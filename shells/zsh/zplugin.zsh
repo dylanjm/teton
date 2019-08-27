@@ -20,7 +20,7 @@ zplugin $load mafredri/zsh-async
 zplugin ice wait '0' silent
 zplugin $load rupa/z
 
-zplugin ice wait '0' atload:'source ~/.dotfiles/shells/zsh/p10k.zsh' silent
+zplugin snippet ~/.p10k
 zplugin $load romkatv/powerlevel10k
 
 zplugin ice wait:1 atload:_zsh_autosuggest_start silent
@@ -29,5 +29,5 @@ zplugin $load zsh-users/zsh-autosuggestions
 zplugin ice silent blockf;
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice silent wait'!1'
-zplugin $load zdharma/fast-syntax-highlighting
+zplugin ice wait atinit"zpcompinit; zpcdreplay" lucid
+zplugin light zdharma/fast-syntax-highlighting

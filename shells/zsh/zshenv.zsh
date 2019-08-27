@@ -13,6 +13,10 @@ export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/
 
 export PATH_SAVE=$PATH
 
+if test "$(whoami)" = "mcdodj"; then
+    export MOOSE_DIR="$HOME/Documents/projects/moose"
+fi
+
 autoload time-shell countdown nuke
 
 

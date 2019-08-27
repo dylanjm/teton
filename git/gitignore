@@ -533,3 +533,4 @@ TSWLatexianTemp*
 # Makeindex log files
 .custom.el
 network-security.data/
+*/recentf

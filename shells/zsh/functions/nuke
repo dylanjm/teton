@@ -1,8 +1,12 @@
 function nuke() {
     read -r "response?Are you sure? [y/N] "
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
-    then
-	    git clean -dfx && git submodule foreach --recursive git clean -dfx
+    read -r "dry?Would you like to do a dry-run first? "
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        if [[ "$dry" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+           git clean -dfxn -e .envrc && git submodule foreach --recursive git clean -dfxn
+        else
+            git clean -dfx -e .envrc && git submodule foreach --recursive git clean -dfx
+        fi
     else
 	    return 0
     fi

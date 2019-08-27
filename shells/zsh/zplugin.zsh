@@ -44,6 +44,10 @@ zplugin light romkatv/powerlevel10k
 zplugin ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
 zplugin load "trapd00r/LS_COLORS"
 
+zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+    atpull'%atclone' pick"direnv" src"zhook.zsh"
+zplugin load direnv/direnv
+
 zplugin ice wait:1 atload:_zsh_autosuggest_start silent
 zplugin $load zsh-users/zsh-autosuggestions
 

@@ -27,6 +27,7 @@ NEWEST_BISON_RUN=$(
 	awk '{print "/projects/bison/git/"$1"/assessment/LWR/validation/"}'
 		)
 
+echo $NEWEST_BISON_RUN | tail
 # Concat with folder of interest passed in from CLI
 NEW_FOLDER="$NEWEST_BISON_RUN$folder/*"
 
@@ -36,10 +37,11 @@ NEW_RFILEP=($(ssh -qn mcdodyla@falcon1 \
 
 # Maninpulate file paths to match the local machine directory
 LOCAL_FILEP=($(for i in "${NEW_RFILEP[@]}"; do
-		   echo $i |
-		       sed -E "s#/projects/bison/git/bison_[0-9]{8}#/Users/mcdodj/Documents/projects/bison#"
-	       done
-	     ))
+                   printf "$i"
+		           echo $i |
+		               sed -E "s#/projects/bison/git/bison_[0-9]{8}#/Users/mcdodj/Documents/projects/bison#"
+	           done
+	         ))
 
 # Check to see if dry-run, if not proceed with copying the files over. 
 if [ "$dry_run" -eq 1 ]; then

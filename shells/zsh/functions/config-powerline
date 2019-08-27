@@ -1,0 +1,9 @@
+function prompt_lambda () {
+    p10k segment -f 9 -i $'\u03BB'
+}
+ 
+function config-powerline(){
+    POWERLEVEL9K_MODE=nerdfont-complete
+    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(lambda dir vcs prompt_char)
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status, virtualenv, context)
+}

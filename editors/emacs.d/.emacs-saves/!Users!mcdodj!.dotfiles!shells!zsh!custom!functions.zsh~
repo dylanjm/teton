@@ -1,0 +1,22 @@
+countdown() {
+    printf "Shutting Down Emacs Server... 10\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 09\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 08\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 07\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 06\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 05\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 04\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 03\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 02\r"
+    sleep 1
+    printf "Shutting Down Emacs Server... 01\r"
+    sleep 1
+    }

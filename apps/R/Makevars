@@ -1,0 +1,74 @@
+# --------
+# Makevars
+# --------
+
+# General note
+# - need to repeat options across C++ flavors (e.g., 11, 14)
+
+# Homebrew bin / opt / lib locations
+HB=/usr/local/bin
+HO=/usr/local/opt
+HL=/usr/local/lib
+HI=/usr/local/include
+
+# MacOS 10.14.6 Xcode header location (August 2019)
+# (do "xcrun -show-sdk-path" in terminal to get path; change if yours is different)
+XH=/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk
+
+# ccache
+CCACHE=$(HB)/ccache
+
+# Make using all cores (set # to # of cores on your machine)
+MAKE=make -j4
+
+# GNU version (August 2019)
+GNU_VER=9
+
+# LLVM (Clang) compiler options
+CC=$(CCACHE) $(HO)/llvm/bin/clang
+CXX=$(CC)++
+CXX98=$(CC)++
+CXX11=$(CC)++
+CXX14=$(CC)++
+CXX17=$(CC)++
+
+# FORTRAN
+FC=$(CCACHE) $(HB)/gfortran-$(GNU_VER)
+F77=$(FC)
+FLIBS=-L$(HL)/gcc/$(GNU_VER) -lgfortran -lquadmath -lm
+
+# STD libraries
+CXX1XSTD=-std=c++0x
+CXX11STD=-std=c++11
+CXX14STD=-std=c++14
+CXX17STD=-std=c++17
+
+# FLAGS
+STD_FLAGS=-g -O3 -Wall -pedantic -mtune=native -pipe
+CFLAGS=$(STD_FLAGS)
+CXXFLAGS=$(STD_FLAGS)
+CXX98FLAGS=$(STD_FLAGS)
+CXX11FLAGS=$(STD_FLAGS)
+CXX14FLAGS=$(STD_FLAGS)
+CXX17FLAGS=$(STD_FLAGS)
+
+# Preprocessor FLAGS
+# NB: -isysroot refigures the include path to the Xcode SDK we set above
+CPPFLAGS=-isysroot $(XH) -I$(HI) \
+	-I$(HO)/llvm/include -I$(HO)/openssl/include \
+	-I$(HO)/gettext/include	-I$(HO)/tcl-tk/include
+
+# Linker flags (suggested by homebrew)
+LDFLAGS+=-L$(HO)/llvm/lib -Wl,-rpath,$(HO)/llvm/lib
+
+# Flags for OpenMP support that should allow packages that want to use
+# OpenMP to do so (data.table), and other packages that bork with
+# -fopenmp flag (stringi) to be left alone
+SHLIB_OPENMP_CFLAGS=-fopenmp
+SHLIB_OPENMP_CXXFLAGS=-fopenmp
+SHLIB_OPENMP_CXX98FLAGS=-fopenmp
+SHLIB_OPENMP_CXX11FLAGS=-fopenmp
+SHLIB_OPENMP_CXX14FLAGS=-fopenmp
+SHLIB_OPENMP_CXX17FLAGS=-fopenmp
+SHLIB_OPENMP_FCFLAGS=-fopenmp
+SHLIB_OPENMP_FFLAGS=-fopenmp

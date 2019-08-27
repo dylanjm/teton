@@ -1,0 +1,9 @@
+#!/usr/local/bin/zsh
+
+for i in `ls $(brew --cellar python)/`; do 
+  ln -s $(brew --cellar python)/$i $HOME/.pyenv/versions/$i-brew; 
+done
+
+for i in `ls $(brew --cellar python@2)/`; do 
+  ln -s $(brew --cellar python@2)/$i $HOME/.pyenv/versions/$i-brew; 
+done

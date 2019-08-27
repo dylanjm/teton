@@ -1,0 +1,32 @@
+[user]
+	name = Dylan McDowell
+	email = dylanjm@users.noreply.github.com
+[core]
+	editor = emacs
+	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	excludesfile = ~/.gitignore
+[color]
+	ui = auto
+[color "branch"]
+       current = yellow bold
+       local = green bold
+       remote = cyan bold
+[color "diff"]
+       meta = yellow bold
+       frag = magenta bold
+       old = red bold
+       new = green bold
+       whitespace = red reverse
+[color "status"]
+       added = green bold
+       changed = yellow bold
+       untracked = red bold
+[alias]
+	a = add .
+	cm = commit -m
+	p = push
+	
+[pager]
+	branch = false
+    stash = false
+    diff = false

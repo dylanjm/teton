@@ -1,0 +1,7 @@
+timer=$(($(gdate +%s%N)/1000000))
+
+source ~/.zshrc
+
+now=$(($(gdate +%s%N)/1000000))
+elapsed=$(($now-$timer))
+echo $elapsed":" $plugin

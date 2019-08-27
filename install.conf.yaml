@@ -1,0 +1,16 @@
+- defaults:
+    link:
+      relink: true
+      force: true
+      create: true
+
+- clean: ['~']
+
+- link:
+    ~/.zshrc: shells/zsh/zshrc.zsh
+    ~/.zshenv: shells/zsh/zshenv.zsh
+    ~/.p10k: shells/zsh/interactive/p10k.zsh
+    ~/.emacs.d: editors/emacs.d
+    
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]

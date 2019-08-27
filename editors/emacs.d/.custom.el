@@ -1,3 +1,4 @@
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -11,18 +12,12 @@
  '(company-minimum-prefix-length 1 t)
  '(company-require-match nil t)
  '(company-tooltip-align-annotations t t)
- '(display-line-numbers-grow-only nil)
- '(display-line-numbers-width nil)
- '(ivy-count-format "(%d/%d) ")
- '(ivy-use-virtual-buffers t)
- '(ivy-virtual-abbreviate 'full)
  '(markdown-asymmetric-header t t)
  '(markdown-split-window-direction 'right t)
  '(package-selected-packages
-   '(ivy-pass all-the-icons-ivy ivy-rich counsel yasnippet-snippets helm rust-mode company-auctex latex-extra company yaml-mode use-package telephone-line spaceline smart-mode-line pdf-tools org-plus-contrib markdown-mode gruvbox-theme exec-path-from-shell evil-anzu editorconfig doom-modeline auctex))
+   '(ivy-rich ivy-pass counsel all-the-icons-ivy helm yasnippet-snippets yaml-mode use-package smartparens smart-mode-line rust-mode rainbow-delimiters pyvenv poly-R pdf-tools org-plus-contrib magic-latex-buffer latex-preview-pane latex-extra key-chord ivy hydra highlight-indentation gruvbox-theme general flycheck exec-path-from-shell evil-anzu ess-view ess-smart-underscore ess-smart-equals ess-R-data-view electric-operator editorconfig doom-modeline diminish company-statistics company-auctex color-identifiers-mode auto-complete auctex-latexmk))
  '(preview-auto-cache-preamble t t)
- '(preview-gs-command "/usr/local/bin/gs" t)
- '(yas-global-mode t))
+ '(preview-gs-command "/usr/local/bin/gs" t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

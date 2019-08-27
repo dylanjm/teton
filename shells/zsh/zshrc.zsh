@@ -1,6 +1,5 @@
-ZDOTDIR="$HOME/dotz/shells/zsh"
-source $ZDOTDIR/zplugin.zsh
-for f in $ZDOTDIR/interactive/*(N); source $f
+source $ZSH/zplugin.zsh
+for f in $ZSH/interactive/*(N); source $f
 
 zpcompinit && zpcdreplay
 ([[ $ZPGLM[ZCOMPDUMP_PATH].zwc -nt $ZPGLM[ZCOMPDUMP_PATH] ]] || zcompile $ZPLGM[ZCOMPDUMP_PATH]) &!

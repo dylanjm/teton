@@ -1,2 +1,0 @@
-;;; Generated package description from /Users/mcdodj/.emacs.d/elpa/color-identifiers-mode-20190805.1455/color-identifiers-mode.el  -*- no-byte-compile: t -*-
-(define-package "color-identifiers-mode" "20190805.1455" "Color identifiers based on their names" '((dash "2.5.0") (emacs "24")) :commit "58fc8706a8f44e8df4678eec8ce15636fd4db758" :keywords '("faces" "languages") :authors '(("Ankur Dave" . "ankurdave@gmail.com")) :maintainer '("Ankur Dave" . "ankurdave@gmail.com") :url "https://github.com/ankurdave/color-identifiers-mode")

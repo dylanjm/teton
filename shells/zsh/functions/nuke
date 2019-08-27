@@ -1,0 +1,9 @@
+function nuke() {
+    read -r "response?Are you sure? [y/N] "
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
+    then
+	    git clean -dfx && git submodule foreach --recursive git clean -dfx
+    else
+	    return 0
+    fi
+}

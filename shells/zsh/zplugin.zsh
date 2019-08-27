@@ -11,19 +11,23 @@ fi
 source $ZPLG_HOME/bin/zplugin.zsh
 load=light
 
+zplugin ice wait '0' silent
 zplugin $load willghatch/zsh-saneopt
 
+zplugin ice wait '0' silent
 zplugin $load mafredri/zsh-async
+
+zplugin ice wait '0' silent
 zplugin $load rupa/z
 
-zplugin ice wait atload:'source ~/.dotfiles/shells/zsh/p10k.zsh'
+zplugin ice wait '0' atload:'source ~/.dotfiles/shells/zsh/p10k.zsh' silent
 zplugin $load romkatv/powerlevel10k
 
-zplugin ice silent wait:1 atload:_zsh_autosuggest_start
+zplugin ice wait:1 atload:_zsh_autosuggest_start silent
 zplugin $load zsh-users/zsh-autosuggestions
 
-zplugin ice blockf;
+zplugin ice silent blockf;
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice silenitt wait!1
+zplugin ice silent wait'!1'
 zplugin $load zdharma/fast-syntax-highlighting

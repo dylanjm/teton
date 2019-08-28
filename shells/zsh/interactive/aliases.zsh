@@ -8,7 +8,7 @@ alias emt="emacsclient -t"
 
 alias lx='exa -lahH --color-scale --icons --sort=changed --time=changed --time-style long-iso -r'
 
-alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
+alias brew="env PATH=${PATH//$HOME/.pyenv\/shims:/} brew"
 
 alias desk="cd $HOME/Desktop"
 
@@ -16,11 +16,11 @@ alias docs="cd $HOME/Documents"
 
 alias dot="cd $DOTFILES"
 
-alias dotz="cd $ZDOTDIR"
+alias dotz="cd $ZSH"
 
 alias dotem="cd $DOTFILES/editors/emacs.d"
 
-if test "$(whoami)" = "djm"; then 
+if test "$USER" = "djm"; then 
     alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
     alias omscs="cd ~/Documents/College/OMSCS"
     alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
@@ -28,7 +28,7 @@ if test "$(whoami)" = "djm"; then
     alias github="cd ~/Documents/Code/Github"
 fi
 
-if test "$(whoami)" = "mcdodj"; then
+if test "$USER" = "mcdodj"; then
     alias proj='cd ~/Documents/projects'
     alias bis='cd ~/Documents/projects/bison'
     alias bisd='cd ~/Documents/projects/bison_data'

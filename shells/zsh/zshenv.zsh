@@ -14,12 +14,7 @@ export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/
 #export PATH_SAVE=$PATH
 
 if test "$(whoami)" = "mcdodj"; then
-    export MY_PROMPT=1
-fi
-
-if test "$(whoami)" = "mcdodj"; then
     export MOOSE_DIR="$HOME/Documents/projects/moose"
-    export MY_PROMPT=2
 fi
 
 autoload time-shell countdown nuke convert-to-md config-powerline

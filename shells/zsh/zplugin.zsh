@@ -14,43 +14,40 @@ load=light
 zstyle ':completion:*' insert-tab false
 zstyle ':prezto:module:editor' key-bindings 'emacs'
 
-zplugin ice wait'0' silent
-zplugin $load mafredri/zsh-async
-
-zplugin ice wait svn lucid wait'0'
+zplugin ice svn lucid wait'3'
 zplugin snippet PZT::modules/directory
 
-zplugin ice wait'0' lucid
+zplugin ice lucid wait'3'
 zplugin snippet OMZ::lib/history.zsh
 
-zplugin ice wait'0' lucid
+zplugin ice lucid wait'3'
 zplugin snippet OMZ::lib/completion.zsh
 
 # Handle keybindings
 #zplugin ice svn silent wait'0'
 #zplugin snippet PZT::modules/editor
 
-zplugin ice wait'0' silent
+zplugin ice lucid wait:1
 zplugin $load davidparsson/zsh-pyenv-lazy
 
-zplugin ice wait'0' silent
-zplugin $load romkatv/gitstatus
-
-zplugin ice wait'!0' atinit"config-powerline"
+zplugin ice wait:! atload"config-powerline" lucid
 zplugin $load romkatv/powerlevel10k
 
-zplugin ice wait'0' atclone"gdircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh"
+zplugin ice nocompile:! pick"c.zsh" atpull'%atclone' atclone"gdircolors -b LS_COLORS > c.zsh" lucid
 zplugin $load "trapd00r/LS_COLORS"
 
-zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    atpull'%atclone' pick"direnv" src"zhook.zsh" wait"0"
-zplugin $load direnv/direnv
+#zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+#    atpull'%atclone' pick"direnv" src"zhook.zsh" wait"3"
+#zplugin $load direnv/direnv
 
-zplugin ice wait'!1' atload:'_zsh_autosuggest_start'
+#zplugin ice id-as"moose" pick"moose_profile.sh" load'[[ $PWD = */bison* ]]' lucid
+#zplugin $load /usr/local/opt/moose
+
+zplugin ice wait:1 atload:_zsh_autosuggest_start lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
-zplugin ice wait:'0' silent blockf;
+zplugin ice blockf lucid;
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice silent wait'0' atinit"zpcompinit; zpcdreplay"
+zplugin ice wait!1 #atinit"zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting

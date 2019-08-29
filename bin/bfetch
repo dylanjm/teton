@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/usr/local/bin/zsh
 RED='\033[0;31m'
 NC='\033[0m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+
+
 
 dry_run=0
 yesterday=1
@@ -20,43 +22,73 @@ shift $(($OPTIND-1))
 
 folder=${1:?"You must define a folder of interest"}
 
-# Grab the most recently updated bison file off of Falcon1; return as string
-# in the form of bison_XXXXXXXX/assessment/LWR/validation/
-bison_latest_run=$(
-    ssh -qn mcdodyla@falcon1 'find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -printf "%T@\t%f\n"' |
-	    sort -t$'\t' -r -nk1,5 |
-	    sed -n "$yesterday"p |
-	    cut -f2-)
-
-bison_remote_path=$(
-    echo $bison_latest_run |
-        awk -v folder="$folder" '{print "/projects/bison/git/"$1"/assessment/LWR/validation/"folder}'
-    )
-
-bison_remote_files=($(ssh -qn mcdodyla@falcon1 \
-		  "find $bison_remote_path -type f -name '*_out.csv' -not -path '*/doc/*' 2>/dev/null"))
-
-# Maninpulate file paths to match the local machine directory
-local_file_path=($(for i in "${bison_remote_files[@]}"; do
-		           echo $i |
-		               gsed -E "s|/projects/bison/git/bison_[0-9]{8}|/Users/mcdodj/Documents/projects/bison|g"
-	           done
-	         ))
-
 # Check to see if dry-run, if not proceed with copying the files over. 
 if [ "$dry_run" -eq 1 ]; then
-    printf "${YELLOW}Initiating Dry-Run (Grabbing files from ${GREEN}${bison_latest_run}/${YELLOW}):${NC}\n"
-    for ((i=0; i<${#bison_remote_files[@]}; i++)); do
-	    printf "${RED}Remote File ->${NC} ${bison_remote_files[i]}\n"
-	    printf "${GREEN}Local File ->${NC} ${local_file_path[i]}\n"
-	    printf "\n"
+    print -Pn "\n%S%11F%{Initiating Dry-Run%}%s%f"
+    
+    # Grab the most recently updated bison file off of Falcon1; return as string
+    # in the form of bison_XXXXXXXX/assessment/LWR/validation/
+    bison_remote_files=($(
+        {
+            {
+                bison_latest_run=$(ssh -qn falcon1 'find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -printf "%T@\t%f\n"' |
+	                sort -t$'\t' -r -nk1,5 |
+	                sed -n "$yesterday"p |
+	                cut -f2-)
+
+                bison_remote_path=$(
+                    echo $bison_latest_run |
+                        awk -v folder="$folder" '{print "/projects/bison/git/"$1"/assessment/LWR/validation/"folder}')
+
+                ssh -qn falcon1 \
+		            "find $bison_remote_path -type f -name '*_out.csv' -not -path '*/doc/*' 2>/dev/null" >&3 3>&-; echo "$?"
+
+                print -Pn "\n\n%U%B%13F%{Fetching data from:%}%u %B%12F%{ /projects/bison/git/${bison_latest_run}%}%b%f\n" >&2
+                
+            } | {
+                until read -t1 ret; do
+                    print -Pn "%S%11F%{.%}%s%f" >&2
+                done
+                exit "$ret"
+            }
+        } 3>&1))
+
+
+    # Maninpulate file paths to match the local machine directory
+    local_file_path=($(for i in "${bison_remote_files[@]}"; do
+		                   echo $i |
+		                       gsed -E "s|/projects/bison/git/bison_[0-9]{8}|$HOME/Documents/projects/bison|g"
+	                   done
+	                 ))
+
+    for ((i=1; i<=${#bison_remote_files[@]}; i++)); do
+	    print -P "\u251C\U2500%B%1F%{Remote File ->%}%b%f ${bison_remote_files[i]}"
+	    print -P "\u251C\U2500%B%10F%{Local File  ->%}%b%f ${local_file_path[i]}"
+
+        if [[ $i -lt ${#bison_remote_files[@]} ]]; then
+	        print -Pn "\U2502\n"
+        else
+            print -Pn "\U2514\U2500\U2504\U27E2\n"
+        fi
     done
+
+    read -r "response?Are you sure? [y/N] "
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+        if [[ "$dry" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+           git clean -dfxn -e .envrc && git submodule foreach --recursive git clean -dfxn
+        else
+            git clean -dfx -e .envrc && git submodule foreach --recursive git clean -dfx
+        fi
+    else
+	    return 0
+    fi
+
 else
     printf "${YELLOW}Fetching Data from ${NC}(${GREEN}${bison_latest_run}${NC})${YELLOW}...${NC}\n"
     
     for ((i=0; i<${#NEW_RFILEP[@]}; i++)); do
         
-	    scp -qp mcdodyla@falcon1:"${NEW_RFILEP[i]}" "${LOCAL_FILEP[i]}"
+	    #scp -qp mcdodyla@falcon1:"${NEW_RFILEP[i]}" "${LOCAL_FILEP[i]}"
         
 	    if [ ${PIPESTATUS[0]} -eq 0 ]; then      
             printf "${GREEN}File Created/Updated at:${NC} ${LOCAL_FILEP[i]}\n"

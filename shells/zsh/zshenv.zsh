@@ -17,6 +17,6 @@ if test "$(whoami)" = "mcdodj"; then
     export MOOSE_DIR="$HOME/Documents/projects/moose"
 fi
 
-autoload time-shell countdown nuke convert-to-md config-powerline
+autoload time-shell countdown nuke convert-to-md config-powerline colorize
 
 

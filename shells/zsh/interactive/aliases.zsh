@@ -20,6 +20,8 @@ alias dotz="cd $ZSH"
 
 alias dotem="cd $DOTFILES/editors/emacs.d"
 
+alias bin='cd $DOTFILES/bin'
+
 if test "$USER" = "djm"; then 
     alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
     alias omscs="cd ~/Documents/College/OMSCS"
@@ -32,7 +34,6 @@ if test "$USER" = "mcdodj"; then
     alias proj='cd ~/Documents/projects'
     alias bis='cd ~/Documents/projects/bison'
     alias bisd='cd ~/Documents/projects/bison_data'
-    alias bin='cd ~/.dotfiles/bin'
     alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
     alias moose='cd ~/Documents/projects/moose'
     alias papers='cd ~/Documents/projects/papers'

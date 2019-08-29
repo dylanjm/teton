@@ -1,5 +1,0 @@
-#!/bin/bash
-ls -t /projects/bison/git |
-    head -1 |
-    awk '{printf "/projects/bison/git/"$1"/assessment/LWR/validation/"}' |
-    xargs -0 -I{} find '{}' -type f -name "*_out.csv"

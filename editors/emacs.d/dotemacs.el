@@ -111,6 +111,7 @@
               (TeX-fold-mode 1)
               (LaTeX-math-mode)
               (turn-on-reftex)
+              (yas-minor-mode t)
               (setq reftex-plug-into-AUCTeX t)
               (push '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
                       :help "Run latexmk on file")
@@ -155,7 +156,7 @@
     :ensure t)
   (yas-global-mode t)
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "C-'") #'yas-expand)
+  (define-key yas-minor-mode-map (kbd "C-;") #'yas-expand)
   (add-to-list #'yas-snippet-dirs "~/.emacs.d/snippets/")
   (yas-reload-all)
   (setq yas-prompt-functions '(yas-ido-prompt)))

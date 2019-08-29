@@ -24,13 +24,13 @@ zplugin ice lucid wait'3'
 zplugin snippet OMZ::lib/completion.zsh
 
 # Handle keybindings
-#zplugin ice svn silent wait'0'
-#zplugin snippet PZT::modules/editor
+zplugin ice svn silent wait'1'
+zplugin snippet PZT::modules/editor
 
 zplugin ice lucid wait:1
 zplugin $load davidparsson/zsh-pyenv-lazy
 
-zplugin ice wait:! atload"config-powerline" lucid
+zplugin ice wait:! atload"source ~/.p10k.zsh" lucid
 zplugin $load romkatv/powerlevel10k
 
 zplugin ice atclone"dircolors -b LS_COLORS > clrs.zsh" \

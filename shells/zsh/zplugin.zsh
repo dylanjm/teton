@@ -33,8 +33,10 @@ zplugin $load davidparsson/zsh-pyenv-lazy
 zplugin ice wait:! atload"config-powerline" lucid
 zplugin $load romkatv/powerlevel10k
 
-zplugin ice nocompile:! pick"c.zsh" atpull'%atclone' atclone"gdircolors -b LS_COLORS > c.zsh" lucid
-zplugin $load "trapd00r/LS_COLORS"
+zplugin ice atclone"dircolors -b LS_COLORS > clrs.zsh" \
+    atpull'%atclone' pick"clrs.zsh" nocompile'!' \
+    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
+zplugin $load trapd00r/LS_COLORS
 
 #zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
 #    atpull'%atclone' pick"direnv" src"zhook.zsh" wait"3"
@@ -49,5 +51,5 @@ zplugin $load zsh-users/zsh-autosuggestions
 zplugin ice blockf lucid;
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait!1 #atinit"zpcompinit; zpcdreplay" lucid
+zplugin ice wait!1 atinit"zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting

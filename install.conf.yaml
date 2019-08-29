@@ -3,13 +3,14 @@
       relink: true
       force: true
       create: true
+    clean:
+      force: true
 
 - clean: ['~']
 
 - link:
     ~/.zshrc: shells/zsh/zshrc.zsh
     ~/.zshenv: shells/zsh/zshenv.zsh
-    ~/.p10k: shells/zsh/interactive/p10k.zsh
     ~/.emacs.d: editors/emacs.d
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore

@@ -16,18 +16,24 @@ alias docs="cd $HOME/Documents"
 
 alias dot="cd $DOTFILES"
 
-alias dotz="cd $ZSH"
+alias dotapp="cd $DOTFILES/apps"
+
+alias dotm="cd $DOTFILES/misc"
+
+alias dotshell="cd $ZSH"
 
 alias dotem="cd $DOTFILES/editors/emacs.d"
 
-alias bin='cd $DOTFILES/bin'
+alias dotbin='cd $DOTFILES/bin'
+
+alias plugins='cd $HOME/.cache/zsh/zplugin/plugins'
 
 if test "$USER" = "djm"; then 
     alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
     alias omscs="cd ~/Documents/College/OMSCS"
     alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
     alias rl="cd ~/Documents/College/OMSCS/cs_7642"
-    alias github="cd ~/Documents/Code/Github"
+    alias code="cd ~/Documents/Code/Github"
 fi
 
 if test "$USER" = "mcdodj"; then

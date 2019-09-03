@@ -51,9 +51,15 @@ if test "$USER" = "mcdodj"; then
             atpull'%atclone' pick"direnv" src"zhook.zsh" wait"1" lucid
     zplugin $load direnv/direnv
 
-    zplugin ice as"completion" if"[ -f '${ZSH}/completions/_pyfetch' ]" blockf lucid;
+    zplugin ice wait'1' as"completion" if"[ -f '${ZSH}/completions/_pyfetch' ]" blockf lucid;
     zplugin snippet "${ZSH}/completions/_pyfetch"
+
+    zplugin ice wait'1' as"completion" if"[ -f '${ZSH}/completions/_bfetch' ]" blockf lucid;
+    zplugin snippet "${ZSH}/completions/_bfetch"
 fi
+
+zplugin ice wait'1' lucid
+zplugin $load rupa/z
 
 zplugin ice wait'1' atload:'_zsh_autosuggest_start' lucid
 zplugin $load zsh-users/zsh-autosuggestions

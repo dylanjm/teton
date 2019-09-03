@@ -1,0 +1,23 @@
+#compdef bfetch
+
+_bfetch() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+    
+    _arguments \
+        '1: :->flags' \
+        '*: :->folders'
+    
+    case "$state" in
+        flags)
+            _arguments '1: :(
+                       -n
+                       -y)'
+            ;;
+        folders)
+            _arguments "*:folder:($(find $HOME/Documents/projects/bison/assessment/LWR/validation -mindepth 1 -maxdepth 1 -type d -exec sh -c 'echo $(basename {})' \;))"
+            ;;
+    esac
+}
+
+_bfetch "$@"

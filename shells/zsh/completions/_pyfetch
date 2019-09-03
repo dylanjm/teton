@@ -1,0 +1,15 @@
+#compdef pyfetch
+
+_pyfetch() {
+    local state
+    
+    _arguments \
+        '1: :->folders'
+    
+    case "$state" in
+        folders) _arguments "1:folders:($(find $HOME/Documents/projects/bison/assessment/LWR/validation -mindepth 1 -maxdepth 1 -type d -exec sh -c 'echo $(basename {})' \;))"
+            ;;
+    esac
+}
+
+_pyfetch "$@"

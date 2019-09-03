@@ -8,9 +8,9 @@ if [[ ! -f $ZPLG_HOME/bin/zplugin.zsh ]]; then
 	git clone https://github.com/psprint/zplugin $ZPLG_HOME/bin
 	zcompile $ZPLG_HOME/bin/*.zsh
 fi
-module_path+=( "/Users/djm/.cache/zsh/zplugin/bin/zmodules/Src" )
+module_path+=( "/Users/$USER/.cache/zsh/zplugin/bin/zmodules/Src" )
 zmodload zdharma/zplugin
-#zpmod source-study
+zpmod source-study
 source $ZPLG_HOME/bin/zplugin.zsh
 load=load
 
@@ -46,12 +46,14 @@ zplugin ice wait'1' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
 
-#zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-#    atpull'%atclone' pick"direnv" src"zhook.zsh" wait"1" lucid
-#zplugin $load direnv/direnv
-#
-#zplugin ice id-as"moose" pick"moose_profile.sh" load'[[ $PWD = */bison* ]]' lucid
-#zplugin $load /usr/local/opt/moose
+if test "$USER" = "mcdodj"; then
+    zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+            atpull'%atclone' pick"direnv" src"zhook.zsh" wait"1" lucid
+    zplugin $load direnv/direnv
+
+    zplugin ice as"completion" if"[ -f '${ZSH}/completions/_pyfetch' ]" blockf lucid;
+    zplugin snippet "${ZSH}/completions/_pyfetch"
+fi
 
 zplugin ice wait'1' atload:'_zsh_autosuggest_start' lucid
 zplugin $load zsh-users/zsh-autosuggestions

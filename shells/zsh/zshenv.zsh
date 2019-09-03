@@ -9,7 +9,7 @@ export EDITOR='emacsclient -c'
 export ALTERNATE_EDITOR=""
 export LANG=en_US.UTF-8
 
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.pyenv/bin:$DOTFILES/bin"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
 
 #export PATH_SAVE=$PATH
 
@@ -17,6 +17,6 @@ if test "$(whoami)" = "mcdodj"; then
     export MOOSE_DIR="$HOME/Documents/projects/moose"
 fi
 
-autoload time-shell countdown nuke convert-to-md config-powerline colorize colorlist
+autoload time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv
 
 

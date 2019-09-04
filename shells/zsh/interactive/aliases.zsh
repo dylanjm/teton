@@ -6,9 +6,9 @@ alias kemc="emacsclient -e '(kill-emacs)'; countdown"
 
 alias emt="emacsclient -t"
 
-alias lx='exa -lahH --color-scale --icons --sort=changed --time=changed --time-style long-iso -r'
+alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso'
 
-alias brew="env PATH=${PATH//$HOME/.pyenv\/shims:/} brew"
+alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
 
 alias desk="cd $HOME/Desktop"
 
@@ -27,6 +27,15 @@ alias dotem="cd $DOTFILES/editors/emacs.d"
 alias dotbin='cd $DOTFILES/bin'
 
 alias plugins='cd $HOME/.cache/zsh/zplugin/plugins'
+
+# Git aliases
+alias gss='git status -s'
+alias gsa='git status'
+alias gaa='git add --all'
+alias gcm='git commit -m'
+alias gp='git push'
+alias gco='git checkout'
+alias gcob='git checkout -b'
 
 if test "$USER" = "djm"; then 
     alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"

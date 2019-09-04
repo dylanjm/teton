@@ -1,0 +1,122 @@
+# -*- mode: snippet -*-
+# name: homework-template
+# key: hw-temp
+# --
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=1in, headsep=.25in, headheight=36pt]{geometry}
+\usepackage{mathptmx} % font
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{listings}
+\usepackage{graphicx,grffile}
+\usepackage[unicode=true]{hyperref}
+\usepackage{longtable,booktabs}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage[symbol]{footmisc}
+\usepackage{tasks}
+\usepackage{mathtools}
+\usepackage[explicit]{titlesec}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{brackets}
+\usepackage{jlcode}
+
+\graphicspath{{figures/}}
+\pdfminorversion=7
+
+\hypersetup{%
+  breaklinks=true,
+  colorlinks=false,
+  hypertexnames=false,
+  citecolor=blue,
+  urlcolor=blue,
+  pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Setting up YAML Inputs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand{\hmwkTitle}{${1:Title}}
+\newcommand{\hmwkDueDate}{${2:Date}}
+\newcommand{\hmwkClass}{${3:Class}}
+\newcommand{\hmwkAuthorName}{${4:Name}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% PERSONAL DOCUMENT FORMATTING SETTINGS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\fancypagestyle{fullstyle}
+{
+  \fancyhf{}
+  \fancyhead[R]{\large \hmwkAuthorName \ \thepage\//\pageref{LastPage}}
+}
+
+
+\fancypagestyle{firststyle}
+{
+  \fancyhf{}
+  \fancyhead[C]{\Large\bfseries \hmwkTitle}
+  \fancyhead[L]{\large\bfseries \hmwkAuthorName}
+  \fancyhead[R]{\large \hmwkClass \\ \hmwkDueDate}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\DeclareInstance{tasks}{alphabetize-parens}{default}{
+  counter-format = { (tsk[a]) }
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{gray95}{rgb}{.97, .97, .97}
+
+\newtcolorbox{solution}[1]{%
+  fonttitle=\bfseries,
+  title = #1) Solution:,
+  colback=gray95
+}
+
+
+\newcommand*\Sectionname{Exercise}
+\titleformat{\section}{\Large\bfseries}{\Sectionname\ \thesection:\ }{0pt}{#1}[]
+\setcounter{secnumdepth}{1}
+
+\newcommand{\e}[1]{e^{#1}}
+\newcommand{\mcb}[2]{\colorbox{#1}{\displaystyle #2}}
+
+\newcommand{\p}[1]{P\parens{#1}}
+\newcommand{\pcap}[2]{P\parens{#1 \cap #2}}
+\newcommand{\pcup}[2]{P\parens{#1 \cup #2}}
+\newcommand{\pbar}[2]{P\parens{#1 \gv #2}}
+\newcommand{\bayes}[2]{\dfrac{P\parens{#2 \gv #1}P\parens{#1}}{P\parens{#2}}}
+
+\newcommand\Myperm[2][^n]{\prescript{#1\mkern-2.5mu}{}P_{#2}}
+\newcommand\Mycomb[2][^n]{\prescript{#1\mkern-0.5mu}{}C_{#2}}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+
+
+\pagestyle{fullstyle}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% DOCUMENT BEGINS HERE!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\begin{document}
+\thispagestyle{empty}
+\clearpage
+\pagenumbering{arabic}
+\thispagestyle{firststyle}
+
+$0
+
+\end{document}

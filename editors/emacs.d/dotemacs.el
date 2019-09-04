@@ -106,7 +106,6 @@
   (setq-default TeX-PDF-mode t)
   (add-hook 'LaTeX-mode-hook
             (lambda ()
-              (auto-fill-mode)
               (flyspell-mode)
               (TeX-fold-mode 1)
               (LaTeX-math-mode)
@@ -118,7 +117,6 @@
                     TeX-command-list)
               (setq TeX-command-default "latexmk")))
   :custom
-  (preview-auto-cache-preamble t)
   (TeX-view-program-selection '((output-pdf "PDF Viewer")))
   (TeX-view-program-list
    '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
@@ -135,9 +133,9 @@
   (:map company-active-map
         ("RET" . nil)
         ([return] . nil)
-        ("TAB" . company-complete-selection)
-        ([tab] . company-complete-selection)
-        ("<right>" . company-complete-common))
+        ("C-f" . company-complete-selection)
+        ("C-f" . company-complete-common)
+        ("C-n" . company-select-next))
   :hook
   (after-init . global-company-mode)
   :custom
@@ -147,19 +145,34 @@
   (company-require-match nil)
   (company-tooltip-align-annotations t))
 
-(use-package diminish)
+(use-package company-auctex
+  :after (company latex))
+
+(use-package company-math)
+
+(use-package auto-yasnippet
+  :after yasnippet
+  :bind (("C-c y a" . aya-create)
+         ("C-c y e" . aya-expand)
+         ("C-c y o" . aya-open-line)))
 
 (use-package yasnippet
-  :ensure t
+  :bind
+  (:map yas-minor-mode-map
+        ("TAB" . nil)
+        ([tab] . nil)
+        ("C-'" . #'yas-expand))
+  :hook
+  ((emacs-lisp-mode . yas-minor-mode)
+   (org-mode . yas-minor-mode)
+   (LaTeX-mode . yas-minor-mode))
+  :custom
+  (yas-snippet-dirs `(,(expand-file-name "snippets/" user-emacs-directory)))
+  (yas-verbosity 2)
   :config
-  (use-package yasnippet-snippets
-    :ensure t)
-  (yas-global-mode t)
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "C-;") #'yas-expand)
-  (add-to-list #'yas-snippet-dirs "~/.emacs.d/snippets/")
-  (yas-reload-all)
-  (setq yas-prompt-functions '(yas-ido-prompt)))
+  (setq yas-prompt-functions '(yas-ido-prompt))
+  (use-package yasnippet-snippets :ensure t)
+  (yas-reload-all))
 
 (use-package all-the-icons-ivy
   :after (all-the-icons ivy)

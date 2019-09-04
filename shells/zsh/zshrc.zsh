@@ -1,6 +1,9 @@
 source $ZSH/zplugin.zsh
-for f in $ZSH/interactive/*.zsh; source $f
+for f in $ZSH/interactive/*(N); do
+    source $f
+done
 
+zpcompinit && zpcdreplay
 ([[ $ZPGLM[ZCOMPDUMP_PATH].zwc -nt $ZPGLM[ZCOMPDUMP_PATH] ]] || zcompile $ZPLGM[ZCOMPDUMP_PATH]) &!
 
 # If zsh init ends with a failing command (like a conditional) the prompt will

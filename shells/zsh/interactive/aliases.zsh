@@ -6,9 +6,9 @@ alias kemc="emacsclient -e '(kill-emacs)'; countdown"
 
 alias emt="emacsclient -t"
 
-alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso'
+alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso --sort changed'
 
-alias brew="env PATH=${PATH//$(pyenv root)\/shims:/} brew"
+alias brew="env PATH=${PATH/$PYENV_ROOT/shims:/} brew"
 
 alias desk="cd $HOME/Desktop"
 
@@ -37,19 +37,20 @@ alias gp='git push'
 alias gco='git checkout'
 alias gcob='git checkout -b'
 
-if test "$USER" = "djm"; then 
-    alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
-    alias omscs="cd ~/Documents/College/OMSCS"
-    alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
-    alias rl="cd ~/Documents/College/OMSCS/cs_7642"
-    alias code="cd ~/Documents/Code/Github"
-fi
 
-if test "$USER" = "mcdodj"; then
-    alias proj='cd ~/Documents/projects'
-    alias bis='cd ~/Documents/projects/bison'
-    alias bisd='cd ~/Documents/projects/bison_data'
-    alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
-    alias moose='cd ~/Documents/projects/moose'
-    alias papers='cd ~/Documents/projects/papers'
-fi
+# Personal Aliases
+alias openbugs="wine ~/.wine/drive_c/Program\ Files\ \(x86\)/OpenBUGS/OpenBUGS323/OpenBUGS.exe"
+alias omscs="cd ~/Documents/College/OMSCS"
+alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
+alias rl="cd ~/Documents/College/OMSCS/cs_7642"
+alias code="cd ~/Documents/Code/Github"
+
+
+# Work Aliases
+alias proj='cd ~/Documents/projects'
+alias bis='cd ~/Documents/projects/bison'
+alias bisd='cd ~/Documents/projects/bison_data'
+alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
+alias moose='cd ~/Documents/projects/moose'
+alias papers='cd ~/Documents/projects/papers'
+

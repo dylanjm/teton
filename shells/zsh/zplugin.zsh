@@ -15,11 +15,8 @@ source $ZPLG_HOME/bin/zplugin.zsh
 load=load
 
 # Handle keybindings
-#zplugin ice svn wait'1' lucid
-#zplugin snippet PZT::modules/editor
-
-zstyle ':completion:*' insert-tab false
-zstyle ':prezto:module:editor' key-bindings 'emacs'
+zplugin ice svn wait'1' lucid
+zplugin snippet PZT::modules/editor
 
 zplugin ice svn wait'1' pick'init.zsh' lucid 
 zplugin snippet PZT::modules/directory
@@ -36,7 +33,6 @@ zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zplugin ice wait'1' lucid
 zplugin $load davidparsson/zsh-pyenv-lazy
 
-PS1="Ready > "
 zplugin ice wait'!' \
         atload'source ~/.p10k.zsh; _p9k_precmd' lucid nocd
 zplugin $load romkatv/powerlevel10k
@@ -58,14 +54,11 @@ if test "$USER" = "mcdodj"; then
     zplugin snippet "${ZSH}/completions/_bfetch"
 fi
 
-zplugin ice wait'1' lucid
-zplugin $load rupa/z
-
 zplugin ice wait'1' atload:'_zsh_autosuggest_start' lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
 zplugin ice wait'1' blockf lucid
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'1' atinit"zpcompinit; zpcdreplay" lucid
+zplugin ice wait'!1' lucid
 zplugin $load zdharma/fast-syntax-highlighting

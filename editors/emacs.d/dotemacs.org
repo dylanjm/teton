@@ -46,9 +46,9 @@
   (put 'upcase-region 'disabled nil)                ; Enable upcase-region
   (set-default-coding-systems 'utf-8)               ; Default to utf-8 encoding
   (add-to-list 'default-frame-alist
-               '(ns-transparent-titlebar . t))      ; Make the titlebar transparent
+                 '(ns-transparent-titlebar . t))      ; Make the titlebar transparent
   (add-to-list 'default-frame-alist
-               '(ns-appearance . dark))             ; Make everything dark
+                 '(ns-appearance . dark))             ; Make everything dark
   (scroll-bar-mode 0)                               ; Disable the scroll bar
   (blink-cursor-mode 0)                             ; Disable the cursor blinking
   (scroll-bar-mode 0)                               ; Disable the scroll bar
@@ -56,6 +56,7 @@
   (tooltip-mode 0)                                  ; Disable the tooltips
   (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
   (global-hl-line-mode 1)
+  (setq vc-follow-symlinks t)
 #+END_SRC
 
 Store all backups and autosave files in `/tmp/`
@@ -82,14 +83,6 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
   (add-hook 'focus-out-hook #'garbage-collect)
 #+END_SRC
 
-*** Theme
-
-#+BEGIN_SRC emacs-lisp
-  (use-package gruvbox-theme 
-    :demand t
-    :config 
-    (load-theme 'gruvbox-dark-hard t))
-#+END_SRC
 
 *** Load .custom.el
 
@@ -98,6 +91,27 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
   (when (file-exists-p custom-file)
     (load custom-file))
 #+end_src
+
+*** Load .secret.el
+
+This is where I'll store all my font settings
+
+#+begin_src emacs-lisp
+  (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
+    (when (file-exists-p secret.el)
+      (load secret.el)))
+#+end_src
+
+*** Theme
+
+#+BEGIN_SRC emacs-lisp
+  (use-package gruvbox-theme 
+    :demand t
+    :config 
+    (load-theme 'gruvbox-dark-hard t)
+    (with-eval-after-load 'faces
+      (set-face-attribute 'default nil :font me/font-family :height me/font-size-default)))
+#+END_SRC
 
 *** OS Specific
 
@@ -109,6 +123,16 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
 
 
 ** Language Specific
+
+*** Python
+
+This is my setup for python
+
+#+begin_src emacs-lisp
+  (use-package elpy
+    :init
+    (elpy-enable))
+#+end_src
 
 *** Lisp
 
@@ -146,6 +170,45 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
 #+end_src
 
 *** LaTeX
+*** Magit
+
+Magit is awesome
+
+#+begin_src emacs-lisp
+(use-package git-commit
+  :preface
+  (defun me/git-commit-auto-fill-everywhere ()
+    (setq fill-column 72)
+    (setq-local comment-auto-fill-only-comments nil))
+  :hook
+  (git-commit-mode . me/git-commit-auto-fill-everywhere)
+  :custom
+  (git-commit-summary-max-length 50))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package magit
+  :bind
+  (:map magit-hunk-section-map
+        ("RET" . magit-diff-visit-file-other-window)
+        ([return] . magit-diff-visit-file-other-window))
+  :custom
+  (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+  (magit-diff-highlight-hunk-body nil)
+  (magit-diff-highlight-hunk-region-functions
+   '(magit-diff-highlight-hunk-region-dim-outside magit-diff-highlight-hunk-region-using-face))
+  (magit-popup-display-buffer-action '((display-buffer-same-window)))
+  (magit-refs-show-commit-count 'all)
+  (magit-section-show-child-count t)
+  :config
+  (remove-hook 'magit-section-highlight-hook #'magit-section-highlight))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package gitattributes-mode)
+(use-package gitconfig-mode)
+(use-package gitignore-mode)
+#+end_src
 
 Found this LaTeX setup at: https://github.com/peterewills/my_configs/blob/master/.emacs
 
@@ -197,7 +260,7 @@ This is auto complete stuff:
     (:map company-active-map
           ("RET" . nil)
           ([return] . nil)
-          ("C-f" . company-complete-selection)
+          ("TAB" . company-complete-selection)
           ("C-f" . company-complete-common)
           ("C-n" . company-select-next))
     :hook
@@ -393,4 +456,85 @@ This is auto complete stuff:
     :bind (("C-s" . swiper)
            :map swiper-map
            ("M-%" . swiper-query-replace)))
+#+end_src
+*** Windows & Buffers
+
+Setup buffer config
+
+#+begin_src emacs-lisp
+  (use-package windmove
+    :ensure nil
+    :bind
+    (("C-M-<left>" . windmove-left)
+     ("C-M-<right>" . windmove-right)
+     ("C-M-<up>" . windmove-up)
+     ("C-M-<down>" . windmove-down)))
+#+end_src
+
+*** Diff
+
+Set up diff
+
+#+begin_src emacs-lisp
+  (use-package ediff-wind
+    :ensure nil
+    :custom
+    (ediff-split-window-function #'split-window-horizontally)
+    (ediff-window-setup-function #'ediff-setup-windows-plain))
+#+end_src
+
+*** Parentheses
+
+Use smart and rainbow highlighters
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :bind
+    (("M-<backspace>" . sp-unwrap-sexp)
+     ("M-<left>" . sp-forward-barf-sexp)
+     ("M-<right>" . sp-forward-slurp-sexp)
+     ("M-S-<left>" . sp-backward-slurp-sexp)
+     ("M-S-<right>" . sp-backward-barf-sexp))
+    :hook
+    (after-init . smartparens-global-mode)
+    :custom
+    (sp-highlight-pair-overlay nil)
+    (sp-highlight-wrap-overlay nil)
+    (sp-highlight-wrap-tag-overlay nil)
+    :config
+    (show-paren-mode 0)
+    (require 'smartparens-config))
+#+end_src
+
+*** Auto-Indent
+
+aggressive and electric indent mode
+
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :preface
+    (defun me/aggressive-indent-mode-off ()
+      (aggressive-indent-mode 0))
+    :hook
+    (prog-mode . aggressive-indent-mode)
+    :custom
+    (aggressive-indent-comments-too t))
+#+end_src
+
+*** Whitespace
+
+Whitespace
+#+begin_src emacs-lisp
+(use-package whitespace
+  :ensure nil
+  :hook
+  ((prog-mode . whitespace-turn-on)
+   (text-mode . whitespace-turn-on))
+  :custom
+  (whitespace-style '(face empty indentation::space tab trailing)))
 #+end_src

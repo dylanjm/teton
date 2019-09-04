@@ -1,3 +1,4 @@
+typeset -U path cdpath fpath manpath path
 export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"

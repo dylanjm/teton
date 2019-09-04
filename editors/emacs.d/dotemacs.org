@@ -48,7 +48,7 @@
   (add-to-list 'default-frame-alist
                  '(ns-transparent-titlebar . t))      ; Make the titlebar transparent
   (add-to-list 'default-frame-alist
-                 '(ns-appearance . dark))             ; Make everything dark
+               '(ns-appearance . dark))             ; Make everything dark
   (scroll-bar-mode 0)                               ; Disable the scroll bar
   (blink-cursor-mode 0)                             ; Disable the cursor blinking
   (scroll-bar-mode 0)                               ; Disable the scroll bar
@@ -57,6 +57,7 @@
   (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
   (global-hl-line-mode 1)
   (setq vc-follow-symlinks t)
+  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-22")) ;; set emacsclient font
 #+END_SRC
 
 Store all backups and autosave files in `/tmp/`
@@ -311,10 +312,12 @@ This is auto complete stuff:
 #+begin_src emacs-lisp
   (use-package all-the-icons-ivy
     :after (all-the-icons ivy)
-    :custom (all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
+    :custom
+    (all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
     :config
     (add-to-list 'all-the-icons-ivy-file-commands 'counsel-dired-jump)
     (add-to-list 'all-the-icons-ivy-file-commands 'counsel-find-library)
+    (all-the-icons-ivy-file-commands 'counsel-find-file)
     (all-the-icons-ivy-setup))
 
   (use-package counsel
@@ -324,7 +327,6 @@ This is auto complete stuff:
            ("C-x C-h" . counsel-minibuffer-history)
            ("C-x C-l" . counsel-find-library)
            ("C-x C-r" . counsel-recentf)
-           ("C-x C-u" . counsel-unicode-char)
            ("C-x C-v" . counsel-set-variable))
     :config (counsel-mode))
 

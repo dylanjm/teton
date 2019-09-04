@@ -67,5 +67,5 @@ zplugin $load zsh-users/zsh-autosuggestions
 zplugin ice wait'1' blockf lucid
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'1' atinit"zpcompinit" lucid
+zplugin ice wait'1' atinit"zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting

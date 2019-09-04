@@ -1,5 +1,5 @@
 source $ZSH/zplugin.zsh
-for f in $ZSH/interactive/*(N); source $f
+for f in $ZSH/interactive/*.zsh; source $f
 
 ([[ $ZPGLM[ZCOMPDUMP_PATH].zwc -nt $ZPGLM[ZCOMPDUMP_PATH] ]] || zcompile $ZPLGM[ZCOMPDUMP_PATH]) &!
 

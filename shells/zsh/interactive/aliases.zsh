@@ -8,7 +8,7 @@ alias emt="emacsclient -t"
 
 alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso --sort changed'
 
-alias brew="env PATH=${PATH/$PYENV_ROOT/shims:/} brew"
+#alias brew="env PATH=${PATH/$PYENV_ROOT/shims:/} brew"
 
 alias desk="cd $HOME/Desktop"
 

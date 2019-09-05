@@ -1,5 +1,6 @@
 #! zsh
 typeset -A ZPLGM
+typeset -F4 SECONDS=0
 ZPLG_HOME=${CACHE_HOME:=~/.cache}/zsh/zplugin
 ZPLGM[HOME_DIR]=$ZPLG_HOME
 ZPLGM[ZCOMPDUMP_PATH]=$CACHE_HOME/zsh/zcompdump
@@ -8,57 +9,55 @@ if [[ ! -f $ZPLG_HOME/bin/zplugin.zsh ]]; then
 	git clone https://github.com/psprint/zplugin $ZPLG_HOME/bin
 	zcompile $ZPLG_HOME/bin/*.zsh
 fi
-module_path+=( "/Users/$USER/.cache/zsh/zplugin/bin/zmodules/Src" )
+
+module_path+=( "$HOME/.cache/zsh/zplugin/bin/zmodules/Src" )
 zmodload zdharma/zplugin
-zpmod source-study
+
 source $ZPLG_HOME/bin/zplugin.zsh
-load=load
+load=light
 
 # Handle keybindings
-zplugin ice svn wait'1' lucid
-zplugin snippet PZT::modules/editor
-
-zplugin ice svn wait'1' pick'init.zsh' lucid 
-zplugin snippet PZT::modules/directory
-
-zplugin ice wait'1' lucid
-zplugin snippet OMZ::lib/history.zsh
-
-zplugin ice wait'1' lucid
-zplugin snippet OMZ::lib/completion.zsh
-
-zplugin ice wait'1' lucid
-zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-
-zplugin ice wait'1' lucid
-zplugin $load davidparsson/zsh-pyenv-lazy
+#zplugin ice svn wait'2' lucid
+#zplugin snippet PZT::modules/editor
 
 zplugin ice wait'!' \
         atload'source ~/.p10k.zsh; _p9k_precmd' lucid nocd
 zplugin $load romkatv/powerlevel10k
 
-zplugin ice wait'1' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
+zplugin ice wait'1' lucid
+zplugin snippet OMZ::lib/history.zsh
+
+zplugin ice svn wait'1' pick'init.zsh' lucid 
+zplugin snippet PZT::modules/directory
+
+zplugin ice wait'2' lucid
+zplugin snippet OMZ::lib/completion.zsh
+
+zplugin ice wait'3' lucid
+zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+
+zplugin ice wait'2' lucid
+zplugin $load davidparsson/zsh-pyenv-lazy
+
+zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
 
 if test "$USER" = "mcdodj"; then
     zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-            atpull'%atclone' pick"direnv" src"zhook.zsh" wait"1" lucid
+            atpull'%atclone' pick"direnv" src"zhook.zsh" wait"3" lucid blockf
     zplugin $load direnv/direnv
-
-    zplugin ice wait'1' as"completion" if"[ -f '${ZSH}/completions/_pyfetch' ]" blockf lucid;
-    zplugin snippet "${ZSH}/completions/_pyfetch"
-
-    zplugin ice wait'1' as"completion" if"[ -f '${ZSH}/completions/_bfetch' ]" blockf lucid;
-    zplugin snippet "${ZSH}/completions/_bfetch"
 fi
 
-zplugin ice wait'1' atload:'_zsh_autosuggest_start' lucid
+zplugin ice wait'1b' atload:'_zsh_autosuggest_start' \
+        wrap_track"_zsh_autosuggest_start" lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
-zplugin ice wait'1' blockf lucid
+zplugin ice wait'2' blockf lucid
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'!1' lucid
+zplugin ice wait'1' atinit"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting
+
+zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

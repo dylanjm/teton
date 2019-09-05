@@ -1,7 +1,8 @@
-typeset -U path cdpath fpath manpath path
+typeset -aU path cdpath fpath manpath
 export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
+export ZSH_PYENV_LAZY_VIRTUALENV=true
 
 fpath+=($ZSH/functions)
 
@@ -10,14 +11,9 @@ export EDITOR='emacsclient -c'
 export ALTERNATE_EDITOR=""
 export LANG=en_US.UTF-8
 
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
+export PATH="$HOME/.cache/zsh/zplugin/plugins/direnv---direnv:$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
 
-#export PATH_SAVE=$PATH
-
-if test "$(whoami)" = "mcdodj"; then
-    export MOOSE_DIR="$HOME/Documents/projects/moose"
-fi
-
+export PATH_SAVE=$PATH
 autoload -Uz time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv
 
 

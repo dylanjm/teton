@@ -11,6 +11,7 @@
 - link:
     ~/.zshrc: shells/zsh/zshrc.zsh
     ~/.zshenv: shells/zsh/zshenv.zsh
+    ~/.zprofile: shells/zsh/zprofile.zsh
     ~/.p10k.zsh: misc/p10k.zsh
     ~/.emacs.d: editors/emacs.d
     ~/.gitconfig: git/gitconfig

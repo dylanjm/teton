@@ -14,6 +14,6 @@ export LANG=en_US.UTF-8
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
 
 export PATH_SAVE=$PATH
-autoload -Uz time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv
+autoload -Uz time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv em
 
 

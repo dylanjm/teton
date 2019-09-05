@@ -1,0 +1,16 @@
+#!/usr/bin/local/zsh
+
+function em() {
+
+    socket_file=$(lsof -c Emacs | grep server | tr -s " " | cut -d' ' -f8)
+
+    if [[ $socket_file == "" ]]; then
+
+        /Applications/Emacs.app/Contents/MacOS/Emacs $@ &
+
+    else
+
+        emacsclient $@ -n -c -s $socket_file
+
+    fi
+}

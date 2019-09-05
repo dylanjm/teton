@@ -57,7 +57,7 @@
   (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
   (global-hl-line-mode 1)
   (setq vc-follow-symlinks t)
-  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-22")) ;; set emacsclient font
+  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-14")) ;; set emacsclient font
 #+END_SRC
 
 Store all backups and autosave files in `/tmp/`
@@ -83,7 +83,6 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'focus-out-hook #'garbage-collect)
 #+END_SRC
-
 
 *** Load .custom.el
 
@@ -175,6 +174,44 @@ This is my setup for python
 #+end_src
 
 *** LaTeX
+
+Found this LaTeX setup at: https://github.com/peterewills/my_configs/blob/master/.emacs
+
+#+begin_src emacs-lisp
+  (use-package tex-site
+    :ensure auctex
+    :mode ("\\.tex\\'" . LaTeX-mode)
+    :config
+    (setq TeX-auto-save t)
+    (setq TeX-save-query nil)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master t)
+    (setq-default TeX-PDF-mode t)
+    (add-hook 'LaTeX-mode-hook
+              (lambda ()
+                (flyspell-mode)
+                (TeX-fold-mode 1)
+                (LaTeX-math-mode)
+                (turn-on-reftex)
+                (yas-minor-mode t)
+                (setq reftex-plug-into-AUCTeX t)
+                (push '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
+                        :help "Run latexmk on file")
+                      TeX-command-list)
+                (setq TeX-command-default "latexmk")))
+    :custom
+    (TeX-view-program-selection '((output-pdf "PDF Viewer")))
+    (TeX-view-program-list
+     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+    (preview-gs-command "/usr/local/bin/gs"))
+
+  (use-package reftex
+    :ensure t
+    :defer t
+    :config
+    (setq reftex-cite-prompt-optional-args t))
+#+end_src
+
 *** Magit
 
 Magit is awesome
@@ -215,42 +252,7 @@ Magit is awesome
 (use-package gitignore-mode)
 #+end_src
 
-Found this LaTeX setup at: https://github.com/peterewills/my_configs/blob/master/.emacs
 
-#+begin_src emacs-lisp
-  (use-package tex-site
-    :ensure auctex
-    :mode ("\\.tex\\'" . LaTeX-mode)
-    :config
-    (setq TeX-auto-save t)
-    (setq TeX-save-query nil)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master t)
-    (setq-default TeX-PDF-mode t)
-    (add-hook 'LaTeX-mode-hook
-              (lambda ()
-                (flyspell-mode)
-                (TeX-fold-mode 1)
-                (LaTeX-math-mode)
-                (turn-on-reftex)
-                (yas-minor-mode t)
-                (setq reftex-plug-into-AUCTeX t)
-                (push '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
-                        :help "Run latexmk on file")
-                      TeX-command-list)
-                (setq TeX-command-default "latexmk")))
-    :custom
-    (TeX-view-program-selection '((output-pdf "PDF Viewer")))
-    (TeX-view-program-list
-     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-    (preview-gs-command "/usr/local/bin/gs"))
-
-  (use-package reftex
-    :ensure t
-    :defer t
-    :config
-    (setq reftex-cite-prompt-optional-args t))
-#+end_src
 
 
 ** Features
@@ -261,6 +263,7 @@ This is auto complete stuff:
 
 #+begin_src emacs-lisp
   (use-package company
+    :diminish company-mode
     :bind
     (:map company-active-map
           ("RET" . nil)
@@ -272,6 +275,8 @@ This is auto complete stuff:
           ("C-p" . company-select-previous))
     :hook
     (after-init . global-company-mode)
+    :config
+    (setq company-transformers '(company-sort-by-occurrence))
     :custom
     (company-dabbrev-downcase nil)
     (company-idle-delay .2)
@@ -280,9 +285,21 @@ This is auto complete stuff:
     (company-tooltip-align-annotations t))
 
   (use-package company-auctex
-    :after (company latex))
+    :defer t
+    :hook ((LaTeX-mode . company-auctex-init)))
 
-  (use-package company-math)
+  (use-package company-math
+    :defer t
+    :after company
+    :init
+    (add-to-list 'company-backends 'company-math-symbols-latex))
+
+  (use-package company-reftex
+    :ensure t
+    :after company
+    :init
+    (add-to-list 'company-backends 'company-reftex-labels)
+    (add-to-list 'company-backends 'company-reftex-citations))
 #+end_src
 
 *** YASnippets

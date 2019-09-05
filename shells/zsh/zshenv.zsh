@@ -11,7 +11,7 @@ export EDITOR='emacsclient -c'
 export ALTERNATE_EDITOR=""
 export LANG=en_US.UTF-8
 
-export PATH="$HOME/.cache/zsh/zplugin/plugins/direnv---direnv:$HOME/.pyenv/bin:$HOME/.pyenv/shims:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$DOTFILES/bin"
 
 export PATH_SAVE=$PATH
 autoload -Uz time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv

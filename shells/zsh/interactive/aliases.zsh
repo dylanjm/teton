@@ -28,6 +28,8 @@ alias dotbin='cd $DOTFILES/bin'
 
 alias plugins='cd $HOME/.cache/zsh/zplugin/plugins'
 
+alias mypic='wget https://uninformedpriors.org/img/dylan.png'
+
 # Git aliases
 alias gss='git status -s'
 alias gsa='git status'

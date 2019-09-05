@@ -2,7 +2,7 @@
 # name: homework-template
 # key: hw-temp
 # --
-\documentclass[11pt,letterpaper]{article}
+\documentclass[12pt,letterpaper]{article}
 \usepackage[margin=1in, headsep=.25in, headheight=36pt]{geometry}
 \usepackage{mathptmx} % font
 \usepackage[T1]{fontenc}
@@ -31,9 +31,11 @@
 \usepackage{listings}
 \usepackage{brackets}
 \usepackage{jlcode}
+\usepackage{xparse}
 
 \graphicspath{{figures/}}
 \pdfminorversion=7
+\setlist[enumerate]{label=(\bfseries{\alph*})}
 
 \hypersetup{%
   breaklinks=true,
@@ -42,39 +44,39 @@
   citecolor=blue,
   urlcolor=blue,
   pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
+  \urlstyle{same}  % don't use monospace font for urls
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Setting up YAML Inputs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand{\hmwkTitle}{${1:Title}}
-\newcommand{\hmwkDueDate}{${2:Date}}
-\newcommand{\hmwkClass}{${3:Class}}
-\newcommand{\hmwkAuthorName}{${4:Name}}
+\newcommand{\hmwkTitle}{$1}
+\newcommand{\hmwkDueDate}{$2}
+\newcommand{\hmwkClass}{ISyE 6420}
+\newcommand{\hmwkAuthorName}{Dylan McDowell}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % PERSONAL DOCUMENT FORMATTING SETTINGS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \fancypagestyle{fullstyle}
 {
-  \fancyhf{}
-  \fancyhead[R]{\large \hmwkAuthorName \ \thepage\//\pageref{LastPage}}
+\fancyhf{}
+\fancyhead[R]{\large \hmwkAuthorName \ \thepage\//\pageref{LastPage}}
 }
 
 
 \fancypagestyle{firststyle}
 {
-  \fancyhf{}
-  \fancyhead[C]{\Large\bfseries \hmwkTitle}
-  \fancyhead[L]{\large\bfseries \hmwkAuthorName}
-  \fancyhead[R]{\large \hmwkClass \\ \hmwkDueDate}
+\fancyhf{}
+\fancyhead[C]{\Large\bfseries \hmwkTitle}
+\fancyhead[L]{\large\bfseries \hmwkAuthorName}
+\fancyhead[R]{\large \hmwkClass \\ \hmwkDueDate}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \DeclareInstance{tasks}{alphabetize-parens}{default}{
-  counter-format = { (tsk[a]) }
+counter-format = { (tsk[a]) }
 }
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -83,9 +85,9 @@
 \definecolor{gray95}{rgb}{.97, .97, .97}
 
 \newtcolorbox{solution}[1]{%
-  fonttitle=\bfseries,
-  title = #1) Solution:,
-  colback=gray95
+fonttitle=\bfseries,
+title = #1) Solution:,
+colback=gray95
 }
 
 
@@ -105,7 +107,8 @@
 \newcommand\Myperm[2][^n]{\prescript{#1\mkern-2.5mu}{}P_{#2}}
 \newcommand\Mycomb[2][^n]{\prescript{#1\mkern-0.5mu}{}C_{#2}}
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
-
+\NewDocumentCommand{\ppois}{ O{\lambda} O{k} m }{\e{-#1}\sum\limits_{i=0}^{#2}\dfrac{#1^{i}}{i!}}
+\NewDocumentCommand{\pexp}{ O{\lambda} O{x} m}{1 - \e{-{#1}{#2}}}
 
 \pagestyle{fullstyle}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -119,4 +122,9 @@
 
 $0
 
+
+\begin{appendix}
+  \section*{Code}
+  
+\end{appendix}
 \end{document}

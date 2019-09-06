@@ -36,8 +36,8 @@ zplugin snippet OMZ::lib/completion.zsh
 zplugin ice wait'3' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
-zplugin ice wait'2' lucid
-zplugin $load davidparsson/zsh-pyenv-lazy
+#zplugin ice wait'2' lucid
+#zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \

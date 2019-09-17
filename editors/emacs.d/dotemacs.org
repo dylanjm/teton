@@ -51,7 +51,6 @@
                '(ns-appearance . dark))             ; Make everything dark
   (scroll-bar-mode 0)                               ; Disable the scroll bar
   (blink-cursor-mode 0)                             ; Disable the cursor blinking
-  (scroll-bar-mode 0)                               ; Disable the scroll bar
   (tool-bar-mode 0)                                 ; Disable the tool bar
   (tooltip-mode 0)                                  ; Disable the tooltips
   (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
@@ -67,15 +66,6 @@ Store all backups and autosave files in `/tmp/`
         `((".*" . , (expand-file-name ".emacs-saves/" user-emacs-directory))))
   (setq auto-save-file-name-transforms
         `((".*" , (expand-file-name ".emacs-saves/" user-emacs-directory) t)))
-#+end_src
-
-Setting up Editor Configuration File
-
-#+begin_src emacs-lisp
-  (use-package editorconfig
-    :ensure t
-    :config
-    (editorconfig-mode 1))
 #+end_src
 
 Garbage-collect on focus-out, Emacs /should/ feel snappier.
@@ -129,10 +119,12 @@ This is where I'll store all my font settings
 
 This is my setup for python
 
-#+begin_src emacs-lisp
-  (use-package py-autopep8
-    :hook (python-mode . py-autopep8-enable-on-save))
-#+end_src
+# #+begin_src emacs-lisp
+#   (use-package py-autopep8
+#     :hook
+#     ((python-mode . py-autopep8-enable-on-save)
+#      (python-mode . turn-on-prettify-symbols-mode)))
+# #+end_src
 
 *** Lisp
 
@@ -478,6 +470,7 @@ This is auto complete stuff:
            :map swiper-map
            ("M-%" . swiper-query-replace)))
 #+end_src
+
 *** Windows & Buffers
 
 Setup buffer config
@@ -557,15 +550,9 @@ Whitespace
   :custom
   (whitespace-style '(face empty indentation::space tab trailing)))
 #+end_src
-*** Direnv
 
-#+begin_src emacs-lisp
-  (use-package direnv
-    :config
-    (direnv-mode))
-#+end_src
 *** Multiple Cursors
-l
+
 #+begin_src emacs-lisp
   (use-package multiple-cursors
     :bind
@@ -580,3 +567,6 @@ l
     (mc/edit-lines-empty-lines 'ignore)
     (mc/insert-numbers-default 1))
 #+end_src
+
+
+

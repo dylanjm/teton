@@ -6,9 +6,9 @@ alias kemc="emacsclient -e '(kill-emacs)'; countdown"
 
 alias emt="emacsclient -t"
 
-alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso --sort changed'
+alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso'
 
-#alias brew="env PATH=${PATH/$PYENV_ROOT/shims:/} brew"
+alias brew='env PATH=${PATH//$(pyenv root)\/shims:/} brew'
 
 alias desk="cd $HOME/Desktop"
 
@@ -29,6 +29,8 @@ alias dotbin='cd $DOTFILES/bin'
 alias plugins='cd $HOME/.cache/zsh/zplugin/plugins'
 
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
+
+alias ls='gls --color=auto'
 
 # Git aliases
 alias gss='git status -s'

@@ -56,7 +56,7 @@
   (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
   (global-hl-line-mode 1)
   (setq vc-follow-symlinks t)
-  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-22")) ;; set emacsclient font
+  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-16")) ;; set emacsclient font
 #+END_SRC
 
 Store all backups and autosave files in `/tmp/`

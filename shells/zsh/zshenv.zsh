@@ -3,6 +3,7 @@ export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
 export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
+export MOOSE_DIR="$HOME/Documents/projects/bison/moose"
 
 fpath+=($ZSH/functions)
 

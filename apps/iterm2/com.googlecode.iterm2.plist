@@ -2493,7 +2493,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>530 490 620 392 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 519 1050 502 0 0 1680 1027 </string>
+	<string>0 450 1480 567 0 0 1680 1027 </string>
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
@@ -4554,7 +4554,7 @@
 			</dict>
 			<key>Bound Hosts</key>
 			<array>
-				<string>mcdodj@</string>
+				<string>mcdodj@inl420511</string>
 			</array>
 			<key>Character Encoding</key>
 			<integer>4</integer>
@@ -7033,7 +7033,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>65</integer>
+	<integer>66</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>

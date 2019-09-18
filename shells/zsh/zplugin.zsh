@@ -17,7 +17,7 @@ source $ZPLG_HOME/bin/zplugin.zsh
 load=light
 
 zplugin ice wait'!' \
-        atload'source ~/.p10k.zsh' blockf lucid nocd
+        atload'source ~/.p10k.zsh; _p9k_precmd' blockf lucid nocd
 zplugin $load romkatv/powerlevel10k
 
 zplugin ice wait'2a' lucid

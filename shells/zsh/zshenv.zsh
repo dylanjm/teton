@@ -2,7 +2,7 @@ typeset -aU path cdpath fpath manpath
 export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
-export ZSH_PYENV_LAZY_VIRTUALENV=true
+export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
 
 fpath+=($ZSH/functions)
 
@@ -30,7 +30,8 @@ path=($HOME/.pyenv/bin
       /usr/sbin
       /sbin
       $DOTFILES/bin
-      /opt/X11/bin)
+      /opt/X11/bin
+      /usr/local/Cellar/modules/4.3.0/bin)
 
 export PATH
 

@@ -37,11 +37,11 @@ zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
 
-if test "$USER" = "mcdodj"; then
-    zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-            atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
-    zplugin $load direnv/direnv
-fi
+# if test "$USER" = "mcdodj"; then
+#     zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+#             atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
+#     zplugin $load direnv/direnv
+# fi
 
 zplugin ice wait'2e' atload:'_zsh_autosuggest_start' \
         wrap_track"_zsh_autosuggest_start" lucid

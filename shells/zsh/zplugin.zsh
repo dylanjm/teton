@@ -1,4 +1,4 @@
-#! zsh
+#!/usr/bin/env zsh
 typeset -A ZPLGM
 typeset -F4 SECONDS=0
 ZPLG_HOME=${CACHE_HOME:=~/.cache}/zsh/zplugin
@@ -16,8 +16,7 @@ zmodload zdharma/zplugin
 source $ZPLG_HOME/bin/zplugin.zsh
 load=light
 
-zplugin ice wait'!' \
-        atload'source ~/.p10k.zsh; _p9k_precmd' blockf lucid nocd
+zplugin ice atload'source ~/.p10k.zsh;' lucid nocd
 zplugin $load romkatv/powerlevel10k
 
 zplugin ice wait'2a' lucid

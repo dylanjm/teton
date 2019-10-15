@@ -6,75 +6,72 @@
 ** Bootstrap
 
 *** Defaults
+#+BEGIN_SRC emacs-lisp
+  (defconst user-emacs-saves-dir
+    (expand-file-name ".emacs-saves/" user-emacs-directory)
+      "Directory for storing autosave files.")
+#+END_SRC
 
 #+BEGIN_SRC emacs-lisp
   (setq-default
-   visible-bell t                                   ; Flashes on error
-   ad-redefinition-action 'accept                   ; Silence warnings for redefinition
-   auto-window-vscroll nil                          ; Lighten vertical scroll
-   cursor-in-non-selected-windows nil               ; Hide the cursor in inactive windows
-   delete-by-moving-to-trash t                      ; Delete files to trash
-   display-time-default-load-average nil            ; Don't display load average
-   display-time-format "%H:%M"                      ; Format the time string
-   fill-column 80                                   ; Set width for automatic line breaks
-   help-window-select t                             ; Focus new help windows when opened
-   indent-tabs-mode nil                             ; Stop using tabs to indent
-   inhibit-startup-screen t                         ; Disable start-up screen
-   initial-scratch-message ""                       ; Empty the initial *scratch* buffer
-   mouse-yank-at-point t                            ; Yank at point rather than pointer
-   ns-use-srgb-colorspace nil                       ; Don't use sRGB colors
-   recenter-positions '(5 top bottom)               ; Set re-centering positions
-   scroll-conservatively most-positive-fixnum       ; Always scroll by one line
-   scroll-margin 10                                 ; Add a margin when scrolling vertically
-   select-enable-clipboard t                        ; Merge system's and Emacs' clipboard
-   sentence-end-double-space nil                    ; End a sentence after a dot and a space
-   show-trailing-whitespace nil                     ; Display trailing whitespaces
-   split-height-threshold nil                       ; Disable vertical window splitting
-   split-width-threshold nil                        ; Disable horizontal window splitting
-   tab-width 4                                      ; Set width for tabs
-   uniquify-buffer-name-style 'forward              ; Uniquify buffer names
-   window-combination-resize t                      ; Resize windows proportionally
-   x-stretch-cursor t)                              ; Stretch cursor to the glyph width
-  (delete-selection-mode 1)                         ; Replace region when inserting text
-  (display-time-mode 1)                             ; Enable time in the mode-line
-  (global-display-line-numbers-mode)                ; Always show line numbers
-  (fringe-mode 0)                                   ; Disable fringes
-  (fset 'yes-or-no-p 'y-or-n-p)                     ; Replace yes/no prompts with y/n
-  (global-subword-mode 1)                           ; Iterate through CamelCase words
-  (menu-bar-mode 0)                                 ; Disable the menu bar
-  (put 'downcase-region 'disabled nil)              ; Enable downcase-region
-  (put 'upcase-region 'disabled nil)                ; Enable upcase-region
-  (set-default-coding-systems 'utf-8)               ; Default to utf-8 encoding
-  (add-to-list 'default-frame-alist
-                 '(ns-transparent-titlebar . t))      ; Make the titlebar transparent
-  (add-to-list 'default-frame-alist
-               '(ns-appearance . dark))             ; Make everything dark
-  (scroll-bar-mode 0)                               ; Disable the scroll bar
-  (blink-cursor-mode 0)                             ; Disable the cursor blinking
-  (tool-bar-mode 0)                                 ; Disable the tool bar
-  (tooltip-mode 0)                                  ; Disable the tooltips
-  (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
-  (global-hl-line-mode 1)
-  (setq vc-follow-symlinks t)
-  (add-to-list 'default-frame-alist '(font . "Iosevka Nerd Font-16")) ;; set emacsclient font
+   visible-bell t                                                       ; Flashes on error
+   auto-window-vscroll nil                                              ; Lighten vertical scroll
+   cursor-in-non-selected-windows nil                                   ; Hide the cursor in inactive windows
+   delete-by-moving-to-trash t                                          ; Delete files to trash
+   display-time-default-load-average nil                                ; Don't display load average
+   display-time-format "%H:%M"                                          ; Format the time string
+   fill-column 80                                                       ; Set width for automatic line breaks
+   indent-tabs-mode nil                                                 ; Stop using tabs to indent
+   inhibit-startup-screen t                                             ; Disable start-up screen
+   initial-scratch-message ""                                           ; Empty the initial *scratch* buffer
+   mouse-yank-at-point t                                                ; Yank at point rather than pointer
+   ;recenter-positions '(5 top bottom)                                   ; Set re-centering positions
+   scroll-conservatively most-positive-fixnum                           ; Always scroll by one line
+   scroll-margin 10                                                     ; Add a margin when scrolling vertically
+   select-enable-clipboard t                                            ; Merge system's and Emacs' clipboard
+   sentence-end-double-space nil                                        ; End a sentence after a dot and a space
+   show-trailing-whitespace nil                                         ; Display trailing whitespaces
+   split-height-threshold nil                                           ; Disable vertical window splitting
+   split-width-threshold nil                                            ; Disable horizontal window splitting
+   tab-width 4                                                          ; Set width for tabs
+   uniquify-buffer-name-style 'forward                                  ; Uniquify buffer names
+   window-combination-resize t                                          ; Resize windows proportionally
+   x-stretch-cursor t                                                   ; Stretch cursor to the glyph width
+   vc-follow-symlinks t                                                 ; Don't show message when opening symlinks
+   backup-directory-alist `((".*" . , user-emacs-saves-dir))            ; Store all autosaves in .emacs-saves/
+   auto-save-file-name-transforms `((".*" , user-emacs-saves-dir t)))   ; Store all autobackups in .emacs-saves/
+
+  (fset 'yes-or-no-p 'y-or-n-p)                                         ; Replace yes/no prompts with y/n
+  (set-default-coding-systems 'utf-8)                                   ; Use utf-8 by default
+  (delete-selection-mode 1)                                             ; Replace region when inserting text
 #+END_SRC
-
-Store all backups and autosave files in `/tmp/`
-
-#+begin_src emacs-lisp
-  (setq backup-directory-alist
-        `((".*" . , (expand-file-name ".emacs-saves/" user-emacs-directory))))
-  (setq auto-save-file-name-transforms
-        `((".*" , (expand-file-name ".emacs-saves/" user-emacs-directory) t)))
-#+end_src
-
-Garbage-collect on focus-out, Emacs /should/ feel snappier.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'focus-out-hook #'garbage-collect)
+  (global-display-fill-column-indicator-mode 1)   ; Show column indicator at fill column number
+  (global-display-line-numbers-mode 1)            ; Always show line numbers
+  (global-hl-line-mode 1)                         ; Highlight current line
+  (blink-cursor-mode 0)                           ; Disable blinking cursor
+  (scroll-bar-mode 0)                             ; No scroll bar
+  (tool-bar-mode 0)                               ; Disable tool bars
+  (menu-bar-mode 0)                               ; Don't show menu bars
+  (tooltip-mode 0)                                ; Disable tool tips
+  (fringe-mode 0)                                 ; Disable fringes
 #+END_SRC
 
-*** Load .custom.el
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))  ; Make the titlebar transparent
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))         ; Make everything dark
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+  (add-hook 'focus-out-hook #'garbage-collect)      ; Garbage-collect on focus-out, Emacs /should/ feel snappier.
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;;(global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
+  (global-set-key (kbd "C-x o") 'ace-window)
+#+END_SRC
 
 #+begin_src emacs-lisp
   (setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
@@ -82,28 +79,20 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
     (load custom-file))
 #+end_src
 
-*** Load .secret.el
-
-This is where I'll store all my font settings
-
-#+begin_src emacs-lisp
-  (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
-    (when (file-exists-p secret.el)
-      (load secret.el)))
-#+end_src
-
-*** Theme
+# #+begin_src emacs-lisp
+#  (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
+#    (when (file-exists-p secret.el)
+#      (load secret.el)))
+# #+end_src
 
 #+BEGIN_SRC emacs-lisp
-  (use-package gruvbox-theme 
+  (use-package doom-themes
     :demand t
-    :config 
-    (load-theme 'gruvbox-dark-hard t)
-    (with-eval-after-load 'faces
-      (set-face-attribute 'default nil :font me/font-family :height me/font-size-default)))
+    :custom
+    (doom-themes-enable-bold nil)
+    :config
+    (load-theme 'doom-gruvbox t))
 #+END_SRC
-
-*** OS Specific
 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
@@ -119,19 +108,10 @@ This is where I'll store all my font settings
 
 This is my setup for python
 
-# #+begin_src emacs-lisp
-#   (use-package py-autopep8
-#     :hook
-#     ((python-mode . py-autopep8-enable-on-save)
-#      (python-mode . turn-on-prettify-symbols-mode)))
-# #+end_src
-
-*** Lisp
-
 #+begin_src emacs-lisp
-  (use-package ielm
-    :ensure nil
-    :hook (ielm-mode . (lambda () (setq-local scroll-margin 0))))
+  ;; (use-package py-autopep8
+  ;;   :hook
+  ;;   ((python-mode . py-autopep8-enable-on-save)))
 #+end_src
 
 *** Markdown
@@ -202,6 +182,7 @@ Found this LaTeX setup at: https://github.com/peterewills/my_configs/blob/master
 
 *** Magit
 
+
 Magit is awesome
 
 #+begin_src emacs-lisp
@@ -241,8 +222,6 @@ Magit is awesome
 #+end_src
 
 
-
-
 ** Features
 
 *** Auto-Complete
@@ -254,11 +233,11 @@ This is auto complete stuff:
     :diminish company-mode
     :bind
     (:map company-active-map
-          ("RET" . nil)
-          ([return] . nil)
+          ("RET" . company-complete-selection)
+          ([return] . company-complete-selection)
           ("TAB" . company-complete-selection)
           ([tab] . company-complete-selection)
-          ("C-f" . company-complete-common)
+          ("<right>" . company-complete-common)
           ("C-n" . company-select-next)
           ("C-p" . company-select-previous))
     :hook
@@ -266,11 +245,9 @@ This is auto complete stuff:
     :config
     (setq company-transformers '(company-sort-by-occurrence))
     :custom
-    (company-dabbrev-downcase nil)
-    (company-idle-delay .2)
-    (company-minimum-prefix-length 1)
-    (company-require-match nil)
-    (company-tooltip-align-annotations t))
+    (company-idle-delay 0)
+    (company-show-numbers t))
+
 
   (use-package company-auctex
     :defer t
@@ -471,32 +448,6 @@ This is auto complete stuff:
            ("M-%" . swiper-query-replace)))
 #+end_src
 
-*** Windows & Buffers
-
-Setup buffer config
-
-#+begin_src emacs-lisp
-  (use-package windmove
-    :ensure nil
-    :bind
-    (("C-M-<left>" . windmove-left)
-     ("C-M-<right>" . windmove-right)
-     ("C-M-<up>" . windmove-up)
-     ("C-M-<down>" . windmove-down)))
-#+end_src
-
-*** Diff
-
-Set up diff
-
-#+begin_src emacs-lisp
-  (use-package ediff-wind
-    :ensure nil
-    :custom
-    (ediff-split-window-function #'split-window-horizontally)
-    (ediff-window-setup-function #'ediff-setup-windows-plain))
-#+end_src
-
 *** Parentheses
 
 Use smart and rainbow highlighters
@@ -523,19 +474,6 @@ Use smart and rainbow highlighters
     :config
     (show-paren-mode 0)
     (require 'smartparens-config))
-#+end_src
-
-*** Auto-Indent
-
-aggressive and electric indent mode
-
-#+begin_src emacs-lisp
-  (use-package aggressive-indent
-    :preface
-    (defun me/aggressive-indent-mode-off ()
-      (aggressive-indent-mode 0))
-    :hook
-    (LaTeX-mode . aggressive-indent-mode))
 #+end_src
 
 *** Whitespace
@@ -567,6 +505,3 @@ Whitespace
     (mc/edit-lines-empty-lines 'ignore)
     (mc/insert-numbers-default 1))
 #+end_src
-
-
-

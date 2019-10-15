@@ -31,6 +31,7 @@ path=($HOME/.pyenv/bin
       /usr/sbin
       /sbin
       $DOTFILES/bin
+      /usr/local/texlive/2019/bin/x86_64-darwin/
       /opt/X11/bin
       /usr/local/Cellar/modules/4.3.0/bin)
 
@@ -44,6 +45,4 @@ if type pygmentize >/dev/null 2>&1; then
   export LESSCOLORIZER='pygmentize -) '
 fi
 
-autoload -Uz time-shell countdown nuke convert-to-md config-powerline colorize colorlist prettycsv em ptyless
-
-
+autoload -Uz time-shell countdown nuke convert-to-md colorlist prettycsv em ptyless

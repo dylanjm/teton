@@ -6,12 +6,19 @@
 ;;; Code:
 (defconst emacs-start-time (current-time))
 
+(defun my/workstation-laptop ()
+  (equal (system-name) "INL610025"))
+
+(defun my/workstation-resolution ()
+  (equal (display-pixel-width) 3840))
+
+
 (defvar my--gc-cons-threshold gc-cons-threshold)
 (defvar my--gc-cons-percentage gc-cons-percentage)
 (defvar my--file-name-handler-alist file-name-handler-alist)
 
 (setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
+      gc-cons-percentage 1.0
       inhibit-compacting-font-caches t
       message-log-max 16384
       file-name-handler-alist nil)
@@ -21,10 +28,6 @@
             (setq gc-cons-threshold my--gc-cons-threshold
                   gc-cons-percentage my--gc-cons-percentage
                   file-name-handler-alist my--file-name-handler-alist)))
-
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
 
 (defvar package--init-file-ensured)
 (setq package-enable-at-startup nil
@@ -37,9 +40,14 @@
               backup-directory-alist '(("." . "~/.cache/emacs-backups"))
               column-number-mode nil
               create-lockfiles nil
+              cursor-in-non-selected-windows nil
+              cursor-type 'bar
               display-time-default-load-average nil
+              display-line-numbers-grow-only t
+              display-line-numbers-width-start t
               fill-column 80
               frame-title-format '("%b - Emacs")
+              help-window-select t
               indent-tabs-mode nil
               inhibit-startup-screen t
               line-number-mode nil
@@ -65,24 +73,22 @@
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+
 (global-hl-line-mode 1)
 (global-display-fill-column-indicator-mode 1)
+
 (blink-cursor-mode 0)
 (tooltip-mode -1)
 (menu-bar-mode -1)
 (fringe-mode -1)
-(fset 'menu-bar-open nil)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+
+;(fset 'menu-bar-open nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(when window-system
-  (scroll-bar-mode -1)
-  (tool-bar-mode -1))
-
-(when window-system
-  (setq-default cursor-type 'bar
-                cursor-in-non-selected-windows nil))
-
-(set-face-attribute 'default nil :font "Iosevka Nerd Font-14")
+(cond ((my/workstation-resolution) (set-face-attribute 'default nil :font "Iosevka Nerd Font-16"))
+      (set-face-attribute 'default nil :font "Iosevka Nerd Font-14"))
 
 (defvar package-archives)
 (setq package-archives
@@ -99,55 +105,45 @@
   (setq use-package-always-ensure t
         use-package-always-verbose t))
 
+(use-package all-the-icons)
+
 (use-package exec-path-from-shell
-  :defer 0.5
   :if (memq window-system '(mac ns nil))
   :hook (after-init . exec-path-from-shell-initialize))
 
-(use-package all-the-icons :defer 0.5)
-
 (use-package doom-themes
   :commands (doom-themes-org-config)
-  :config
-  (doom-themes-org-config)
-  (doom-themes-visual-bell-config)
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  :init (load-theme 'doom-gruvbox t))
+  :init (load-theme 'doom-gruvbox t)
+  :config (doom-themes-visual-bell-config))
 
 (use-package doom-modeline
   :config
-  (setq doom-modeline-bar-width 1
-        doom-modeline-minor-modes t
-        doom-modeline-percent-position nil
+  (set-face-attribute 'doom-modeline-buffer-major-mode nil :weight 'bold :foreground (doom-color 'orange))
+  (setq doom-modeline-percent-position nil
+        doom-modeline-buffer-encoding nil
+        doom-modeline-bar-width 3
         find-file-visit-truename t)
   (doom-modeline-mode 1))
 
 (use-package solaire-mode
-  :custom (solaire-mode-remap-fringe t)
   :config
   (solaire-mode-swap-bg)
-  (solaire-global-mode 1))
+  (solaire-global-mode 1)
+  :custom (solaire-mode-remap-fringe t))
+
+(use-package magit)
 
 (use-package eyebrowse
-  :defer 0.5
+  :disabled
   :commands eyebrowse-mode
-  :init (eyebrowse-mode t))
-
-(use-package display-line-numbers
-  :ensure nil
-  :config
-  (setq display-line-numbers-grow-only t
-        display-line-numbers-width-start t))
+  :config (eyebrowse-mode t))
 
 (use-package prog-mode
   :ensure nil
   :hook ((prog-mode . show-paren-mode)
          (prog-mode . display-line-numbers-mode)))
 
-(use-package help
-  :ensure nil
-  :config (setq help-window-select t))
+(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
 
 (use-package savehist
   :ensure nil
@@ -168,75 +164,86 @@
 
 (use-package minions
   :commands minions-mode
-  :init (minions-mode 1))
-
-(use-package eldoc
-  :hook (emacs-lisp-mode . eldoc-mode))
+  :config (minions-mode 1))
 
 (use-package aggressive-indent
   :hook (emacs-lisp-mode . aggressive-indent-mode)
   :custom (aggressive-indent-comments-too))
 
-(use-package electric-operator
-  :hook (python-mode . electric-operator-mode))
-
 (use-package hungry-delete
-  :defer 0.7
-  :config (global-hungry-delete-mode))
+  :config (hungry-delete-mode 1))
 
 (use-package company
   :commands global-company-mode
-  :hook (after-init . global-company-mode))
+  :bind
+  (:map company-active-map
+        ("RET" . nil)
+        ([return] . nil)
+        ("TAB" . company-complete-selection)
+        ([tab] . company-complete-selection)
+        ("C-f" . company-complete-common)
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous))
+  :hook (after-init . global-company-mode)
+  :config (setq company-transformers '(company-sort-by-occurrence))
+  :custom
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-tooltip-align-annotations 't)
+  (company-show-numbers t))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package undo-tree
   :commands global-undo-tree-mode
-  :init (global-undo-tree-mode 1))
+  :config (global-undo-tree-mode 1))
 
 (use-package gcmh
+  :ensure nil
   :commands gcmh-mode
-  :init (gcmh-mode 1))
+  :config (gcmh-mode 1))
 
 (use-package ivy
-  :demand t
   :bind (("C-x b" . ivy-switch-buffer)
          ("C-x B" . ivy-switch-buffer-other-window)
-         ("M-H" . ivy-resume))
-  :bind (:map ivy-minibuffer-map
-              ("<tab>" . ivy-alt-done)
-              ("C-i" . ivy-partial-or-done)
-              ("C-r" . ivy-previous-line-or-history)
-              ("M-r" . ivy-reverse-i-search))
+         :map ivy-minibuffer-map
+         ("<tab>" . ivy-alt-done)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-switch-buffer-kill))
   :custom
-  (ivy-dynamic-exhibit-delay-ms 200)
-  (ivy-height 8)
   (ivy-case-fold-search-default t)
-  (ivy-initial-inputs-alist nil t)
   (ivy-re-builders-alist '((t . ivy--regex-plus)))
   (ivy-use-virtual-buffers t)
-  (ivy-wrap t)
+  (ivy-count-format "(%d/%d) ")
   :config
-  (ivy-mode 1)
-  (ivy-set-occur 'ivy-switch-buffer 'ivy-switch-buffer-occur))
+  (ivy-mode 1))
 
 (use-package counsel
-  :after ivy
-  :demand t
-  :bind (("C-x C-f" . counsel-find-file)))
+  :bind (("C-x C-f" . counsel-find-file)
+         ("C-x C-d" . counsel-dired-jump)
+         ("C-x C-l" . counsel-find-library)
+         ("C-x C-r" . counsel-recentf)))
 
-(let ((elapsed (float-time (time-subtract (current-time)
-                                          emacs-start-time))))
+(use-package swiper
+  :bind (("C-s" . swiper)
+         :map swiper-map
+         ("M-%" . swiper-query-replace)))
+
+(use-package all-the-icons-ivy
+  :config
+  (add-to-list 'all-the-icons-ivy-file-commands '(counsel-find-file counsel-dired-jump counsel-recentf counsel-find-library))
+  (add-to-list 'all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
+  (all-the-icons-ivy-setup))
+
+(let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
   (message "Loading %s...done (%.3fs)" load-file-name elapsed))
 
 (add-hook 'after-init-hook
           `(lambda ()
              (let ((elapsed
-                    (float-time
-                     (time-subtract (current-time) emacs-start-time))))
-               (message "Loading %s...done (%.3fs) [after-init]"
-                        ,load-file-name elapsed))) t)
+                    (float-time (time-subtract (current-time) emacs-start-time))))
+               (message "Loading %s...done (%.3fs) [after-init]" ,load-file-name elapsed))) t)
 
 (provide 'init)
 ;;; init.el ends here

@@ -43,17 +43,17 @@
               cursor-in-non-selected-windows nil
               cursor-type 'bar
               display-time-default-load-average nil
-              display-line-numbers-grow-only t
-              display-line-numbers-width-start t
               fill-column 80
               frame-title-format '("%b - Emacs")
               help-window-select t
               indent-tabs-mode nil
               inhibit-startup-screen t
               line-number-mode nil
+              line-move-visual nil
               load-prefer-newer t
               mode-line-position nil
               mode-line-in-non-selected-windows nil
+              redisplay-dont-pause t
               ring-bell-function 'ignore
               scroll-conservatively most-positive-fixnum
               scroll-margin 10
@@ -73,9 +73,9 @@
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
-
 (global-hl-line-mode 1)
 (global-display-fill-column-indicator-mode 1)
+(global-display-line-numbers-mode)
 
 (blink-cursor-mode 0)
 (tooltip-mode -1)
@@ -84,11 +84,12 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
-;(fset 'menu-bar-open nil)
+(fset 'menu-bar-open nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(cond ((my/workstation-resolution) (set-face-attribute 'default nil :font "Iosevka Nerd Font-16"))
-      (set-face-attribute 'default nil :font "Iosevka Nerd Font-14"))
+;; (cond ((my/workstation-resolution) (set-face-attribute 'default nil :font "Iosevka Nerd Font Mono-16"))
+;; (set-face-attribute 'default nil :font "Iosevka:pixelsize=16:weight=Light:slant=Oblique")
+(add-to-list 'default-frame-alist '(font . "Iosevka Thin-18:style=Thin,Regular"))
 
 (defvar package-archives)
 (setq package-archives
@@ -113,8 +114,12 @@
 
 (use-package doom-themes
   :commands (doom-themes-org-config)
-  :init (load-theme 'doom-gruvbox t)
-  :config (doom-themes-visual-bell-config))
+  :custom
+  (doom-themes-enable-bold t)
+  (doom-themes-enable-itallic t)
+  :config
+  (load-theme 'doom-gruvbox t)
+  (doom-themes-visual-bell-config))
 
 (use-package doom-modeline
   :config
@@ -140,8 +145,7 @@
 
 (use-package prog-mode
   :ensure nil
-  :hook ((prog-mode . show-paren-mode)
-         (prog-mode . display-line-numbers-mode)))
+  :hook ((prog-mode . show-paren-mode)))
 
 (use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
 
@@ -212,6 +216,7 @@
          :map ivy-switch-buffer-map
          ("C-k" . ivy-switch-buffer-kill))
   :custom
+  (ivy-dynamic-exhibit-delay-ms 250)
   (ivy-case-fold-search-default t)
   (ivy-re-builders-alist '((t . ivy--regex-plus)))
   (ivy-use-virtual-buffers t)
@@ -235,6 +240,65 @@
   (add-to-list 'all-the-icons-ivy-file-commands '(counsel-find-file counsel-dired-jump counsel-recentf counsel-find-library))
   (add-to-list 'all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
   (all-the-icons-ivy-setup))
+
+(use-package tex
+  :ensure auctex
+  :bind (:map TeX-mode-map
+              ("C-c C-o" . TeX-recenter-output-buffer)
+              ("C-c C-l" . TeX-next-error)
+              ("M-[" . outline-previous-heading)
+              ("M-]" . outline-next-heading))
+  :hook (LaTeX-mode . reftex-mode)
+  :custom
+  (TeX-auto-save t)
+  (TeX-byte-compile t)
+  (TeX-clean-confirm nil)
+  (TeX-master 'dwim)
+  (TeX-parse-self t)
+  (TeX-PDF-mode t)
+  (TeX-source-correlate-mode t)
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  (Tex-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+  (TeX-source-correlate-start-server t))
+
+(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+(use-package company-auctex
+  :after (auctex company)
+  :config (company-auctex-init))
+
+(setq-default TeX-engine 'xetex)
+
+(use-package reftex
+  :after auctex
+  :custom
+  (reftex-plug-into-AUCTeX t)
+  (reftex-save-parse-info t)
+  (reftex-use-multiple-selection-buffers t))
+
+(use-package pdf-tools
+  :defer 1
+  :magic ("%PDF" . pdf-view-mode)
+  :init (pdf-tools-install :no-query))
+
+(use-package server
+  :ensure nil
+  :config
+  (unless (server-running-p)
+    (server-start)))
+
+(use-package pdf-view
+  :ensure nil
+  :after pdf-tools
+  :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward)
+              ("d" . pdf-annot-delete)
+              ("h" . pdf-annot-add-highlight-markup-annotation)
+              ("t" . pdf-annot-add-text-annotation))
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-resize-factor 1.1)
+  (pdf-view-use-unicode-lighter nil))
 
 (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
   (message "Loading %s...done (%.3fs)" load-file-name elapsed))

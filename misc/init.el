@@ -4,15 +4,6 @@
 ;;; Emacs config by dylanjm
 ;;;
 ;;; Code:
-(defconst emacs-start-time (current-time))
-
-(defun my/workstation-laptop ()
-  (equal (system-name) "INL610025"))
-
-(defun my/workstation-resolution ()
-  (equal (display-pixel-width) 3840))
-
-
 (defvar my--gc-cons-threshold gc-cons-threshold)
 (defvar my--gc-cons-percentage gc-cons-percentage)
 (defvar my--file-name-handler-alist file-name-handler-alist)
@@ -87,9 +78,9 @@
 (fset 'menu-bar-open nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; (cond ((my/workstation-resolution) (set-face-attribute 'default nil :font "Iosevka Nerd Font Mono-16"))
-;; (set-face-attribute 'default nil :font "Iosevka:pixelsize=16:weight=Light:slant=Oblique")
-(add-to-list 'default-frame-alist '(font . "Iosevka Thin-18:style=Thin,Regular"))
+(add-to-list
+ 'default-frame-alist
+ '(font . "-*-Iosevka Nerd Font Mono-light-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
 
 (defvar package-archives)
 (setq package-archives
@@ -104,28 +95,34 @@
 (eval-when-compile
   (require 'use-package)
   (setq use-package-always-ensure t
-        use-package-always-verbose t))
+        use-package-verbose t))
 
-(use-package all-the-icons)
+(use-package all-the-icons :defer 0.5)
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns nil))
   :hook (after-init . exec-path-from-shell-initialize))
 
+(use-package darktooth-theme
+  :config (load-theme 'darktooth t))
+
 (use-package doom-themes
-  :commands (doom-themes-org-config)
-  :custom
-  (doom-themes-enable-bold t)
-  (doom-themes-enable-itallic t)
   :config
-  (load-theme 'doom-gruvbox t)
-  (doom-themes-visual-bell-config))
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config)
+  (setq doom-themes-enable-italic
+        doom-themes-enable-bold))
 
 (use-package doom-modeline
   :config
-  (set-face-attribute 'doom-modeline-buffer-major-mode nil :weight 'bold :foreground (doom-color 'orange))
+  (set-face-attribute 'mode-line nil :height 140)
+  (set-face-attribute 'doom-modeline-bar nil :background "#1D2021")
+  (set-face-attribute 'doom-modeline-project-dir nil :foreground "#528B8B")
+  (set-face-attribute 'doom-modeline-project-parent-dir nil :foreground "#613620")
+  (set-face-attribute 'doom-modeline-buffer-major-mode nil :weight 'bold :foreground "#613620")
   (setq doom-modeline-percent-position nil
         doom-modeline-buffer-encoding nil
+        doom-modeline-height 5
         doom-modeline-bar-width 3
         find-file-visit-truename t)
   (doom-modeline-mode 1))
@@ -133,8 +130,7 @@
 (use-package solaire-mode
   :config
   (solaire-mode-swap-bg)
-  (solaire-global-mode 1)
-  :custom (solaire-mode-remap-fringe t))
+  (solaire-global-mode 1))
 
 (use-package magit)
 
@@ -200,6 +196,7 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package undo-tree
+  :defer 0.5
   :commands global-undo-tree-mode
   :config (global-undo-tree-mode 1))
 
@@ -237,77 +234,93 @@
 
 (use-package all-the-icons-ivy
   :config
-  (add-to-list 'all-the-icons-ivy-file-commands '(counsel-find-file counsel-dired-jump counsel-recentf counsel-find-library))
-  (add-to-list 'all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
+  (add-to-list 'all-the-icons-ivy-file-commands
+               '(counsel-find-file counsel-dired-jump counsel-recentf counsel-find-library))
+  (add-to-list 'all-the-icons-ivy-buffer-commands
+               '(ivy-switch-buffer-other-window))
   (all-the-icons-ivy-setup))
 
-(use-package tex
-  :ensure auctex
-  :bind (:map TeX-mode-map
-              ("C-c C-o" . TeX-recenter-output-buffer)
-              ("C-c C-l" . TeX-next-error)
-              ("M-[" . outline-previous-heading)
-              ("M-]" . outline-next-heading))
-  :hook (LaTeX-mode . reftex-mode)
-  :custom
-  (TeX-auto-save t)
-  (TeX-byte-compile t)
-  (TeX-clean-confirm nil)
-  (TeX-master 'dwim)
-  (TeX-parse-self t)
-  (TeX-PDF-mode t)
-  (TeX-source-correlate-mode t)
-  (TeX-view-program-selection '((output-pdf "PDF Tools")))
-  (Tex-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-  (TeX-source-correlate-start-server t))
-
-(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
-
-(use-package company-auctex
-  :after (auctex company)
-  :config (company-auctex-init))
-
-(setq-default TeX-engine 'xetex)
-
-(use-package reftex
-  :after auctex
-  :custom
-  (reftex-plug-into-AUCTeX t)
-  (reftex-save-parse-info t)
-  (reftex-use-multiple-selection-buffers t))
-
-(use-package pdf-tools
-  :defer 1
-  :magic ("%PDF" . pdf-view-mode)
-  :init (pdf-tools-install :no-query))
-
-(use-package server
+(use-package dired
   :ensure nil
-  :config
-  (unless (server-running-p)
-    (server-start)))
-
-(use-package pdf-view
-  :ensure nil
-  :after pdf-tools
-  :bind (:map pdf-view-mode-map
-              ("C-s" . isearch-forward)
-              ("d" . pdf-annot-delete)
-              ("h" . pdf-annot-add-highlight-markup-annotation)
-              ("t" . pdf-annot-add-text-annotation))
+  :delight "Dired "
   :custom
-  (pdf-view-display-size 'fit-page)
-  (pdf-view-resize-factor 1.1)
-  (pdf-view-use-unicode-lighter nil))
+  (dired-auto-revert-buffer t)
+  (dired-dwim-target t)
+  (dired-hide-details-hide-symlink-targets nil)
+  (dired-listing-switches "-alh")
+  (dired-ls-F-marks-symlinks nil)
+  (dired-recursive-copies 'always))
 
-(let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
-  (message "Loading %s...done (%.3fs)" load-file-name elapsed))
+(use-package dired-narrow
+  :bind (("C-c C-n" . dired-narrow)
+         ("C-c C-f" . dired-narrow-fuzzy)
+         ("C-c C-r" . dired-narrow-regexp)))
 
-(add-hook 'after-init-hook
-          `(lambda ()
-             (let ((elapsed
-                    (float-time (time-subtract (current-time) emacs-start-time))))
-               (message "Loading %s...done (%.3fs) [after-init]" ,load-file-name elapsed))) t)
+(use-package dired-subtree
+  :bind (:map dired-mode-map
+              ("<backtab>" . dired-subtree-cycle)
+              ("<tab>" . dired-subtree-toggle)))
+
+(use-package treemacs)
+
+;; (use-package tex
+;;   :ensure auctex
+;;   :bind (:map TeX-mode-map
+;;               ("C-c C-o" . TeX-recenter-output-buffer)
+;;               ("C-c C-l" . TeX-next-error)
+;;               ("M-[" . outline-previous-heading)
+;;               ("M-]" . outline-next-heading))
+;;   :hook (LaTeX-mode . reftex-mode)
+;;   :custom
+;;   (TeX-auto-save t)
+;;   (TeX-byte-compile t)
+;;   (TeX-clean-confirm nil)
+;;   (TeX-master 'dwim)
+;;   (TeX-parse-self t)
+;;   (TeX-PDF-mode t)
+;;   (TeX-source-correlate-mode t)
+;;   (TeX-view-program-selection '((output-pdf "PDF Tools")))
+;;   (Tex-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+;;   (TeX-source-correlate-start-server t))
+
+;; (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+
+;; (use-package company-auctex
+;;   :after (auctex company)
+;;   :config (company-auctex-init))
+
+;; (setq-default TeX-engine 'xetex)
+
+;; (use-package reftex
+;;   :after auctex
+;;   :custom
+;;   (reftex-plug-into-AUCTeX t)
+;;   (reftex-save-parse-info t)
+;;   (reftex-use-multiple-selection-buffers t))
+
+;; (use-package pdf-tools
+;;   :defer 1
+;;   :magic ("%PDF" . pdf-view-mode)
+;;   :init (pdf-tools-install :no-query))
+
+;; (use-package server
+;;   :ensure nil
+;;   :config
+;;   (unless (server-running-p)
+;;     (server-start)))
+
+;; (use-package pdf-view
+;;   :ensure nil
+;;   :after pdf-tools
+;;   :bind (:map pdf-view-mode-map
+;;               ("C-s" . isearch-forward)
+;;               ("d" . pdf-annot-delete)
+;;               ("h" . pdf-annot-add-highlight-markup-annotation)
+;;               ("t" . pdf-annot-add-text-annotation))
+;;   :custom
+;;   (pdf-view-display-size 'fit-page)
+;;   (pdf-view-resize-factor 1.1)
+;;   (pdf-view-use-unicode-lighter nil))
 
 (provide 'init)
 ;;; init.el ends here

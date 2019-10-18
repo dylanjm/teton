@@ -25,10 +25,10 @@
       package--init-file-ensured nil)
 
 (setq-default ad-redefinition-action 'accept
-              auto-save-file-name-transforms '((".*" "~/.cache/emacs-backups" t))
+              auto-save-file-name-transforms '((".*" "~/.cache/emacs/emacs-backups" t))
               auto-window-vscroll nil
               backup-by-copying t
-              backup-directory-alist '(("." . "~/.cache/emacs-backups"))
+              backup-directory-alist '(("." . "~/.cache/emacs/emacs-backups"))
               column-number-mode nil
               create-lockfiles nil
               cursor-in-non-selected-windows nil
@@ -38,14 +38,18 @@
               frame-title-format '("%b - Emacs")
               help-window-select t
               indent-tabs-mode nil
+              inhibit-compacting-font-caches t
+              inhibit-default-init t
               inhibit-startup-screen t
+              initial-scratch-message ""
               line-number-mode nil
               line-move-visual nil
               load-prefer-newer t
               mode-line-position nil
               mode-line-in-non-selected-windows nil
               redisplay-dont-pause t
-              ring-bell-function 'ignore
+              ring-bell-function #'ignore
+              sentence-end-double-space nil
               scroll-conservatively most-positive-fixnum
               scroll-margin 10
               size-indication-mode nil
@@ -58,9 +62,8 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file :noerror)
 
-(prefer-coding-system 'utf-8)
-(when (display-graphic-p)
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
+(prefer-coding-system 'utf-8-unix)
+(set-language-environment "UTF-8")
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
@@ -80,12 +83,9 @@
 
 (add-to-list
  'default-frame-alist
- '(font . "-*-Iosevka Nerd Font Mono-light-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
+ '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
 
-(defvar package-archives)
-(setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -97,11 +97,30 @@
   (setq use-package-always-ensure t
         use-package-verbose t))
 
-(use-package all-the-icons :defer 0.5)
+(use-package all-the-icons)
+(use-package flx)
 
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns nil))
-  :hook (after-init . exec-path-from-shell-initialize))
+  :if (and (eq system-type 'darwin) (display-graphic-p))
+  :config
+  (progn
+    (when (string-match-p "/zsh$" (getenv "SHELL"))
+      (setq exec-path-from-shell-arguments '("-l")))
+    (dolist (var '("PYTHONPATH"))
+      (add-to-list 'exec-path-from-shell-variables var))
+    (exec-path-from-shell-initialize)))
+
+(use-package ns-win
+  :ensure nil
+  :defer t
+  :if (eq system-type 'darwin)
+  :config
+  (setq ns-pop-up-frames nil
+        mac-option-modifier 'meta
+        mac-command-modifier 'meta
+        mac-right-command-modifier 'left
+        mac-right-option-modifier 'none
+        mac-function-modifier 'hyper))
 
 (use-package darktooth-theme
   :config (load-theme 'darktooth t))
@@ -115,7 +134,7 @@
 
 (use-package doom-modeline
   :config
-  (set-face-attribute 'mode-line nil :height 140)
+  (set-face-attribute 'mode-line nil :height 160)
   (set-face-attribute 'doom-modeline-bar nil :background "#1D2021")
   (set-face-attribute 'doom-modeline-project-dir nil :foreground "#528B8B")
   (set-face-attribute 'doom-modeline-project-parent-dir nil :foreground "#613620")
@@ -128,11 +147,11 @@
   (doom-modeline-mode 1))
 
 (use-package solaire-mode
+  :hook
+  ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+  (minibuffer-setup . solaire-mode-in-minibuffer)
   :config
-  (solaire-mode-swap-bg)
   (solaire-global-mode 1))
-
-(use-package magit)
 
 (use-package eyebrowse
   :disabled
@@ -162,16 +181,17 @@
   :custom
   (whitespace-style '(face empty indentation::space tab trailing)))
 
-(use-package minions
-  :commands minions-mode
-  :config (minions-mode 1))
-
 (use-package aggressive-indent
   :hook (emacs-lisp-mode . aggressive-indent-mode)
   :custom (aggressive-indent-comments-too))
 
 (use-package hungry-delete
+  :defer 1
   :config (hungry-delete-mode 1))
+
+(use-package minions
+  :commands minions-mode
+  :init (minions-mode 1))
 
 (use-package company
   :commands global-company-mode
@@ -185,12 +205,26 @@
         ("C-n" . company-select-next)
         ("C-p" . company-select-previous))
   :hook (after-init . global-company-mode)
-  :config (setq company-transformers '(company-sort-by-occurrence))
-  :custom
-  (company-idle-delay .1)
-  (company-minimum-prefix-length 2)
-  (company-tooltip-align-annotations 't)
-  (company-show-numbers t))
+  :config (setq company-require-match 'never
+                company-idle-delay 0.0
+                company-minimum-prefix-length 2
+                company-tooltip-align-annotations t
+                company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+                                    company-preview-frontend
+                                    company-echo-metadata-frontend)
+                company-back-ends '(company-capf company-files)))
+
+(use-package company-statistics
+  :after company
+  :config (company-statistics-mode))
+
+(use-package company-flx
+  :after company
+  :config (company-flx-mode 1))
+
+(use-package company-quickhelp
+  :after company
+  :config (company-quickhelp-mode))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -206,6 +240,7 @@
   :config (gcmh-mode 1))
 
 (use-package ivy
+  :demand
   :bind (("C-x b" . ivy-switch-buffer)
          ("C-x B" . ivy-switch-buffer-other-window)
          :map ivy-minibuffer-map
@@ -222,10 +257,14 @@
   (ivy-mode 1))
 
 (use-package counsel
+  :demand
   :bind (("C-x C-f" . counsel-find-file)
          ("C-x C-d" . counsel-dired-jump)
          ("C-x C-l" . counsel-find-library)
-         ("C-x C-r" . counsel-recentf)))
+         ("C-x C-r" . counsel-recentf)
+         ("C-x C-v" . counsel-set-variable))
+  :config
+  (counsel-mode 1))
 
 (use-package swiper
   :bind (("C-s" . swiper)
@@ -233,94 +272,87 @@
          ("M-%" . swiper-query-replace)))
 
 (use-package all-the-icons-ivy
+  :demand
+  :commands (all-the-icons-ivy-setup)
+  :preface
+  (setq all-the-icons-ivy-file-commands '(counsel-find-file
+                                          counsel-dired-jump
+                                          counsel-recentf
+                                          counsel-find-library))
+  (setq all-the-icons-ivy-buffer-commands '(ivy-switch-buffer
+                                            ivy-switch-buffer-other-window
+                                            counsel-projectile-switch-to-buffer))
   :config
-  (add-to-list 'all-the-icons-ivy-file-commands
-               '(counsel-find-file counsel-dired-jump counsel-recentf counsel-find-library))
-  (add-to-list 'all-the-icons-ivy-buffer-commands
-               '(ivy-switch-buffer-other-window))
   (all-the-icons-ivy-setup))
 
-(use-package dired
-  :ensure nil
-  :delight "Dired "
+(use-package flyspell
+  :hook (((markdown-mode org-mode text-mode) . flyspell-mode)
+         (prog-mode . flyspell-prog-mode))
   :custom
-  (dired-auto-revert-buffer t)
-  (dired-dwim-target t)
-  (dired-hide-details-hide-symlink-targets nil)
-  (dired-listing-switches "-alh")
-  (dired-ls-F-marks-symlinks nil)
-  (dired-recursive-copies 'always))
+  (flyspell-abbrev-p t)
+  (flyspell-default-dictionary "en_US")
+  (flyspell-issue-message-flag nil)
+  (flyspell-issue-welcom-message nil))
 
-(use-package dired-narrow
-  :bind (("C-c C-n" . dired-narrow)
-         ("C-c C-f" . dired-narrow-fuzzy)
-         ("C-c C-r" . dired-narrow-regexp)))
+(use-package flyspell-correct-ivy
+  :after (flyspell ivy)
+  :init (setq flyspell-correct-interface #'flyspell-correct-ivy))
 
-(use-package dired-subtree
-  :bind (:map dired-mode-map
-              ("<backtab>" . dired-subtree-cycle)
-              ("<tab>" . dired-subtree-toggle)))
+(use-package ispell
+  :defer 2
+  :ensure-system-package (hunspell . "trizen -S hunspell")
+  :custom
+  (ispell-dictionary "en_US")
+  (ispell-program-name (executable-find "hunspell"))
+  (ispell-really-hunspell t)
+  (ispell-silently-savep t)
+  :config
+  (flyspell-mode 1))
 
-(use-package treemacs)
+(use-package abbrev
+  :ensure nil
+  :hook ((text-mode org-mode latex-mode) . abbrev-mode)
+  :custom (abbrev-file-name "~/.cache/emacs_abbrev")
+  :config
+  (if (file-exists-p abbrev-file-name)
+      (quietly-read-abbrev-file)))
 
-;; (use-package tex
-;;   :ensure auctex
-;;   :bind (:map TeX-mode-map
-;;               ("C-c C-o" . TeX-recenter-output-buffer)
-;;               ("C-c C-l" . TeX-next-error)
-;;               ("M-[" . outline-previous-heading)
-;;               ("M-]" . outline-next-heading))
-;;   :hook (LaTeX-mode . reftex-mode)
-;;   :custom
-;;   (TeX-auto-save t)
-;;   (TeX-byte-compile t)
-;;   (TeX-clean-confirm nil)
-;;   (TeX-master 'dwim)
-;;   (TeX-parse-self t)
-;;   (TeX-PDF-mode t)
-;;   (TeX-source-correlate-mode t)
-;;   (TeX-view-program-selection '((output-pdf "PDF Tools")))
-;;   (Tex-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-;;   (TeX-source-correlate-start-server t))
+(use-package recentf
+  :init (recentf-mode)
+  :custom
+  (recentf-exclude (list "COMMIT_EDITMSG"
+                         "~$"
+                         "/scp:"
+                         "/ssh:"
+                         "/sudo:"
+                         "/tmp/"))
+  (recentf-max-menu-items 15)
+  (recentf-max-saved-items 200)
+  (recentf-save-file "~/.cache/emacs/emacs-recentf")
+  :config (run-at-time nil (* 5 60) 'recentf-save-list))
 
-;; (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+(use-package git-commit
+  :after magit
+  :hook (git-commit-mode . my/git-commit-auto-fill-everywhere)
+  :custom (git-commit-summary-max-length 50)
+  :preface
+  (defun my/git-commmit-auto-fill-everywhere ()
+    "Ensures that the commit body does not exceed 72 characters."
+    (setq fill-column 72)
+    (setq-local comment-auto-fill-only-comments nil)))
 
-;; (use-package company-auctex
-;;   :after (auctex company)
-;;   :config (company-auctex-init))
+(use-package magit :defer 0.3)
 
-;; (setq-default TeX-engine 'xetex)
+(use-package git-gutter
+  :defer 0.3
+  :init (global-git-gutter-mode 1))
 
-;; (use-package reftex
-;;   :after auctex
-;;   :custom
-;;   (reftex-plug-into-AUCTeX t)
-;;   (reftex-save-parse-info t)
-;;   (reftex-use-multiple-selection-buffers t))
+(use-package gitconfig-mode
+  :defer t
+  :hook (gitconfig-mode . (lambda () (setf indent-tabs-mode nil tab-width 4))))
 
-;; (use-package pdf-tools
-;;   :defer 1
-;;   :magic ("%PDF" . pdf-view-mode)
-;;   :init (pdf-tools-install :no-query))
-
-;; (use-package server
-;;   :ensure nil
-;;   :config
-;;   (unless (server-running-p)
-;;     (server-start)))
-
-;; (use-package pdf-view
-;;   :ensure nil
-;;   :after pdf-tools
-;;   :bind (:map pdf-view-mode-map
-;;               ("C-s" . isearch-forward)
-;;               ("d" . pdf-annot-delete)
-;;               ("h" . pdf-annot-add-highlight-markup-annotation)
-;;               ("t" . pdf-annot-add-text-annotation))
-;;   :custom
-;;   (pdf-view-display-size 'fit-page)
-;;   (pdf-view-resize-factor 1.1)
-;;   (pdf-view-use-unicode-lighter nil))
+(use-package ace-window
+  :bind (("C-x o" . ace-window)))
 
 (provide 'init)
 ;;; init.el ends here

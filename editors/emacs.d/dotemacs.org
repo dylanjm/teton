@@ -87,11 +87,7 @@
 
 #+BEGIN_SRC emacs-lisp
   (use-package doom-themes
-    :demand t
-    :custom
-    (doom-themes-enable-bold nil)
-    :config
-    (load-theme 'doom-gruvbox t))
+    :config (load-theme 'doom-gruvbox t))
 #+END_SRC
 
 #+begin_src emacs-lisp

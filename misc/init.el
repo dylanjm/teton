@@ -85,6 +85,8 @@
  'default-frame-alist
  '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
 
+(require 'package)
+(setq package-enable-at-starup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
@@ -99,6 +101,7 @@
 
 (use-package all-the-icons)
 (use-package flx)
+(use-package use-package-ensure-system-package)
 
 (use-package exec-path-from-shell
   :if (and (eq system-type 'darwin) (display-graphic-p))
@@ -129,29 +132,41 @@
   :config
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
+  (doom-themes-visual-bell-config)
   (setq doom-themes-enable-italic
         doom-themes-enable-bold))
 
 (use-package doom-modeline
   :config
-  (set-face-attribute 'mode-line nil :height 160)
-  (set-face-attribute 'doom-modeline-bar nil :background "#1D2021")
-  (set-face-attribute 'doom-modeline-project-dir nil :foreground "#528B8B")
-  (set-face-attribute 'doom-modeline-project-parent-dir nil :foreground "#613620")
+  (set-face-attribute 'mode-line nil :height 180)
+  (set-face-attribute 'doom-modeline-buffer-minor-mode nil :foreground (doom-color 'fg))
+  (set-face-attribute 'doom-modeline-buffer-file nil :foreground (doom-color 'fg) :weight 'semi-bold)
   (set-face-attribute 'doom-modeline-buffer-major-mode nil :weight 'bold :foreground "#613620")
   (setq doom-modeline-percent-position nil
         doom-modeline-buffer-encoding nil
-        doom-modeline-height 5
+        doom-modeline-minor-modes t
+        doom-modeline-buffer-file-name-style 'file-name
+        doom-modeline-major-mode-color-icon nil
+        doom-modeline-height 10
         doom-modeline-bar-width 3
         find-file-visit-truename t)
   (doom-modeline-mode 1))
 
-(use-package solaire-mode
-  :hook
-  ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
-  (minibuffer-setup . solaire-mode-in-minibuffer)
-  :config
-  (solaire-global-mode 1))
+;; (use-package solaire-mode
+;;   :commands (solaire-global-mode
+;;              solaire-mode-swap-bg
+;;              turn-on-solaire-mode
+;;              solaire-mode-in-minibuffer
+;;              solaire-mode-reset)
+;;   :hook (((after-revert change-major-mode org-capture-mode org-src-mode) . turn-on-solaire-mode)
+;;          (snippet-mode . solaire-mode))
+;;   :config
+;;   (solaire-mode-swap-bg)
+;;   (with-no-warnings
+;;     (if (boundp 'after-focus-change-function)
+;;         (add-function :after after-focus-change-function #'solaire-mode-reset)
+;;       (add-hook 'focus-in-hook #'solaire-mode-reset)))
+;;   :init (solaire-global-mode 1))
 
 (use-package eyebrowse
   :disabled
@@ -226,6 +241,10 @@
   :after company
   :config (company-quickhelp-mode))
 
+(use-package counsel-projectile
+  :after (counsel projectile)
+  :config (counsel-projectile-mode 1))
+
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -262,7 +281,8 @@
          ("C-x C-d" . counsel-dired-jump)
          ("C-x C-l" . counsel-find-library)
          ("C-x C-r" . counsel-recentf)
-         ("C-x C-v" . counsel-set-variable))
+         ("C-x C-v" . counsel-set-variable)
+         ("C-x C-u" . counsel-unicode-char))
   :config
   (counsel-mode 1))
 
@@ -353,6 +373,27 @@
 
 (use-package ace-window
   :bind (("C-x o" . ace-window)))
+
+(use-package projectile
+  :defer 1
+  :custom
+  (projectile-cache-file "~/.cache/emacs/projectile.cache")
+  (projectile-completion-system 'ivy)
+  (projectile-enable-caching t)
+  (projectile-keymap-prefix (kbd "C-c C-p"))
+  (projectile-known-projects-file "~/.cache/emacs/projectile-bookmarks.eld")
+  (projectile-mode-line '(:eval (projectile-project-name)))
+  :config (projectile-global-mode))
+
+(use-package server
+  :init (server-mode))
+
+(use-package julia-mode)
+(use-package julia-repl
+  :hook (julia-mode . julia-repl-mode))
+
+(use-package eterm-256color
+  :hook (term-mode . eterm-256color-mode))
 
 (provide 'init)
 ;;; init.el ends here

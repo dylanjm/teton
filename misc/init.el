@@ -86,8 +86,8 @@
  '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
 
 (require 'package)
-(setq package-enable-at-starup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -99,9 +99,13 @@
   (setq use-package-always-ensure t
         use-package-verbose t))
 
+;(use-package no-littering)
 (use-package all-the-icons)
 (use-package flx)
-(use-package use-package-ensure-system-package)
+(use-package eldoc
+  :hook (emacs-lisp-mode . eldoc-mode))
+(use-package use-package-ensure-system-package
+  :commands (use-package-ensure-system-package-exists?))
 
 (use-package exec-path-from-shell
   :if (and (eq system-type 'darwin) (display-graphic-p))
@@ -126,50 +130,42 @@
         mac-function-modifier 'hyper))
 
 (use-package darktooth-theme
-  :config (load-theme 'darktooth t))
+  :config
+  (load-theme 'darktooth t)
+  (darktooth-modeline-three)
+  (set-face-attribute 'mode-line nil :height 160)
+  (set-face-attribute 'mode-line-inactive nil :height 160))
 
 (use-package doom-themes
   :config
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config)
-  (doom-themes-visual-bell-config)
+  ;;(doom-themes-treemacs-config)
+  ;;(doom-themes-org-config)
   (setq doom-themes-enable-italic
         doom-themes-enable-bold))
 
-(use-package doom-modeline
-  :config
-  (set-face-attribute 'mode-line nil :height 180)
-  (set-face-attribute 'doom-modeline-buffer-minor-mode nil :foreground (doom-color 'fg))
-  (set-face-attribute 'doom-modeline-buffer-file nil :foreground (doom-color 'fg) :weight 'semi-bold)
-  (set-face-attribute 'doom-modeline-buffer-major-mode nil :weight 'bold :foreground "#613620")
-  (setq doom-modeline-percent-position nil
-        doom-modeline-buffer-encoding nil
-        doom-modeline-minor-modes t
-        doom-modeline-buffer-file-name-style 'file-name
-        doom-modeline-major-mode-color-icon nil
-        doom-modeline-height 10
-        doom-modeline-bar-width 3
-        find-file-visit-truename t)
-  (doom-modeline-mode 1))
-
-;; (use-package solaire-mode
-;;   :commands (solaire-global-mode
-;;              solaire-mode-swap-bg
-;;              turn-on-solaire-mode
-;;              solaire-mode-in-minibuffer
-;;              solaire-mode-reset)
-;;   :hook (((after-revert change-major-mode org-capture-mode org-src-mode) . turn-on-solaire-mode)
-;;          (snippet-mode . solaire-mode))
+;; (use-package doom-modeline
 ;;   :config
-;;   (solaire-mode-swap-bg)
-;;   (with-no-warnings
-;;     (if (boundp 'after-focus-change-function)
-;;         (add-function :after after-focus-change-function #'solaire-mode-reset)
-;;       (add-hook 'focus-in-hook #'solaire-mode-reset)))
-;;   :init (solaire-global-mode 1))
+;;   (setq doom-modeline-project-detection 'project
+;;         doom-modeline-buffer-file-name-style 'truncate-upto-project
+;;         doom-modeline-icon (display-graphic-p)
+;;         doom-modeline-major-mode-icon t
+;;         doom-modeline-major-mode-color-icon t
+;;         doom-modeline-buffer-state-icon t
+;;         doom-modeline-minor-modes (featurep 'minions)
+;;         doom-modeline-checker-simple-format t
+;;         doom-modeline-vcs-max-length 80
+;;         doom-modeline-github t
+;;         doom-modeline-github-interval (* 30 60)
+;;         doom-modeline-percent-position nil
+;;         doom-modeline-buffer-encoding nil
+;;         find-file-visit-truename t)
+;;   :hook (after-init . doom-modeline-mode))
+
+(use-package smart-mode-line
+  :config
+  (sml/setup))
 
 (use-package eyebrowse
-  :disabled
   :commands eyebrowse-mode
   :config (eyebrowse-mode t))
 
@@ -177,14 +173,13 @@
   :ensure nil
   :hook ((prog-mode . show-paren-mode)))
 
-(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
-
 (use-package savehist
   :ensure nil
   :custom
   (history-delete-duplicates t)
   (history-length t)
-  (savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+  (savehist-additional-variables
+   '(kill-ring search-ring regexp-search-ring))
   (savehist-file (expand-file-name "~/.cache/emacs-history"))
   (savehist-save-minibuffer-history 1)
   :config (savehist-mode 1))
@@ -220,17 +215,24 @@
         ("C-n" . company-select-next)
         ("C-p" . company-select-previous))
   :hook (after-init . global-company-mode)
-  :config (setq company-require-match 'never
-                company-idle-delay 0.0
-                company-minimum-prefix-length 2
-                company-tooltip-align-annotations t
-                company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
-                                    company-preview-frontend
-                                    company-echo-metadata-frontend)
-                company-back-ends '(company-capf company-files)))
+  :init (setq company-require-match 'never
+              company-async-timeout 5
+              company-idle-delay 0.1
+              company-minimum-prefix-length 2
+              company-tooltip-align-annotations t)
+  :config
+  (setq company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+                            company-preview-frontend
+                            company-echo-metadata-frontend))
+  (setq company-backends '(company-capf company-files)))
+
+(use-package company-lsp :defer t)
+(use-package company-irony :defer t)
 
 (use-package company-statistics
   :after company
+  :custom
+  (company-statistics-file "~/.cache/emacs/company-statistics-cache.el")
   :config (company-statistics-mode))
 
 (use-package company-flx
@@ -269,7 +271,7 @@
   :custom
   (ivy-dynamic-exhibit-delay-ms 250)
   (ivy-case-fold-search-default t)
-  (ivy-re-builders-alist '((t . ivy--regex-plus)))
+  (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
   (ivy-use-virtual-buffers t)
   (ivy-count-format "(%d/%d) ")
   :config
@@ -363,6 +365,9 @@
 
 (use-package magit :defer 0.3)
 
+(use-package gh
+  :defer t)
+
 (use-package git-gutter
   :defer 0.3
   :init (global-git-gutter-mode 1))
@@ -380,10 +385,12 @@
   (projectile-cache-file "~/.cache/emacs/projectile.cache")
   (projectile-completion-system 'ivy)
   (projectile-enable-caching t)
-  (projectile-keymap-prefix (kbd "C-c C-p"))
   (projectile-known-projects-file "~/.cache/emacs/projectile-bookmarks.eld")
   (projectile-mode-line '(:eval (projectile-project-name)))
-  :config (projectile-global-mode))
+  :config
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode 1))
 
 (use-package server
   :init (server-mode))
@@ -394,6 +401,9 @@
 
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
+
+(use-package flycheck
+  :config (global-flycheck-mode))
 
 (provide 'init)
 ;;; init.el ends here

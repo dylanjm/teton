@@ -3,7 +3,6 @@ export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
 export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
-export MOOSE_DIR="$HOME/Documents/projects/bison/moose"
 
 fpath+=($ZSH/functions)
 
@@ -13,8 +12,14 @@ export ALTERNATE_EDITOR=""
 export LANG=en_US.UTF-8
 export EXA_COLORS="bd=31:cd=32:pi=34"
 
-path=($HOME/.pyenv/bin
-      $HOME/.pyenv/shims
+# if command -v pyenv 1>/dev/null 2>&1; then
+#     eval "$(pyenv init -)"
+#     eval "$(pyenv virtualenv-init -)"
+# fi
+
+path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
+      $PYENV_ROOT/bin
+      $PYENV_ROOT/shims
       /usr/local/bin
       /usr/bin
       /bin
@@ -28,4 +33,11 @@ path=($HOME/.pyenv/bin
 
 export PATH
 
-autoload -Uz time-shell countdown nuke convert-to-md colorlist prettycsv em ptyless
+autoload -Uz time-shell \
+         countdown \
+         nuke \
+         convert-to-md \
+         colorlist \
+         prettycsv \
+         em \
+         ptyless

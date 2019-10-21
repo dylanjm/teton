@@ -16,8 +16,10 @@ zmodload zdharma/zplugin
 source $ZPLG_HOME/bin/zplugin.zsh
 load=light
 
-zplugin ice atload'source ~/.p10k.zsh;' lucid nocd
-zplugin $load romkatv/powerlevel10k
+# zplugin ice atload'source ~/.p10k.zsh;' lucid nocd
+# zplugin $load romkatv/powerlevel10k
+zplugin ice wait'!' pick"async.zsh" src"pure.zsh" lucid nocd
+zplugin $load sindresorhus/pure
 
 zplugin ice wait'3' lucid
 zplugin snippet OMZ::lib/history.zsh
@@ -37,9 +39,6 @@ zplugin ice wait'3' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
 zplugin $load trapd00r/LS_COLORS
 
 if test "$USER" = "mcdodj"; then
-    #     zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    #             atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
-    #     zplugin $load direnv/direnv
     # zplugin ice wait'2' id-as'moose' pick'moose_profile.zsh' lucid
     # zplugin $load /opt/moose/environments
 fi

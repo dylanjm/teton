@@ -8,7 +8,7 @@ alias emt="emacsclient -t"
 
 alias lx='exa -lahH --color-scale --icons --time=changed --time-style long-iso'
 
-alias brew='env PATH=${PATH//$(pyenv root)\/shims:/} brew'
+#alias brew='env PATH=${PATH//$(pyenv root)\/shims:/} brew'
 
 alias desk="cd $HOME/Desktop"
 
@@ -57,4 +57,3 @@ alias bisd='cd ~/Documents/projects/bison_data'
 alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
 alias moose='cd ~/Documents/projects/moose'
 alias papers='cd ~/Documents/projects/papers'
-

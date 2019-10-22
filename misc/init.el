@@ -4,91 +4,120 @@
 ;;; Emacs config by dylanjm
 ;;;
 ;;; Code:
-(defvar my--gc-cons-threshold gc-cons-threshold)
-(defvar my--gc-cons-percentage gc-cons-percentage)
-(defvar my--file-name-handler-alist file-name-handler-alist)
+(defun doom-defer-garbage-collection-h ()
+  "Increase `gc-cons-threshold' to stave off garbage collection."
+  (setq gc-cons-threshold most-positive-fixnum))
 
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 1.0
-      inhibit-compacting-font-caches t
-      message-log-max 16384
-      file-name-handler-alist nil)
+(defun doom-restore-garbage-collection-h ()
+  "Restore `gc-cons-threshold' to a reasonable value so the GC can do its job."
+  ;; Defer it so that commands launched immediately after will enjoy the
+  ;; benefits.
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold 16777216))))
 
-(add-hook 'after-init-hook
-          (lambda ()
-            (setq gc-cons-threshold my--gc-cons-threshold
-                  gc-cons-percentage my--gc-cons-percentage
-                  file-name-handler-alist my--file-name-handler-alist)))
+(add-hook 'minibuffer-setup-hook #'doom-defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
 
-(defvar package--init-file-ensured)
-(setq package-enable-at-startup nil
-      package--init-file-ensured nil)
+;; Not restoring these to their defaults will cause stuttering/freezes.
+(add-hook 'emacs-startup-hook #'doom-restore-garbage-collection-h)
 
-(setq-default ad-redefinition-action 'accept
-              auto-save-file-name-transforms '((".*" "~/.cache/emacs/emacs-backups" t))
-              auto-window-vscroll nil
-              backup-by-copying t
-              backup-directory-alist '(("." . "~/.cache/emacs/emacs-backups"))
-              column-number-mode nil
-              create-lockfiles nil
-              cursor-in-non-selected-windows nil
-              cursor-type 'bar
-              display-time-default-load-average nil
-              fill-column 80
-              frame-title-format '("%b - Emacs")
-              help-window-select t
-              indent-tabs-mode nil
-              inhibit-compacting-font-caches t
-              inhibit-default-init t
-              inhibit-startup-screen t
-              initial-scratch-message ""
-              line-number-mode nil
-              line-move-visual nil
-              load-prefer-newer t
-              mode-line-position nil
-              mode-line-in-non-selected-windows nil
-              redisplay-dont-pause t
-              ring-bell-function #'ignore
-              sentence-end-double-space nil
-              scroll-conservatively most-positive-fixnum
-              scroll-margin 10
-              size-indication-mode nil
-              select-enable-clipboard t
-              tab-width 4
-              vc-follow-symlinks t
-              view-read-only t
-              uniquify-buffer-name-style 'forward)
+;; When Emacs loses focus seems like a great time to do some garbage collection
+;; all sneaky breeky like, so we can return to a fresh(er) Emacs.
+(add-hook 'focus-out-hook #'garbage-collect)
+
+(setq-default  auto-save-file-name-transforms '((".*" "~/.cache/emacs/emacs-backups" t))
+               auto-window-vscroll nil
+               backup-by-copying t
+               backup-directory-alist '(("." . "~/.cache/emacs/emacs-backups"))
+               create-lockfiles nil
+               cursor-in-non-selected-windows nil
+               cursor-type 'bar
+               display-time-default-load-average nil
+               fill-column 80
+               frame-title-format '("%b - Emacs")
+               help-window-select t
+               icon-title-format frame-title-format
+               indent-tabs-mode nil
+               inhibit-compacting-font-caches t
+               inhibit-default-init t
+               inhibit-startup-screen t
+               inhibit-startup-echo-area-message t
+               initial-scratch-message ""
+               load-prefer-newer t
+               mode-line-in-non-selected-windows nil
+               ns-use-thin-smoothing t
+               redisplay-dont-pause t
+               ring-bell-function #'ignore
+               sentence-end-double-space nil
+               select-enable-clipboard t
+               tab-width 4
+               vc-follow-symlinks t
+               view-read-only t
+               uniquify-buffer-name-style 'forward
+               use-file-dialog nil
+               use-dialog-box nil
+               window-divider-default-places t
+               window-divider-default-bottom-width 1
+               window-divider-default-right-width 1)
+
+(when (boundp 'x-gtk-use-system-tooltips)
+  (setq x-gtk-use-system-tooltips nil))
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file :noerror)
 
+(when (display-graphic-p)
+  (setq mouse-wheel-scroll-amount '(1 ((shift) .1))
+        mouse-wheel-progressive-speed nil))
+
+(setq scroll-step 1
+      scroll-margin 5
+      scroll-conservatively most-positive-fixnum)
+(setq mac-redisplay-dont-reset-vscroll t
+      mac-mouse-wheel-smooth-scroll nil)
+
+(when (fboundp 'set-charset-priority)
+  (set-charset-priority 'unicode))
 (prefer-coding-system 'utf-8-unix)
-(set-language-environment "UTF-8")
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8
+      default-process-coding-system '(utf-8 . utf-8))
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+(add-hook 'after-load-theme-hook
+          (lambda ()
+            (let ((bg (frame-parameter nil 'background-mode)))
+              (set-frame-parameter nil 'ns-appearance bg)
+              (setcdr (assq 'ns-appearance default-frame-alist) bg))))
+(add-hook 'window-setup-hook #'window-divider-mode)
 (global-hl-line-mode 1)
 (global-display-fill-column-indicator-mode 1)
 (global-display-line-numbers-mode)
 
 (blink-cursor-mode 0)
-(tooltip-mode -1)
-(menu-bar-mode -1)
-(fringe-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
+(fringe-mode 0)
 
 (fset 'menu-bar-open nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(add-to-list
- 'default-frame-alist
- '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
+(add-to-list 'default-frame-alist
+             '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
 
 (require 'package)
-(setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+
+(unless (bound-and-true-p package--initialized)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -97,99 +126,158 @@
 (eval-when-compile
   (require 'use-package)
   (setq use-package-always-ensure t
-        use-package-verbose t))
-
-;(use-package no-littering)
-(use-package all-the-icons)
-(use-package flx)
-(use-package eldoc
-  :hook (emacs-lisp-mode . eldoc-mode))
-(use-package use-package-ensure-system-package
-  :commands (use-package-ensure-system-package-exists?))
+        use-package-verbose t
+        use-package-always-defer t))
 
 (use-package exec-path-from-shell
-  :if (and (eq system-type 'darwin) (display-graphic-p))
-  :config
-  (progn
-    (when (string-match-p "/zsh$" (getenv "SHELL"))
-      (setq exec-path-from-shell-arguments '("-l")))
-    (dolist (var '("PYTHONPATH"))
-      (add-to-list 'exec-path-from-shell-variables var))
-    (exec-path-from-shell-initialize)))
+  :init
+  (setq exec-path-from-shell-check-startup-files nil
+        exec-path-from-shell-variables '("PATH" "MANPATH" "PYTHONPATH")
+        exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
+
+(use-package server
+  :ensure nil
+  :hook (after-init . server-mode))
+
+(use-package time
+  :ensure nil
+  :unless (display-graphic-p)
+  :hook (after-init . display-time-mode)
+  :init (setq display-time-24hr-format t
+              display-time-day-and-date t))
+
+(use-package simple
+  :ensure nil
+  :hook ((window-setup . size-indication-mode)
+         ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace))
+  :init
+  (setq column-number-mode t
+        line-number-mode t
+        line-move-visual nil
+        track-eol t
+        set-mark-command-repeat-pop t)
+  (setq-default show-trailing-whitespace nil)
+  (defun enable-trailing-whitespace ()
+    (setq show-trailing-whitespace t)
+    (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
+
+(use-package saveplace
+  :ensure nil
+  :hook (after-init . save-place-mode))
+
+(use-package savehist
+  :ensure nil
+  :hook (after-init . savehist-mode)
+  :custom
+  (history-delete-duplicates t)
+  (history-length t)
+  (savehist-additional-variables '(mark-ring
+                                   global-mark-ring
+                                   search-ring
+                                   extended-command-history
+                                   kill-ring))
+  (savehist-autosave-intervall 300)
+  (savehist-file (expand-file-name "~/.cache/emacs/emacs-history"))
+  (savehist-save-minibuffer-history 1)
+  (history-length 1000))
 
 (use-package ns-win
   :ensure nil
   :defer t
   :if (eq system-type 'darwin)
   :config
+  (and (or (daemonp)
+           (display-graphic-p))
+       (require 'ns-auto-titlebar nil t)
+       (ns-auto-titlebar-mode 1))
   (setq ns-pop-up-frames nil
+        ns-use-native-fullscreen nil
         mac-option-modifier 'meta
         mac-command-modifier 'meta
         mac-right-command-modifier 'left
         mac-right-option-modifier 'none
-        mac-function-modifier 'hyper))
+        mac-function-modifier 'hyper)
+  (add-hook 'after-make-frame-functions
+            (defun init-menu-bar-in-gui-frames-h (frame)
+              (when (display-graphic-p frame)
+                (set-frame-parameter frame 'menu-bar-lines 1)))))
+
+(use-package prog-mode
+  :ensure nil
+  :hook ((prog-mode . show-paren-mode)
+         (prog-mode . prettify-symbols-mode))
+  :init
+  (setq-default prettify-symbols-alist '(("lambda" . ?λ) ("<-" . ?⭠)))
+  (setq prettify-symbols-unprettify-at-point 'right-edge))
+
+(use-package bmx-mode
+  :after company
+  :hook (after-init . bmx-mode-setup-defaults))
+
+(use-package fish-mode
+  :hook (fish-mode . (lambda ()
+                       (add-hook 'before-save-hook #'fish_indent-before-save))))
+
+(use-package recentf
+  :ensure nil
+  :hook (after-init . recentf-mode)
+  :custom
+  (recentf-exclude '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+                     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$" "^/tmp/" "^/ssh:"
+                     "\\.?ido\\.last$" "\\.revive$" "/TAGS$" "^/var/folders/.+$"
+                     (lambda (file) (file-in-directory-p file package-user-dir))))
+  (recentf-max-menu-items 15)
+  (recentf-max-saved-items 200)
+  (recentf-save-file "~/.cache/emacs/emacs-recentf")
+  :config
+  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (run-at-time nil (* 5 60) 'recentf-save-list))
 
 (use-package darktooth-theme
+  :demand
   :config
   (load-theme 'darktooth t)
-  (darktooth-modeline-three)
   (set-face-attribute 'mode-line nil :height 160)
-  (set-face-attribute 'mode-line-inactive nil :height 160))
+  (set-face-attribute 'mode-line-inactive nil :height 160)
+  (set-face-attribute 'hl-line nil :extend t))
 
 (use-package doom-themes
   :config
   ;;(doom-themes-treemacs-config)
   ;;(doom-themes-org-config)
+  (doom-themes-visual-bell-config)
+  (set-face-attribute 'doom-visual-bell nil
+                      :inherit 'mode-line
+                      :background (face-foreground 'error)
+                      :inverse-video nil)
   (setq doom-themes-enable-italic
         doom-themes-enable-bold))
 
-;; (use-package doom-modeline
-;;   :config
-;;   (setq doom-modeline-project-detection 'project
-;;         doom-modeline-buffer-file-name-style 'truncate-upto-project
-;;         doom-modeline-icon (display-graphic-p)
-;;         doom-modeline-major-mode-icon t
-;;         doom-modeline-major-mode-color-icon t
-;;         doom-modeline-buffer-state-icon t
-;;         doom-modeline-minor-modes (featurep 'minions)
-;;         doom-modeline-checker-simple-format t
-;;         doom-modeline-vcs-max-length 80
-;;         doom-modeline-github t
-;;         doom-modeline-github-interval (* 30 60)
-;;         doom-modeline-percent-position nil
-;;         doom-modeline-buffer-encoding nil
-;;         find-file-visit-truename t)
-;;   :hook (after-init . doom-modeline-mode))
-
-(use-package smart-mode-line
+(use-package solaire-mode
+  :functions persp-load-state-from-file
+  :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+         (minibuffer-setup . solaire-mode-in-minibuffer)
+         (after-load-theme . solaire-mode-swap-bg))
   :config
-  (sml/setup))
+  (setq solaire-mode-remap-fringe nil)
+  (solaire-global-mode 1)
+  (solaire-mode-swap-bg)
+  (advice-add #'persp-load-state-from-file
+              :after #'solaire-mode-restore-persp-mode-buffers))
+
+(use-package hide-mode-line
+  :hook (((completion-list-mode completion-in-region-mode) . hide-mode-line-mode)))
+
+(use-package all-the-icons)
+(use-package flx)
+(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
+(use-package use-package-ensure-system-package
+  :commands (use-package-ensure-system-package-exists?))
 
 (use-package eyebrowse
   :commands eyebrowse-mode
   :config (eyebrowse-mode t))
-
-(use-package prog-mode
-  :ensure nil
-  :hook ((prog-mode . show-paren-mode)))
-
-(use-package savehist
-  :ensure nil
-  :custom
-  (history-delete-duplicates t)
-  (history-length t)
-  (savehist-additional-variables
-   '(kill-ring search-ring regexp-search-ring))
-  (savehist-file (expand-file-name "~/.cache/emacs-history"))
-  (savehist-save-minibuffer-history 1)
-  :config (savehist-mode 1))
-
-(use-package whitespace
-  :ensure nil
-  :hook (((prog-mode text-mode) . whitespace-turn-on)
-         (before-save . whitespace-cleanup))
-  :custom
-  (whitespace-style '(face empty indentation::space tab trailing)))
 
 (use-package aggressive-indent
   :hook (emacs-lisp-mode . aggressive-indent-mode)
@@ -198,10 +286,6 @@
 (use-package hungry-delete
   :defer 1
   :config (hungry-delete-mode 1))
-
-(use-package minions
-  :commands minions-mode
-  :init (minions-mode 1))
 
 (use-package company
   :commands global-company-mode
@@ -243,69 +327,88 @@
   :after company
   :config (company-quickhelp-mode))
 
-(use-package counsel-projectile
-  :after (counsel projectile)
-  :config (counsel-projectile-mode 1))
-
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package undo-tree
-  :defer 0.5
   :commands global-undo-tree-mode
   :config (global-undo-tree-mode 1))
 
-(use-package gcmh
-  :ensure nil
-  :commands gcmh-mode
-  :config (gcmh-mode 1))
-
-(use-package ivy
-  :demand
+(use-package counsel
   :bind (("C-x b" . ivy-switch-buffer)
          ("C-x B" . ivy-switch-buffer-other-window)
+         ("C-c C-r" . ivy-resume)
+         ("C-c v p" . ivy-push-view)
+         ("C-c v o" . ivy-pop-view)
+         ("C-c v ." . ivy-switch-view)
+
          :map ivy-minibuffer-map
          ("<tab>" . ivy-alt-done)
+         ("C-w" . ivy-yank-word)
          :map ivy-switch-buffer-map
-         ("C-k" . ivy-switch-buffer-kill))
-  :custom
-  (ivy-dynamic-exhibit-delay-ms 250)
-  (ivy-case-fold-search-default t)
-  (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  (ivy-use-virtual-buffers t)
-  (ivy-count-format "(%d/%d) ")
-  :config
-  (ivy-mode 1))
+         ("C-k" . ivy-switch-buffer-kill)
 
-(use-package counsel
-  :demand
-  :bind (("C-x C-f" . counsel-find-file)
+         :map counsel-mode-map
+         ([remap swiper] . counsel-grep-or-swiper)
+         ([remap dired] . counsel-dired)
+         ("C-x C-f" . counsel-find-file)
          ("C-x C-d" . counsel-dired-jump)
          ("C-x C-l" . counsel-find-library)
-         ("C-x C-r" . counsel-recentf)
+         ("C-x C-r" . counsel-buffer-or-recentf)
          ("C-x C-v" . counsel-set-variable)
-         ("C-x C-u" . counsel-unicode-char))
-  :config
-  (counsel-mode 1))
+         ("C-x C-u" . counsel-unicode-char)
+         ("C-x j" . counsel-mark-ring)
 
-(use-package swiper
-  :bind (("C-s" . swiper)
+         ("C-c g" . counsel-grep)
+         ("C-c h" . counsel-command-history)
+         ("C-c j" . counsel-git)
+         ("C-c j" . counsel-git-grep)
+         ("C-c r" . counsel-rg)
+         ("C-c z" . counsel-fzf)
+         ("C-c c w" . counsel-colors-web)
+
+         ("C-h F" . counsel-describe-face)
+         ("C-h f" . counsel-describe-function)
+         ("C-h v" . counsel-describe-variable)
+
+         ("C-s" . swiper-isearch)
+         ("C-r" . swiper-isearch-backward)
+         ("s-f" . swiper)
+         ("C-S-s" . swiper-all)
+
          :map swiper-map
-         ("M-%" . swiper-query-replace)))
+         ("M-%" . swiper-query-replace)
+         ("M-s" . swiper-isearch-toggle)
+         :map isearch-mode-map
+         ("M-s" . swiper-isearch-toggle))
+  :hook ((after-init . ivy-mode)
+         (ivy-mode . counsel-mode))
+  :init
+  (setq enable-recursive-minibuffers t
+        ivy-dynamic-exhibit-delay-ms 250
+        ivy-use-selectable-prompt t
+        ivy-height 10
+        ivy-on-del-error-function nil
+        ivy-initial-inputs-alist nil
+        ivy-case-fold-search-default t
+        ivy-re-builders-alist '((t . ivy--regex-fuzzy))
+        ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) ")
+  (when (executable-find "rg")
+    (setq counsel-grep-base-command "rg -S --no-heading --line-number --color never '%s' %s")))
 
-(use-package all-the-icons-ivy
-  :demand
-  :commands (all-the-icons-ivy-setup)
-  :preface
-  (setq all-the-icons-ivy-file-commands '(counsel-find-file
-                                          counsel-dired-jump
-                                          counsel-recentf
-                                          counsel-find-library))
-  (setq all-the-icons-ivy-buffer-commands '(ivy-switch-buffer
-                                            ivy-switch-buffer-other-window
-                                            counsel-projectile-switch-to-buffer))
-  :config
-  (all-the-icons-ivy-setup))
+(use-package counsel-projectile
+  :after (counsel projectile)
+  :config (counsel-projectile-mode 1))
+
+(use-package amx
+  :init (setq amx-history-length 20)
+  :hook (after-init . amx-mode))
+
+(use-package flyspell-correct-ivy
+  :after flyspell
+  :bind (:map flyspell-mode-map
+              ([remap flyspell-correct-word-before-point] . flyspell-correct-previous-word-generic)))
 
 (use-package flyspell
   :hook (((markdown-mode org-mode text-mode) . flyspell-mode)
@@ -315,10 +418,6 @@
   (flyspell-default-dictionary "en_US")
   (flyspell-issue-message-flag nil)
   (flyspell-issue-welcom-message nil))
-
-(use-package flyspell-correct-ivy
-  :after (flyspell ivy)
-  :init (setq flyspell-correct-interface #'flyspell-correct-ivy))
 
 (use-package ispell
   :defer 2
@@ -334,24 +433,10 @@
 (use-package abbrev
   :ensure nil
   :hook ((text-mode org-mode latex-mode) . abbrev-mode)
-  :custom (abbrev-file-name "~/.cache/emacs_abbrev")
+  :custom (abbrev-file-name "~/.cache/emacs/emacs_abbrev")
   :config
   (if (file-exists-p abbrev-file-name)
       (quietly-read-abbrev-file)))
-
-(use-package recentf
-  :init (recentf-mode)
-  :custom
-  (recentf-exclude (list "COMMIT_EDITMSG"
-                         "~$"
-                         "/scp:"
-                         "/ssh:"
-                         "/sudo:"
-                         "/tmp/"))
-  (recentf-max-menu-items 15)
-  (recentf-max-saved-items 200)
-  (recentf-save-file "~/.cache/emacs/emacs-recentf")
-  :config (run-at-time nil (* 5 60) 'recentf-save-list))
 
 (use-package git-commit
   :after magit
@@ -363,10 +448,10 @@
     (setq fill-column 72)
     (setq-local comment-auto-fill-only-comments nil)))
 
-(use-package magit :defer 0.3)
-
-(use-package gh
-  :defer t)
+(use-package magit
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-popup)))
 
 (use-package git-gutter
   :defer 0.3
@@ -378,6 +463,29 @@
 
 (use-package ace-window
   :bind (("C-x o" . ace-window)))
+
+(use-package dired
+  :ensure nil
+  :bind (:map dired-mode-map
+              ("C-c C-p" . wdired-change-to-wdired-mode))
+  :config
+  (setq dired-recursive-deletes 'always
+        dired-recursive-copies 'always)
+  (setq dired-use-ls-dired nil)
+  (when (executable-find "gls")
+    (setq insert-directory-program "gls"))
+  (use-package dired-rsync
+    :bind (:map dired-mode-map
+                ("C-c C-r" . dired-rsync)))
+  (use-package diredfl
+    :init (diredfl-global-mode 1))
+  (use-package dired-aux :ensure nil)
+  (use-package dired-x
+    :ensure nil
+    :demand))
+
+(when (executable-find "fd")
+  (use-package fd-dired))
 
 (use-package projectile
   :defer 1
@@ -391,9 +499,6 @@
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode 1))
-
-(use-package server
-  :init (server-mode))
 
 (use-package julia-mode)
 (use-package julia-repl

@@ -6,16 +6,14 @@ export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Module
 
 fpath+=($ZSH/functions)
 
-export PYENV_ROOT="$HOME/.pyenv"
-export EDITOR='emacsclient -c'
-export ALTERNATE_EDITOR=""
 export LANG=en_US.UTF-8
-export EXA_COLORS="bd=31:cd=32:pi=34"
+export TERM=xterm-256color
+export DEFAULT_USER=$USER
+export EDITOR='emacsclient -c -a "emacs"'
 
-# if command -v pyenv 1>/dev/null 2>&1; then
-#     eval "$(pyenv init -)"
-#     eval "$(pyenv virtualenv-init -)"
-# fi
+export PYENV_ROOT="$HOME/.pyenv"
+export EXA_COLORS="bd=31:cd=32:pi=34"
+export LDFLAGS=-L/usr/local/opt/texinfo/lib
 
 path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
       $PYENV_ROOT/bin
@@ -29,6 +27,7 @@ path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
       $DOTFILES/bin
       /usr/local/texlive/2019/bin/x86_64-darwin/
       /opt/X11/bin
+      /usr/local/opt/texinfo/bin
       /usr/local/Cellar/modules/4.3.0/bin)
 
 export PATH

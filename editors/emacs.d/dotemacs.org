@@ -6,498 +6,422 @@
 ** Bootstrap
 
 *** Defaults
+
 #+BEGIN_SRC emacs-lisp
-  (defconst user-emacs-saves-dir
-    (expand-file-name ".emacs-saves/" user-emacs-directory)
-      "Directory for storing autosave files.")
+(when (boundp 'x-gtk-use-system-tooltips)
+  (setq x-gtk-use-system-tooltips nil))
+
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file :noerror)
+
+(when (display-graphic-p)
+  (setq mouse-wheel-scroll-amount '(1 ((shift) .1))
+        mouse-wheel-progressive-speed nil))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (setq-default
-   visible-bell t                                                       ; Flashes on error
-   auto-window-vscroll nil                                              ; Lighten vertical scroll
-   cursor-in-non-selected-windows nil                                   ; Hide the cursor in inactive windows
-   delete-by-moving-to-trash t                                          ; Delete files to trash
-   display-time-default-load-average nil                                ; Don't display load average
-   display-time-format "%H:%M"                                          ; Format the time string
-   fill-column 80                                                       ; Set width for automatic line breaks
-   indent-tabs-mode nil                                                 ; Stop using tabs to indent
-   inhibit-startup-screen t                                             ; Disable start-up screen
-   initial-scratch-message ""                                           ; Empty the initial *scratch* buffer
-   mouse-yank-at-point t                                                ; Yank at point rather than pointer
-   ;recenter-positions '(5 top bottom)                                   ; Set re-centering positions
-   scroll-conservatively most-positive-fixnum                           ; Always scroll by one line
-   scroll-margin 10                                                     ; Add a margin when scrolling vertically
-   select-enable-clipboard t                                            ; Merge system's and Emacs' clipboard
-   sentence-end-double-space nil                                        ; End a sentence after a dot and a space
-   show-trailing-whitespace nil                                         ; Display trailing whitespaces
-   split-height-threshold nil                                           ; Disable vertical window splitting
-   split-width-threshold nil                                            ; Disable horizontal window splitting
-   tab-width 4                                                          ; Set width for tabs
-   uniquify-buffer-name-style 'forward                                  ; Uniquify buffer names
-   window-combination-resize t                                          ; Resize windows proportionally
-   x-stretch-cursor t                                                   ; Stretch cursor to the glyph width
-   vc-follow-symlinks t                                                 ; Don't show message when opening symlinks
-   backup-directory-alist `((".*" . , user-emacs-saves-dir))            ; Store all autosaves in .emacs-saves/
-   auto-save-file-name-transforms `((".*" , user-emacs-saves-dir t)))   ; Store all autobackups in .emacs-saves/
+(when (fboundp 'set-charset-priority)
+  (set-charset-priority 'unicode))
+(prefer-coding-system 'utf-8-unix)
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8
+      default-process-coding-system '(utf-8 . utf-8))
 
-  (fset 'yes-or-no-p 'y-or-n-p)                                         ; Replace yes/no prompts with y/n
-  (set-default-coding-systems 'utf-8)                                   ; Use utf-8 by default
-  (delete-selection-mode 1)                                             ; Replace region when inserting text
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+(add-hook 'window-setup-hook #'window-divider-mode)
+(global-hl-line-mode 1)
+(global-display-fill-column-indicator-mode 1)
+(global-display-line-numbers-mode)
+
+(blink-cursor-mode 0)
+(fringe-mode 0)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(add-to-list
+ 'default-frame-alist
+ '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1"))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (global-display-fill-column-indicator-mode 1)   ; Show column indicator at fill column number
-  (global-display-line-numbers-mode 1)            ; Always show line numbers
-  (global-hl-line-mode 1)                         ; Highlight current line
-  (blink-cursor-mode 0)                           ; Disable blinking cursor
-  (scroll-bar-mode 0)                             ; No scroll bar
-  (tool-bar-mode 0)                               ; Disable tool bars
-  (menu-bar-mode 0)                               ; Don't show menu bars
-  (tooltip-mode 0)                                ; Disable tool tips
-  (fringe-mode 0)                                 ; Disable fringes
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))  ; Make the titlebar transparent
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))         ; Make everything dark
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'before-save-hook 'whitespace-cleanup)
-  (add-hook 'focus-out-hook #'garbage-collect)      ; Garbage-collect on focus-out, Emacs /should/ feel snappier.
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  ;;(global-set-key (kbd "C-x C-b") 'ibuffer)         ; Smart Buffer Default
-  (global-set-key (kbd "C-x o") 'ace-window)
-#+END_SRC
-
-#+begin_src emacs-lisp
-  (setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
-  (when (file-exists-p custom-file)
-    (load custom-file))
-#+end_src
-
-# #+begin_src emacs-lisp
-#  (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
-#    (when (file-exists-p secret.el)
-#      (load secret.el)))
-# #+end_src
-
-#+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
-    :config (load-theme 'doom-gruvbox t))
-#+END_SRC
-
-#+begin_src emacs-lisp
-  (use-package exec-path-from-shell
-    :defer 10
-    :if (memq window-system '(mac ns nil))
-    :hook (after-init . exec-path-from-shell-initialize))
-#+end_src
-
-
-** Language Specific
-
-*** Python
-
-This is my setup for python
-
-#+begin_src emacs-lisp
-  ;; (use-package py-autopep8
-  ;;   :hook
-  ;;   ((python-mode . py-autopep8-enable-on-save)))
-#+end_src
-
-*** Markdown
-
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :mode
-    ("INSTALL\\'"
-     "CONTRIBUTORS\\'"
-     "LICENSE\\'"
-     "README\\'"
-     "\\.markdown\\'"
-     "\\.md\\'")
-    :custom
-    (markdown-asymmetric-header t)
-    (markdown-split-window-direction 'right)
+  (leaf *init-emacs
+    :doc "starting off our emacs init"
     :config
-    (unbind-key "M-<down>" markdown-mode-map)
-    (unbind-key "M-<up>" markdown-mode-map))
-#+end_src
+    (leaf exec-path-from-shell
+      :ensure t
+      :when (memq window-system '(macs ns x))
+      :defun (exec-path-from-shell-initialize)
+      :custom ((exec-path-from-shell-check-startup-files . nil)
+               (exec-path-from-shell-variables . '("PATH" "MANPATH"))
+               (exec-path-from-shell-arguments . '("-l")))
+      :config
+      (exec-path-from-shell-initialize))
 
-*** YAML
+    (leaf files
+      :custom
+      `((auto-save-file-name-transforms . '((".*" "~/.cache/emacs/emacs-backups" t)))
+        (backup-directory-alist . '(("." . "~/.cache/emacs/emacs-backups")))
+        (backup-by-copying . t)))
 
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-    :mode
-    ("\\.yml\\'" "\\.yaml\\'"))
-#+end_src
+    (leaf help
+      :custom `((help-window-select . t)))
 
-*** LaTeX
+    (leaf startup
+      :custom `((inhibit-startup-screen . t)
+                (inhibit-startup-echo-area-message . t)
+                (inhibit-default-init . t)
+                (initial-scratch-message . "")))
 
-Found this LaTeX setup at: https://github.com/peterewills/my_configs/blob/master/.emacs
+    (leaf uniquify.el
+      :custom ((uniquify-buffer-name-style . 'forward)))
 
-#+begin_src emacs-lisp
-  (use-package tex-site
-    :ensure auctex
-    :mode ("\\.tex\\'" . LaTeX-mode)
-    :config
-    (setq TeX-auto-save t)
-    (setq TeX-save-query nil)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master t)
-    (setq-default TeX-PDF-mode t)
-    (add-hook 'LaTeX-mode-hook
-              (lambda ()
-                (flyspell-mode)
-                (TeX-fold-mode 1)
-                (LaTeX-math-mode)
-                (turn-on-reftex)
-                (yas-minor-mode t)
-                (setq reftex-plug-into-AUCTeX t)
-                (push '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
-                        :help "Run latexmk on file")
-                      TeX-command-list)
-                (setq TeX-command-default "latexmk")))
-    :custom
-    (TeX-view-program-selection '((output-pdf "PDF Viewer")))
-    (TeX-view-program-list
-     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
-    (preview-gs-command "/usr/local/bin/gs"))
+    (leaf paragraphs
+      :custom ((sentence-end-double-space . nil)))
 
-  (use-package reftex
-    :ensure t
-    :defer t
-    :config
-    (setq reftex-cite-prompt-optional-args t))
-#+end_src
+    (leaf select
+      :custom ((select-enable-clipboard . t)))
 
-*** Magit
+    (leaf cus-start
+      :hook (before-save-hook . delete-trailing-whitespace)
+      :custom `((auto-window-vscroll . nil)
+                (create-lockfiles . nil)
+                (cursor-in-non-selected-windows . nil)
+                (cursor-type . 'bar)
+                (display-time-default-load-average . nil)
+                (fill-column . 80)
+                (frame-title-format . '("%b - Emacs"))
+                (icon-title-format . frame-title-format)
+                (indent-tabs-mode . nil)
+                (inhibit-compacting-font-caches . t)
+                (load-prefer-newer . t)
+                (mode-line-in-non-selected-windows . nil)
+                (ns-use-thin-smoothing . t)
+                (redisplay-dont-pause . t)
+                (ring-bell-function . #'ignore)
+                (tab-width . 4)
+                (vc-follow-symlinks . t)
+                (view-read-only . t)
+                (use-file-dialog . nil)
+                (use-dialog-box . nil)
+                (scroll-conservatively . most-positive-fixnum)
+                (scroll-margin . 10)
+                (scroll-step . 1)
+                (show-trailing-whitespace . t)
+                (window-divider-default-places . t)
+                (window-divider-default-bottom-width . 1)
+                (window-divider-default-right-width . 1)))
+
+    (leaf simple
+      :custom `((column-number-mode . t)
+                (line-number-mode . t)
+                (line-move-visual . nil)
+                (track-eol . t)
+                (set-mark-command-repeat-pop . t)))
+
+    (leaf saveplace
+      :hook (after-init-hook . save-place-mode))
+
+    (leaf savehist
+      :hook (after-init-hook . savehist-mode)
+      :custom `((history-delete-duplicates . t)
+                (history-length . t)
+                (savehist-additional-variables . '(mark-ring
+                                                   global-mark-ring
+                                                   search-ring
+                                                   extended-command-history
+                                                   kill-ring))
+                (savehist-autosave-intervall . 300)
+                (savehist-file . "~/.cache/emacs/emacs-history")
+                (savehist-save-minibuffer-history . 1)
+                (history-length . 1000)))
+
+    (leaf ns-win
+      :if (eq system-type 'darwin)
+      :custom `((ns-pop-up-frames . nil)
+                (ns-use-native-fullscreen . nil)
+                (mac-option-modifier . 'meta)
+                (mac-command-modifier . 'meta)
+                (mac-right-command-modifier . 'left)
+                (mac-right-option-modifier . 'none)
+                (mac-function-modifier . 'hyper)))
+
+    (leaf prog-mode
+      :hook ((prog-mode-hook . show-paren-mode)
+             (prog-mode-hook . prettify-symbols-mode))
+      :custom `((prettify-symbols-alist . '(("lambda" . ?λ)))
+                (prettify-symbols-unprettify-at-point . 'right-edge)))
+
+    (leaf recentf
+      :hook (after-init-hook . recentf-mode)
+      :custom
+      `((recentf-exclude . '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+                             "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$" "^/tmp/" "^/ssh:"
+                             "\\.?ido\\.last$" "\\.revive$" "/TAGS$" "^/var/folders/.+$"
+                             (lambda (file) (file-in-directory-p file package-user-dir))))
+        (recentf-max-menu-items . 15)
+        (recentf-max-saved-items . 200)
+        (recentf-save-file . "~/.cache/emacs/emacs-recentf"))
+      :config
+      (push (expand-file-name recentf-save-file) recentf-exclude)
+      (run-at-time nil (* 5 60) 'recentf-save-list)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (leaf darktooth-theme
+  ;;   :demand
+  ;;   :config
+  ;;   (load-theme 'darktooth t)
+  ;;   (set-face-attribute 'mode-line nil :height 160)
+  ;;   (set-face-attribute 'mode-line-inactive nil :height 160)
+  ;;   (set-face-attribute 'hl-line nil :extend t))
+
+  ;; (leaf doom-themes
+  ;; :custom
+  ;; (doom-themes-enable-italic)
+  ;; (doom-themes-enable-bold)
+  ;; :config
+  ;; (doom-themes-treemacs-config)
+  ;; (doom-themes-org-config)
+  ;; (doom-themes-visual-bell-config)
+  ;; (set-face-attribute 'doom-visual-bell nil
+  ;;                     :inherit 'mode-line
+  ;;                     :background (face-foreground 'error)
+  ;;                     :inverse-video nil)
 
 
-Magit is awesome
+  ;; (leaf solaire-mode
+  ;;   :functions persp-load-state-from-file
+  ;;   :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+  ;;          (minibuffer-setup . solaire-mode-in-minibuffer)
+  ;;          (after-load-theme . solaire-mode-swap-bg))
+  ;;   :config
+  ;;   (setq solaire-mode-remap-fringe nil)
+  ;;   (solaire-global-mode 1)
+  ;;   (solaire-mode-swap-bg)
+  ;;   (advice-add #'persp-load-state-from-file
+  ;;               :after #'solaire-mode-restore-persp-mode-buffers))
+#+END_SRC
 
-#+begin_src emacs-lisp
-(use-package git-commit
-  :preface
-  (defun me/git-commit-auto-fill-everywhere ()
-    (setq fill-column 72)
-    (setq-local comment-auto-fill-only-comments nil))
-  :hook
-  (git-commit-mode . me/git-commit-auto-fill-everywhere)
-  :custom
-  (git-commit-summary-max-length 50))
-#+end_src
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons)
+(use-package flx)
+(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
+(use-package use-package-ensure-system-package
+  :commands (use-package-ensure-system-package-exists?))
 
-#+begin_src emacs-lisp
-(use-package magit
+(use-package eyebrowse :config (eyebrowse-mode t))
+
+(use-package aggressive-indent
+  :hook (emacs-lisp-mode . aggressive-indent-mode)
+  :custom (aggressive-indent-comments-too))
+
+(use-package hungry-delete :init (hungry-delete-mode 1))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :commands global-company-mode
   :bind
-  (:map magit-hunk-section-map
-        ("RET" . magit-diff-visit-file-other-window)
-        ([return] . magit-diff-visit-file-other-window))
+  (:map company-active-map
+        ("RET" . nil)
+        ([return] . nil)
+        ("TAB" . company-complete-selection)
+        ([tab] . company-complete-selection)
+        ("C-f" . company-complete-common)
+        ("C-n" . company-select-next)
+        ("C-p" . company-select-previous))
+  :hook (after-init . global-company-mode)
   :custom
-  (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
-  (magit-diff-highlight-hunk-body nil)
-  (magit-diff-highlight-hunk-region-functions
-   '(magit-diff-highlight-hunk-region-dim-outside magit-diff-highlight-hunk-region-using-face))
-  (magit-popup-display-buffer-action '((display-buffer-same-window)))
-  (magit-refs-show-commit-count 'all)
-  (magit-section-show-child-count t)
+  (company-require-match 'never)
+  (company-async-timeout 5)
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 2)
+  (company-tooltip-align-annotations t)
+  (company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+                       company-preview-frontend
+                       company-echo-metadata-frontend))
+  (company-backends '(company-capf company-files))
   :config
-  (remove-hook 'magit-section-highlight-hook #'magit-section-highlight))
-#+end_src
+  (use-package company-lsp)
+  (use-package company-statistics
+    :custom (company-statistics-file "~/.cache/emacs/company-statistics-cache.el")
+    :config (company-statistics-mode))
 
-#+begin_src emacs-lisp
-(use-package gitattributes-mode)
-(use-package gitconfig-mode)
-(use-package gitignore-mode)
-#+end_src
+  (use-package company-flx
+    :config (company-flx-mode 1))
+  (use-package company-quickhelp
+    :config (company-quickhelp-mode)))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 
-** Features
+(use-package undo-tree
+  :config (global-undo-tree-mode 1))
+#+END_SRC
 
-*** Auto-Complete
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+  :bind (("C-x b" . ivy-switch-buffer)
+         ("C-x B" . ivy-switch-buffer-other-window)
+         ("C-c C-r" . ivy-resume)
+         ("C-c v p" . ivy-push-view)
+         ("C-c v o" . ivy-pop-view)
+         ("C-c v ." . ivy-switch-view)
 
-This is auto complete stuff:
+         :map ivy-minibuffer-map
+         ("<tab>" . ivy-alt-done)
+         ("C-w" . ivy-yank-word)
+         :map ivy-switch-buffer-map
+         ("C-x k" . ivy-switch-buffer-kill)
 
-#+begin_src emacs-lisp
-  (use-package company
-    :diminish company-mode
-    :bind
-    (:map company-active-map
-          ("RET" . company-complete-selection)
-          ([return] . company-complete-selection)
-          ("TAB" . company-complete-selection)
-          ([tab] . company-complete-selection)
-          ("<right>" . company-complete-common)
-          ("C-n" . company-select-next)
-          ("C-p" . company-select-previous))
-    :hook
-    (after-init . global-company-mode)
-    :config
-    (setq company-transformers '(company-sort-by-occurrence))
-    :custom
-    (company-idle-delay 0)
-    (company-show-numbers t))
+         :map counsel-mode-map
+         ([remap swiper] . counsel-grep-or-swiper)
+         ([remap dired] . counsel-dired)
+         ("C-x C-f" . counsel-find-file)
+         ("C-x C-d" . counsel-dired-jump)
+         ("C-x C-l" . counsel-find-library)
+         ("C-x C-r" . counsel-buffer-or-recentf)
+         ("C-x C-v" . counsel-set-variable)
+         ("C-x C-u" . counsel-unicode-char)
+         ("C-x j" . counsel-mark-ring)
 
+         ("C-c g" . counsel-grep)
+         ("C-c h" . counsel-command-history)
+         ("C-c j" . counsel-git)
+         ("C-c j" . counsel-git-grep)
+         ("C-c r" . counsel-rg)
+         ("C-c z" . counsel-fzf)
+         ("C-c c w" . counsel-colors-web)
 
-  (use-package company-auctex
-    :defer t
-    :hook ((LaTeX-mode . company-auctex-init)))
+         ("C-h F" . counsel-describe-face)
+         ("C-h f" . counsel-describe-function)
+         ("C-h v" . counsel-describe-variable)
 
-  (use-package company-math
-    :defer t
-    :after company
-    :init
-    (add-to-list 'company-backends 'company-math-symbols-latex))
+         ("C-s" . swiper)
+         ("C-c c s" . swiper-isearch)
+         ("C-c c r" . swiper-isearch-backward)
+         ("C-S-s" . swiper-all)
 
-  (use-package company-reftex
-    :ensure t
-    :after company
-    :init
-    (add-to-list 'company-backends 'company-reftex-labels)
-    (add-to-list 'company-backends 'company-reftex-citations))
-#+end_src
-
-*** YASnippets
-
-#+begin_src emacs-lisp
-  (use-package auto-yasnippet
-    :after yasnippet
-    :bind (("C-c y a" . aya-create)
-           ("C-c y e" . aya-expand)
-           ("C-c y o" . aya-open-line)))
-
-  (use-package yasnippet
-    :bind
-    (:map yas-minor-mode-map
-          ("TAB" . nil)
-          ([tab] . nil)
-          ("C-'" . #'yas-expand))
-    :hook
-    ((emacs-lisp-mode . yas-minor-mode)
-     (org-mode . yas-minor-mode)
-     (LaTeX-mode . yas-minor-mode))
-    :custom
-    (yas-snippet-dirs `(,(expand-file-name "snippets/" user-emacs-directory)))
-    (yas-verbosity 2)
-    :config
-    (setq yas-prompt-functions '(yas-ido-prompt))
-    (use-package yasnippet-snippets :ensure t)
-    (yas-reload-all))
-#+end_src
-
-*** Ivy
-
-#+begin_src emacs-lisp
-  (use-package all-the-icons-ivy
-    :after (all-the-icons ivy)
-    :custom
-    (all-the-icons-ivy-buffer-commands '(ivy-switch-buffer-other-window))
-    :config
-    (add-to-list 'all-the-icons-ivy-file-commands 'counsel-dired-jump)
-    (add-to-list 'all-the-icons-ivy-file-commands 'counsel-find-library)
-    (all-the-icons-ivy-file-commands 'counsel-find-file)
-    (all-the-icons-ivy-setup))
-
-  (use-package counsel
-    :after ivy
-    :delight
-    :bind (("C-x C-d" . counsel-dired-jump)
-           ("C-x C-h" . counsel-minibuffer-history)
-           ("C-x C-l" . counsel-find-library)
-           ("C-x C-r" . counsel-recentf)
-           ("C-x C-v" . counsel-set-variable))
-    :config (counsel-mode))
-
-  (use-package ivy
-    :delight
-    :after ivy-rich
-    :bind (("C-x b" . ivy-switch-buffer)
-           ("C-x B" . ivy-switch-buffer-other-window)
-           ("M-H"   . ivy-resume)
-           :map ivy-minibuffer-map
-           ("<tab>" . ivy-alt-done)
-           ("C-i" . ivy-partial-or-done)
-           ("S-SPC" . nil)
-           :map ivy-switch-buffer-map
-           ("C-k" . ivy-switch-buffer-kill))
-    :custom
-    (ivy-case-fold-search-default t)
-    (ivy-count-format "(%d/%d) ")
-    (ivy-re-builders-alist '((t . ivy--regex-plus)))
-    (ivy-use-virtual-buffers t)
-    :config (ivy-mode))
-
-  (use-package ivy-pass
-    :after ivy
-    :commands ivy-pass)
-
-  (use-package ivy-rich
-    :defer 0.1
-    :preface
-    (defun ivy-rich-branch-candidate (candidate)
-      "Displays the branch candidate of the candidate for ivy-rich."
-      (let ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate))
-            ""
-          (format "%s%s"
-                  (propertize
-                   (replace-regexp-in-string abbreviated-home-dir "~/"
-                                             (file-name-directory
-                                              (directory-file-name candidate)))
-                   'face 'font-lock-doc-face)
-                  (propertize
-                   (file-name-nondirectory
-                    (directory-file-name candidate))
-                   'face 'success)))))
-
-    (defun ivy-rich-compiling (candidate)
-      "Displays compiling buffers of the candidate for ivy-rich."
-      (let* ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate)
-                (not (magit-git-repo-p candidate)))
-            ""
-          (if (my/projectile-compilation-buffers candidate)
-              "compiling"
-            ""))))
-
-    (defun ivy-rich-file-group (candidate)
-      "Displays the file group of the candidate for ivy-rich"
-      (let ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate))
-            ""
-          (let* ((group-id (file-attribute-group-id (file-attributes candidate)))
-                 (group-function (if (fboundp #'group-name) #'group-name #'identity))
-                 (group-name (funcall group-function group-id)))
-            (format "%s" group-name)))))
-
-    (defun ivy-rich-file-modes (candidate)
-      "Displays the file mode of the candidate for ivy-rich."
-      (let ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate))
-            ""
-          (format "%s" (file-attribute-modes (file-attributes candidate))))))
-
-    (defun ivy-rich-file-size (candidate)
-      "Displays the file size of the candidate for ivy-rich."
-      (let ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate))
-            ""
-          (let ((size (file-attribute-size (file-attributes candidate))))
-            (cond
-             ((> size 1000000) (format "%.1fM " (/ size 1000000.0)))
-             ((> size 1000) (format "%.1fk " (/ size 1000.0)))
-             (t (format "%d " size)))))))
-
-    (defun ivy-rich-file-user (candidate)
-      "Displays the file user of the candidate for ivy-rich."
-      (let ((candidate (expand-file-name candidate ivy--directory)))
-        (if (or (not (file-exists-p candidate)) (file-remote-p candidate))
-            ""
-          (let* ((user-id (file-attribute-user-id (file-attributes candidate)))
-                 (user-name (user-login-name user-id)))
-            (format "%s" user-name)))))
-
-    (defun ivy-rich-switch-buffer-icon (candidate)
-      "Returns an icon for the candidate out of `all-the-icons'."
-      (with-current-buffer
-          (get-buffer candidate)
-        (let ((icon (all-the-icons-icon-for-mode major-mode :height 0.9)))
-          (if (symbolp icon)
-              (all-the-icons-icon-for-mode 'fundamental-mode :height 0.9)
-            icon))))
-    :config
-    (plist-put ivy-rich-display-transformers-list
-               'counsel-find-file
-               '(:columns
-                 ((ivy-rich-candidate               (:width 73))
-                  (ivy-rich-file-user               (:width 8 :face font-lock-doc-face))
-                  (ivy-rich-file-group              (:width 4 :face font-lock-doc-face))
-                  (ivy-rich-file-modes              (:width 11 :face font-lock-doc-face))
-                  (ivy-rich-file-size               (:width 7 :face font-lock-doc-face))
-                  (ivy-rich-file-last-modified-time (:width 30 :face font-lock-doc-face)))))
-    (plist-put ivy-rich-display-transformers-list
-               'counsel-projectile-switch-project
-               '(:columns
-                 ((ivy-rich-branch-candidate        (:width 80))
-                  (ivy-rich-compiling))))
-    (plist-put ivy-rich-display-transformers-list
-               'ivy-switch-buffer
-               '(:columns
-                 ((ivy-rich-switch-buffer-icon       (:width 2))
-                  (ivy-rich-candidate                (:width 40))
-                  (ivy-rich-switch-buffer-size       (:width 7))
-                  (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
-                  (ivy-rich-switch-buffer-major-mode (:width 20 :face warning)))
-                 :predicate (lambda (cand) (get-buffer cand))))
-    (ivy-rich-mode 1))
-
-  (use-package swiper
-    :after ivy
-    :bind (("C-s" . swiper)
-           :map swiper-map
-           ("M-%" . swiper-query-replace)))
-#+end_src
-
-*** Parentheses
-
-Use smart and rainbow highlighters
-
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package smartparens
-    :bind
-    (("M-<backspace>" . sp-unwrap-sexp)
-     ("M-<left>" . sp-forward-barf-sexp)
-     ("M-<right>" . sp-forward-slurp-sexp)
-     ("M-S-<left>" . sp-backward-slurp-sexp)
-     ("M-S-<right>" . sp-backward-barf-sexp))
-    :hook
-    (after-init . smartparens-global-mode)
-    :custom
-    (sp-highlight-pair-overlay nil)
-    (sp-highlight-wrap-overlay nil)
-    (sp-highlight-wrap-tag-overlay nil)
-    :config
-    (show-paren-mode 0)
-    (require 'smartparens-config))
-#+end_src
-
-*** Whitespace
-
-Whitespace
-#+begin_src emacs-lisp
-(use-package whitespace
-  :ensure nil
-  :hook
-  ((prog-mode . whitespace-turn-on)
-   (text-mode . whitespace-turn-on))
+         :map swiper-map
+         ("M-%" . swiper-query-replace)
+         ("M-s" . swiper-isearch-toggle)
+         :map isearch-mode-map
+         ("M-s" . swiper-isearch-toggle))
+  :hook ((after-init . ivy-mode)
+         (ivy-mode . counsel-mode))
   :custom
-  (whitespace-style '(face empty indentation::space tab trailing)))
-#+end_src
+  (enable-recursive-minibuffers t)
+  (ivy-dynamic-exhibit-delay-ms 250)
+  (ivy-use-selectable-prompt t)
+  (ivy-height 10)
+  (ivy-on-del-error-function nil)
+  (ivy-initial-inputs-alist nil)
+  (ivy-case-fold-search-default t)
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "(%d/%d) ")
+  :config
+  (with-eval-after-load 'ivy
+    (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
+          ivy-re-builders-alist)
+    (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist))
+  (when (executable-find "rg")
+    (setq counsel-grep-base-command "rg -S --no-heading --line-number --color never '%s' %s")))
 
-*** Multiple Cursors
+(use-package counsel-projectile
+  :after (counsel projectile)
+  :config (counsel-projectile-mode 1))
 
-#+begin_src emacs-lisp
-  (use-package multiple-cursors
-    :bind
-    (("C-S-c C-S-c" . mc/edit-lines)
-     ("C->" . mc/mark-next-like-this)
-     ("C-<" . mc/mark-previous-like-this)
-     ("C-c C-<" . mc/mark-all-like-this))
-    :init
-    (setq-default
-     mc/list-file (expand-file-name ".multiple-cursors.elpy" user-emacs-directory))
-    :custom
-    (mc/edit-lines-empty-lines 'ignore)
-    (mc/insert-numbers-default 1))
-#+end_src
+(use-package amx
+  :custom (amx-history-length 20)
+  :hook (after-init . amx-mode))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package ispell
+  :ensure-system-package (hunspell . "trizen -S hunspell")
+  :custom
+  (ispell-dictionary "en_US")
+  (ispell-program-name (executable-find "hunspell"))
+  (ispell-really-hunspell t)
+  (ispell-silently-savep t))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)
+         ("C-c M-g" . magit-file-popup)))
+
+(use-package git-commit
+  :hook (git-commit-mode . (lambda ()
+                             (setq fill-column 72)
+                             (setq-local comment-auto-fill-only-comments nil)))
+  :custom (git-commit-summary-max-length 50))
+
+(use-package git-gutter
+  :config (global-git-gutter-mode 1))
+
+(use-package gitconfig-mode
+  :hook (gitconfig-mode . (lambda () (setf indent-tabs-mode nil tab-width 4))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :bind (("C-x o" . ace-window)))
+
+(use-package dired
+  :ensure nil
+  :bind (:map dired-mode-map
+              ("C-c C-p" . wdired-change-to-wdired-mode))
+  :custom
+  (dired-recursive-deletes 'always)
+  (dired-recursive-copies 'always)
+  (dired-use-ls-dired nil)
+  :config
+  (when (executable-find "fd")
+    (use-package fd-dired))
+  (when (executable-find "gls")
+    (setq insert-directory-program "gls"))
+  (use-package dired-rsync
+    :bind (:map dired-mode-map ("C-c C-r" . dired-rsync)))
+  (use-package diredfl
+    :config (diredfl-global-mode 1))
+  (use-package dired-aux :ensure nil)
+  (use-package dired-x :ensure nil :demand))
+
+(use-package projectile
+  :custom
+  (projectile-cache-file "~/.cache/emacs/projectile.cache")
+  (projectile-completion-system 'ivy)
+  (projectile-enable-caching t)
+  (projectile-known-projects-file "~/.cache/emacs/projectile-bookmarks.eld")
+  (projectile-mode-line '(:eval (projectile-project-name)))
+  :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode 1))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package julia-mode)
+(use-package julia-repl :hook (julia-mode . julia-repl-mode))
+
+(use-package eterm-256color :hook (term-mode . eterm-256color-mode))
+
+(use-package flycheck :config (global-flycheck-mode))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(provide 'init)
+#+END_SRC

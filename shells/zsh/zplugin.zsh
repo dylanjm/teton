@@ -21,19 +21,19 @@ load=light
 zplugin ice wait'!' pick"async.zsh" src"pure.zsh" lucid nocd
 zplugin $load sindresorhus/pure
 
-zplugin ice wait'3' lucid
+zplugin ice wait'2' lucid
 zplugin snippet OMZ::lib/history.zsh
 
-zplugin ice svn wait'3' pick'init.zsh' lucid
+zplugin ice svn wait'2' pick'init.zsh' lucid
 zplugin snippet PZT::modules/directory
 
-zplugin ice wait'3' lucid
+zplugin ice wait'2' lucid
 zplugin snippet OMZ::lib/completion.zsh
 
-zplugin ice wait'3' lucid
+zplugin ice wait'2' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
-zplugin ice wait'3' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
+zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
@@ -43,14 +43,13 @@ if test "$USER" = "mcdodj"; then
     # zplugin $load /opt/moose/environments
 fi
 
-zplugin ice wait'3' atload:'_zsh_autosuggest_start' \
-        wrap_track"_zsh_autosuggest_start" lucid
+zplugin ice wait'2' atload:'_zsh_autosuggest_start' lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
-zplugin ice wait'3' blockf lucid
+zplugin ice wait'2' blockf lucid
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'!3' atinit"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" lucid
+zplugin ice wait'!2' atinit"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

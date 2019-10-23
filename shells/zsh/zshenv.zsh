@@ -1,19 +1,18 @@
 typeset -aU path cdpath fpath manpath
-export CACHE_HOME="$HOME/.cache"
-export DOTFILES="$HOME/dotz"
-export ZSH="$DOTFILES/shells/zsh"
-export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
-
-fpath+=($ZSH/functions)
-
 export LANG=en_US.UTF-8
 export TERM=xterm-256color
-export DEFAULT_USER=$USER
-export EDITOR='emacsclient -c -a "emacs"'
+export DEFAULT_USER="$USER"
+export EDITOR='emacsclient -a ""'
 
+export CACHE_HOME="$HOME/.cache"
+export DOTFILES="$HOME/dotz"
+export EMACSD="$DOTFILES/editors/emacs.d"
+export ZSH="$DOTFILES/shells/zsh"
+export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
 export PYENV_ROOT="$HOME/.pyenv"
 export EXA_COLORS="bd=31:cd=32:pi=34"
-export LDFLAGS=-L/usr/local/opt/texinfo/lib
+
+fpath+=($ZSH/functions)
 
 path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
       $PYENV_ROOT/bin
@@ -38,5 +37,4 @@ autoload -Uz time-shell \
          convert-to-md \
          colorlist \
          prettycsv \
-         em \
          ptyless

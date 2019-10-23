@@ -1,38 +1,28 @@
 (let ((gc-cons-threshold most-positive-fixnum))
-  (defconst user-emacs-modules-directory
-    (expand-file-name (concat user-emacs-directory "lisp/"))
-    "Directory for storing modules.")
-
   ;; Set repositories
-  (require 'package)
-  (setq-default
-   load-prefer-newer t
-   package-enable-at-startup nil)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-  (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/") t )
-  (package-initialize)
+  (prog1 "leaf"
+    (prog1 "install leaf"
+      (custom-set-variables
+       '(package-archives '(("melpa" . "https://melpa.org/packages/")
+                            ("org" . "https://orgmode.org/elpa/")
+                            ("gnu"   . "https://elpa.gnu.org/packages/"))))
+      (unless (bound-and-true-p package--initialized)
+        (package-initialize))
+      (unless (package-installed-p 'leaf)
+        (package-refresh-contents)
+        (package-install 'leaf)))
 
-  ;; Install dependencies
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package t))
-  (require 'use-package)
-  (setq-default
-   use-package-always-defer t
-   use-package-always-ensure t
-   use-package-verbose t)
+    (leaf leaf-keywords
+      :ensure t
+      :config (leaf-keywords-init)))
 
-  (use-package auto-compile
+  (leaf auto-compile
+    :ensure t
     :config (auto-compile-on-load-mode))
-  (setq load-prefer-newer t)
 
   ;; Use latest Org
-  (use-package org :ensure org-plus-contrib)
-
-  ;; Useful Modules
-  (add-to-list 'load-path user-emacs-modules-directory)
-  (require 'init-modeline)
+  (leaf org
+    :ensure org-plus-contrib)
 
   ;; Tangle configuration
   (org-babel-load-file (expand-file-name "dotemacs.org" user-emacs-directory))

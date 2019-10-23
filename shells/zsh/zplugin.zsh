@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 typeset -A ZPLGM
 typeset -F4 SECONDS=0
 ZPLG_HOME=${CACHE_HOME:=~/.cache}/zsh/zplugin

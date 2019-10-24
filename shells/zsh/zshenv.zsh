@@ -1,7 +1,7 @@
 typeset -aU path cdpath fpath manpath
 export LANG=en_US.UTF-8
 export TERM=xterm-256color
-export EDITOR='emacsclient -a ""'
+export EDITOR='emacsclient -a "" -c'
 
 export CACHE_HOME="$HOME/.cache"
 export DOTFILES="$HOME/dotz"

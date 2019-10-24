@@ -64,7 +64,8 @@ symbols, emojis, greek letters, as well as fall backs for."
 
 (eval-and-compile
   (require 'package)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
 
 (unless (bound-and-true-p package--initialized)
   (package-initialize))
@@ -433,7 +434,6 @@ https://stackoverflow.com/questions/15441961/opening-a-file-from-dired-in-partic
                 ("C-c C-r" . dired-rsync)))
 
   (use-package diredfl
-    :ensure nil
     :demand t
     :config (diredfl-global-mode 1))
 
@@ -466,10 +466,6 @@ https://stackoverflow.com/questions/15441961/opening-a-file-from-dired-in-partic
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode 1))
 
-(use-package julia-mode)
-(use-package julia-repl
-  :hook (julia-mode . julia-repl-mode))
-
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 
@@ -484,11 +480,46 @@ https://stackoverflow.com/questions/15441961/opening-a-file-from-dired-in-partic
   :bind (:map help-map ("C-h" . which-key-C-h-dispatch))
   :hook (after-init . which-key-mode))
 
-(use-package yasnippet
-  :hook (prog-mode . yas-minor-mode)
-  :custom ((yas-snippet-dirs (expand-file-name "snippets" user-emacs-directory)))
-  :config  (yas-global-mode 1))
+                                        ;(use-package yasnippet
+                                        ;  :hook (prog-mode . yas-minor-mode)
+                                        ;  :custom ((yas-snippet-dirs (expand-file-name "snippets" user-emacs-directory)))
+                                        ;  :config  (yas-global-mode 1))
 
+(use-package ess
+  :custom
+  (inferior-julia-program-name "/usr/local/bin/julia"))
+
+(use-package jupyter
+  :demand
+  :config
+  (use-package ob-jupyter
+    :ensure nil
+    :demand
+    :config
+    (add-to-list 'org-src-lang-modes '("jupyter" . fundamental))))
+
+(use-package org
+  :ensure org-plus-contrib
+  :bind ("C-c i" . org-insert-structure-template)
+  :config
+  (use-package org-indent :ensure nil :delight)
+  (use-package toc-org
+    :hook (org-mode . toc-org-enable))
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("●" "►" "▸")))
+
+  (use-package ob-dot :ensure nil)
+  (use-package ob-emacs-lisp :ensure nil)
+  (use-package ob-latex
+    :ensure nil
+    :custom (org-latex-compiler "xelatex"))
+
+  (use-package ob-org :ensure nil)
+
+  (use-package ob-python :ensure nil)
+  (use-package ob-shell :ensure nil))
 
 (provide 'init)
 ;;; init.el ends here

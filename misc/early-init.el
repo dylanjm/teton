@@ -4,12 +4,15 @@
 
 ;;; Code:
 
+(eval-and-compile
+  (defun emacs-path (path)
+    (expand-file-name path user-emacs-directory)))
+
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
 (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
 
-(setq package-enable-at-startup nil
-      inhibit-compacting-font-caches t
+(setq inhibit-compacting-font-caches t
       frame-inhibit-implied-resize t
       gc-cons-percentage 0.6
       auto-window-vscroll nil
@@ -36,6 +39,12 @@
 
             (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
             (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
+
+(customize-set-variable 'package-archives
+                        '(("melpa" . "https://melpa.org/packages/")
+                          ("org" . "https://orgmode.org/elpa/")
+                          ("gnu" . "https://elpa.gnu.org/packages/")))
+;(require 'package)
 
 (push '(ns-transparent-titlebar . t) default-frame-alist)
 (push '(menu-bar-lines . 1) default-frame-alist)

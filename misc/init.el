@@ -6,37 +6,37 @@
 ;;; Code:
 
 ;; Font setup
-(defun lunaryorn-configure-fonts (frame)
-  "Set up fonts for FRAME.
-Set the default font, and configure various overrides for
-symbols, emojis, greek letters, as well as fall backs for."
-  ;; Additional fonts for special characters and fallbacks
-  ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-  (dolist (script '(symbol mathematical))
-    (set-fontset-font t script (font-spec :family "XITS Math")
-                      frame 'prepend))
+;; (defun lunaryorn-configure-fonts (frame)
+;;   "Set up fonts for FRAME.
+;; Set the default font, and configure various overrides for
+;; symbols, emojis, greek letters, as well as fall backs for."
+;;   ;; Additional fonts for special characters and fallbacks
+;;   ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+;;   (dolist (script '(symbol mathematical))
+;;     (set-fontset-font t script (font-spec :family "XITS Math")
+;;                       frame 'prepend))
 
-  ;; Define a font set stack for symbols, greek and math characters
-  (dolist (script '(symbol greek mathematical))
-    (set-fontset-font t script (font-spec :family "Arial Unicode MS")
-                      frame 'prepend)
-    (set-fontset-font t script (font-spec :family "Menlo")
-                      frame 'prepend)
-    (set-fontset-font t script (font-spec :family "DejaVu Sans Mono")
-                      frame 'prepend))
+;;   ;; Define a font set stack for symbols, greek and math characters
+;;   (dolist (script '(symbol greek mathematical))
+;;     (set-fontset-font t script (font-spec :family "Arial Unicode MS")
+;;                       frame 'prepend)
+;;     (set-fontset-font t script (font-spec :family "Menlo")
+;;                       frame 'prepend)
+;;     (set-fontset-font t script (font-spec :family "DejaVu Sans Mono")
+;;                       frame 'prepend))
 
-  (when (eq system-type 'darwin)
-    ;; Colored Emoji on OS X, prefer over everything else!
-    (set-fontset-font t nil (font-spec :family "Apple Color Emoji")
-                      frame 'prepend))
+;;   (when (eq system-type 'darwin)
+;;     ;; Colored Emoji on OS X, prefer over everything else!
+;;     (set-fontset-font t nil (font-spec :family "Apple Color Emoji")
+;;                       frame 'prepend))
 
-  ;; Fallbacks for math and generic symbols
-  (set-fontset-font t nil (font-spec :family "Apple Symbols")
-                    frame 'append))
+;;   ;; Fallbacks for math and generic symbols
+;;   (set-fontset-font t nil (font-spec :family "Apple Symbols")
+;;                     frame 'append))
 
-(when-let (frame (selected-frame))
-  (lunaryorn-configure-fonts frame))
-(add-hook 'after-make-frame-functions #'lunaryorn-configure-fonts)
+;; (when-let (frame (selected-frame))
+;;   (lunaryorn-configure-fonts frame))
+;; (add-hook 'after-make-frame-functions #'lunaryorn-configure-fonts)
 
 (global-hl-line-mode 1)
 (global-display-fill-column-indicator-mode 1)
@@ -61,14 +61,6 @@ symbols, emojis, greek letters, as well as fall backs for."
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file :noerror)
-
-(eval-and-compile
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
-
-(unless (bound-and-true-p package--initialized)
-  (package-initialize))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -191,14 +183,15 @@ symbols, emojis, greek letters, as well as fall backs for."
 
 (use-package recentf
   :ensure nil
+  :functions (recentf-save-list)
   :hook (after-init . recentf-mode)
-  :custom ((recentf-max-saved-items 200)
-           (recentf-save-file "~/.cache/emacs/emacs-recentf")
-           (recentf-exclude
-            '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
-              "NEWS" "autoloads" "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-              "^/tmp/" "^/ssh:" "\\.?ido\\.last$" "\\.revive$" "/TAGS$"
-              "^/var/folders/.+$" (lambda (file) (file-in-directory-p file package-user-dir)))))
+  :init (setq recentf-save-file "~/.cache/emacs/emacs-recentf"
+              recentf-max-saved-items 200
+              recentf-exclude
+              '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks" "NEWS"
+                "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$" "^/tmp/" "^/ssh:"
+                "\\.?ido\\.last$" "\\.revive$" "/TAGS$" "^/var/folders/.+$"
+                (lambda (file) (file-in-directory-p file package-user-dir))))
   :config
   (push (expand-file-name recentf-save-file) recentf-exclude)
   (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
@@ -213,45 +206,44 @@ symbols, emojis, greek letters, as well as fall backs for."
 (use-package doom-themes
   :demand t
   :config
-  (load-theme 'doom-nord-light t)
-  (setq doom-themes-enable-italic
-        doom-themes-enable-bold)
   (doom-themes-org-config)
+  (load-theme 'doom-nord-light t)
+  (setq doom-themes-enable-italic t)
+  (setq doom-themes-enable-bold t)
   (set-face-attribute 'hl-line nil :extend t)
   (set-face-attribute 'region nil :extend t)
   (set-face-attribute 'secondary-selection nil :extend t)
   (set-face-attribute 'mode-line nil :foreground (doom-color 'red))
   (set-face-attribute 'font-lock-comment-face nil :font "-*-Iosevka Slab-bold-italic-normal-*-18-*-*-*-m-0-iso10646-1"))
 
-(use-package solaire-mode
-  :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
-         (minibuffer-setup . solaire-mode-in-minibuffer))
-  :config (solaire-global-mode 1))
+;; (use-package solaire-mode
+;;   :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+;;          (minibuffer-setup . solaire-mode-in-minibuffer))
+;;   :config (solaire-global-mode 1))
 
 (use-package minions
-  :demand
+  :demand t
   :commands (minions-mode)
   :config
   (setq minions-mode-line-lighter "...")
   (setq minions-mode-line-delimiters '("" . ""))
   (minions-mode 1))
 
-(use-package all-the-icons)
-(use-package diffview)
-(use-package focus)
-(use-package flx)
-(use-package eldoc :hook (emacs-lisp-mode . eldoc-mode))
+;(use-package all-the-icons)
+;(use-package diffview)
+;(use-package focus)
+;(use-package flx)
+;(use-package eldoc :ensure nil :hook (emacs-lisp-mode . eldoc-mode))
 (use-package use-package-ensure-system-package
   :commands (use-package-ensure-system-package-exists?))
 
-(use-package eyebrowse
-  :commands (eyebrowse-mode)
-  :config (eyebrowse-mode 1))
+;; (use-package eyebrowse
+;;   :commands (eyebrowse-mode)
+;;   :config (eyebrowse-mode 1))
 
-
-(use-package aggressive-indent
-  :hook (prog-mode . aggressive-indent-mode)
-  :custom (aggressive-indent-comments-too))
+;; (use-package aggressive-indent
+;;   :hook (prog-mode . aggressive-indent-mode)
+;;   :custom (aggressive-indent-comments-too))
 
 (use-package hungry-delete
   :init (global-hungry-delete-mode 1))
@@ -270,22 +262,17 @@ symbols, emojis, greek letters, as well as fall backs for."
   :custom
   (company-require-match 'never)
   (company-async-timeout 5)
-  (company-idle-delay 0.1)
+  (company-idle-delay 0)
   (company-minimum-prefix-length 2)
   (company-tooltip-align-annotations t)
-  (company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
-                       company-preview-frontend
-                       company-echo-metadata-frontend))
-  (company-backends '(company-capf company-files))
   :config
-  (use-package company-lsp)
-
   (use-package company-statistics
     :custom (company-statistics-file "~/.cache/emacs/company-statistics-cache.el")
     :config (company-statistics-mode))
 
   (use-package company-flx
     :config (company-flx-mode 1))
+
   (global-company-mode 1))
 
 (use-package rainbow-delimiters
@@ -305,6 +292,7 @@ symbols, emojis, greek letters, as well as fall backs for."
          :map ivy-minibuffer-map
          ("<tab>" . ivy-alt-done)
          ("C-w" . ivy-yank-word)
+         ("C-r" . ivy-previous-line)
          :map ivy-switch-buffer-map
          ("C-x k" . ivy-switch-buffer-kill)
 
@@ -314,7 +302,7 @@ symbols, emojis, greek letters, as well as fall backs for."
          ("C-x C-f" . counsel-find-file)
          ("C-x C-d" . counsel-dired-jump)
          ("C-x C-l" . counsel-find-library)
-         ("C-x C-r" . counsel-buffer-or-recentf)
+         ("C-x C-r" . counsel-recentf)
          ("C-x C-v" . counsel-set-variable)
          ("C-x C-u" . counsel-unicode-char)
          ("C-x j" . counsel-mark-ring)
@@ -348,7 +336,6 @@ symbols, emojis, greek letters, as well as fall backs for."
   (ivy-dynamic-exhibit-delay-ms 250)
   (ivy-use-selectable-prompt t)
   (ivy-height 10)
-  (ivy-on-del-error-function nil)
   (ivy-initial-inputs-alist nil)
   (ivy-case-fold-search-default t)
   (ivy-use-virtual-buffers t)
@@ -367,17 +354,36 @@ symbols, emojis, greek letters, as well as fall backs for."
     :custom (amx-history-length 20)
     :hook (after-init . amx-mode)))
 
+(use-package posframe)
+(use-package ivy-posframe
+  :demand t
+  :functions (ivy-posframe-display-at-window-bottom-left
+              ivy-posframe-display-at-frame-center)
+  :config
+  (push (cons #'swiper nil)
+        ivy-posframe-display-functions-alist)
+  (push (cons #'counsel-M-x #'ivy-posframe-display-at-window-bottom-left)
+        ivy-posframe-display-functions-alist)
+  (push (cons t #'ivy-posframe-display-at-frame-center)
+        ivy-posframe-display-functions-alist)
+  (ivy-posframe-enable))
+
 (use-package counsel-projectile
   :after (counsel projectile)
   :config (counsel-projectile-mode 1))
 
-(use-package ispell
-  :ensure-system-package (hunspell . "trizen -S hunspell")
-  :custom
-  (ispell-dictionary "en_US")
-  (ispell-program-name (executable-find "hunspell"))
-  (ispell-really-hunspell t)
-  (ispell-silently-savep t))
+(use-package prescient)
+(use-package ivy-prescient)
+(use-package company-prescient)
+
+;; (use-package ispell
+;;   :ensure nil
+;;   :ensure-system-package (hunspell . "trizen -S hunspell")
+;;   :custom
+;;   (ispell-dictionary "en_US")
+;;   (ispell-program-name (executable-find "hunspell"))
+;;   (ispell-really-hunspell t)
+;;   (ispell-silently-savep t))
 
 (use-package magit
   :bind (("C-x g" . magit-status)
@@ -402,7 +408,12 @@ symbols, emojis, greek letters, as well as fall backs for."
 (use-package dired
   :demand t
   :ensure nil
-  :functions (wdired-change-to-wdired-mode)
+  :functions (wdired-change-to-wdired-mode
+              dired-get-file-for-visit
+              aw-switch-to-window
+              ace-window
+              aw-window-list
+              aw-select)
   :defines (djm/dired-choose-window
             dired-window)
   :bind (:map dired-mode-map
@@ -429,20 +440,16 @@ https://stackoverflow.com/questions/15441961/opening-a-file-from-dired-in-partic
   (when (executable-find "gls") (setq insert-directory-program "gls"))
 
   (use-package dired-rsync
-    :demand t
     :bind (:map dired-mode-map
                 ("C-c C-r" . dired-rsync)))
 
   (use-package diredfl
-    :demand t
     :config (diredfl-global-mode 1))
 
   (use-package dired-aux
-    :demand t
     :ensure nil)
 
   (use-package dired-x
-    :demand t
     :ensure nil)
 
   (use-package dired-subtree
@@ -480,46 +487,11 @@ https://stackoverflow.com/questions/15441961/opening-a-file-from-dired-in-partic
   :bind (:map help-map ("C-h" . which-key-C-h-dispatch))
   :hook (after-init . which-key-mode))
 
-                                        ;(use-package yasnippet
-                                        ;  :hook (prog-mode . yas-minor-mode)
-                                        ;  :custom ((yas-snippet-dirs (expand-file-name "snippets" user-emacs-directory)))
-                                        ;  :config  (yas-global-mode 1))
-
-(use-package ess
-  :custom
-  (inferior-julia-program-name "/usr/local/bin/julia"))
-
-(use-package jupyter
-  :demand
+(use-package yasnippet
+  :demand t
+  :hook (term-mode . (lambda () (yas-minor-mode -1)))
   :config
-  (use-package ob-jupyter
-    :ensure nil
-    :demand
-    :config
-    (add-to-list 'org-src-lang-modes '("jupyter" . fundamental))))
-
-(use-package org
-  :ensure org-plus-contrib
-  :bind ("C-c i" . org-insert-structure-template)
-  :config
-  (use-package org-indent :ensure nil :delight)
-  (use-package toc-org
-    :hook (org-mode . toc-org-enable))
-  (use-package org-bullets
-    :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("●" "►" "▸")))
-
-  (use-package ob-dot :ensure nil)
-  (use-package ob-emacs-lisp :ensure nil)
-  (use-package ob-latex
-    :ensure nil
-    :custom (org-latex-compiler "xelatex"))
-
-  (use-package ob-org :ensure nil)
-
-  (use-package ob-python :ensure nil)
-  (use-package ob-shell :ensure nil))
+  (yas-global-mode 1))
 
 (provide 'init)
 ;;; init.el ends here

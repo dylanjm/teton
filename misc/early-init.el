@@ -12,11 +12,11 @@
 (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
 (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
 
-(setq inhibit-compacting-font-caches t
-      frame-inhibit-implied-resize t
-      gc-cons-percentage 0.6
-      auto-window-vscroll nil
-      file-name-handler-alist nil)
+(setq-default  inhibit-compacting-font-caches t
+               frame-inhibit-implied-resize t
+               gc-cons-percentage 0.6
+               auto-window-vscroll nil
+               file-name-handler-alist nil)
 
 (add-hook 'after-init-hook
           (lambda ()

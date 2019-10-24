@@ -4,6 +4,7 @@ export TERM=xterm-256color
 export EDITOR='emacsclient -a "" -c'
 
 export CACHE_HOME="$HOME/.cache"
+export HISTFILE="$CACHE_HOME/zsh/zsh_history"
 export DOTFILES="$HOME/dotz"
 export EMACSD="$DOTFILES/editors/emacs.d"
 export ZSH="$DOTFILES/shells/zsh"

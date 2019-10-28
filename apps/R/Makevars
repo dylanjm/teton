@@ -11,9 +11,9 @@ HO=/usr/local/opt
 HL=/usr/local/lib
 HI=/usr/local/include
 
-# MacOS 10.14.6 Xcode header location (August 2019)
+# MacOS 10.15 Xcode header location (October 2019)
 # (do "xcrun -show-sdk-path" in terminal to get path; change if yours is different)
-XH=/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk
+XH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
 # ccache
 CCACHE=$(HB)/ccache

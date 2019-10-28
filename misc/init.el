@@ -20,10 +20,11 @@
   (browse-urls-browser-function "firefox")
   (create-lockfiles nil)
   (cursor-in-non-selected-windows nil)
+  (cursor-type 'bar)
   (custom-file (make-temp-file "emacs-custom"))
   (debug-on-error t)
   (display-time-default-load-average nil)
-  (echo-keystrokes 0.1)
+  (echo-keystrokes 5)
   (enable-recursive-minibuffers t)
   (fill-column 80)
   (frame-inhibit-implied-resize t)
@@ -65,8 +66,6 @@
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
   (global-hl-line-mode 1)
-  (global-display-fill-column-indicator-mode 1)
-  (global-display-line-numbers-mode)
   (blink-cursor-mode 0))
 
 (use-package frame
@@ -131,7 +130,9 @@
 (use-package prog-mode
   :straight nil
   :hook ((prog-mode . prettify-symbols-mode)
-         (prog-mode . show-paren-mode))
+         (prog-mode . show-paren-mode)
+         (prog-mode . display-line-numbers-mode)
+         (prog-mode . display-fill-column-indicator-mode))
   :custom
   (prettify-symbols-unprettify-at-point 'right-edge))
 
@@ -151,7 +152,7 @@
                      "bookmarks"
                      "NEWS"
                      "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                     "^/tmp/"
+                     "^/tmp/"nnn
                      "^/ssh:"
                      "\\.?ido\\.last$"
                      "\\.revive$"
@@ -160,7 +161,7 @@
                      (lambda (file)
                        (file-in-directory-p file package-user-dir))))
   :config
-  (advice-add 'recentf-cleanup :around #'inhibit-message-in-minibuffer)
+  ;(advice-add 'recentf-cleanup :around #'inhibit-message-in-minibuffer)
   (push (expand-file-name recentf-save-file) recentf-exclude)
   (run-at-time nil (* 3 60) (lambda ()
                               (let ((save-silently t)) (recentf-save-list)))))
@@ -197,8 +198,6 @@
     :bind ("M-\\" . dired-sidebar-toggle-sidebar)
     :custom (dired-sidebar-theme 'vscode)))
 
-                                        ;(use-package ignoramus :config (ignoramus-setup))
-
 (use-package osx-trash :init (osx-trash-setup))
 
 (use-package focus-autosave-mode :init (focus-autosave-mode))
@@ -210,24 +209,39 @@
 
 (use-package whitespace
   :straight nil
-  :bind (("C-c w" . whitespace-mode))
   :hook (((prog-mode text-mode conf-mode) . whitespace-mode)
          (before-save . delete-trailing-whitespace))
   :custom
   (whitespace-style '(face indentation space-after-tab space-before-tab
-                           tab-mark empty trailing lines-tail))
-  (whitespace-line-column nil))
+                           tab-mark empty trailing)))
 
 (use-package windmove
-  :bind (("C-c <left>" . windmove-left)
-         ("C-c <right>" . windmove-right)
-         ("C-c <up>" . windmove-up)
-         ("C-c <down>" . windmove-down))
+  :bind (("C-c w l" . windmove-left)
+         ("C-c w r" . windmove-right)
+         ("C-c w p" . windmove-up)
+         ("C-c w n" . windmove-down))
   :custom (windmove-default-keybindings 'shift))
 
 (use-package zop-to-char
   :bind (("M-z" . zop-to-char)
          ("M-Z" . zop-up-to-char)))
+
+(use-package eldoc
+  :custom (eldoc-idle-delay 2))
+
+(use-package which-key
+  :custom (which-key-idle-delay 0.5)
+  :config (which-key-mode))
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpfule-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . helpfule-variable)
+  ([remap describe-key] . helpful-key))
 
 (use-package async)
 (use-package exec-path-from-shell
@@ -241,17 +255,17 @@
 (use-package doom-themes
   :demand t
   :config
-  (load-theme 'doom-nord t)
+  (load-theme 'doom-gruvbox t)
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
   (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                       :height 180 :weight 'bold :slant 'italic))
 
-  (use-package minions
-    :hook (after-init . minions-mode)
-    :custom
-    (minions-mode-line-lighter "...")
-    (minions-mode-line-delimiters '("" . "")))
+(use-package minions
+  :hook (after-init . minions-mode)
+  :custom
+  (minions-mode-line-lighter "...")
+  (minions-mode-line-delimiters '("" . "")))
 
 (use-package tab-line
   :disabled t
@@ -261,10 +275,6 @@
   (tab-line-separator nil)
   (tab-line-close-button-show nil)
   :init (global-tab-line-mode))
-
-(use-package eyebrowse
-  :commands (eyebrowse-mode)
-  :init (eyebrowse-mode 1))
 
 (use-package aggressive-indent
   :hook (emacs-lisp-mode . aggressive-indent-mode))
@@ -311,10 +321,15 @@
              (djm/emacs-cache "company-statistics-cache.el")))
 
   (use-package company-math
-    :config (add-to-list 'company-backends '(company-math-symbols-unicode
-                                     company-math-symbols-latex)))
+    :init
+    (add-to-list 'company-backends '(company-math-symbols-unicode))
+    (add-to-list 'company-backends '(company-math-symbols-latex)))
   (use-package company-flx :init (company-flx-mode 1))
-  (use-package company-prescient :init (company-prescient-mode 1)))
+  (use-package company-prescient :init (company-prescient-mode 1))
+  (use-package company-lsp :init (setq company-lsp-cache-canidates 'auto))
+  (use-package company-anaconda
+    :config
+    (add-to-list 'company-backends 'company-anaconda)))
 
 (use-package hippie-exp
   :bind (([remap dabbrev-expand] . hippie-expand))
@@ -346,7 +361,18 @@
 
 (use-package undo-tree :init (global-undo-tree-mode 1))
 
-(use-package posframe)
+(use-package posframe
+  :custom
+  (posframe-arghandler #'hemacs-posframe-arghandler)
+  :config
+  (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
+    (let ((info '(:internal-border-width 12 :min-width 80)))
+      (or (plist-get info arg-name) value))))
+
+(use-package which-key-posframe
+  :config (which-key-posframe-mode)
+  :custom (which-key-posframe-poshandler
+           'posframe-poshandler-point-bottom-left-corner))
 
 (use-package counsel
   :hook ((after-init . ivy-mode)
@@ -409,17 +435,6 @@
   (ivy-count-format "(%d/%d) ")
 
   :config
-  (with-eval-after-load 'ivy
-    (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
-          ivy-re-builders-alist)
-    (push (cons #'swiper-isearch (cdr (assq t ivy-re-builders-alist)))
-          ivy-re-builders-alist)
-    (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist))
-
-  (when (executable-find "rg")
-    (setq counsel-grep-base-command
-          "rg -S --no-heading --line-number --color never '%s' %s"))
-
   (use-package ivy-hydra)
   (use-package ivy-prescient
     :custom (ivy-prescient-retain-classic-highlighting t)
@@ -445,7 +460,19 @@
 
   (use-package amx
     :init (amx-mode 1)
-    :custom (amx-save-file (djm/emacs-cache "amx-items"))))
+    :custom (amx-save-file (djm/emacs-cache "amx-items")))
+
+  (when (executable-find "rg")
+    (setq counsel-grep-base-command
+          "rg -S --no-heading --line-number --color never '%s' %s"))
+
+  (with-eval-after-load 'ivy
+    (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
+          ivy-re-builders-alist)
+    (push (cons #'swiper-isearch (cdr (assq t ivy-re-builders-alist)))
+          ivy-re-builders-alist)
+    (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
+    (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
 
 (use-package avy
   :bind (:map dired-mode-map
@@ -458,7 +485,7 @@
   :config (avy-setup-default))
 
 (use-package dimmer
-  :custom (dimmer-exclusion-regexp (rx (or "posframe" "which-key")))
+  :custom (dimmer-exclusion-regexp (rx (or "posframe" "which-key" "*Python*")))
   :config (dimmer-mode))
 
 (use-package ispell
@@ -498,12 +525,71 @@
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 
+(use-package lsp-mode
+  :hook (python-mode . lsp-deferred)
+  :bind (:map lsp-mode-map
+              ("C-c C-d" . lsp-describe-thing-at-point))
+  :init (setq lsp-auto-guess-root t
+              lsp-prefer-flymake nil
+              flymake-fringe-indicator-position 'right-fringe)
+  :config
+  (use-package lsp-clients
+    :straight nil
+    :init (setq lsp-clients-python-library-directories '("~/.pyenv/shims/")))
+  (use-package lsp-python-ms
+    :hook (python-mode . (lambda () (require 'lsp-python-ms) (lsp-deferred))))
+
+  (use-package dap-mode
+    :hook ((after-init . dap-mode)
+           (dap-mode . dap-ui-mode)
+           (python-mode . (lambda () (require 'dap-python))))))
+
+(use-package lsp-ui
+  :commands (lsp-ui-mode lsp-ui-doc-hide)
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom-face
+  (lsp-ui-doc-background ((t (:background nil))))
+  (lsp-ui-sideline--code-action ((t (:inherit warning))))
+  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
+  :bind (:map lsp-ui-mode-map
+              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . lsp-ui-peek-find-references)
+              ("C-c u" . lsp-ui-imenu))
+  :custom
+  (lsp-ui-doc-use-webkit nil)
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-header t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-delay 0.7)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-border (face-foreground 'default))
+  (lsp-eldoc-enable-hove nil)
+  (lsp-ui-sideline-ignore-duplicate t)
+  :config
+  (defun lsp-ui-imenu-hide-mode-line ()
+    (setq mode-line-format nil))
+  (advice-add #'lsp-ui-menu :after #'lsp-ui-imenu-hide-mode-line))
+
 (use-package flycheck
   :hook (after-init . global-flycheck-mode)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-check-syntax-automatically '(save mode-enabled))
-  (flycheck-indication-mode 'right-fringe))
+  (flycheck-emacs-ch
+  (flycheck-indication-mode 'right-fringe)
+  (when (fboundp 'define-fringe-bitmap)
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
+      [16 48 112 240 112 48 16] nil nil 'center))
+  :config
+  (use-package flycheck-posframe
+    :hook (flycheck-mode . flycheck-posframe-mode)
+    :config (add-to-list 'flycheck-posframe-inhibit-functions
+                         #'(lambda () (bound-and-true-p company-backend))))
+  (use-package flycheck-pos-tip
+    :defines flycheck-pos-tip-timeout
+    :hook (global-flycheck-mode . flycheck-pos-tip-mode)
+    :config (setq flycheck-pos-tip-timeout 30))
+  (use-package flycheck-popup-tip
+    :hook (flycheck-mode . flycheck-popup-tip-mode)))
 
 (use-package sh-script
   :ensure-system-package shfmt
@@ -511,6 +597,109 @@
   :custom
   (sh-indentation 2)
   (sh-basic-offset 2))
+
+(use-package ess
+  :init
+  (progn
+    (add-to-list 'safe-local-variable-values '(outline-minor-mode))
+    (add-to-list 'safe-local-variable-values '(whitespace-style
+                                               face tabs spaces
+                                               trailing lines space-before-tab::space
+                                               newline indentation::space empty
+                                               space-after-tab::space space-mark
+                                               tab-mark newline-mark))))
+
+(use-package python
+  :straight nil
+  :hook (inferior-python-mode . (lambda ()
+                                  (process-query-on-exit-flag
+                                   (get-process "Python"))))
+  :init
+  (setq python-shell-completion-native-enable nil)
+  :config
+  (when (and (executable-find "ipython")
+             (string= python-shell-interpreter "ipython"))
+    (setq python-shell-interpreter "python"))
+
+  (with-eval-after-load 'exec-path-from-shell
+    (exec-path-from-shell-copy-env "PYTHONPATH"))
+
+  (use-package anaconda-mode
+    :hook (python-mode . anaconda-mode))
+  (use-package pip-requirements)
+  (use-package live-py-mode)
+  (use-package yapfify :hook (python-mode . yapf-mode))
+  (use-package eval-in-repl)
+  (use-package eval-in-repl-python
+    :straight nil
+    :init
+    (progn
+      (defun eir-eval-in-python ()
+        "eval-in-repl for Python."
+        (interactive)
+        ;; Define local variables
+        (let* ((script-window (selected-window)))
+          ;;
+          (eir-repl-start "*Python*" #'run-python)
+
+          ;; Check if selection is present
+          (if (and transient-mark-mode mark-active)
+              ;; If selected, send region
+              (let* ((body (buffer-substring-no-properties (point) (mark)))
+                     (paste (concat "%cpaste -q \n" body "\n--")))
+                (eir-send-to-python paste))
+
+            ;; If not selected, do all the following
+            ;; Move to the beginning of line
+            (beginning-of-line)
+            ;; Set mark at current position
+            (set-mark (point))
+            ;; Go to the end of statement
+            (python-nav-end-of-statement)
+            ;; Go to the end of block
+            (python-nav-end-of-block)
+            ;; Send region if not empty
+            (if (not (equal (point) (mark)))
+                ;; Add one more character for newline unless at EOF
+                ;; This does not work if the statement asks for an input.
+                (let* ((body (buffer-substring-no-properties
+                              (min (+ 1 (point)) (point-max))
+                              (mark)))
+                       (paste (concat "%cpaste -q \n" body "\n--")))
+                  (eir-send-to-python paste))
+              ;; If empty, deselect region
+              (setq mark-active nil))
+            ;; Move to the next statement
+            (python-nav-forward-statement)
+
+            ;; Switch to the shell
+            (python-shell-switch-to-shell)
+            ;; Switch back to the script window
+            (select-window script-window))))
+
+      (bind-key "C-<return>" 'eir-eval-in-python python-mode-map))))
+
+(use-package dashboard
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
+
+(defun djm/get-or-create-dashboard (&optional concise)
+  (let ((buffer (get-buffer "*dashboard*")))
+    (recentf-cleanup)
+    (if buffer
+        buffer
+      (progn
+        (dashboard-insert-startupify-lists)
+        (get-buffer "*dashboard*")))))
+
+(setq initial-buffer-choice (lambda () (djm/get-or-create-dashboard)))
+
+
 
 (provide 'init)
 ;;; init.el ends here

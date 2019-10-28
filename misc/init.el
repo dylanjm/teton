@@ -71,7 +71,7 @@
 
 (use-package frame
   :straight nil
-  :init (window-divider-mode 1)
+  :config (window-divider-mode 1)
   :custom
   (window-divider-default-places t)
   (window-divider-default-bottom-width 1)
@@ -170,11 +170,11 @@
   :straight nil
   :functions (dired wdired-change-to-wdired-mode)
   :bind (:map dired-mode-map
-           ("C-c C-p" . wdired-change-to-wdired-mode)
-           ("C-c C-r" . dired-rsync)
-           ("TAB" . dired-subtree-insert)
-           (";" . dired-subtree-remove)
-           (":" . dired-git-info-mode))
+              ("C-c C-p" . wdired-change-to-wdired-mode)
+              ("C-c C-r" . dired-rsync)
+              ("TAB" . dired-subtree-insert)
+              (";" . dired-subtree-remove)
+              (":" . dired-git-info-mode))
   :custom
   (dired-auto-revert-buffer t)
   (dired-dwim-target t)
@@ -194,10 +194,10 @@
   (use-package dired-subtree)
   (use-package fd-dired)
   (use-package dired-sidebar
-  :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-  :custom (dired-sidebar-theme 'vscode)))
+    :bind ("M-\\" . dired-sidebar-toggle-sidebar)
+    :custom (dired-sidebar-theme 'vscode)))
 
-;(use-package ignoramus :config (ignoramus-setup))
+                                        ;(use-package ignoramus :config (ignoramus-setup))
 
 (use-package osx-trash :init (osx-trash-setup))
 
@@ -238,18 +238,20 @@
   :config
   (exec-path-from-shell-initialize))
 
-(use-package base16-theme
+(use-package doom-themes
   :demand t
   :config
-  (load-theme 'base16-darktooth t)
+  (load-theme 'doom-nord t)
   (dolist (face '(region hl-line secondary-selection))
-    (set-face-attribute face nil :extend t)))
+    (set-face-attribute face nil :extend t))
+  (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
+                      :height 180 :weight 'bold :slant 'italic))
 
-(use-package minions
-  :hook (after-init . minions-mode)
-  :custom
-  (minions-mode-line-lighter "...")
-  (minions-mode-line-delimiters '("" . "")))
+  (use-package minions
+    :hook (after-init . minions-mode)
+    :custom
+    (minions-mode-line-lighter "...")
+    (minions-mode-line-delimiters '("" . "")))
 
 (use-package tab-line
   :disabled t
@@ -260,9 +262,9 @@
   (tab-line-close-button-show nil)
   :init (global-tab-line-mode))
 
-;; (use-package eyebrowse
-;;   :commands (eyebrowse-mode)
-;;   :config (eyebrowse-mode 1))
+(use-package eyebrowse
+  :commands (eyebrowse-mode)
+  :init (eyebrowse-mode 1))
 
 (use-package aggressive-indent
   :hook (emacs-lisp-mode . aggressive-indent-mode))
@@ -272,7 +274,7 @@
 
 (use-package key-chord
   :custom (key-chord-two-keys-delay 0.05)
-  :config (key-chord-mode 1))
+  :init (key-chord-mode 1))
 
 (use-package prescient
   :custom
@@ -428,9 +430,7 @@
     :functions (ivy-posframe-display-at-window-bottom-left
                 ivy-posframe-display-at-frame-center)
     :config
-    (push (cons #'swiper #'ivy-posframe-display-at-window-bottom-left)
-          ivy-posframe-display-functions-alist)
-    (push (cons #'counsel-M-x #'ivy-posframe-display-at-window-bottom-left)
+    (push (cons #'swiper nil)
           ivy-posframe-display-functions-alist)
     (push (cons t #'ivy-posframe-display-at-frame-center)
           ivy-posframe-display-functions-alist))

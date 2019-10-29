@@ -1,3 +1,35 @@
+(use-package dashboard
+  :init (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
+
+(use-package org
+  :straight org-plus-contrib
+  :hook (org-mode . visual-line-mode)
+  :requires (org-capture org-protocol)
+  :custom
+  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
+                       (sequence "MAYBE" "CANCELED" "|")))
+  :config
+  (org-add-link-type "project" 'projectile-switch-project-by-name)
+  (use-package org-habit-plus
+    :straight (org-habit-plus :type git :host github
+                              :repo "oddious/org-habit-plus")
+    :custom
+    (org-habit-scheduled-past-days org-scheduled-past-days))
+  (use-package org-make-toc
+    :straight (org-make-toc :type git :host github
+                            :repo "alphapapa/org-make-toc")
+    :init (org-make-toc-mode 1)))
+
+(provide 'init)
+;;; init.el ends here
+
 ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
@@ -369,17 +401,22 @@
 
 (use-package dimmer
   :custom
-  (dimmer-fraction 0.5)
+  (dimmer-fraction 0.50)
   (dimmer-exclusion-regexp (rx (or "posframe"
                                    "which-key"
-                                   "magit-"
-                                   "Messages"
-                                   "Warnings"
-                                   "Async"
-                                   "Minibuf")))
+                                   "LV"
+                                   "magit"
+                                   "transient"
+                                   "Messages*"
+                                   "Help"
+                                   "^Warnings*"
+                                   "Async*"
+                                   "Minibuf-.*")))
+
   :config (dimmer-mode))
 
-
+(use-package smartparens
+  :functions (sp-backward-delete-char))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode)
@@ -544,7 +581,7 @@
     :custom
     (ivy-posframe-border-width 20)
     (ivy-posframe-style 'frame-center)
-    (ivy-posframe-hide-minibuffer t)
+    ;(ivy-posframe-hide-minibuffer t)
     (ivy-posframe-parameters '((alpha 100 100)))
 
     :config
@@ -636,131 +673,196 @@
   :config
   (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
 
-(use-package lsp-mode
-  :hook (python-mode . lsp-deferred)
-  :bind (:map lsp-mode-map
-              ("C-c C-d" . lsp-describe-thing-at-point))
-  :init (setq lsp-auto-guess-root t
-              lsp-prefer-flymake nil
-              flymake-fringe-indicator-position 'right-fringe)
+(use-package flycheck
+  :hook (after-init . global-flycheck-mode)
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-indication-mode 'right-fringe)
+  (when (fboundp 'define-fringe-bitmap)
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
+      [16 48 112 240 112 48 16] nil nil 'center))
   :config
-  (use-package lsp-clients
-    :straight nil
-    :init (setq lsp-clients-python-library-directories '("~/.pyenv/shims/")))
-  (use-package lsp-python-ms
-    :hook (python-mode . (lambda () (require 'lsp-python-ms) (lsp-deferred))))
+  (use-package flycheck-posframe
+    :hook (flycheck-mode . flycheck-posframe-mode)
+    :config (add-to-list 'flycheck-posframe-inhibit-functions
+                         #'(lambda () (bound-and-true-p company-backend))))
+  (use-package flycheck-pos-tip
+    :defines flycheck-pos-tip-timeout
+    :hook (global-flycheck-mode . flycheck-pos-tip-mode)
+    :config (setq flycheck-pos-tip-timeout 30))
+  (use-package flycheck-popup-tip
+    :hook (flycheck-mode . flycheck-popup-tip-mode)))
 
-  (use-package dap-mode
-    :hook ((after-init . dap-mode)
-           (dap-mode . dap-ui-mode)
-           (python-mode . (lambda () (require 'dap-python))))))
+(use-package sh-script
+  :ensure-system-package shfmt
+  :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
+  :custom
+  (sh-indentation 2)
+  (sh-basic-offset 2))
+
+(use-package ess
+  :init
+  (progn
+    (add-to-list 'safe-local-variable-values '(outline-minor-mode))
+    (add-to-list 'safe-local-variable-values '(whitespace-style
+                                               face tabs spaces
+                                               trailing lines space-before-tab::space
+                                               newline indentation::space empty
+                                               space-after-tab::space space-mark
+                                               tab-mark newline-mark))))
+
+(use-package lsp-mode
+  :hook ((python-mode . lsp-deferred)
+         (sh-mode . lsp-deferred)
+         (c-mode-common . lsp-deferred))
+  :preface
+  (defun config-lsp--setup-buffer ()
+    (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
+      (highlight-thing-mode -1)))
+  :custom
+  (flymake-fringe-indicator-position 'right-fringe)
+  (lsp-auto-guess-root t)
+  (lsp-edoc-render-all nil)
+  (lsp-prefer-fly-make nil)
+  (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
+  (lsp-restart 'auto-restart)
+  (lsp-enable-on-type-formatting nil)
+  :config
+  (progn
+    (when (and lsp-auto-configure lsp-auto-require-clients)
+      (require 'lsp-clients))
+
+    (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
+    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
+
+(use-package dap-mode
+  :hook ((lsp-mode . dap-mode)
+         (lsp-mode . dap-ui-mode))
+  :preface
+  (defvar config-lsp--dap-cache-dir (djm/emacs-cache "dap"))
+  :init
+  (progn
+    (f-mkdir config-lsp--dap-cache-dir)
+    (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
+  :config
+  (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+
+
+(use-package lsp-python-ms
+  :hook (python-mode . (lambda () (require 'lsp-python-ms) (lsp-deferred))))
+
 
 (use-package lsp-ui
-  :commands (lsp-ui-mode lsp-ui-doc-hide)
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom-face
-  (lsp-ui-doc-background ((t (:background nil))))
-  (lsp-ui-sideline--code-action ((t (:inherit warning))))
-  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
-  :bind (:map lsp-ui-mode-map
-              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-              ([remap xref-find-references] . lsp-ui-peek-find-references)
-              ("C-c u" . lsp-ui-imenu))
-  :custom
-  (lsp-ui-doc-use-webkit nil)
-  (lsp-ui-doc-enable t)
-  (lsp-ui-doc-header t)
-  (lsp-ui-doc-include-signature t)
-  (lsp-ui-doc-delay 0.7)
-  (lsp-ui-doc-position 'top)
-  (lsp-ui-doc-border (face-foreground 'default))
-  (lsp-eldoc-enable-hove nil)
-  (lsp-ui-sideline-ignore-duplicate t)
+  :preface
+  (progn
+    (defun config-lsp-toggle-ui-overlays (&optional should-enable)
+      (interactive (list (not (bound-and-true-p lsp-ui-mode))))
+      (cond
+       (should-enable
+        (lsp-ui-mode +1)
+        (eldoc-mode -1))
+       (t
+        (lsp-ui-mode -1)
+        (eldoc-mode +1))))
+
+    (defun config-lsp-configure-ui ()
+      (config-lsp-toggle-ui-overlays t)
+      (lsp-ui-flycheck-enable t)))
+  :init
+  (progn
+    (use-package lsp-ui-flycheck :straight nil)
+    (with-eval-after-load 'lsp-mode
+      (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays)))
   :config
-  (defun lsp-ui-imenu-hide-mode-line ()
-    (setq mode-line-format nil))
-  (advice-add #'lsp-ui-menu :after #'lsp-ui-imenu-hide-mode-line))
+  (progn
+    (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-sideline-show-code-actions nil
+          lsp-ui-sideline-show-flycheck nil
+          lsp-ui-doc-enable nil)
+    (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
+    (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
 
 (use-package python
-  :straight nil
-  :hook (inferior-python-mode . (lambda ()
-                                  (process-query-on-exit-flag
-                                   (get-process "Python"))))
-  :init
-  (setq python-shell-completion-native-enable nil)
-  :config
-  (when (and (executable-find "ipython")
-             (string= python-shell-interpreter "ipython"))
-    (setq python-shell-interpreter "python"))
+  :hook (python-mode . config-python--init-python-mode)
+  :preface
+  (progn
+    (autoload 'python-indent-dedent-line "python")
+    (autoload 'python-shell-get-process "python")
 
-  (use-package anaconda-mode
-    :hook (python-mode . anaconda-mode))
-  (use-package pip-requirements)
-  (use-package live-py-mode)
-  (use-package yapfify :hook (python-mode . yapf-mode))
-  (use-package eval-in-repl)
-  (use-package eval-in-repl-python
-    :straight nil
-    :init
+    (defun config-python--init-python-mode ()
+      (setq-local comment-inline-offset 2)
+      (setq-local tab-width 4)
+      (prettify-symbols-mode -1)
+      (when (executable-find "ipython")
+        (setq-local python-shell-interpreter "ipython")
+        (setq-local python-shell-interpreter-args "--simple-promt -i")))
+
+    (defun config-python-backspace ()
+      (interactive)
+      (if (equal (char-before) ?\s)
+          (unless (python-indent-dedent-line)
+            (backward-delete-char-untabify 1))
+        (sp-backward-delete-char)))
+
+    (defvar config-python-prev-source-buffer)
+
+    (defun config-python-repl-switch-to-source ()
+      (interactive)
+      (-when-let (buf config-python-prev-source-buffer)
+        (when (buffer-live-p buf)
+          (pop-to-buffer buf))))
+
+    (defun config-python-repl ()
+      (interactive)
+      (when (derived-mode-p 'python-mode)
+        (setq config-python-prev-source-buffer (current-buffer)))
+      (let ((shel-process
+             (or (python-shell-get-process)
+                 (with-demoted-errors "Error: %S"
+                   (call-interactively #'run-python)
+                   (python-shell-get-process)))))
+        (unless shell-process
+          (error "Failed to start python shell properly"))
+        (pop-to-buffer (process-buffer shell-process))))
+    :config
     (progn
-      (defun eir-eval-in-python ()
-        "eval-in-repl for Python."
-        (interactive)
-        (let* ((script-window (selected-window)))
-          (eir-repl-start "*Python*" #'run-python)
+      (setq python-indent-guess-indent-offset nil)
+      (setq python-indent-offset 4)
+      (setq python-fill-docstring-style 'django)
 
-          (if (and transient-mark-mode mark-active)
-              (let* ((body (buffer-substring-no-properties (point) (mark)))
-                     (paste (concat "%cpaste -q \n" body "\n--")))
-                (eir-send-to-python paste))
+      (push "jupyter" python-shell-completion-native-disabled-interpreters)
 
-            (beginning-of-line)
-            (set-mark (point))
-            (python-nav-end-of-statement)
-            (python-nav-end-of-block)
+      (define-key python-mode-map [remap python-indent-dedent-line-backspace] #'config-python-backspace)
+      (define-key python-mode-map [remap python-shell-switch-to-shell] #'config-python-repl)
+      (define-key inferior-python-mode-map (kbd "C-c C-z") #'config-python-repl-switch-to-source)
 
-            (if (not (equal (point) (mark)))
-                (let* ((body (buffer-substring-no-properties
-                              (min (+ 1 (point)) (point-max))
-                              (mark)))
-                       (paste (concat "%cpaste -q \n" body "\n--")))
-                  (eir-send-to-python paste))
-              (setq mark-active nil))
+      (add-to-list 'display-buffer-alist
+                   `(,(rx bos "*Python*" eos)
+                     (display-buffer-reuse-window
+                      display-buffer-at-bottom)
+                     (reusable-frames . visible)
+                     (slot . 0)
+                     (window-height . 0.2))))))
 
-            (python-nav-forward-statement)
-            (python-shell-switch-to-shell)
-            (select-window script-window))))
+(use-package anaconda-mode
+  :hook ((python-mode . anaconda-mode)
+         (python-mode . anaconda-eldoc-mode)))
 
-      (bind-key "C-<return>" 'eir-eval-in-python python-mode-map))))
+(use-package py-yapf
+  :hook (python-mode . python-auto-format-mode)
+  :preface
+  (progn
+    (defvar python-auto-format-buffer t)
 
-(use-package dashboard
-  :init (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
-  :config
-  (set-face-bold 'dashboard-heading-face t))
+    (defun python-auto-format-maybe ()
+      (when python-auto-format-buffer
+        (py-yapf-buffer)))
 
-(use-package org
-  :straight org-plus-contrib
-  :hook (org-mode . visual-line-mode)
-  :requires (org-capture org-protocol)
-  :custom
-  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                       (sequence "MAYBE" "CANCELED" "|")))
-  :config
-  (org-add-link-type "project" 'projectile-switch-project-by-name)
-  (use-package org-habit-plus
-    :straight (org-habit-plus :type git :host github
-                              :repo "oddious/org-habit-plus")
-    :custom
-    (org-habit-scheduled-past-days org-scheduled-past-days))
-  (use-package org-make-toc
-    :straight (org-make-toc :type git :host github
-                            :repo "alphapapa/org-make-toc")
-    :init (org-make-toc-mode 1)))
-
-(provide 'init)
-;;; init.el ends here
+    (define-minor-mode python-auto-format-mode
+      nil nil nil nil
+      (if python-auto-format-mode
+          (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
+        (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))

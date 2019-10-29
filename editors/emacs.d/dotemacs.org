@@ -155,7 +155,6 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 This concludes =early-init.el=.
 
 * Default Settings
-
 ** Sane settings for the insane
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -485,14 +484,14 @@ This concludes =early-init.el=.
 #+end_src
 
 * Theme
-
+** Doom-Themes
 #+begin_src emacs-lisp
   (use-package doom-themes
     :demand t
     :config
     (load-theme 'doom-gruvbox t)
     (setq doom-gruvbox-brighter-comments t)
-    (doom-themes-org-config)
+    ;(doom-themes-org-config)
     (dolist (face '(region hl-line secondary-selection))
       (set-face-attribute face nil :extend t))
     (with-eval-after-load 'org
@@ -505,12 +504,21 @@ This concludes =early-init.el=.
     (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                         :height 180 :weight 'bold :slant 'italic))
 
+#+end_src
+
+** Minions
+
+#+begin_src emacs-lisp
   (use-package minions
     :hook (after-init . minions-mode)
     :custom
     (minions-mode-line-lighter "...")
     (minions-mode-line-delimiters '("" . "")))
+#+end_src
 
+** Tab Line (built-in)
+
+#+begin_src emacs-lisp
   (use-package tab-line
     :disabled t
     :straight nil
@@ -521,7 +529,12 @@ This concludes =early-init.el=.
     :init (global-tab-line-mode))
 #+end_src
 
+* Features
+
 #+begin_src emacs-lisp
+  (use-package ace-window
+    :bind (("C-x o" . ace-window)))
+
   (use-package aggressive-indent
     :commands (aggressive-indent-mode))
 
@@ -536,80 +549,35 @@ This concludes =early-init.el=.
     :custom (prescient-save-file (djm/emacs-cache "prescient-save.el"))
     :config (prescient-persist-mode))
 
-  (use-package company
-    :demand t
-    :commands global-company-mode
-    :bind (:map company-active-map
-                ("RET" . nil)
-                ([return] . nil)
-                ("TAB" . company-complete-selection)
-                ([tab] . company-complete-selection)
-                ("C-f" . company-complete-common)
-                ("C-n" . company-select-next)
-                ("C-p" . company-select-previous))
+  (use-package dimmer
     :custom
-    (company-require-match 'never)
-    (company-async-timeout 5)
-    (company-idle-delay 0)
-    (company-minimum-prefix-length 2)
-    (company-tooltip-align-annotations t)
-    (company-transformers '(company-sort-by-statistics
-                            company-sort-by-occurrence))
-    (company-frontends '(company-preview-common-frontend
-                         company-pseudo-tooltip-frontend
-                         company-echo-metadata-frontend))
-    (company-backends '(company-capf
-                        company-files
-                        company-xcode
-                        company-keywords))
-    :config
-    (global-company-mode 1)
-    (use-package company-statistics
-      :init (company-statistics-mode 1)
-      :custom (company-statistics-file
-               (djm/emacs-cache "company-statistics-cache.el")))
+    (dimmer-fraction 0.5)
+    (dimmer-exclusion-regexp (rx (or "posframe"
+                                     "which-key"
+                                     "magit-"
+                                     "Messages"
+                                     "Warnings"
+                                     "Async"
+                                     "Minibuf")))
+    :config (dimmer-mode))
+#+end_src
 
-    (use-package company-math
-      :init
-      (add-to-list 'company-backends 'company-math-symbols-unicode)
-      (add-to-list 'company-backends 'company-math-symbols-latex))
-    (use-package company-flx :init (company-flx-mode 1))
-    (use-package company-prescient :init (company-prescient-mode 1))
-    (use-package company-lsp :init (setq company-lsp-cache-canidates 'auto))
-    (use-package company-anaconda
-      :config
-      (add-to-list 'company-backends 'company-anaconda)))
+#+begin_src emacs-lisp
 
-  (use-package hippie-exp
-    :bind (([remap dabbrev-expand] . hippie-expand))
-    :custom
-    (hippie-expand-try-functions-list '(try-expand-dabbrev
-                                        try-expand-dabbrev-all-buffers
-                                        try-expand-dabbrev-from-kill
-                                        try-complete-file-name-partially
-                                        try-complete-file-name
-                                        try-expand-all-abbrevs
-                                        try-expand-list
-                                        try-complete-lisp-symbol-partially
-                                        try-complete-lisp-symbol)))
+#+end_src
 
-  (use-package yasnippet
-    :commands (yas-reload-all)
-    :hook ((term-mode . (lambda () (yas-minor-mode -1)))
-           (company-mode . yas-minor-mode))
-    :config
-    (use-package yasnippet-snippets)
-    (use-package ivy-yasnippet
-      :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
-    (yas-reload-all)
-    (yas-global-mode 1))
-
+#+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode)
     :custom (rainbow-delimters-max-face-count 5))
+#+end_src
 
-  (use-package undo-tree :init (global-undo-tree-mode 1))
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :init (global-undo-tree-mode 1))
+#+end_src
 
+#+begin_src emacs-lisp
   (use-package posframe
     :custom
     (posframe-arghandler #'hemacs-posframe-arghandler)
@@ -622,187 +590,264 @@ This concludes =early-init.el=.
     :config (which-key-posframe-mode)
     :custom (which-key-posframe-poshandler
              'posframe-poshandler-point-bottom-left-corner))
+#+end_src
 
-  (use-package counsel
-    :hook ((after-init . ivy-mode)
-           (ivy-mode . counsel-mode))
-
-    :bind (("C-x b" . ivy-switch-buffer)
-           ("C-x B" . ivy-switch-buffer-other-window)
-           ("C-c C-r" . ivy-resume)
-           ("C-c v p" . ivy-push-view)
-           ("C-c v o" . ivy-pop-view)
-           ("C-c v ." . ivy-switch-view)
-           :map ivy-minibuffer-map
-           ("<tab>" . ivy-alt-done)
-           ("C-w" . ivy-yank-word)
-           ("C-r" . ivy-previous-line)
-           (:map ivy-switch-buffer-map
-                 ("C-x k" . ivy-switch-buffer-kill))
-
-           (:map counsel-mode-map
-                 ([remap dired] . counsel-dired)
-                 ("M-x" . counsel-M-x)
-                 ("C-x C-f" . counsel-find-file)
-                 ("C-x C-d" . counsel-dired-jump)
-                 ("C-x C-l" . counsel-find-library)
-                 ("C-x C-r" . counsel-recentf)
-                 ("C-x C-v" . counsel-set-variable)
-                 ("C-x C-u" . counsel-unicode-char)
-                 ("C-x j" . counsel-mark-ring)
-                 ("C-c g" . counsel-grep)
-                 ("C-c h" . counsel-command-history)
-                 ("C-c j" . counsel-git)
-                 ("C-c j" . counsel-git-grep)
-                 ("C-c r" . counsel-rg)
-                 ("C-c z" . counsel-fzf)
-                 ("C-c c w" . counsel-colors-web)
-                 ("C-h F" . counsel-describe-face)
-                 ("C-h f" . counsel-describe-function)
-                 ("C-h v" . counsel-describe-variable))
-
-           ("C-s" . swiper)
-           ("C-c c s" . swiper-isearch)
-           ("C-c c r" . swiper-isearch-backward)
-           ("C-S-s" . swiper-all)
-           :map swiper-map
-           ("M-%" . swiper-query-replace)
-           ("M-s" . swiper-isearch-toggle)
-           :map isearch-mode-map
-           ("M-s" . swiper-isearch-toggle))
-
-    :custom
-    (ivy-dynamic-exhibit-delay-ms 250)
-    (ivy-use-selectable-prompt t)
-    (ivy-format-function #'ivy-format-function-arrow)
-    (ivy-height 10)
-    (ivy-initial-inputs-alist nil)
-    (ivy-case-fold-search-default t)
-    (ivy-use-virtual-buffers t)
-    (ivy-virtual-abbreviate 'abbreviate)
-    (ivy-count-format "")
-    (ivy-flx-limit 2000)
-
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :commands (yas-reload-all)
+    :hook ((term-mode . (lambda () (yas-minor-mode -1)))
+           (company-mode . yas-minor-mode))
     :config
-    (use-package ivy-hydra)
-    (use-package ivy-prescient
-      :custom (ivy-prescient-retain-classic-highlighting t)
-      :init (ivy-prescient-mode 1))
+    (use-package yasnippet-snippets)
+    (use-package ivy-yasnippet
+      :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
+    (yas-reload-all)
+    (yas-global-mode 1))
+#+end_src
 
-    (use-package ivy-posframe
-      :init (ivy-posframe-mode 1)
-      :functions (ivy-posframe-display-at-window-bottom-left
-                  ivy-posframe-display-at-frame-center)
+** Autocomplete
+
+*** Hippie-Exp
+
+#+begin_src emacs-lisp
+  (use-package hippie-exp
+    :bind (([remap dabbrev-expand] . hippie-expand))
+    :custom
+    (hippie-expand-try-functions-list '(try-expand-dabbrev
+                                        try-expand-dabbrev-all-buffers
+                                        try-expand-dabbrev-from-kill
+                                        try-complete-file-name-partially
+                                        try-complete-file-name
+                                        try-expand-all-abbrevs
+                                        try-expand-list
+                                        try-complete-lisp-symbol-partially
+                                        try-complete-lisp-symbol)))
+#+end_src
+
+*** Company
+
+#+begin_src emacs-lisp
+    (use-package company
+      :demand t
+      :commands global-company-mode
+      :bind (:map company-active-map
+                  ("RET" . nil)
+                  ([return] . nil)
+                  ("TAB" . company-complete-selection)
+                  ([tab] . company-complete-selection)
+                  ("C-f" . company-complete-common)
+                  ("C-n" . company-select-next)
+                  ("C-p" . company-select-previous))
       :custom
-      (ivy-posframe-border-width 20)
-      (ivy-posframe-style 'frame-center)
-      (ivy-posframe-hide-minibuffer t)
-      (ivy-posframe-parameters '((alpha 100 100)))
+      (company-require-match 'never)
+      (company-async-timeout 5)
+      (company-idle-delay 0)
+      (company-minimum-prefix-length 2)
+      (company-tooltip-align-annotations t)
+      (company-transformers '(company-sort-by-statistics
+                              company-sort-by-occurrence))
+      (company-frontends '(company-preview-common-frontend
+                           company-pseudo-tooltip-frontend
+                           company-echo-metadata-frontend))
+      (company-backends '(company-capf
+                          company-files
+                          company-xcode
+                          company-keywords))
+      :config
+      (global-company-mode 1)
+
+      (use-package company-statistics
+        :init (company-statistics-mode 1)
+        :custom (company-statistics-file
+                 (djm/emacs-cache "company-statistics-cache.el")))
+      (use-package company-math
+        :init
+        (add-to-list 'company-backends 'company-math-symbols-unicode)
+        (add-to-list 'company-backends 'company-math-symbols-latex))
+      (use-package company-flx
+        :init (company-flx-mode 1))
+      (use-package company-prescient
+        :init (company-prescient-mode 1))
+      (use-package company-lsp
+        :init (setq company-lsp-cache-canidates 'auto))
+      (use-package company-anaconda
+        :config (add-to-list 'company-backends 'company-anaconda)))
+
+#+end_src
+
+** Ivy/Counsel/Swiper
+
+#+begin_src emacs-lisp
+    (use-package counsel
+      :hook ((after-init . ivy-mode)
+             (ivy-mode . counsel-mode))
+
+      :bind (("C-x b" . ivy-switch-buffer)
+             ("C-x B" . ivy-switch-buffer-other-window)
+             ("C-c C-r" . ivy-resume)
+             ("C-c v p" . ivy-push-view)
+             ("C-c v o" . ivy-pop-view)
+             ("C-c v ." . ivy-switch-view)
+             :map ivy-minibuffer-map
+             ("<tab>" . ivy-alt-done)
+             ("C-w" . ivy-yank-word)
+             ("C-r" . ivy-previous-line)
+             (:map ivy-switch-buffer-map
+                   ("C-x k" . ivy-switch-buffer-kill))
+
+             (:map counsel-mode-map
+                   ([remap dired] . counsel-dired)
+                   ("M-x" . counsel-M-x)
+                   ("C-x C-f" . counsel-find-file)
+                   ("C-x C-d" . counsel-dired-jump)
+                   ("C-x C-l" . counsel-find-library)
+                   ("C-x C-r" . counsel-recentf)
+                   ("C-x C-v" . counsel-set-variable)
+                   ("C-x C-u" . counsel-unicode-char)
+                   ("C-x j" . counsel-mark-ring)
+                   ("C-c g" . counsel-grep)
+                   ("C-c h" . counsel-command-history)
+                   ("C-c j" . counsel-git)
+                   ("C-c j" . counsel-git-grep)
+                   ("C-c r" . counsel-rg)
+                   ("C-c z" . counsel-fzf)
+                   ("C-c c w" . counsel-colors-web)
+                   ("C-h F" . counsel-describe-face)
+                   ("C-h f" . counsel-describe-function)
+                   ("C-h v" . counsel-describe-variable))
+
+             ("C-s" . swiper)
+             ("C-c c s" . swiper-isearch)
+             ("C-c c r" . swiper-isearch-backward)
+             ("C-S-s" . swiper-all)
+             :map swiper-map
+             ("M-%" . swiper-query-replace)
+             ("M-s" . swiper-isearch-toggle)
+             :map isearch-mode-map
+             ("M-s" . swiper-isearch-toggle))
+
+      :custom
+      (ivy-dynamic-exhibit-delay-ms 250)
+      (ivy-use-selectable-prompt t)
+      (ivy-format-function #'ivy-format-function-arrow)
+      (ivy-height 10)
+      (ivy-initial-inputs-alist nil)
+      (ivy-case-fold-search-default t)
+      (ivy-use-virtual-buffers t)
+      (ivy-virtual-abbreviate 'abbreviate)
+      (ivy-count-format "")
+      (ivy-flx-limit 2000)
 
       :config
-      (push (cons #'swiper nil)
-            ivy-posframe-display-functions-alist)
-      (push (cons t #'ivy-posframe-display-at-frame-center)
-            ivy-posframe-display-functions-alist))
+      (use-package ivy-hydra)
+      (use-package ivy-prescient
+        :custom (ivy-prescient-retain-classic-highlighting t)
+        :init (ivy-prescient-mode 1))
 
-    (use-package counsel-projectile
-      :after (counsel projectile)
-      :custom
-      (counsel-projectile-switch-project-action #'dired)
-      :config (counsel-projectile-mode 1))
+      (use-package ivy-posframe
+        :init (ivy-posframe-mode 1)
+        :functions (ivy-posframe-display-at-window-bottom-left
+                    ivy-posframe-display-at-frame-center)
+        :custom
+        (ivy-posframe-border-width 20)
+        (ivy-posframe-style 'frame-center)
+        (ivy-posframe-hide-minibuffer t)
+        (ivy-posframe-parameters '((alpha 100 100)))
 
-    (use-package auto-insert
+        :config
+        (push (cons #'swiper nil)
+              ivy-posframe-display-functions-alist)
+        (push (cons t #'ivy-posframe-display-at-frame-center)
+              ivy-posframe-display-functions-alist))
+
+      (use-package counsel-projectile
+        :after (counsel projectile)
+        :custom
+        (counsel-projectile-switch-project-action #'dired)
+        :config (counsel-projectile-mode 1))
+
+      (use-package auto-insert
+        :straight nil
+        :bind (("C-c ci a" . auto-insert)))
+
+      (use-package amx
+        :init (amx-mode 1)
+        :custom (amx-save-file (djm/emacs-cache "amx-items")))
+
+      (use-package flx)
+
+      (when (executable-find "rg")
+        (setq counsel-grep-base-command
+              "rg -S --no-heading --line-number --color never '%s' %s"))
+
+      (with-eval-after-load 'ivy
+        (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
+              ivy-re-builders-alist)
+        (push (cons #'swiper-isearch (cdr (assq t ivy-re-builders-alist)))
+              ivy-re-builders-alist)
+        (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
+        (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
+
+    (use-package avy
+      :bind (:map dired-mode-map
+                  ("." . avy-goto-word-or-subword-1))
+      :custom (avy-style 'de-bruijn)
+      :chords
+      ("jj" . avy-goto-char-timer)
+      ("jk" . avy-goto-word-or-subword-1)
+      ("jl" . avy-goto-line)
+      :config (avy-setup-default))
+
+
+    (use-package ispell
       :straight nil
-      :bind (("C-c ci a" . auto-insert)))
+      :ensure-system-package (hunspell . "trizen -S hunspell")
+      :custom
+      (ispell-dictionary "en_US")
+      (ispell-program-name (executable-find "hunspell"))
+      (ispell-really-hunspell t)
+      (ispell-silently-savep t))
+#+end_src
 
-    (use-package amx
-      :init (amx-mode 1)
-      :custom (amx-save-file (djm/emacs-cache "amx-items")))
+** Version Control
+#+begin_src emacs-lisp
+    (use-package magit
+      :bind (("C-x g" . magit-status)
+             ("C-x M-g" . magit-dispatch)
+             ("C-c M-g" . magit-file-popup))
+      :config
+      (use-package git-commit
+        :custom (git-commit-summary-max-length 50))
 
-    (use-package flx)
+      (use-package git-gutter
+        :commands (global-git-gutter-mode)
+        :init (global-git-gutter-mode 1)))
 
-    (when (executable-find "rg")
-      (setq counsel-grep-base-command
-            "rg -S --no-heading --line-number --color never '%s' %s"))
 
-    (with-eval-after-load 'ivy
-      (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
-            ivy-re-builders-alist)
-      (push (cons #'swiper-isearch (cdr (assq t ivy-re-builders-alist)))
-            ivy-re-builders-alist)
-      (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
-      (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
+    (use-package projectile
+      :custom
+      (projectile-cache-file (djm/emacs-cache "projectile.cache"))
+      (projectile-completion-system 'ivy)
+      (projectile-enable-caching t)
+      (projectile-known-projects-file (djm/emacs-cache "projectile-bookmarks.eld"))
+      :config
+      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+      (projectile-mode 1))
 
-  (use-package avy
-    :bind (:map dired-mode-map
-                ("." . avy-goto-word-or-subword-1))
-    :custom (avy-style 'de-bruijn)
-    :chords
-    ("jj" . avy-goto-char-timer)
-    ("jk" . avy-goto-word-or-subword-1)
-    ("jl" . avy-goto-line)
-    :config (avy-setup-default))
+    (use-package vterm)
+    (use-package eterm-256color
+      :hook (term-mode . eterm-256color-mode))
 
-  (use-package dimmer
-    :custom
-    (dimmer-fraction 0.5)
-    (dimmer-exclusion-regexp (rx (or "posframe"
-                                     "which-key"
-                                     "Messages"
-                                     "Warnings"
-                                     "Async"
-                                     "Minibuf")))
-    :config (dimmer-mode))
-
-  (use-package ispell
-    :straight nil
-    :ensure-system-package (hunspell . "trizen -S hunspell")
-    :custom
-    (ispell-dictionary "en_US")
-    (ispell-program-name (executable-find "hunspell"))
-    (ispell-really-hunspell t)
-    (ispell-silently-savep t))
-
-  (use-package magit
-    :bind (("C-x g" . magit-status)
-           ("C-x M-g" . magit-dispatch)
-           ("C-c M-g" . magit-file-popup))
-    :config
-    (use-package git-commit
-      :custom (git-commit-summary-max-length 50))
-
-    (use-package git-gutter
-      :commands (global-git-gutter-mode)
-      :init (global-git-gutter-mode 1)))
-
-  (use-package ace-window
-    :bind (("C-x o" . ace-window)))
-
-  (use-package projectile
-    :custom
-    (projectile-cache-file (djm/emacs-cache "projectile.cache"))
-    (projectile-completion-system 'ivy)
-    (projectile-enable-caching t)
-    (projectile-known-projects-file (djm/emacs-cache "projectile-bookmarks.eld"))
-    :config
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (projectile-mode 1))
-
-  (use-package vterm)
-  (use-package eterm-256color
-    :hook (term-mode . eterm-256color-mode))
-
-  (use-package shell-pop
-    :bind ("C-x t" . shell-pop)
-    :custom
-    (shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda () (ansi-term shell-pop-term-shell)))))
-    (shell-pop-term-shell (getenv "SHELL"))
-    :config
-    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+    (use-package shell-pop
+      :bind ("C-x t" . shell-pop)
+      :custom
+      (shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda () (ansi-term shell-pop-term-shell)))))
+      (shell-pop-term-shell (getenv "SHELL"))
+      :config
+      (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
 #+end_src
 
 * Language Support
-
 ** Language Server Setup
 #+begin_src emacs-lisp
   (use-package lsp-mode

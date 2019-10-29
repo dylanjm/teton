@@ -322,7 +322,7 @@
   :config
   (load-theme 'doom-gruvbox t)
   (setq doom-gruvbox-brighter-comments t)
-  (doom-themes-org-config)
+  ;(doom-themes-org-config)
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
   (with-eval-after-load 'org
@@ -350,6 +350,9 @@
   (tab-line-close-button-show nil)
   :init (global-tab-line-mode))
 
+(use-package ace-window
+  :bind (("C-x o" . ace-window)))
+
 (use-package aggressive-indent
   :commands (aggressive-indent-mode))
 
@@ -363,6 +366,64 @@
 (use-package prescient
   :custom (prescient-save-file (djm/emacs-cache "prescient-save.el"))
   :config (prescient-persist-mode))
+
+(use-package dimmer
+  :custom
+  (dimmer-fraction 0.5)
+  (dimmer-exclusion-regexp (rx (or "posframe"
+                                   "which-key"
+                                   "magit-"
+                                   "Messages"
+                                   "Warnings"
+                                   "Async"
+                                   "Minibuf")))
+  :config (dimmer-mode))
+
+
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :custom (rainbow-delimters-max-face-count 5))
+
+(use-package undo-tree
+  :init (global-undo-tree-mode 1))
+
+(use-package posframe
+  :custom
+  (posframe-arghandler #'hemacs-posframe-arghandler)
+  :config
+  (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
+    (let ((info '(:internal-border-width 15 :min-width 80)))
+      (or (plist-get info arg-name) value))))
+
+(use-package which-key-posframe
+  :config (which-key-posframe-mode)
+  :custom (which-key-posframe-poshandler
+           'posframe-poshandler-point-bottom-left-corner))
+
+(use-package yasnippet
+  :commands (yas-reload-all)
+  :hook ((term-mode . (lambda () (yas-minor-mode -1)))
+         (company-mode . yas-minor-mode))
+  :config
+  (use-package yasnippet-snippets)
+  (use-package ivy-yasnippet
+    :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
+  (yas-reload-all)
+  (yas-global-mode 1))
+
+(use-package hippie-exp
+  :bind (([remap dabbrev-expand] . hippie-expand))
+  :custom
+  (hippie-expand-try-functions-list '(try-expand-dabbrev
+                                      try-expand-dabbrev-all-buffers
+                                      try-expand-dabbrev-from-kill
+                                      try-complete-file-name-partially
+                                      try-complete-file-name
+                                      try-expand-all-abbrevs
+                                      try-expand-list
+                                      try-complete-lisp-symbol-partially
+                                      try-complete-lisp-symbol)))
 
 (use-package company
   :demand t
@@ -392,64 +453,23 @@
                       company-keywords))
   :config
   (global-company-mode 1)
+
   (use-package company-statistics
     :init (company-statistics-mode 1)
     :custom (company-statistics-file
              (djm/emacs-cache "company-statistics-cache.el")))
-
   (use-package company-math
     :init
     (add-to-list 'company-backends 'company-math-symbols-unicode)
     (add-to-list 'company-backends 'company-math-symbols-latex))
-  (use-package company-flx :init (company-flx-mode 1))
-  (use-package company-prescient :init (company-prescient-mode 1))
-  (use-package company-lsp :init (setq company-lsp-cache-canidates 'auto))
+  (use-package company-flx
+    :init (company-flx-mode 1))
+  (use-package company-prescient
+    :init (company-prescient-mode 1))
+  (use-package company-lsp
+    :init (setq company-lsp-cache-canidates 'auto))
   (use-package company-anaconda
-    :config
-    (add-to-list 'company-backends 'company-anaconda)))
-
-(use-package hippie-exp
-  :bind (([remap dabbrev-expand] . hippie-expand))
-  :custom
-  (hippie-expand-try-functions-list '(try-expand-dabbrev
-                                      try-expand-dabbrev-all-buffers
-                                      try-expand-dabbrev-from-kill
-                                      try-complete-file-name-partially
-                                      try-complete-file-name
-                                      try-expand-all-abbrevs
-                                      try-expand-list
-                                      try-complete-lisp-symbol-partially
-                                      try-complete-lisp-symbol)))
-
-(use-package yasnippet
-  :commands (yas-reload-all)
-  :hook ((term-mode . (lambda () (yas-minor-mode -1)))
-         (company-mode . yas-minor-mode))
-  :config
-  (use-package yasnippet-snippets)
-  (use-package ivy-yasnippet
-    :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
-  (yas-reload-all)
-  (yas-global-mode 1))
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :custom (rainbow-delimters-max-face-count 5))
-
-(use-package undo-tree :init (global-undo-tree-mode 1))
-
-(use-package posframe
-  :custom
-  (posframe-arghandler #'hemacs-posframe-arghandler)
-  :config
-  (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-    (let ((info '(:internal-border-width 15 :min-width 80)))
-      (or (plist-get info arg-name) value))))
-
-(use-package which-key-posframe
-  :config (which-key-posframe-mode)
-  :custom (which-key-posframe-poshandler
-           'posframe-poshandler-point-bottom-left-corner))
+    :config (add-to-list 'company-backends 'company-anaconda)))
 
 (use-package counsel
   :hook ((after-init . ivy-mode)
@@ -571,16 +591,6 @@
   ("jl" . avy-goto-line)
   :config (avy-setup-default))
 
-(use-package dimmer
-  :custom
-  (dimmer-fraction 0.5)
-  (dimmer-exclusion-regexp (rx (or "posframe"
-                                   "which-key"
-                                   "Messages"
-                                   "Warnings"
-                                   "Async"
-                                   "Minibuf")))
-  :config (dimmer-mode))
 
 (use-package ispell
   :straight nil
@@ -603,8 +613,6 @@
     :commands (global-git-gutter-mode)
     :init (global-git-gutter-mode 1)))
 
-(use-package ace-window
-  :bind (("C-x o" . ace-window)))
 
 (use-package projectile
   :custom

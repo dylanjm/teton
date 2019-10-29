@@ -672,7 +672,9 @@
     :custom
     (org-habit-scheduled-past-days org-scheduled-past-days))
   (use-package org-make-toc
-    :hook (org-mode . org-make-toc-mode)))
+    :straight (org-make-toc :type git :host github
+                            :repo "alphapapa/org-make-toc")
+    :init (org-make-toc-mode 1)))
 
 (provide 'init)
 ;;; init.el ends here

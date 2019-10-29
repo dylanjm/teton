@@ -493,6 +493,19 @@ This concludes =early-init.el=.
 ** Utilities
 
 #+begin_src emacs-lisp
+  (use-package tramp
+    :custom
+    (tramp-default-method "ssh")
+    (tramp-backup-directory-alist backup-directory-alist)
+    (tramp-default-proxies-alist nil)
+    :config
+    (put 'temporary-file-directory 'standard-value `(,temporary-file-directory)))
+
+  (use-package sudo-edit
+    :bind (:map ctl-x-map
+                ("M-s" . sudo-edit)))
+
+
   (use-package ws-butler
     :commands (ws-butler-global-mode)
     :hook ((prog-mode . (lambda () (require 'ws-butler)))
@@ -1020,74 +1033,75 @@ This concludes =early-init.el=.
 
 ** Language Server Setup
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :hook ((python-mode . lsp-deferred)
-           (sh-mode . lsp-deferred)
-           (c-mode-common . lsp-deferred))
-    :preface
-    (defun config-lsp--setup-buffer ()
-      (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
-        (highlight-thing-mode -1)))
-    :custom
-    (flymake-fringe-indicator-position 'right-fringe)
-    (lsp-auto-guess-root t)
-    (lsp-edoc-render-all nil)
-    (lsp-prefer-fly-make nil)
-    (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
-    (lsp-restart 'ignore)
-    (lsp-enable-on-type-formatting nil)
-    :config
-    (progn
-      (when (and lsp-auto-configure lsp-auto-require-clients)
-        (require 'lsp-clients))
+    (use-package lsp-mode
+      :hook ((python-mode . lsp-deferred)
+             (sh-mode . lsp-deferred)
+             (c-mode-common . lsp-deferred)
+             (c++-mode . lsp-deferred))
+      :preface
+      (defun config-lsp--setup-buffer ()
+        (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
+          (highlight-thing-mode -1)))
+      :custom
+      (flymake-fringe-indicator-position 'right-fringe)
+      (lsp-auto-guess-root t)
+      (lsp-edoc-render-all nil)
+      (lsp-prefer-fly-make nil)
+      (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
+      (lsp-restart 'ignore)
+      (lsp-enable-on-type-formatting nil)
+      :config
+      (progn
+        (when (and lsp-auto-configure lsp-auto-require-clients)
+          (require 'lsp-clients))
 
-      (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
-      (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
+        (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
+        (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
 
-  (use-package dap-mode
-    :hook ((lsp-mode . dap-mode)
-           (lsp-mode . dap-ui-mode))
-    :preface
-    (defvar config-lsp--dap-cache-dir (djm/emacs-cache "dap"))
-    :init
-    (progn
-      (f-mkdir config-lsp--dap-cache-dir)
-      (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
-    :config
-    (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+    (use-package dap-mode
+      :hook ((lsp-mode . dap-mode)
+             (lsp-mode . dap-ui-mode))
+      :preface
+      (defvar config-lsp--dap-cache-dir (djm/emacs-cache "dap"))
+      :init
+      (progn
+        (f-mkdir config-lsp--dap-cache-dir)
+        (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
+      :config
+      (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
-  (use-package lsp-ui
-    :preface
-    (progn
-      (defun config-lsp-toggle-ui-overlays (&optional should-enable)
-        (interactive (list (not (bound-and-true-p lsp-ui-mode))))
-        (cond
-         (should-enable
-          (lsp-ui-mode +1)
-          (eldoc-mode -1))
-         (t
-          (lsp-ui-mode -1)
-          (eldoc-mode +1))))
+    (use-package lsp-ui
+      :preface
+      (progn
+        (defun config-lsp-toggle-ui-overlays (&optional should-enable)
+          (interactive (list (not (bound-and-true-p lsp-ui-mode))))
+          (cond
+           (should-enable
+            (lsp-ui-mode +1)
+            (eldoc-mode -1))
+           (t
+            (lsp-ui-mode -1)
+            (eldoc-mode +1))))
 
-      (defun config-lsp-configure-ui ()
-        (config-lsp-toggle-ui-overlays t)
-        (lsp-ui-flycheck-enable t)))
-    :init
-    (progn
-      (use-package lsp-ui-flycheck :straight nil)
-      (with-eval-after-load 'lsp-mode
-        (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays)))
-    :config
-    (progn
-      (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
-      (setq lsp-ui-sideline-enable t
-            lsp-ui-sideline-show-code-actions nil
-            lsp-ui-sideline-show-flycheck nil
-            lsp-ui-doc-enable nil)
-      (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
-      (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
-      (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-      (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
+        (defun config-lsp-configure-ui ()
+          (config-lsp-toggle-ui-overlays t)
+          (lsp-ui-flycheck-enable t)))
+      :init
+      (progn
+        (use-package lsp-ui-flycheck :straight nil)
+        (with-eval-after-load 'lsp-mode
+          (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays)))
+      :config
+      (progn
+        (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
+        (setq lsp-ui-sideline-enable t
+              lsp-ui-sideline-show-code-actions nil
+              lsp-ui-sideline-show-flycheck nil
+              lsp-ui-doc-enable nil)
+        (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
+        (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
+        (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+        (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
 #+end_src
 
 ** Python
@@ -1223,4 +1237,10 @@ This concludes =early-init.el=.
 
   (provide 'init)
   ;;; init.el ends here
+#+end_src
+** C++
+#+begin_src emacs-lisp
+  (use-package ccls
+    :custom
+    (ccls-executable "/usr/local/bin/ccls"))
 #+end_src

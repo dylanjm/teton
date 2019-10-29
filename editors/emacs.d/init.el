@@ -293,6 +293,19 @@
   :config
   (setq ibuffer-projectile-prefix ""))
 
+(use-package tramp
+  :custom
+  (tramp-default-method "ssh")
+  (tramp-backup-directory-alist backup-directory-alist)
+  (tramp-default-proxies-alist nil)
+  :config
+  (put 'temporary-file-directory 'standard-value `(,temporary-file-directory)))
+
+(use-package sudo-edit
+  :bind (:map ctl-x-map
+              ("M-s" . sudo-edit)))
+
+
 (use-package ws-butler
   :commands (ws-butler-global-mode)
   :hook ((prog-mode . (lambda () (require 'ws-butler)))
@@ -770,7 +783,8 @@
 (use-package lsp-mode
   :hook ((python-mode . lsp-deferred)
          (sh-mode . lsp-deferred)
-         (c-mode-common . lsp-deferred))
+         (c-mode-common . lsp-deferred)
+         (c++-mode . lsp-deferred))
   :preface
   (defun config-lsp--setup-buffer ()
     (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
@@ -963,3 +977,7 @@
 
 (provide 'init)
 ;;; init.el ends here
+
+(use-package ccls
+  :custom
+  (ccls-executable "/usr/local/bin/ccls"))

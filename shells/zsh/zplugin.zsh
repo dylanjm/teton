@@ -6,7 +6,7 @@ ZPLGM[HOME_DIR]="$CACHE_HOME/zsh/zplugin"
 ZPLGM[ZCOMPDUMP_PATH]=$CACHE_HOME/zsh/zcompdump
 
 if [[ ! -f $ZPLGM[HOME_DIR]/bin/zplugin.zsh ]]; then
-    git clone https://github.com/psprint/zplugin $ZPLG_HOME/bin
+    git clone https://github.com/psprint/zplugin $ZPLGM[HOME_DIR]/bin
 fi
 
 source $ZPLGM[HOME_DIR]/bin/zplugin.zsh

@@ -40,8 +40,7 @@ I didn't really the like the =no-littering= package when I gave it a try. So I'm
 going to roll my own for the time being by declaring these variables. Maybe I'll
 come pack to the package later but for right now this works for me. I got the
 idea for this function from jwiegley's dot-files. You can find his version of
-the function in his github repo
-[jwiegley/dot-emacs/init.el](https://github.com/jwiegley/dot-emacs/blob/master/init.el).
+the function in his github repo [[https://github.com/jwiegley/dot-emacs/blobl/master/init.el][jwiegley/dot-emacs/init.el]].
 
 #+BEGIN_SRC emacs-lisp
 (defvar user-emacs-cache "~/.cache/emacs/")
@@ -69,8 +68,7 @@ You may have to play with these values depending on the specs of your computer.
 Not only do we want to suspend garbage collection on start-up, but we can
 implement a few tricks (or hacks) such that the garbage collector is run at
 optimal times. I got this idea from seagle0128's widely-popular centaur emacs.
-You can see how he implemented this at
-[seagle0128/.emacs.d/init.el](https://github.com/seagle0128/.emacs.d/blob/master/init.el).
+You can see how he implemented this at [[https://github.com/seagle0128/.emacs.d/blob/master/init.el][seagle0128/.emacs.d/init.el]].
 
 TODO: Detail why we left out a few popular variables to set based on some /r/emacs posts.
 

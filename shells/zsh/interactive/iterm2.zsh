@@ -13,5 +13,4 @@ if [[ ! -r $ITERM2_DIR/startup.zsh ]]; then
 		print Installed iTerm2 utility: $cmd
 	done
 fi
-source $ITERM2_DIR/startup.zsh
 path+=($ITERM2_DIR/bin)

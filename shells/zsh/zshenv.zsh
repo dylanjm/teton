@@ -1,16 +1,18 @@
 typeset -aU path cdpath fpath manpath
 export LANG=en_US.UTF-8
 export TERM=xterm-256color
+
 export EDITOR='emacsclient -a "" -c'
 
 export CACHE_HOME="$HOME/.cache"
 export HISTFILE="$CACHE_HOME/zsh/zsh_history"
 export DOTFILES="$HOME/dotz"
+
 export EMACSD="$DOTFILES/editors/emacs.d"
 export ZSH="$DOTFILES/shells/zsh"
+
 export MODULEPATH="/usr/local/Cellar/modules/4.3.0/modulefiles:/opt/moose/Modules/3.2.10/modulefiles"
 export PYENV_ROOT="$HOME/.pyenv"
-export EXA_COLORS="bd=31:cd=32:pi=34"
 
 fpath+=($ZSH/functions)
 
@@ -31,10 +33,4 @@ path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
 
 export PATH
 
-autoload -Uz time-shell \
-         countdown \
-         nuke \
-         convert-to-md \
-         colorlist \
-         prettycsv \
-         ptyless
+autoload -Uz time-shell nuke convert-to-md colorlist

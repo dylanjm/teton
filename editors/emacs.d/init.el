@@ -503,8 +503,7 @@
                                       try-complete-lisp-symbol)))
 
 (use-package company
-  :demand t
-  :commands global-company-mode
+  :init (global-company-mode 1)
   :bind (:map company-active-map
               ("RET" . nil)
               ([return] . nil)
@@ -527,26 +526,38 @@
   (company-backends '(company-capf
                       company-files
                       company-xcode
-                      company-keywords))
-  :config
-  (global-company-mode 1)
+                      company-keywords)))
 
-  (use-package company-statistics
-    :init (company-statistics-mode 1)
-    :custom (company-statistics-file
-             (djm/emacs-cache "company-statistics-cache.el")))
-  (use-package company-math
-    :init
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
-    (add-to-list 'company-backends 'company-math-symbols-latex))
-  (use-package company-flx
-    :init (company-flx-mode 1))
-  (use-package company-prescient
-    :init (company-prescient-mode 1))
-  (use-package company-lsp
-    :init (setq company-lsp-cache-canidates 'auto))
-  (use-package company-anaconda
-    :config (add-to-list 'company-backends 'company-anaconda)))
+(use-package company-statistics
+  :after (company)
+  :init
+  (company-statistics-mode 1)
+  :custom
+  (company-statistics-file (djm/emacs-cache "company-statistics-cache.el")))
+
+(use-package company-math
+  :after (company)
+  :init
+  (add-to-list 'company-backends 'company-math-symbols-unicode)
+  (add-to-list 'company-backends 'company-math-symbols-latex))
+
+(use-package company-flx
+  :after (company)
+  :init (company-flx-mode 1))
+
+(use-package company-prescient
+  :after (company prescient)
+  :init (company-prescient-mode 1))
+
+(use-package company-lsp
+  :after (company lsp-mode)
+  :init
+  (setq company-lsp-cache-canidates 'auto))
+
+(use-package company-anaconda
+  :after (company anaconda-mode)
+  :init
+  (add-to-list 'company-backends 'company-anaconda))
 
 (use-package counsel
   :hook ((after-init . ivy-mode)
@@ -871,21 +882,21 @@
     (progn
       (setq python-indent-guess-indent-offset nil)
       (setq python-indent-offset 4)
-      (setq python-fill-docstring-style 'django)
+      (setq python-fill-docstring-style 'django))))
 
-      (push "jupyter" python-shell-completion-native-disabled-interpreters)
+;; (push "jupyter" python-shell-completion-native-disabled-interpreters)
 
-      (define-key python-mode-map [remap python-indent-dedent-line-backspace] #'config-python-backspace)
-      (define-key python-mode-map [remap python-shell-switch-to-shell] #'config-python-repl)
-      (define-key inferior-python-mode-map (kbd "C-c C-z") #'config-python-repl-switch-to-source)
+;; (define-key python-mode-map [remap python-indent-dedent-line-backspace] #'config-python-backspace)
+;; (define-key python-mode-map [remap python-shell-switch-to-shell] #'config-python-repl)
+;; (define-key inferior-python-mode-map (kbd "C-c C-z") #'config-python-repl-switch-to-source)
 
-      (add-to-list 'display-buffer-alist
-                   `(,(rx bos "*Python*" eos)
-                     (display-buffer-reuse-window
-                      display-buffer-at-bottom)
-                     (reusable-frames . visible)
-                     (slot . 0)
-                     (window-height . 0.2))))))
+;; (add-to-list 'display-buffer-alist
+;;              `(,(rx bos "*Python*" eos)
+;;                (display-buffer-reuse-window
+;;                 display-buffer-at-bottom)
+;;                (reusable-frames . visible)
+;;                (slot . 0)
+;;                (window-height . 0.2))))))
 
 (use-package anaconda-mode
   :hook ((python-mode . anaconda-mode)

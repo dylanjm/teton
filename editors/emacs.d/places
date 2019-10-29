@@ -1,8 +1,0 @@
-;;; -*- coding: utf-8 -*-
-(("/Users/djm/dotz/editors/emacs.d/dotemacs.org" . 4011)
- ("/Users/djm/dotz/misc/init.el" . 1025)
- ("/Users/djm/.cache/emacs/emacs-recentf" . 451)
- ("/usr/local/Cellar/emacs-head/HEAD-9e15df2_1/share/emacs/27.0.50/lisp/cus-start.el.gz" . 10165)
- ("/Users/djm/dotz/editors/emacs.d/early-init.el" . 180)
- ("/Users/djm/dotz/editors/emacs.d/"
-  (dired-filename . "/Users/djm/dotz/editors/emacs.d/.secret.el")))

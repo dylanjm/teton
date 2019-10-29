@@ -1,35 +1,3 @@
-(use-package dashboard
-  :init (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
-  :config
-  (set-face-bold 'dashboard-heading-face t))
-
-(use-package org
-  :straight org-plus-contrib
-  :hook (org-mode . visual-line-mode)
-  :requires (org-capture org-protocol)
-  :custom
-  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                       (sequence "MAYBE" "CANCELED" "|")))
-  :config
-  (org-add-link-type "project" 'projectile-switch-project-by-name)
-  (use-package org-habit-plus
-    :straight (org-habit-plus :type git :host github
-                              :repo "oddious/org-habit-plus")
-    :custom
-    (org-habit-scheduled-past-days org-scheduled-past-days))
-  (use-package org-make-toc
-    :straight (org-make-toc :type git :host github
-                            :repo "alphapapa/org-make-toc")
-    :init (org-make-toc-mode 1)))
-
-(provide 'init)
-;;; init.el ends here
-
 ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
@@ -109,8 +77,50 @@
 (use-package files
   :straight nil
   :custom
+  (require-final-newline t)
+  (backup-by-copying t)
+  (version-control t)
+  (delete-old-versions t)
+  (kept-new-versions 6)
+  (kept-old-versions 2)
   (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
   (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
+
+(use-package autorevert
+  :straight nil
+  :init (global-auto-revert-mode 1)
+  :custom
+  (auto-revert-verbose nil)
+  (global-auto-revert-non-file-buffers t)
+  (auto-revert-use-notify nil))
+
+(use-package recentf
+  :straight nil
+  :functions (recentf-save-list)
+  :init (recentf-mode 1)
+  :custom
+  (recentf-save-file (djm/emacs-cache "recentf"))
+  (recentf-max-saved-items 200)
+  (recentf-max-menu-items 20)
+  (recentf-auto-cleanup 'never)
+  (recentf-exclude '("\\.?cache"
+                     ".cask"
+                     "url"
+                     "COMMIT_EDITMSG\\'"
+                     "bookmarks"
+                     "NEWS"
+                     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+                     "^/tmp/"nnn
+                     "^/ssh:"
+                     "\\.?ido\\.last$"
+                     "\\.revive$"
+                     "/TAGS$"
+                     "^/var/folders/.+$"
+                     (lambda (file)
+                       (file-in-directory-p file package-user-dir))))
+  :config
+  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 
 (use-package frame
     :straight nil
@@ -120,6 +130,12 @@
     (window-divider-default-bottom-width 1)
     (window-divider-default-right-width 1)
     (global-unset-key (kbd "C-z")))
+
+(use-package delsel
+  :bind (:map mode-specific-map
+              ("C-g" . minibuffer-keyboard-quit))
+  :config
+  (delete-selection-mode 1))
 
   (use-package simple
     :straight nil
@@ -178,42 +194,6 @@
   (savehist-autosave-interval 300)
   (savehist-file (djm/emacs-cache "emacs-history"))
   (savehist-save-minibuffer-history 1))
-
-(use-package autorevert
-  :straight nil
-  :init (global-auto-revert-mode 1)
-  :custom
-  (auto-revert-verbose nil)
-  (global-auto-revert-non-file-buffers t)
-  (auto-revert-use-notify nil))
-
-(use-package recentf
-  :straight nil
-  :functions (recentf-save-list)
-  :init (recentf-mode 1)
-  :custom
-  (recentf-save-file (djm/emacs-cache "recentf"))
-  (recentf-max-saved-items 200)
-  (recentf-max-menu-items 20)
-  (recentf-auto-cleanup 'never)
-  (recentf-exclude '("\\.?cache"
-                     ".cask"
-                     "url"
-                     "COMMIT_EDITMSG\\'"
-                     "bookmarks"
-                     "NEWS"
-                     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                     "^/tmp/"nnn
-                     "^/ssh:"
-                     "\\.?ido\\.last$"
-                     "\\.revive$"
-                     "/TAGS$"
-                     "^/var/folders/.+$"
-                     (lambda (file)
-                       (file-in-directory-p file package-user-dir))))
-  :config
-  (push (expand-file-name recentf-save-file) recentf-exclude)
-  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 
 (use-package prog-mode
     :straight nil
@@ -307,13 +287,11 @@
   :config
   (setq ibuffer-projectile-prefix ""))
 
-  (use-package whitespace
-    :straight nil
-    :hook (((prog-mode text-mode conf-mode) . whitespace-mode)
-           (before-save . delete-trailing-whitespace))
-    :custom
-    (whitespace-style '(face indentation space-after-tab space-before-tab
-                             tab-mark empty trailing)))
+(use-package ws-butler
+  :commands (ws-butler-global-mode)
+  :hook ((prog-mode . (lambda () (require 'ws-butler)))
+         (text-mode . (lambda () (require 'ws-butler))))
+  :config (ws-butler-global-mode 1))
 
   (use-package zop-to-char
     :bind (("M-z" . zop-to-char)
@@ -356,10 +334,14 @@
 
 (use-package doom-themes
   :demand t
+  :custom
+  (doom-gruvbox-brighter-comments t)
+  (doom-themes-enable-italic t)
+  (doom-themes-enable-bold t)
   :config
   (load-theme 'doom-gruvbox t)
-  (setq doom-gruvbox-brighter-comments t)
   (doom-themes-org-config)
+  ;; Emacs 27 added new extend keyword which breaks most themes
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
   (with-eval-after-load 'org
@@ -369,6 +351,37 @@
                     org-level-1
                     org-quote))
       (set-face-attribute face nil :extend t)))
+  (with-eval-after-load 'magit
+      (dolist (face '(magit-diff-hunk-heading
+                      magit-diff-hunk-heading-highlight
+                      magit-diff-hunk-heading-selection
+                      magit-diff-hunk-region
+                      magit-diff-lines-heading
+                      magit-diff-lines-boundary
+                      magit-diff-conflict-heading
+                      magit-diff-added
+                      magit-diff-removed
+                      magit-diff-our
+                      magit-diff-base
+                      magit-diff-their
+                      magit-diff-context
+                      magit-diff-added-highlight
+                      magit-diff-removed-highlight
+                      magit-diff-our-highlight
+                      magit-diff-base-highlight
+                      magit-diff-their-highlight
+                      magit-diff-context-highlight
+                      magit-diff-whitespace-warning
+                      magit-diffstat-added
+                      magit-diffstat-removed
+                      magit-section-heading
+                      magit-section-heading-selection
+                      magit-section-highlight
+                      magit-section-secondary-heading
+                      magit-diff-file-heading
+                      magit-diff-file-heading-highlight
+                      magit-diff-file-heading-selection))
+        (set-face-attribute face nil :extend t)))
   (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                       :height 180 :weight 'bold :slant 'italic))
 
@@ -410,7 +423,7 @@
   :commands (aggressive-indent-mode))
 
 (use-package hungry-delete
-  :commands (hungy-delete-mode))
+  :commands (hungry-delete-mode))
 
 (use-package key-chord
   :custom (key-chord-two-keys-delay 0.05)
@@ -886,3 +899,49 @@
       (if python-auto-format-mode
           (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
         (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
+
+(use-package dashboard
+  :init (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
+
+(use-package org
+  :straight org-plus-contrib
+  :hook (org-mode . visual-line-mode)
+  :requires (org-capture org-protocol)
+  :custom
+  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
+                       (sequence "MAYBE" "CANCELED" "|")))
+  :config
+  (org-add-link-type "project" 'projectile-switch-project-by-name)
+  (use-package org-habit-plus
+    :straight (org-habit-plus :type git :host github
+                              :repo "oddious/org-habit-plus")
+    :custom
+    (org-habit-scheduled-past-days org-scheduled-past-days))
+  (use-package org-make-toc
+    :straight (org-make-toc :type git :host github
+                            :repo "alphapapa/org-make-toc")
+    :init (org-make-toc-mode 1)))
+
+(use-package org-src
+:straight nil
+  :preface
+  (progn
+    (defun config-org--supress-final-newline ()
+      (setq-local require-final-newline nil))
+
+    (defun config-org--org-src-delete-trailing-space (&rest _)
+      (delete-trailing-whitespace)))
+  :config
+  (progn
+    (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
+    (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
+
+(provide 'init)
+;;; init.el ends here

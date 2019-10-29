@@ -76,11 +76,12 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
   (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
   (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
 
-  (setq-default  inhibit-compacting-font-caches t
-                 frame-inhibit-implied-resize t
-                 gc-cons-percentage 0.6
-                 auto-window-vscroll nil
-                 file-name-handler-alist nil)
+  (setq-default auto-window-vscroll nil
+                file-name-handler-alist nil
+                frame-inhibit-implied-resize t
+                gc-cons-percentage 0.6
+                inhibit-compacting-font-caches t
+                package-enable-at-startup nil)
 
   (add-hook 'after-init-hook
             (lambda ()
@@ -105,10 +106,13 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
               (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 #+END_SRC
 
+** A few default settings before we create our frame
+
 #+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
 (fset 'view-hello-file 'ignore)
 (fset 'display-startup-echo-area-message 'ignore)
+
 (put 'narrow-to-region 'disabled nil)
 (put 'up-case-rgion 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -125,14 +129,10 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 ** Getting packages /straightened-out/ using =straight.el=
 
 #+BEGIN_SRC emacs-lisp
-(setq straight-check-for-modifications '(find-when-checking check-on-save)
-      use-package-enable-imenu-support t
-      straight-use-package-by-default t)
+  (eval-and-compile
+    (defvar bootstrap-version 5)
+    (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
         (url-retrieve-synchronously
@@ -140,16 +140,40 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package)
+  (load bootstrap-file nil 'nomessage)
 
-(use-package use-package-chords)
-(use-package use-package-ensure-system-package)
-(use-package use-package-hydra)
+  (unless (fboundp 'straight-vc-built-in-get-commit)
+    (defun straight-vc-built-in-get-commit (&rest _)
+      "built-in"))
 
-(provide 'early-init)
-;;; early-init.el ends here
+  (with-no-warnings
+    (setq straight-cache-autoloads t)
+    (setq straight-check-for-modifications '(find-when-checking check-on-save))
+    (setq straight-use-package-by-default t))
+
+  (with-no-warnings
+    (setq use-package-verbose t)
+    (setq use-package-enable-imenu-support t))
+
+  (straight-use-package 'use-package)
+
+  (use-package dash)
+  (use-package dash-functional)
+  (use-package f)
+  (use-package s)
+  (use-package memoize)
+  (use-package general)
+  (use-package el-patch)
+  (use-package hydra)
+  (use-package use-package-chords)
+  (use-package use-package-ensure-system-package)
+  (use-package use-package-hydra)
+  (use-package diminish)
+  (use-package bind-key)
+
+  (provide 'early-init)
+  ;;; early-init.el ends here
 #+END_SRC
 
 This concludes =early-init.el=.
@@ -232,83 +256,14 @@ This concludes =early-init.el=.
   (use-package files
     :straight nil
     :custom
+    (require-final-newline t)
+    (backup-by-copying t)
+    (version-control t)
+    (delete-old-versions t)
+    (kept-new-versions 6)
+    (kept-old-versions 2)
     (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
     (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
-#+end_src
-
-** Window & Frame Settings
-
-#+begin_src emacs-lisp
-  (use-package frame
-    :straight nil
-    :config (window-divider-mode 1)
-    :custom
-    (window-divider-default-places t)
-    (window-divider-default-bottom-width 1)
-    (window-divider-default-right-width 1)
-    (global-unset-key (kbd "C-z")))
-
-  (use-package simple
-    :straight nil
-    :custom
-    (column-number-mode nil)
-    (line-number-mode nil)
-    (line-move-visual nil)
-    (track-eol t)
-    (set-mark-command-repeat-pop t))
-
-  (use-package fringe
-    :straight nil
-    :custom
-    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                  fringe-indicator-alist))
-    :config (fringe-mode '(10 . 8)))
-
-  (use-package pixel-scroll
-    :demand t
-    :straight nil
-    :config (pixel-scroll-mode 1))
-
-  (use-package ns-win
-    :straight nil
-    :custom
-    (ns-pop-up-frames nil)
-    (ns-use-native-fullscreen nil)
-    (mac-option-modifier 'meta)
-    (mac-command-modifier 'meta)
-    (mac-right-command-modifier 'left)
-    (mac-right-option-modifier 'none)
-    (mac-function-modifier 'hyper))
-
-  (use-package windmove
-    :bind (("C-c w l" . windmove-left)
-           ("C-c w r" . windmove-right)
-           ("C-c w p" . windmove-up)
-           ("C-c w n" . windmove-down))
-    :custom (windmove-default-keybindings 'shift))
-
-(advice-add 'help-window-display-message :override #'ignore)
-#+end_src
-
-** Picking up where we left off
-
-#+begin_src emacs-lisp
-  (use-package focus-autosave-mode :init (focus-autosave-mode))
-
-  (use-package saveplace
-    :straight nil
-    :init (save-place-mode 1)
-    :custom (save-place-file (djm/emacs-cache "places")))
-
-  (use-package savehist
-    :straight nil
-    :init (savehist-mode 1)
-    :custom
-    (history-length 1000)
-    (history-delete-duplicates t)
-    (savehist-autosave-interval 300)
-    (savehist-file (djm/emacs-cache "emacs-history"))
-    (savehist-save-minibuffer-history 1))
 
   (use-package autorevert
     :straight nil
@@ -345,6 +300,88 @@ This concludes =early-init.el=.
     :config
     (push (expand-file-name recentf-save-file) recentf-exclude)
     (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
+
+#+end_src
+
+** Window & Frame Settings
+
+#+begin_src emacs-lisp
+      (use-package frame
+        :straight nil
+        :config (window-divider-mode 1)
+        :custom
+        (window-divider-default-places t)
+        (window-divider-default-bottom-width 1)
+        (window-divider-default-right-width 1)
+        (global-unset-key (kbd "C-z")))
+
+    (use-package delsel
+      :bind (:map mode-specific-map
+                  ("C-g" . minibuffer-keyboard-quit))
+      :config
+      (delete-selection-mode 1))
+
+      (use-package simple
+        :straight nil
+        :custom
+        (column-number-mode nil)
+        (line-number-mode nil)
+        (line-move-visual nil)
+        (track-eol t)
+        (set-mark-command-repeat-pop t))
+
+      (use-package fringe
+        :straight nil
+        :custom
+        (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                      fringe-indicator-alist))
+        :config (fringe-mode '(10 . 8)))
+
+      (use-package pixel-scroll
+        :demand t
+        :straight nil
+        :config (pixel-scroll-mode 1))
+
+      (use-package ns-win
+        :straight nil
+        :custom
+        (ns-pop-up-frames nil)
+        (ns-use-native-fullscreen nil)
+        (mac-option-modifier 'meta)
+        (mac-command-modifier 'meta)
+        (mac-right-command-modifier 'left)
+        (mac-right-option-modifier 'none)
+        (mac-function-modifier 'hyper))
+
+      (use-package windmove
+        :bind (("C-c w l" . windmove-left)
+               ("C-c w r" . windmove-right)
+               ("C-c w p" . windmove-up)
+               ("C-c w n" . windmove-down))
+        :custom (windmove-default-keybindings 'shift))
+
+    (advice-add 'help-window-display-message :override #'ignore)
+#+end_src
+
+** Picking up where we left off
+
+#+begin_src emacs-lisp
+  (use-package focus-autosave-mode :init (focus-autosave-mode))
+
+  (use-package saveplace
+    :straight nil
+    :init (save-place-mode 1)
+    :custom (save-place-file (djm/emacs-cache "places")))
+
+  (use-package savehist
+    :straight nil
+    :init (savehist-mode 1)
+    :custom
+    (history-length 1000)
+    (history-delete-duplicates t)
+    (savehist-autosave-interval 300)
+    (savehist-file (djm/emacs-cache "emacs-history"))
+    (savehist-save-minibuffer-history 1))
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
@@ -440,13 +477,11 @@ This concludes =early-init.el=.
     :config
     (setq ibuffer-projectile-prefix ""))
 
-    (use-package whitespace
-      :straight nil
-      :hook (((prog-mode text-mode conf-mode) . whitespace-mode)
-             (before-save . delete-trailing-whitespace))
-      :custom
-      (whitespace-style '(face indentation space-after-tab space-before-tab
-                               tab-mark empty trailing)))
+  (use-package ws-butler
+    :commands (ws-butler-global-mode)
+    :hook ((prog-mode . (lambda () (require 'ws-butler)))
+           (text-mode . (lambda () (require 'ws-butler))))
+    :config (ws-butler-global-mode 1))
 
     (use-package zop-to-char
       :bind (("M-z" . zop-to-char)
@@ -493,10 +528,14 @@ This concludes =early-init.el=.
 #+begin_src emacs-lisp
   (use-package doom-themes
     :demand t
+    :custom
+    (doom-gruvbox-brighter-comments t)
+    (doom-themes-enable-italic t)
+    (doom-themes-enable-bold t)
     :config
     (load-theme 'doom-gruvbox t)
-    (setq doom-gruvbox-brighter-comments t)
     (doom-themes-org-config)
+    ;; Emacs 27 added new extend keyword which breaks most themes
     (dolist (face '(region hl-line secondary-selection))
       (set-face-attribute face nil :extend t))
     (with-eval-after-load 'org
@@ -506,6 +545,37 @@ This concludes =early-init.el=.
                       org-level-1
                       org-quote))
         (set-face-attribute face nil :extend t)))
+    (with-eval-after-load 'magit
+        (dolist (face '(magit-diff-hunk-heading
+                        magit-diff-hunk-heading-highlight
+                        magit-diff-hunk-heading-selection
+                        magit-diff-hunk-region
+                        magit-diff-lines-heading
+                        magit-diff-lines-boundary
+                        magit-diff-conflict-heading
+                        magit-diff-added
+                        magit-diff-removed
+                        magit-diff-our
+                        magit-diff-base
+                        magit-diff-their
+                        magit-diff-context
+                        magit-diff-added-highlight
+                        magit-diff-removed-highlight
+                        magit-diff-our-highlight
+                        magit-diff-base-highlight
+                        magit-diff-their-highlight
+                        magit-diff-context-highlight
+                        magit-diff-whitespace-warning
+                        magit-diffstat-added
+                        magit-diffstat-removed
+                        magit-section-heading
+                        magit-section-heading-selection
+                        magit-section-highlight
+                        magit-section-secondary-heading
+                        magit-diff-file-heading
+                        magit-diff-file-heading-highlight
+                        magit-diff-file-heading-selection))
+          (set-face-attribute face nil :extend t)))
     (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                         :height 180 :weight 'bold :slant 'italic))
 
@@ -561,7 +631,7 @@ This concludes =early-init.el=.
     :commands (aggressive-indent-mode))
 
   (use-package hungry-delete
-    :commands (hungy-delete-mode))
+    :commands (hungry-delete-mode))
 
   (use-package key-chord
     :custom (key-chord-two-keys-delay 0.05)
@@ -1080,7 +1150,7 @@ This concludes =early-init.el=.
 #+end_src
 
 
-#+begin_src emac-lisp
+#+begin_src emacs-lisp
   (use-package dashboard
     :init (dashboard-setup-startup-hook)
     :custom
@@ -1109,6 +1179,20 @@ This concludes =early-init.el=.
       :straight (org-make-toc :type git :host github
                               :repo "alphapapa/org-make-toc")
       :init (org-make-toc-mode 1)))
+
+  (use-package org-src
+  :straight nil
+    :preface
+    (progn
+      (defun config-org--supress-final-newline ()
+        (setq-local require-final-newline nil))
+
+      (defun config-org--org-src-delete-trailing-space (&rest _)
+        (delete-trailing-whitespace)))
+    :config
+    (progn
+      (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
+      (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 
   (provide 'init)
   ;;; init.el ends here

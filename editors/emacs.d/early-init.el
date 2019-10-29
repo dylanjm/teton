@@ -21,11 +21,12 @@
 (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
 (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
 
-(setq-default  inhibit-compacting-font-caches t
-               frame-inhibit-implied-resize t
-               gc-cons-percentage 0.6
-               auto-window-vscroll nil
-               file-name-handler-alist nil)
+(setq-default auto-window-vscroll nil
+              file-name-handler-alist nil
+              frame-inhibit-implied-resize t
+              gc-cons-percentage 0.6
+              inhibit-compacting-font-caches t
+              package-enable-at-startup nil)
 
 (add-hook 'after-init-hook
           (lambda ()
@@ -52,6 +53,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (fset 'view-hello-file 'ignore)
 (fset 'display-startup-echo-area-message 'ignore)
+
 (put 'narrow-to-region 'disabled nil)
 (put 'up-case-rgion 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -64,28 +66,48 @@
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 (push '(variable-pitch . "-*-Fira Sans-light-normal-normal-*-18-*-*-*-p-0-iso10646-1") default-frame-alist)
 
-(setq straight-check-for-modifications '(find-when-checking check-on-save)
-      use-package-enable-imenu-support t
-      straight-use-package-by-default t)
+(eval-and-compile
+  (defvar bootstrap-version 5)
+  (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+       'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+
+(load bootstrap-file nil 'nomessage)
+
+(unless (fboundp 'straight-vc-built-in-get-commit)
+  (defun straight-vc-built-in-get-commit (&rest _)
+    "built-in"))
+
+(with-no-warnings
+  (setq straight-cache-autoloads t)
+  (setq straight-check-for-modifications '(find-when-checking check-on-save))
+  (setq straight-use-package-by-default t))
+
+(with-no-warnings
+  (setq use-package-verbose t)
+  (setq use-package-enable-imenu-support t))
 
 (straight-use-package 'use-package)
 
+(use-package dash)
+(use-package dash-functional)
+(use-package f)
+(use-package s)
+(use-package memoize)
+(use-package general)
+(use-package el-patch)
+(use-package hydra)
 (use-package use-package-chords)
 (use-package use-package-ensure-system-package)
 (use-package use-package-hydra)
+(use-package diminish)
+(use-package bind-key)
 
 (provide 'early-init)
 ;;; early-init.el ends here

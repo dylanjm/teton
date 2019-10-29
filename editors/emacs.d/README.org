@@ -1,1 +1,1 @@
-/Users/djm/dotz/editors/emacs.d/dotemacs.org
+dotemacs.org

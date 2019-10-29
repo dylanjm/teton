@@ -187,10 +187,8 @@ This concludes =early-init.el=.
     (ad-redefinition-action 'accept)
     (auto-save-list-file-prefix nil)
     (auto-window-vscroll nil)
-    (backup-by-copying t)
     (browse-urls-browser-function "firefox")
     (confirm-kill-processes nil)
-    (create-lockfiles nil)
     (cursor-in-non-selected-windows nil)
     (cursor-type 'bar)
     (custom-file (make-temp-file "emacs-custom"))
@@ -206,16 +204,11 @@ This concludes =early-init.el=.
     (ffap-machine-p-known 'reject)
     (frame-resize-pixelwise t)
     (frame-title-format '("%b - Emacs"))
-    (help-window-select t)
     (icon-title-format frame-title-format)
     (indent-tabs-mode nil)
     (inhibit-compacting-font-caches t)
     (inhibit-default-init t)
-    (inhibit-startup-screen t)
-    (inhibit-startup-echo-area-message t)
-    (initial-scratch-message "")
     (insert-directory-program "gls")
-    (line-spacing 1)
     (load-prefer-newer t)
     (message-log-max 10000)
     (mode-line-in-non-selected-windows nil)
@@ -242,6 +235,12 @@ This concludes =early-init.el=.
     (view-read-only t)
     (window-combination-resize t))
 
+  (use-package emacs
+    :straight nil
+    :init (setq inhibit-startup-screen t
+                initial-scratch-message ""
+                inhibit-startup-echo-area-message t))
+
   (use-package osx-trash :init (osx-trash-setup))
   (use-package vscode-icon)
 #+end_src
@@ -251,21 +250,22 @@ This concludes =early-init.el=.
 #+begin_src emacs-lisp
   (use-package mule
     :straight nil
-    :config
+    :init
     (prefer-coding-system 'utf-8-unix)
     (set-language-environment "UTF-8"))
 
   (use-package files
     :straight nil
-    :custom
-    (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-    (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
-    (backup-by-copying t)
-    (delete-old-versions t)
-    (kept-new-versions 6)
-    (kept-old-versions 2)
-    (require-final-newline t)
-    (version-control t))
+    :init
+    (setq-default auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t))
+                  backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))
+                  backup-by-copying t
+                  create-lockfiles nil
+                  delete-old-versions t
+                  kept-new-versions 6
+                  kept-old-versions 2
+                  require-final-newline t
+                  version-control t))
 
   (use-package autorevert
     :straight nil
@@ -309,18 +309,17 @@ This concludes =early-init.el=.
 #+begin_src emacs-lisp
   (use-package hl-line
     :straight nil
-    :config (global-hl-line-mode 1))
+    :init (global-hl-line-mode 1))
 
   (use-package frame
     :straight nil
-    :init (window-divider-mode 1)
-    :custom
-    (window-divider-default-places t)
-    (window-divider-default-bottom-width 1)
-    (window-divider-default-right-width 1)
-    (global-unset-key (kbd "C-z"))
-    :config
-    (blink-cursor-mode 0))
+    :init
+    (window-divider-mode 1)
+    (blink-cursor-mode 0)
+    (setq-default window-divider-default-places t
+                  window-divider-default-bottom-width 1
+                  window-divider-default-right-width 1
+                  global-unset-key (kbd "C-z")))
 
   (use-package delsel
     :bind (:map mode-specific-map
@@ -329,19 +328,19 @@ This concludes =early-init.el=.
 
   (use-package simple
     :straight nil
-    :custom
-    (column-number-mode nil)
-    (line-number-mode nil)
-    (line-move-visual nil)
-    (set-mark-command-repeat-pop t)
-    (track-eol t))
+    :init
+    (setq-default column-number-mode nil
+                  line-number-mode nil
+                  line-move-visual nil
+                  set-mark-command-repeat-pop t
+                  track-eol t))
 
   (use-package fringe
     :straight nil
-    :custom
-    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                  fringe-indicator-alist))
-    :config (fringe-mode '(10 . 8)))
+    :init
+    (setq-default fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                               fringe-indicator-alist))
+    (fringe-mode '(10 . 8)))
 
   (use-package pixel-scroll
     :straight nil
@@ -349,14 +348,14 @@ This concludes =early-init.el=.
 
   (use-package ns-win
     :straight nil
-    :custom
-    (mac-command-modifier 'meta)
-    (mac-option-modifier 'meta)
-    (mac-right-command-modifier 'left)
-    (mac-right-option-modifier 'none)
-    (mac-function-modifier 'hyper)
-    (ns-pop-up-frames nil)
-    (ns-use-native-fullscreen nil))
+    :init
+    (setq-default mac-command-modifier 'meta
+                  mac-option-modifier 'meta
+                  mac-right-command-modifier 'left
+                  mac-right-option-modifier 'none
+                  mac-function-modifier 'hyper
+                  ns-pop-up-frames nil
+                  ns-use-native-fullscreen nil))
 
   (use-package windmove
     :bind (("C-c w l" . windmove-left)
@@ -501,11 +500,6 @@ This concludes =early-init.el=.
     :config
     (put 'temporary-file-directory 'standard-value `(,temporary-file-directory)))
 
-  (use-package sudo-edit
-    :bind (:map ctl-x-map
-                ("M-s" . sudo-edit)))
-
-
   (use-package ws-butler
     :commands (ws-butler-global-mode)
     :hook ((prog-mode . (lambda () (require 'ws-butler)))
@@ -522,6 +516,10 @@ This concludes =early-init.el=.
   (use-package which-key
     :custom (which-key-idle-delay 0.5)
     :config (which-key-mode))
+
+  (use-package help
+    :straight nil
+    :init (setq help-window-select t))
 
   (use-package helpful
     :custom
@@ -542,7 +540,11 @@ This concludes =early-init.el=.
     (progn
       (async-bytecomp-package-mode 1)
       (dired-async-mode 1)))
+#+end_src
 
+** MacOS Specific
+
+#+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :custom
     (exec-path-from-shell-check-startup-files nil)
@@ -650,6 +652,51 @@ This concludes =early-init.el=.
 #+end_src
 
 * Features
+** Org-Mode
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :init (dashboard-setup-startup-hook)
+    :custom
+    (dashboard-items '((recents . 5)
+                       (projects . 5)
+                       (bookmarks . 5)
+                       (agenda . 5)))
+    :config
+    (set-face-bold 'dashboard-heading-face t))
+
+  (use-package org
+    :general
+    ("C-c a" #'org-agenda
+     "C-c s" #'org-search-view
+     "C-c t" #'org-todo-list
+     "C-c /" #'org-tags-view)
+    (:states '(emacs normal) :keymaps 'org-mode-map
+     "<backtab>" #'org-global-cycle
+     "<tab>" #'org-cycle
+     "C-c c" #'org-columns
+     "M-n" #'org-metadown
+     "M-p" #'org-metaup
+     "RET" #'org-return)
+    (:states '(normal motion insert emacs) :keymaps 'org-mode-map
+     "C-c C-." #'org-time-stamp-inactive
+     "C-c ." #'org-time-stamp))
+
+  (use-package org-src
+  :straight nil
+    :preface
+    (progn
+      (defun config-org--supress-final-newline ()
+        (setq-local require-final-newline nil))
+
+      (defun config-org--org-src-delete-trailing-space (&rest _)
+        (delete-trailing-whitespace)))
+    :config
+    (progn
+      (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
+      (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
+
+
+#+end_src
 
 #+begin_src emacs-lisp
   (use-package man)
@@ -1190,57 +1237,14 @@ This concludes =early-init.el=.
           (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
 #+end_src
 
-
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :init (dashboard-setup-startup-hook)
-    :custom
-    (dashboard-items '((recents . 5)
-                       (projects . 5)
-                       (bookmarks . 5)
-                       (agenda . 5)))
-    :config
-    (set-face-bold 'dashboard-heading-face t))
-
-  (use-package org
-    :straight org-plus-contrib
-    :hook (org-mode . visual-line-mode)
-    :requires (org-capture org-protocol)
-    :custom
-    (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                         (sequence "MAYBE" "CANCELED" "|")))
-    :config
-    (org-add-link-type "project" 'projectile-switch-project-by-name)
-    (use-package org-habit-plus
-      :straight (org-habit-plus :type git :host github
-                                :repo "oddious/org-habit-plus")
-      :custom
-      (org-habit-scheduled-past-days org-scheduled-past-days))
-    (use-package org-make-toc
-      :straight (org-make-toc :type git :host github
-                              :repo "alphapapa/org-make-toc")
-      :init (org-make-toc-mode 1)))
-
-  (use-package org-src
-  :straight nil
-    :preface
-    (progn
-      (defun config-org--supress-final-newline ()
-        (setq-local require-final-newline nil))
-
-      (defun config-org--org-src-delete-trailing-space (&rest _)
-        (delete-trailing-whitespace)))
-    :config
-    (progn
-      (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
-      (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
-
-  (provide 'init)
-  ;;; init.el ends here
-#+end_src
 ** C++
 #+begin_src emacs-lisp
   (use-package ccls
     :custom
     (ccls-executable "/usr/local/bin/ccls"))
+#+end_src
+* Finale
+#+begin_src emacs-lisp
+(provide 'init)
+;;; init.el ends here
 #+end_src

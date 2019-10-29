@@ -73149,7 +73149,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>650 602 620 392 0 0 1920 1177 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>315 2137 3210 554 0 0 3840 2137 </string>
+	<string>315 2137 3210 479 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>212 101 1050 517 0 0 1680 1027 </string>
 	<key>New Bookmarks</key>
@@ -76600,7 +76600,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>IosevkaNerdFontComplete-Term 16</string>
+			<string>IosevkaNerdFontComplete-Medium 16</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Place Prompt at First Column</key>
@@ -77568,7 +77568,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>136</integer>
+	<integer>137</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>

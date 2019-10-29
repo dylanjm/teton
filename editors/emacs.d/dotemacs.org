@@ -215,6 +215,8 @@ This concludes =early-init.el=.
     (set-language-environment "UTF-8")
     (global-hl-line-mode 1)
     (blink-cursor-mode 0))
+
+  (use-package osx-trash :init (osx-trash-setup))
 #+end_src
 
 ** Auto-Save Madness
@@ -228,6 +230,7 @@ This concludes =early-init.el=.
 #+end_src
 
 ** Window & Frame Settings
+
 #+begin_src emacs-lisp
   (use-package frame
     :straight nil
@@ -265,11 +268,19 @@ This concludes =early-init.el=.
     (mac-right-option-modifier 'none)
     (mac-function-modifier 'hyper))
 
+  (use-package windmove
+    :bind (("C-c w l" . windmove-left)
+           ("C-c w r" . windmove-right)
+           ("C-c w p" . windmove-up)
+           ("C-c w n" . windmove-down))
+    :custom (windmove-default-keybindings 'shift))
 #+end_src
 
 ** Picking up where we left off
 
 #+begin_src emacs-lisp
+  (use-package focus-autosave-mode :init (focus-autosave-mode))
+
   (use-package saveplace
     :straight nil
     :init (save-place-mode 1)
@@ -366,10 +377,6 @@ This concludes =early-init.el=.
       :bind ("M-\\" . dired-sidebar-toggle-sidebar)
       :custom (dired-sidebar-theme 'vscode)))
 
-  (use-package osx-trash :init (osx-trash-setup))
-
-  (use-package focus-autosave-mode :init (focus-autosave-mode))
-
   (use-package ibuffer
     :bind (([remap list-buffers] . ibuffer))
     :custom
@@ -382,13 +389,6 @@ This concludes =early-init.el=.
     :custom
     (whitespace-style '(face indentation space-after-tab space-before-tab
                              tab-mark empty trailing)))
-
-  (use-package windmove
-    :bind (("C-c w l" . windmove-left)
-           ("C-c w r" . windmove-right)
-           ("C-c w p" . windmove-up)
-           ("C-c w n" . windmove-down))
-    :custom (windmove-default-keybindings 'shift))
 
   (use-package zop-to-char
     :bind (("M-z" . zop-to-char)
@@ -419,7 +419,11 @@ This concludes =early-init.el=.
     (exec-path-from-shell-arguments '("-l"))
     :config
     (exec-path-from-shell-initialize))
+#+end_src
 
+* Theme
+
+#+begin_src emacs-lisp
   (use-package doom-themes
     :demand t
     :config
@@ -451,7 +455,9 @@ This concludes =early-init.el=.
     (tab-line-separator nil)
     (tab-line-close-button-show nil)
     :init (global-tab-line-mode))
+#+end_src
 
+#+begin_src emacs-lisp
   (use-package aggressive-indent
     :commands (aggressive-indent-mode))
 
@@ -711,7 +717,12 @@ This concludes =early-init.el=.
     (shell-pop-term-shell (getenv "SHELL"))
     :config
     (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+#+end_src
 
+* Language Support
+
+** Language Server Setup
+#+begin_src emacs-lisp
   (use-package lsp-mode
     :hook (python-mode . lsp-deferred)
     :bind (:map lsp-mode-map
@@ -756,7 +767,11 @@ This concludes =early-init.el=.
     (defun lsp-ui-imenu-hide-mode-line ()
       (setq mode-line-format nil))
     (advice-add #'lsp-ui-menu :after #'lsp-ui-imenu-hide-mode-line))
+#+end_src
 
+** Flycheck
+
+#+begin_src emacs-lisp
   (use-package flycheck
     :hook (after-init . global-flycheck-mode)
     :custom
@@ -793,8 +808,11 @@ This concludes =early-init.el=.
                                                  trailing lines space-before-tab::space
                                                  newline indentation::space empty
                                                  space-after-tab::space space-mark
-                                                 tab-mark newline-mark))))
+#+end_src                                                 tab-mark newline-mark))))
 
+** Python
+
+#+begin_src emacs-lisp
   (use-package python
     :straight nil
     :hook (inferior-python-mode . (lambda ()

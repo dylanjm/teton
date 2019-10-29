@@ -6,12 +6,6 @@
 ;;;
 ;;; Code:
 
-(use-package files
-  :straight nil
-  :custom
-  (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-  (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
-
 (use-package cus-start
   :straight nil
   :custom
@@ -74,6 +68,14 @@
   (global-hl-line-mode 1)
   (blink-cursor-mode 0))
 
+(use-package osx-trash :init (osx-trash-setup))
+
+(use-package files
+  :straight nil
+  :custom
+  (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+  (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
+
 (use-package frame
   :straight nil
   :config (window-divider-mode 1)
@@ -91,6 +93,33 @@
   (line-move-visual nil)
   (track-eol t)
   (set-mark-command-repeat-pop t))
+
+(use-package fringe
+  :straight nil
+  :custom
+  (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                fringe-indicator-alist))
+  :config (fringe-mode '(10 . 8)))
+
+(use-package ns-win
+  :straight nil
+  :custom
+  (ns-pop-up-frames nil)
+  (ns-use-native-fullscreen nil)
+  (mac-option-modifier 'meta)
+  (mac-command-modifier 'meta)
+  (mac-right-command-modifier 'left)
+  (mac-right-option-modifier 'none)
+  (mac-function-modifier 'hyper))
+
+(use-package windmove
+  :bind (("C-c w l" . windmove-left)
+         ("C-c w r" . windmove-right)
+         ("C-c w p" . windmove-up)
+         ("C-c w n" . windmove-down))
+  :custom (windmove-default-keybindings 'shift))
+
+(use-package focus-autosave-mode :init (focus-autosave-mode))
 
 (use-package saveplace
   :straight nil
@@ -114,33 +143,6 @@
   (auto-revert-verbose nil)
   (global-auto-revert-non-file-buffers t)
   (auto-revert-use-notify nil))
-
-(use-package fringe
-  :straight nil
-  :custom
-  (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                fringe-indicator-alist))
-  :config (fringe-mode '(10 . 8)))
-
-(use-package ns-win
-  :straight nil
-  :custom
-  (ns-pop-up-frames nil)
-  (ns-use-native-fullscreen nil)
-  (mac-option-modifier 'meta)
-  (mac-command-modifier 'meta)
-  (mac-right-command-modifier 'left)
-  (mac-right-option-modifier 'none)
-  (mac-function-modifier 'hyper))
-
-(use-package prog-mode
-  :straight nil
-  :hook ((prog-mode . prettify-symbols-mode)
-         (prog-mode . show-paren-mode)
-         (prog-mode . display-line-numbers-mode)
-         (prog-mode . display-fill-column-indicator-mode))
-  :custom
-  (prettify-symbols-unprettify-at-point 'right-edge))
 
 (use-package recentf
   :straight nil
@@ -167,10 +169,19 @@
                      (lambda (file)
                        (file-in-directory-p file package-user-dir))))
   :config
-  ;(advice-add 'recentf-cleanup :around #'inhibit-message-in-minibuffer)
   (push (expand-file-name recentf-save-file) recentf-exclude)
   (run-at-time nil (* 3 60) (lambda ()
                               (let ((save-silently t)) (recentf-save-list)))))
+
+(use-package prog-mode
+  :straight nil
+  :hook ((prog-mode . prettify-symbols-mode)
+         (prog-mode . show-paren-mode)
+         (prog-mode . display-line-numbers-mode)
+         (prog-mode . display-fill-column-indicator-mode))
+  :custom
+  (prettify-symbols-unprettify-at-point 'right-edge))
+
 
 (use-package vscode-icon)
 (use-package dired
@@ -204,10 +215,6 @@
     :bind ("M-\\" . dired-sidebar-toggle-sidebar)
     :custom (dired-sidebar-theme 'vscode)))
 
-(use-package osx-trash :init (osx-trash-setup))
-
-(use-package focus-autosave-mode :init (focus-autosave-mode))
-
 (use-package ibuffer
   :bind (([remap list-buffers] . ibuffer))
   :custom
@@ -220,13 +227,6 @@
   :custom
   (whitespace-style '(face indentation space-after-tab space-before-tab
                            tab-mark empty trailing)))
-
-(use-package windmove
-  :bind (("C-c w l" . windmove-left)
-         ("C-c w r" . windmove-right)
-         ("C-c w p" . windmove-up)
-         ("C-c w n" . windmove-down))
-  :custom (windmove-default-keybindings 'shift))
 
 (use-package zop-to-char
   :bind (("M-z" . zop-to-char)
@@ -594,44 +594,6 @@
   (defun lsp-ui-imenu-hide-mode-line ()
     (setq mode-line-format nil))
   (advice-add #'lsp-ui-menu :after #'lsp-ui-imenu-hide-mode-line))
-
-(use-package flycheck
-  :hook (after-init . global-flycheck-mode)
-  :custom
-  (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-indication-mode 'right-fringe)
-  (when (fboundp 'define-fringe-bitmap)
-    (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-      [16 48 112 240 112 48 16] nil nil 'center))
-  :config
-  (use-package flycheck-posframe
-    :hook (flycheck-mode . flycheck-posframe-mode)
-    :config (add-to-list 'flycheck-posframe-inhibit-functions
-                         #'(lambda () (bound-and-true-p company-backend))))
-  (use-package flycheck-pos-tip
-    :defines flycheck-pos-tip-timeout
-    :hook (global-flycheck-mode . flycheck-pos-tip-mode)
-    :config (setq flycheck-pos-tip-timeout 30))
-  (use-package flycheck-popup-tip
-    :hook (flycheck-mode . flycheck-popup-tip-mode)))
-
-(use-package sh-script
-  :ensure-system-package shfmt
-  :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
-  :custom
-  (sh-indentation 2)
-  (sh-basic-offset 2))
-
-(use-package ess
-  :init
-  (progn
-    (add-to-list 'safe-local-variable-values '(outline-minor-mode))
-    (add-to-list 'safe-local-variable-values '(whitespace-style
-                                               face tabs spaces
-                                               trailing lines space-before-tab::space
-                                               newline indentation::space empty
-                                               space-after-tab::space space-mark
-                                               tab-mark newline-mark))))
 
 (use-package python
   :straight nil

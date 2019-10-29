@@ -178,7 +178,7 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 
 This concludes =early-init.el=.
 
-* Default Settings
+* General Settings
 ** Sane settings for the insane
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -240,30 +240,32 @@ This concludes =early-init.el=.
     (use-file-dialog nil)
     (vc-follow-symlinks t)
     (view-read-only t)
-    (window-combination-resize t)
-    :config
-    (prefer-coding-system 'utf-8-unix)
-    (set-language-environment "UTF-8")
-    (global-hl-line-mode 1)
-    (blink-cursor-mode 0))
+    (window-combination-resize t))
 
   (use-package osx-trash :init (osx-trash-setup))
+  (use-package vscode-icon)
 #+end_src
 
 ** Auto-Save Madness
 
 #+begin_src emacs-lisp
+  (use-package mule
+    :straight nil
+    :config
+    (prefer-coding-system 'utf-8-unix)
+    (set-language-environment "UTF-8"))
+
   (use-package files
     :straight nil
     :custom
-    (require-final-newline t)
+    (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+    (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
     (backup-by-copying t)
-    (version-control t)
     (delete-old-versions t)
     (kept-new-versions 6)
     (kept-old-versions 2)
-    (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-    (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
+    (require-final-newline t)
+    (version-control t))
 
   (use-package autorevert
     :straight nil
@@ -300,74 +302,75 @@ This concludes =early-init.el=.
     :config
     (push (expand-file-name recentf-save-file) recentf-exclude)
     (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
-
 #+end_src
 
 ** Window & Frame Settings
 
 #+begin_src emacs-lisp
-      (use-package frame
-        :straight nil
-        :config (window-divider-mode 1)
-        :custom
-        (window-divider-default-places t)
-        (window-divider-default-bottom-width 1)
-        (window-divider-default-right-width 1)
-        (global-unset-key (kbd "C-z")))
+  (use-package hl-line
+    :straight nil
+    :config (global-hl-line-mode 1))
 
-    (use-package delsel
-      :bind (:map mode-specific-map
-                  ("C-g" . minibuffer-keyboard-quit))
-      :config
-      (delete-selection-mode 1))
+  (use-package frame
+    :straight nil
+    :init (window-divider-mode 1)
+    :custom
+    (window-divider-default-places t)
+    (window-divider-default-bottom-width 1)
+    (window-divider-default-right-width 1)
+    (global-unset-key (kbd "C-z"))
+    :config
+    (blink-cursor-mode 0))
 
-      (use-package simple
-        :straight nil
-        :custom
-        (column-number-mode nil)
-        (line-number-mode nil)
-        (line-move-visual nil)
-        (track-eol t)
-        (set-mark-command-repeat-pop t))
+  (use-package delsel
+    :bind (:map mode-specific-map
+                ("C-g" . minibuffer-keyboard-quit))
+    :init (delete-selection-mode 1))
 
-      (use-package fringe
-        :straight nil
-        :custom
-        (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                      fringe-indicator-alist))
-        :config (fringe-mode '(10 . 8)))
+  (use-package simple
+    :straight nil
+    :custom
+    (column-number-mode nil)
+    (line-number-mode nil)
+    (line-move-visual nil)
+    (set-mark-command-repeat-pop t)
+    (track-eol t))
 
-      (use-package pixel-scroll
-        :demand t
-        :straight nil
-        :config (pixel-scroll-mode 1))
+  (use-package fringe
+    :straight nil
+    :custom
+    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                  fringe-indicator-alist))
+    :config (fringe-mode '(10 . 8)))
 
-      (use-package ns-win
-        :straight nil
-        :custom
-        (ns-pop-up-frames nil)
-        (ns-use-native-fullscreen nil)
-        (mac-option-modifier 'meta)
-        (mac-command-modifier 'meta)
-        (mac-right-command-modifier 'left)
-        (mac-right-option-modifier 'none)
-        (mac-function-modifier 'hyper))
+  (use-package pixel-scroll
+    :straight nil
+    :init (pixel-scroll-mode 1))
 
-      (use-package windmove
-        :bind (("C-c w l" . windmove-left)
-               ("C-c w r" . windmove-right)
-               ("C-c w p" . windmove-up)
-               ("C-c w n" . windmove-down))
-        :custom (windmove-default-keybindings 'shift))
+  (use-package ns-win
+    :straight nil
+    :custom
+    (mac-command-modifier 'meta)
+    (mac-option-modifier 'meta)
+    (mac-right-command-modifier 'left)
+    (mac-right-option-modifier 'none)
+    (mac-function-modifier 'hyper)
+    (ns-pop-up-frames nil)
+    (ns-use-native-fullscreen nil))
 
-    (advice-add 'help-window-display-message :override #'ignore)
+  (use-package windmove
+    :bind (("C-c w l" . windmove-left)
+           ("C-c w r" . windmove-right)
+           ("C-c w p" . windmove-up)
+           ("C-c w n" . windmove-down))
+    :custom (windmove-default-keybindings 'shift)
+    :config
+    (advice-add 'help-window-display-message :override #'ignore))
 #+end_src
 
 ** Picking up where we left off
 
 #+begin_src emacs-lisp
-  (use-package focus-autosave-mode :init (focus-autosave-mode))
-
   (use-package saveplace
     :straight nil
     :init (save-place-mode 1)
@@ -377,80 +380,89 @@ This concludes =early-init.el=.
     :straight nil
     :init (savehist-mode 1)
     :custom
-    (history-length 1000)
     (history-delete-duplicates t)
+    (history-length 1000)
     (savehist-autosave-interval 300)
     (savehist-file (djm/emacs-cache "emacs-history"))
     (savehist-save-minibuffer-history 1))
+
+  (use-package focus-autosave-mode
+    :init (focus-autosave-mode 1))
 #+end_src
 
+#+begin_src emacs-lisp
+  (use-package prog-mode
+    :straight nil
+    :hook ((prog-mode . prettify-symbols-mode)
+           (prog-mode . show-paren-mode)
+           (prog-mode . display-line-numbers-mode)
+           (prog-mode . display-fill-column-indicator-mode))
+    :custom
+    (prettify-symbols-unprettify-at-point 'right-edge))
+
+  (use-package term
+    :straight nil
+    :commands (ansi-term)
+    :preface
+    (defun config-basic-settings--shell-hl-line-off ()
+      (when (bound-and-true-p hl-line-mode)
+        (hl-line-mode -1)))
+    :config
+    (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
+#+end_src
+
+** Dired
 #+BEGIN_SRC emacs-lisp
-    (use-package prog-mode
-      :straight nil
-      :hook ((prog-mode . prettify-symbols-mode)
-             (prog-mode . show-paren-mode)
-             (prog-mode . display-line-numbers-mode)
-             (prog-mode . display-fill-column-indicator-mode))
-      :custom
-      (prettify-symbols-unprettify-at-point 'right-edge))
+  (use-package dired
+    :straight nil
+    :functions (dired wdired-change-to-wdired-mode)
+    :bind (:map dired-mode-map
+                ("C-c C-p" . wdired-change-to-wdired-mode)
+                ("C-c C-r" . dired-rsync)
+                ("TAB" . dired-subtree-insert)
+                (";" . dired-subtree-remove)
+                (":" . dired-git-info-mode))
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-dwim-target t)
+    (dired-guess-shell-gnutar "tar")
+    (dired-listing-switches "-alhF --group-directories-first -v")
+    (dired-ls-F-marks-symlinks t)
+    (dired-recursive-deletes 'always)
+    (dired-recursive-copies 'always)
+    (dired-use-ls-dired nil)
+    :config
+    (use-package dired-aux :straight nil)
+    (use-package dired-x :straight nil)
+    (use-package diredfl :init (diredfl-global-mode 1))
+    (use-package dired-ranger)
+    (use-package dired-git-info)
+    (use-package dired-rsync)
+    (use-package dired-subtree)
+    (use-package fd-dired)
+    (use-package dired-sidebar
+      :bind ("M-\\" . dired-sidebar-toggle-sidebar)
+      :custom (dired-sidebar-theme 'vscode)))
+#+end_src
 
-    (use-package term
-      :straight nil
-      :commands (ansi-term)
-      :preface
-      (defun config-basic-settings--shell-hl-line-off ()
-        (when (bound-and-true-p hl-line-mode)
-          (hl-line-mode -1)))
-      :config
-      (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
+** IBuffer
 
-    (use-package vscode-icon)
-    (use-package dired
-      :straight nil
-      :functions (dired wdired-change-to-wdired-mode)
-      :bind (:map dired-mode-map
-                  ("C-c C-p" . wdired-change-to-wdired-mode)
-                  ("C-c C-r" . dired-rsync)
-                  ("TAB" . dired-subtree-insert)
-                  (";" . dired-subtree-remove)
-                  (":" . dired-git-info-mode))
-      :custom
-      (dired-auto-revert-buffer t)
-      (dired-dwim-target t)
-      (dired-guess-shell-gnutar "tar")
-      (dired-listing-switches "-alhF --group-directories-first -v")
-      (dired-ls-F-marks-symlinks t)
-      (dired-recursive-deletes 'always)
-      (dired-recursive-copies 'always)
-      (dired-use-ls-dired nil)
-      :config
-      (use-package dired-aux :straight nil)
-      (use-package dired-x :straight nil)
-      (use-package diredfl :init (diredfl-global-mode 1))
-      (use-package dired-ranger)
-      (use-package dired-git-info)
-      (use-package dired-rsync)
-      (use-package dired-subtree)
-      (use-package fd-dired)
-      (use-package dired-sidebar
-        :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-        :custom (dired-sidebar-theme 'vscode)))
-
-    (use-package ibuffer
-      :bind (([remap list-buffers] . ibuffer))
-      :hook (ibuffer-mode . hl-line-mode)
-      :custom
-      (ibuffer-expert t)
-      (ibuffer-show-empty-filter-groups nil)
-      (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
-      (ibuffer-never-show-predicates (list (rx (or "*Messages*"
-                                                   "*magit-"
-                                                   "*git-auto-push*"
-                                                   "*Backtrace*"
-                                                   "*new*"
-                                                   "*Org*"
-                                                   "*Flycheck error messages*"
-                                                   "*Help*")))))
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :bind (([remap list-buffers] . ibuffer))
+    :hook (ibuffer-mode . hl-line-mode)
+    :custom
+    (ibuffer-expert t)
+    (ibuffer-show-empty-filter-groups nil)
+    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+    (ibuffer-never-show-predicates (list (rx (or "*Messages*"
+                                                 "*magit-"
+                                                 "*git-auto-push*"
+                                                 "*Backtrace*"
+                                                 "*new*"
+                                                 "*Org*"
+                                                 "*Flycheck error messages*"
+                                                 "*Help*")))))
 
   (use-package ibuf-ext
     :straight nil
@@ -476,51 +488,55 @@ This concludes =early-init.el=.
     (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
     :config
     (setq ibuffer-projectile-prefix ""))
+#+end_src
 
+** Utilities
+
+#+begin_src emacs-lisp
   (use-package ws-butler
     :commands (ws-butler-global-mode)
     :hook ((prog-mode . (lambda () (require 'ws-butler)))
            (text-mode . (lambda () (require 'ws-butler))))
     :config (ws-butler-global-mode 1))
 
-    (use-package zop-to-char
-      :bind (("M-z" . zop-to-char)
-             ("M-Z" . zop-up-to-char)))
+  (use-package zop-to-char
+    :bind (("M-z" . zop-to-char)
+           ("M-Z" . zop-up-to-char)))
 
-    (use-package eldoc
-      :custom (eldoc-idle-delay 2))
+  (use-package eldoc
+    :custom (eldoc-idle-delay 2))
 
-    (use-package which-key
-      :custom (which-key-idle-delay 0.5)
-      :config (which-key-mode))
+  (use-package which-key
+    :custom (which-key-idle-delay 0.5)
+    :config (which-key-mode))
 
-    (use-package helpful
-      :custom
-      (counsel-describe-function-function #'helpful-callable)
-      (counsel-describe-variable-function #'helpful-variable)
-      :bind
-      ([remap describe-function] . helpful-callable)
-      ([remap describe-command] . helpful-command)
-      ([remap describe-variable] . helpful-variable)
-      ([remap describe-key] . helpful-key))
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . helpful-callable)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . helpful-variable)
+    ([remap describe-key] . helpful-key))
 
-    (use-package async
-      :preface
-      (progn
-        (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-        (autoload 'dired-async-mode "dired-async.el" nil t))
-      :config
-      (progn
-        (async-bytecomp-package-mode 1)
-        (dired-async-mode 1)))
+  (use-package async
+    :preface
+    (progn
+      (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+      (autoload 'dired-async-mode "dired-async.el" nil t))
+    :config
+    (progn
+      (async-bytecomp-package-mode 1)
+      (dired-async-mode 1)))
 
-    (use-package exec-path-from-shell
-      :custom
-      (exec-path-from-shell-check-startup-files nil)
-      (exec-path-from-shell-variables '("PATH" "MANPATH"))
-      (exec-path-from-shell-arguments '("-l"))
-      :config
-      (exec-path-from-shell-initialize))
+  (use-package exec-path-from-shell
+    :custom
+    (exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-variables '("PATH" "MANPATH"))
+    (exec-path-from-shell-arguments '("-l"))
+    :config
+    (exec-path-from-shell-initialize))
 #+end_src
 
 * Theme
@@ -535,7 +551,8 @@ This concludes =early-init.el=.
     :config
     (load-theme 'doom-gruvbox t)
     (doom-themes-org-config)
-    ;; Emacs 27 added new extend keyword which breaks most themes
+
+    ;; Emacs 27 added new `:extend' keyword which breaks most themes
     (dolist (face '(region hl-line secondary-selection))
       (set-face-attribute face nil :extend t))
     (with-eval-after-load 'org

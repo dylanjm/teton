@@ -151,7 +151,7 @@
   :custom
   (recentf-save-file (djm/emacs-cache "recentf"))
   (recentf-max-saved-items 200)
-  (recentf-max-menu-items 15)
+  (recentf-max-menu-items 20)
   (recentf-auto-cleanup 'never)
   (recentf-exclude '("\\.?cache"
                      ".cask"
@@ -170,8 +170,7 @@
                        (file-in-directory-p file package-user-dir))))
   :config
   (push (expand-file-name recentf-save-file) recentf-exclude)
-  (run-at-time nil (* 3 60) (lambda ()
-                              (let ((save-silently t)) (recentf-save-list)))))
+  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 
 (use-package prog-mode
   :straight nil
@@ -181,7 +180,6 @@
          (prog-mode . display-fill-column-indicator-mode))
   :custom
   (prettify-symbols-unprettify-at-point 'right-edge))
-
 
 (use-package vscode-icon)
 (use-package dired
@@ -440,7 +438,6 @@
          ("M-s" . swiper-isearch-toggle))
 
   :custom
-  (ivy-extra-directories nil)
   (ivy-dynamic-exhibit-delay-ms 250)
   (ivy-use-selectable-prompt t)
   (ivy-format-function #'ivy-format-function-arrow)
@@ -461,6 +458,8 @@
     :init (ivy-posframe-mode 1)
     :functions (ivy-posframe-display-at-window-bottom-left
                 ivy-posframe-display-at-frame-center)
+    :custom
+    (ivy-posframe-border-width 3)
     :config
     (push (cons #'swiper nil)
           ivy-posframe-display-functions-alist)

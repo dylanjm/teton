@@ -1,8 +1,6 @@
 #+title: DotEmacs with Org Mode
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-* Table of Contents
-:property: TOC this
 * About this document
 
 This is my emacs configuration. It's heavily inspired by many different =init.el= files.
@@ -312,7 +310,7 @@ This concludes =early-init.el=.
     :custom
     (recentf-save-file (djm/emacs-cache "recentf"))
     (recentf-max-saved-items 200)
-    (recentf-max-menu-items 15)
+    (recentf-max-menu-items 20)
     (recentf-auto-cleanup 'never)
     (recentf-exclude '("\\.?cache"
                        ".cask"
@@ -331,8 +329,7 @@ This concludes =early-init.el=.
                          (file-in-directory-p file package-user-dir))))
     :config
     (push (expand-file-name recentf-save-file) recentf-exclude)
-    (run-at-time nil (* 3 60) (lambda ()
-                                (let ((save-silently t)) (recentf-save-list)))))
+    (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 #+end_src
 
 #+BEGIN_SRC emacs-lisp
@@ -344,7 +341,6 @@ This concludes =early-init.el=.
            (prog-mode . display-fill-column-indicator-mode))
     :custom
     (prettify-symbols-unprettify-at-point 'right-edge))
-
 
   (use-package vscode-icon)
   (use-package dired
@@ -441,6 +437,9 @@ This concludes =early-init.el=.
         (set-face-attribute face nil :extend t)))
     (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                         :height 180 :weight 'bold :slant 'italic))
+
+  (use-package solaire-mode
+    :config (solaire-mode 1))
 
   (use-package minions
     :hook (after-init . minions-mode)
@@ -552,7 +551,7 @@ This concludes =early-init.el=.
     (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
     (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-      (let ((info '(:internal-border-width 12 :min-width 80)))
+      (let ((info '(:internal-border-width 15 :min-width 80)))
         (or (plist-get info arg-name) value))))
 
   (use-package which-key-posframe
@@ -609,7 +608,6 @@ This concludes =early-init.el=.
            ("M-s" . swiper-isearch-toggle))
 
     :custom
-    (ivy-extra-directories nil)
     (ivy-dynamic-exhibit-delay-ms 250)
     (ivy-use-selectable-prompt t)
     (ivy-format-function #'ivy-format-function-arrow)
@@ -630,6 +628,9 @@ This concludes =early-init.el=.
       :init (ivy-posframe-mode 1)
       :functions (ivy-posframe-display-at-window-bottom-left
                   ivy-posframe-display-at-frame-center)
+      :custom
+      (ivy-posframe-border-width 3)
+
       :config
       (push (cons #'swiper nil)
             ivy-posframe-display-functions-alist)

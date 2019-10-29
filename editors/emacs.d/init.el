@@ -20,11 +20,12 @@
   (custom-file (make-temp-file "emacs-custom"))
   (debug-on-error t)
   (display-time-default-load-average nil)
-  (echo-keystrokes 5)
+  (echo-keystrokes 0.02)
   (enable-recursive-minibuffers t)
   (fill-column 80)
   (frame-inhibit-implied-resize t)
   (fast-but-imprecise-scrolling t)
+  (ffap-machine-p-known 'reject)
   (frame-resize-pixelwise t)
   (frame-title-format '("%b - Emacs"))
   (help-window-select t)
@@ -101,6 +102,11 @@
                                 fringe-indicator-alist))
   :config (fringe-mode '(10 . 8)))
 
+(use-package pixel-scroll
+  :demand t
+  :straight nil
+  :config (pixel-scroll-mode 1))
+
 (use-package ns-win
   :straight nil
   :custom
@@ -173,93 +179,149 @@
   (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 
 (use-package prog-mode
-  :straight nil
-  :hook ((prog-mode . prettify-symbols-mode)
-         (prog-mode . show-paren-mode)
-         (prog-mode . display-line-numbers-mode)
-         (prog-mode . display-fill-column-indicator-mode))
-  :custom
-  (prettify-symbols-unprettify-at-point 'right-edge))
+    :straight nil
+    :hook ((prog-mode . prettify-symbols-mode)
+           (prog-mode . show-paren-mode)
+           (prog-mode . display-line-numbers-mode)
+           (prog-mode . display-fill-column-indicator-mode))
+    :custom
+    (prettify-symbols-unprettify-at-point 'right-edge))
 
-(use-package vscode-icon)
-(use-package dired
+  (use-package term
+    :straight nil
+    :commands (ansi-term)
+    :preface
+    (defun config-basic-settings--shell-hl-line-off ()
+      (when (bound-and-true-p hl-line-mode)
+        (hl-line-mode -1)))
+    :config
+    (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
+
+  (use-package vscode-icon)
+  (use-package dired
+    :straight nil
+    :functions (dired wdired-change-to-wdired-mode)
+    :bind (:map dired-mode-map
+                ("C-c C-p" . wdired-change-to-wdired-mode)
+                ("C-c C-r" . dired-rsync)
+                ("TAB" . dired-subtree-insert)
+                (";" . dired-subtree-remove)
+                (":" . dired-git-info-mode))
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-dwim-target t)
+    (dired-guess-shell-gnutar "tar")
+    (dired-listing-switches "-alhF --group-directories-first -v")
+    (dired-ls-F-marks-symlinks t)
+    (dired-recursive-deletes 'always)
+    (dired-recursive-copies 'always)
+    (dired-use-ls-dired nil)
+    :config
+    (use-package dired-aux :straight nil)
+    (use-package dired-x :straight nil)
+    (use-package diredfl :init (diredfl-global-mode 1))
+    (use-package dired-ranger)
+    (use-package dired-git-info)
+    (use-package dired-rsync)
+    (use-package dired-subtree)
+    (use-package fd-dired)
+    (use-package dired-sidebar
+      :bind ("M-\\" . dired-sidebar-toggle-sidebar)
+      :custom (dired-sidebar-theme 'vscode)))
+
+  (use-package ibuffer
+    :bind (([remap list-buffers] . ibuffer))
+    :hook (ibuffer-mode . hl-line-mode)
+    :custom
+    (ibuffer-expert t)
+    (ibuffer-show-empty-filter-groups nil)
+    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+    (ibuffer-never-show-predicates (list (rx (or "*Messages*"
+                                                 "*magit-"
+                                                 "*git-auto-push*"
+                                                 "*Backtrace*"
+                                                 "*new*"
+                                                 "*Org*"
+                                                 "*Flycheck error messages*"
+                                                 "*Help*")))))
+
+(use-package ibuf-ext
   :straight nil
-  :functions (dired wdired-change-to-wdired-mode)
-  :bind (:map dired-mode-map
-              ("C-c C-p" . wdired-change-to-wdired-mode)
-              ("C-c C-r" . dired-rsync)
-              ("TAB" . dired-subtree-insert)
-              (";" . dired-subtree-remove)
-              (":" . dired-git-info-mode))
-  :custom
-  (dired-auto-revert-buffer t)
-  (dired-dwim-target t)
-  (dired-guess-shell-gnutar "tar")
-  (dired-listing-switches "-alhF --group-directories-first -v")
-  (dired-ls-F-marks-symlinks t)
-  (dired-recursive-deletes 'always)
-  (dired-recursive-copies 'always)
-  (dired-use-ls-dired nil)
+  :hook (ibuffer-mode . ibuffer-auto-mode)
   :config
-  (use-package dired-aux :straight nil)
-  (use-package dired-x :straight nil)
-  (use-package diredfl :init (diredfl-global-mode 1))
-  (use-package dired-ranger)
-  (use-package dired-git-info)
-  (use-package dired-rsync)
-  (use-package dired-subtree)
-  (use-package fd-dired)
-  (use-package dired-sidebar
-    :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-    :custom (dired-sidebar-theme 'vscode)))
+  (setq ibuffer-show-empty-filter-groups nil))
 
-(use-package ibuffer
-  :bind (([remap list-buffers] . ibuffer))
-  :custom
-  (ibuffer-expert t))
-
-(use-package whitespace
-  :straight nil
-  :hook (((prog-mode text-mode conf-mode) . whitespace-mode)
-         (before-save . delete-trailing-whitespace))
-  :custom
-  (whitespace-style '(face indentation space-after-tab space-before-tab
-                           tab-mark empty trailing)))
-
-(use-package zop-to-char
-  :bind (("M-z" . zop-to-char)
-         ("M-Z" . zop-up-to-char)))
-
-(use-package eldoc
-  :custom (eldoc-idle-delay 2))
-
-(use-package which-key
-  :custom (which-key-idle-delay 0.5)
-  :config (which-key-mode))
-
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  :bind
-  ([remap describe-function] . helpful-callable)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . helpful-variable)
-  ([remap describe-key] . helpful-key))
-
-(use-package async)
-(use-package exec-path-from-shell
-  :custom
-  (exec-path-from-shell-check-startup-files nil)
-  (exec-path-from-shell-variables '("PATH" "MANPATH"))
-  (exec-path-from-shell-arguments '("-l"))
+(use-package ibuffer-projectile
+  :commands (ibuffer-projectile-set-filter-groups)
+  :functions (ibuffer-do-sort-by-alphabetic)
+  :preface
+  (defun config-ibuffer--setup-buffer ()
+    (ibuffer-projectile-set-filter-groups)
+    (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+    (add-to-list 'ibuffer-filter-groups '("Ensime" (predicate . (s-matches? "Ensime" (buffer-name)))))
+    (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
+    (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic))
+    (when (bound-and-true-p page-break-lines-mode)
+      (page-break-lines--update-display-tables)))
+  :init
+  (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
   :config
-  (exec-path-from-shell-initialize))
+  (setq ibuffer-projectile-prefix ""))
+
+  (use-package whitespace
+    :straight nil
+    :hook (((prog-mode text-mode conf-mode) . whitespace-mode)
+           (before-save . delete-trailing-whitespace))
+    :custom
+    (whitespace-style '(face indentation space-after-tab space-before-tab
+                             tab-mark empty trailing)))
+
+  (use-package zop-to-char
+    :bind (("M-z" . zop-to-char)
+           ("M-Z" . zop-up-to-char)))
+
+  (use-package eldoc
+    :custom (eldoc-idle-delay 2))
+
+  (use-package which-key
+    :custom (which-key-idle-delay 0.5)
+    :config (which-key-mode))
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . helpful-callable)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . helpful-variable)
+    ([remap describe-key] . helpful-key))
+
+  (use-package async
+    :preface
+    (progn
+      (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+      (autoload 'dired-async-mode "dired-async.el" nil t))
+    :config
+    (progn
+      (async-bytecomp-package-mode 1)
+      (dired-async-mode 1)))
+
+  (use-package exec-path-from-shell
+    :custom
+    (exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-variables '("PATH" "MANPATH"))
+    (exec-path-from-shell-arguments '("-l"))
+    :config
+    (exec-path-from-shell-initialize))
 
 (use-package doom-themes
   :demand t
   :config
   (load-theme 'doom-gruvbox t)
+  (setq doom-gruvbox-brighter-comments t)
   (doom-themes-org-config)
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
@@ -381,7 +443,7 @@
   (posframe-arghandler #'hemacs-posframe-arghandler)
   :config
   (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-    (let ((info '(:internal-border-width 12 :min-width 80)))
+    (let ((info '(:internal-border-width 15 :min-width 80)))
       (or (plist-get info arg-name) value))))
 
 (use-package which-key-posframe
@@ -446,7 +508,8 @@
   (ivy-case-fold-search-default t)
   (ivy-use-virtual-buffers t)
   (ivy-virtual-abbreviate 'abbreviate)
-  (ivy-count-format "(%d/%d) ")
+  (ivy-count-format "")
+  (ivy-flx-limit 2000)
 
   :config
   (use-package ivy-hydra)
@@ -459,7 +522,11 @@
     :functions (ivy-posframe-display-at-window-bottom-left
                 ivy-posframe-display-at-frame-center)
     :custom
-    (ivy-posframe-border-width 3)
+    (ivy-posframe-border-width 20)
+    (ivy-posframe-style 'frame-center)
+    (ivy-posframe-hide-minibuffer t)
+    (ivy-posframe-parameters '((alpha 100 100)))
+
     :config
     (push (cons #'swiper nil)
           ivy-posframe-display-functions-alist)
@@ -468,6 +535,8 @@
 
   (use-package counsel-projectile
     :after (counsel projectile)
+    :custom
+    (counsel-projectile-switch-project-action #'dired)
     :config (counsel-projectile-mode 1))
 
   (use-package auto-insert
@@ -477,6 +546,8 @@
   (use-package amx
     :init (amx-mode 1)
     :custom (amx-save-file (djm/emacs-cache "amx-items")))
+
+  (use-package flx)
 
   (when (executable-find "rg")
     (setq counsel-grep-base-command
@@ -501,7 +572,14 @@
   :config (avy-setup-default))
 
 (use-package dimmer
-  :custom (dimmer-exclusion-regexp (rx (or "posframe" "which-key" "*Python*")))
+  :custom
+  (dimmer-fraction 0.5)
+  (dimmer-exclusion-regexp (rx (or "posframe"
+                                   "which-key"
+                                   "Messages"
+                                   "Warnings"
+                                   "Async"
+                                   "Minibuf")))
   :config (dimmer-mode))
 
 (use-package ispell
@@ -538,6 +616,7 @@
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode 1))
 
+(use-package vterm)
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 

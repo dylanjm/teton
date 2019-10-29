@@ -50,7 +50,12 @@
             (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 
 (fset 'yes-or-no-p 'y-or-n-p)
+(fset 'view-hello-file 'ignore)
 (fset 'display-startup-echo-area-message 'ignore)
+(put 'narrow-to-region 'disabled nil)
+(put 'up-case-rgion 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'erase-buffer 'disabled nil)
 
 (push '(ns-transparent-titlebar . t) default-frame-alist)
 (push '(internal-border . 0) default-frame-alist)

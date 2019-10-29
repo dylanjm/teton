@@ -40,7 +40,7 @@ I didn't really the like the =no-littering= package when I gave it a try. So I'm
 going to roll my own for the time being by declaring these variables. Maybe I'll
 come pack to the package later but for right now this works for me. I got the
 idea for this function from jwiegley's dot-files. You can find his version of
-the function in his github repo [[https://github.com/jwiegley/dot-emacs/blobl/master/init.el][jwiegley/dot-emacs/init.el]].
+the function in his github repo [[https://github.com/jwiegley/dot-emacs/blob/master/init.el][jwiegley/dot-emacs/init.el]].
 
 #+BEGIN_SRC emacs-lisp
 (defvar user-emacs-cache "~/.cache/emacs/")
@@ -118,7 +118,7 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 (push '(variable-pitch . "-*-Fira Sans-light-normal-normal-*-18-*-*-*-p-0-iso10646-1") default-frame-alist)
 #+END_SRC
 
-** Getting my packages straightened-out using =straight.el=
+** Getting packages /straightened-out/ using =straight.el=
 
 #+BEGIN_SRC emacs-lisp
 (setq straight-check-for-modifications '(find-when-checking check-on-save)
@@ -152,13 +152,8 @@ This concludes =early-init.el=.
 
 * Default Settings
 
-#+BEGIN_SRC emacs-lisp
-  (use-package files
-    :straight nil
-    :custom
-    (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-    (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
-
+** Sane settings for the insane
+#+begin_src emacs-lisp
   (use-package cus-start
     :straight nil
     :custom
@@ -220,7 +215,20 @@ This concludes =early-init.el=.
     (set-language-environment "UTF-8")
     (global-hl-line-mode 1)
     (blink-cursor-mode 0))
+#+end_src
 
+** Auto-Save Madness
+
+#+begin_src emacs-lisp
+  (use-package files
+    :straight nil
+    :custom
+    (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+    (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
+#+end_src
+
+** Window & Frame Settings
+#+begin_src emacs-lisp
   (use-package frame
     :straight nil
     :config (window-divider-mode 1)
@@ -239,6 +247,29 @@ This concludes =early-init.el=.
     (track-eol t)
     (set-mark-command-repeat-pop t))
 
+  (use-package fringe
+    :straight nil
+    :custom
+    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                  fringe-indicator-alist))
+    :config (fringe-mode '(10 . 8)))
+
+  (use-package ns-win
+    :straight nil
+    :custom
+    (ns-pop-up-frames nil)
+    (ns-use-native-fullscreen nil)
+    (mac-option-modifier 'meta)
+    (mac-command-modifier 'meta)
+    (mac-right-command-modifier 'left)
+    (mac-right-option-modifier 'none)
+    (mac-function-modifier 'hyper))
+
+#+end_src
+
+** Picking up where we left off
+
+#+begin_src emacs-lisp
   (use-package saveplace
     :straight nil
     :init (save-place-mode 1)
@@ -261,33 +292,6 @@ This concludes =early-init.el=.
     (auto-revert-verbose nil)
     (global-auto-revert-non-file-buffers t)
     (auto-revert-use-notify nil))
-
-  (use-package fringe
-    :straight nil
-    :custom
-    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                  fringe-indicator-alist))
-    :config (fringe-mode '(10 . 8)))
-
-  (use-package ns-win
-    :straight nil
-    :custom
-    (ns-pop-up-frames nil)
-    (ns-use-native-fullscreen nil)
-    (mac-option-modifier 'meta)
-    (mac-command-modifier 'meta)
-    (mac-right-command-modifier 'left)
-    (mac-right-option-modifier 'none)
-    (mac-function-modifier 'hyper))
-
-  (use-package prog-mode
-    :straight nil
-    :hook ((prog-mode . prettify-symbols-mode)
-           (prog-mode . show-paren-mode)
-           (prog-mode . display-line-numbers-mode)
-           (prog-mode . display-fill-column-indicator-mode))
-    :custom
-    (prettify-symbols-unprettify-at-point 'right-edge))
 
   (use-package recentf
     :straight nil
@@ -314,10 +318,21 @@ This concludes =early-init.el=.
                        (lambda (file)
                          (file-in-directory-p file package-user-dir))))
     :config
-    ;(advice-add 'recentf-cleanup :around #'inhibit-message-in-minibuffer)
     (push (expand-file-name recentf-save-file) recentf-exclude)
     (run-at-time nil (* 3 60) (lambda ()
                                 (let ((save-silently t)) (recentf-save-list)))))
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+  (use-package prog-mode
+    :straight nil
+    :hook ((prog-mode . prettify-symbols-mode)
+           (prog-mode . show-paren-mode)
+           (prog-mode . display-line-numbers-mode)
+           (prog-mode . display-fill-column-indicator-mode))
+    :custom
+    (prettify-symbols-unprettify-at-point 'right-edge))
+
 
   (use-package vscode-icon)
   (use-package dired

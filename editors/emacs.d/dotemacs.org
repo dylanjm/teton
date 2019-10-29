@@ -16,15 +16,14 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
 ;;; Code:
 #+END_SRC
 
-* Initial Setup
-
-** =early-init.el=
+* Initial Setup with =early-init.el=
 :properties:
 :header-args: :tangle "~/dotz/editors/emacs.d/early-init.el"
 :end:
 
 This section details the =early-init.el= section of the configuration.
 
+** Header
 #+BEGIN_SRC emacs-lisp
 ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t-*-
 ;;;
@@ -35,6 +34,14 @@ This section details the =early-init.el= section of the configuration.
 ;;;
 ;;; Code:
 #+END_SRC
+
+** Rolling my own =no-littering.el=
+I didn't really the like the =no-littering= package when I gave it a try. So I'm
+going to roll my own for the time being by declaring these variables. Maybe I'll
+come pack to the package later but for right now this works for me. I got the
+idea for this function from jwiegley's dot-files. You can find his version of
+the function in his github repo
+[jwiegley/dot-emacs/init.el](https://github.com/jwiegley/dot-emacs/blob/master/init.el).
 
 #+BEGIN_SRC emacs-lisp
 (defvar user-emacs-cache "~/.cache/emacs/")
@@ -47,6 +54,25 @@ This section details the =early-init.el= section of the configuration.
     (defun djm/emacs-cache (path)
            (expand-file-name path user-emacs-cache)))
 #+END_SRC
+
+** Performance enhancements
+You'll see the following code in many =init.el= files across the web. This has
+to do with the performance hit emacs takes while performing garbage collection.
+There are a few caveats though:
+
+1. If you set =gc-cons-threshold= too high, and don't change it back, Emacs will
+   start to freeze and lag during memory intensive operations.
+2. If you keep it too low, then emacs will also start lag as it will be running
+   the garbage collector too often.
+
+You may have to play with these values depending on the specs of your computer.
+Not only do we want to suspend garbage collection on start-up, but we can
+implement a few tricks (or hacks) such that the garbage collector is run at
+optimal times. I got this idea from seagle0128's widely-popular centaur emacs.
+You can see how he implemented this at
+[seagle0128/.emacs.d/init.el](https://github.com/seagle0128/.emacs.d/blob/master/init.el).
+
+TODO: Detail why we left out a few popular variables to set based on some /r/emacs posts.
 
 #+BEGIN_SRC emacs-lisp
 (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -94,6 +120,8 @@ This section details the =early-init.el= section of the configuration.
 (push '(variable-pitch . "-*-Fira Sans-light-normal-normal-*-18-*-*-*-p-0-iso10646-1") default-frame-alist)
 #+END_SRC
 
+** Getting my packages straightened-out using =straight.el=
+
 #+BEGIN_SRC emacs-lisp
 (setq straight-check-for-modifications '(find-when-checking check-on-save)
       use-package-enable-imenu-support t
@@ -121,6 +149,8 @@ This section details the =early-init.el= section of the configuration.
 (provide 'early-init)
 ;;; early-init.el ends here
 #+END_SRC
+
+This concludes =early-init.el=.
 
 * Default Settings
 
@@ -178,6 +208,9 @@ This section details the =early-init.el= section of the configuration.
     (sentence-end-double-space nil)
     (tab-always-indent 'complete)
     (tab-width 4)
+    (transient-history-file (djm/emacs-cache "transient/history.el"))
+    (transient-levels-file (djm/emacs-cache "transient/levels.el"))
+    (transient-values-file (djm/emacs-cache "transient/values.el"))
     (uniquify-buffer-name-style 'post-forward-angle-brackets)
     (use-dialog-box nil)
     (use-file-dialog nil)
@@ -378,6 +411,7 @@ This section details the =early-init.el= section of the configuration.
     :demand t
     :config
     (load-theme 'doom-gruvbox t)
+    (doom-themes-org-config)
     (dolist (face '(region hl-line secondary-selection))
       (set-face-attribute face nil :extend t))
     (with-eval-after-load 'org

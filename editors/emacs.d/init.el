@@ -59,6 +59,9 @@
   (sentence-end-double-space nil)
   (tab-always-indent 'complete)
   (tab-width 4)
+  (transient-history-file (djm/emacs-cache "transient/history.el"))
+  (transient-levels-file (djm/emacs-cache "transient/levels.el"))
+  (transient-values-file (djm/emacs-cache "transient/values.el"))
   (uniquify-buffer-name-style 'post-forward-angle-brackets)
   (use-dialog-box nil)
   (use-file-dialog nil)
@@ -259,6 +262,7 @@
   :demand t
   :config
   (load-theme 'doom-gruvbox t)
+  (doom-themes-org-config)
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
   (with-eval-after-load 'org

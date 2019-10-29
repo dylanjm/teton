@@ -1,5 +1,4 @@
 #+title: DotEmacs with Org Mode
-#+options: toc:4 h:4
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
 * About this document

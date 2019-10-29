@@ -1,35 +1,3 @@
-(use-package dashboard
-  :init (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
-  :config
-  (set-face-bold 'dashboard-heading-face t))
-
-(use-package org
-  :straight org-plus-contrib
-  :hook (org-mode . visual-line-mode)
-  :requires (org-capture org-protocol)
-  :custom
-  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                       (sequence "MAYBE" "CANCELED" "|")))
-  :config
-  (org-add-link-type "project" 'projectile-switch-project-by-name)
-  (use-package org-habit-plus
-    :straight (org-habit-plus :type git :host github
-                              :repo "oddious/org-habit-plus")
-    :custom
-    (org-habit-scheduled-past-days org-scheduled-past-days))
-  (use-package org-make-toc
-    :straight (org-make-toc :type git :host github
-                            :repo "alphapapa/org-make-toc")
-    :init (org-make-toc-mode 1)))
-
-(provide 'init)
-;;; init.el ends here
-
 ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
@@ -725,7 +693,7 @@
   (lsp-edoc-render-all nil)
   (lsp-prefer-fly-make nil)
   (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
-  (lsp-restart 'auto-restart)
+  (lsp-restart 'ignore)
   (lsp-enable-on-type-formatting nil)
   :config
   (progn
@@ -746,11 +714,6 @@
     (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
   :config
   (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
-
-
-(use-package lsp-python-ms
-  :hook (python-mode . (lambda () (require 'lsp-python-ms) (lsp-deferred))))
-
 
 (use-package lsp-ui
   :preface
@@ -866,3 +829,35 @@
       (if python-auto-format-mode
           (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
         (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
+
+(use-package dashboard
+  :init (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
+
+(use-package org
+  :straight org-plus-contrib
+  :hook (org-mode . visual-line-mode)
+  :requires (org-capture org-protocol)
+  :custom
+  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
+                       (sequence "MAYBE" "CANCELED" "|")))
+  :config
+  (org-add-link-type "project" 'projectile-switch-project-by-name)
+  (use-package org-habit-plus
+    :straight (org-habit-plus :type git :host github
+                              :repo "oddious/org-habit-plus")
+    :custom
+    (org-habit-scheduled-past-days org-scheduled-past-days))
+  (use-package org-make-toc
+    :straight (org-make-toc :type git :host github
+                            :repo "alphapapa/org-make-toc")
+    :init (org-make-toc-mode 1)))
+
+(provide 'init)
+;;; init.el ends here

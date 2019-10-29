@@ -670,7 +670,9 @@
     :straight (org-habit-plus :type git :host github
                               :repo "oddious/org-habit-plus")
     :custom
-    (org-habit-scheduled-past-days org-scheduled-past-days)))
+    (org-habit-scheduled-past-days org-scheduled-past-days))
+  (use-package org-make-toc
+    :hook (org-mode . org-make-toc-mode)))
 
 (provide 'init)
 ;;; init.el ends here

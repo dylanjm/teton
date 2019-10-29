@@ -812,83 +812,85 @@ This concludes =early-init.el=.
 ** Python
 
 #+begin_src emacs-lisp
-  (use-package python
-    :straight nil
-    :hook (inferior-python-mode . (lambda ()
-                                    (process-query-on-exit-flag
-                                     (get-process "Python"))))
-    :init
-    (setq python-shell-completion-native-enable nil)
-    :config
-    (when (and (executable-find "ipython")
-               (string= python-shell-interpreter "ipython"))
-      (setq python-shell-interpreter "python"))
-
-    (use-package anaconda-mode
-      :hook (python-mode . anaconda-mode))
-    (use-package pip-requirements)
-    (use-package live-py-mode)
-    (use-package yapfify :hook (python-mode . yapf-mode))
-    (use-package eval-in-repl)
-    (use-package eval-in-repl-python
+    (use-package python
       :straight nil
+      :hook (inferior-python-mode . (lambda ()
+                                      (process-query-on-exit-flag
+                                       (get-process "Python"))))
       :init
-      (progn
-        (defun eir-eval-in-python ()
-          "eval-in-repl for Python."
-          (interactive)
-          (let* ((script-window (selected-window)))
-            (eir-repl-start "*Python*" #'run-python)
+      (setq python-shell-completion-native-enable nil)
+      :config
+      (when (and (executable-find "ipython")
+                 (string= python-shell-interpreter "ipython"))
+        (setq python-shell-interpreter "python"))
 
-            (if (and transient-mark-mode mark-active)
-                (let* ((body (buffer-substring-no-properties (point) (mark)))
-                       (paste (concat "%cpaste -q \n" body "\n--")))
-                  (eir-send-to-python paste))
+      (use-package anaconda-mode
+        :hook (python-mode . anaconda-mode))
+      (use-package pip-requirements)
+      (use-package live-py-mode)
+      (use-package yapfify :hook (python-mode . yapf-mode))
+      (use-package eval-in-repl)
+      (use-package eval-in-repl-python
+        :straight nil
+        :init
+        (progn
+          (defun eir-eval-in-python ()
+            "eval-in-repl for Python."
+            (interactive)
+            (let* ((script-window (selected-window)))
+              (eir-repl-start "*Python*" #'run-python)
 
-              (beginning-of-line)
-              (set-mark (point))
-              (python-nav-end-of-statement)
-              (python-nav-end-of-block)
-
-              (if (not (equal (point) (mark)))
-                  (let* ((body (buffer-substring-no-properties
-                                (min (+ 1 (point)) (point-max))
-                                (mark)))
+              (if (and transient-mark-mode mark-active)
+                  (let* ((body (buffer-substring-no-properties (point) (mark)))
                          (paste (concat "%cpaste -q \n" body "\n--")))
                     (eir-send-to-python paste))
-                (setq mark-active nil))
 
-              (python-nav-forward-statement)
-              (python-shell-switch-to-shell)
-              (select-window script-window))))
+                (beginning-of-line)
+                (set-mark (point))
+                (python-nav-end-of-statement)
+                (python-nav-end-of-block)
 
-        (bind-key "C-<return>" 'eir-eval-in-python python-mode-map))))
+                (if (not (equal (point) (mark)))
+                    (let* ((body (buffer-substring-no-properties
+                                  (min (+ 1 (point)) (point-max))
+                                  (mark)))
+                           (paste (concat "%cpaste -q \n" body "\n--")))
+                      (eir-send-to-python paste))
+                  (setq mark-active nil))
 
-  (use-package dashboard
-    :init (dashboard-setup-startup-hook)
-    :custom
-    (dashboard-items '((recents . 5)
-                       (projects . 5)
-                       (bookmarks . 5)
-                       (agenda . 5)))
-    :config
-    (set-face-bold 'dashboard-heading-face t))
+                (python-nav-forward-statement)
+                (python-shell-switch-to-shell)
+                (select-window script-window))))
 
-  (use-package org
-    :straight org-plus-contrib
-    :hook (org-mode . visual-line-mode)
-    :requires (org-capture org-protocol)
-    :custom
-    (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                         (sequence "MAYBE" "CANCELED" "|")))
-    :config
-    (org-add-link-type "project" 'projectile-switch-project-by-name)
-    (use-package org-habit-plus
-      :straight (org-habit-plus :type git :host github
-                                :repo "oddious/org-habit-plus")
+          (bind-key "C-<return>" 'eir-eval-in-python python-mode-map))))
+
+    (use-package dashboard
+      :init (dashboard-setup-startup-hook)
       :custom
-      (org-habit-scheduled-past-days org-scheduled-past-days)))
+      (dashboard-items '((recents . 5)
+                         (projects . 5)
+                         (bookmarks . 5)
+                         (agenda . 5)))
+      :config
+      (set-face-bold 'dashboard-heading-face t))
 
-  (provide 'init)
-  ;;; init.el ends here
+    (use-package org
+      :straight org-plus-contrib
+      :hook (org-mode . visual-line-mode)
+      :requires (org-capture org-protocol)
+      :custom
+      (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
+                           (sequence "MAYBE" "CANCELED" "|")))
+      :config
+      (org-add-link-type "project" 'projectile-switch-project-by-name)
+      (use-package org-habit-plus
+        :straight (org-habit-plus :type git :host github
+                                  :repo "oddious/org-habit-plus")
+        :custom
+        (org-habit-scheduled-past-days org-scheduled-past-days))
+      (use-package org-make-toc
+        :hook (org-mode . org-make-toc-mode)))
+
+    (provide 'init)
+    ;;; init.el ends here
 #+end_src

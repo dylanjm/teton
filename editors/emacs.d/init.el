@@ -1,3 +1,35 @@
+(use-package dashboard
+  :init (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
+
+(use-package org
+  :straight org-plus-contrib
+  :hook (org-mode . visual-line-mode)
+  :requires (org-capture org-protocol)
+  :custom
+  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
+                       (sequence "MAYBE" "CANCELED" "|")))
+  :config
+  (org-add-link-type "project" 'projectile-switch-project-by-name)
+  (use-package org-habit-plus
+    :straight (org-habit-plus :type git :host github
+                              :repo "oddious/org-habit-plus")
+    :custom
+    (org-habit-scheduled-past-days org-scheduled-past-days))
+  (use-package org-make-toc
+    :straight (org-make-toc :type git :host github
+                            :repo "alphapapa/org-make-toc")
+    :init (org-make-toc-mode 1)))
+
+(provide 'init)
+;;; init.el ends here
+
 ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
@@ -14,6 +46,7 @@
   (auto-window-vscroll nil)
   (backup-by-copying t)
   (browse-urls-browser-function "firefox")
+  (confirm-kill-processes nil)
   (create-lockfiles nil)
   (cursor-in-non-selected-windows nil)
   (cursor-type 'bar)
@@ -22,6 +55,8 @@
   (display-time-default-load-average nil)
   (echo-keystrokes 0.02)
   (enable-recursive-minibuffers t)
+  (eval-expression-print-length nil)
+  (eval-expression-print-level nil)
   (fill-column 80)
   (frame-inhibit-implied-resize t)
   (fast-but-imprecise-scrolling t)
@@ -48,7 +83,7 @@
   (set-horizontal-scroll-bar-mode nil)
   (scroll-conservatively most-positive-fixnum)
   (scroll-margin 5)
-  (scroll-preserve-screen-position 'always)
+  (scroll-preserve-screen-position t)
   (scroll-step 1)
   (select-enable-clipboard t)
   (sentence-end-double-space nil)
@@ -78,52 +113,54 @@
   (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
 
 (use-package frame
-  :straight nil
-  :config (window-divider-mode 1)
-  :custom
-  (window-divider-default-places t)
-  (window-divider-default-bottom-width 1)
-  (window-divider-default-right-width 1)
-  (global-unset-key (kbd "C-z")))
+    :straight nil
+    :config (window-divider-mode 1)
+    :custom
+    (window-divider-default-places t)
+    (window-divider-default-bottom-width 1)
+    (window-divider-default-right-width 1)
+    (global-unset-key (kbd "C-z")))
 
-(use-package simple
-  :straight nil
-  :custom
-  (column-number-mode nil)
-  (line-number-mode nil)
-  (line-move-visual nil)
-  (track-eol t)
-  (set-mark-command-repeat-pop t))
+  (use-package simple
+    :straight nil
+    :custom
+    (column-number-mode nil)
+    (line-number-mode nil)
+    (line-move-visual nil)
+    (track-eol t)
+    (set-mark-command-repeat-pop t))
 
-(use-package fringe
-  :straight nil
-  :custom
-  (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                fringe-indicator-alist))
-  :config (fringe-mode '(10 . 8)))
+  (use-package fringe
+    :straight nil
+    :custom
+    (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                  fringe-indicator-alist))
+    :config (fringe-mode '(10 . 8)))
 
-(use-package pixel-scroll
-  :demand t
-  :straight nil
-  :config (pixel-scroll-mode 1))
+  (use-package pixel-scroll
+    :demand t
+    :straight nil
+    :config (pixel-scroll-mode 1))
 
-(use-package ns-win
-  :straight nil
-  :custom
-  (ns-pop-up-frames nil)
-  (ns-use-native-fullscreen nil)
-  (mac-option-modifier 'meta)
-  (mac-command-modifier 'meta)
-  (mac-right-command-modifier 'left)
-  (mac-right-option-modifier 'none)
-  (mac-function-modifier 'hyper))
+  (use-package ns-win
+    :straight nil
+    :custom
+    (ns-pop-up-frames nil)
+    (ns-use-native-fullscreen nil)
+    (mac-option-modifier 'meta)
+    (mac-command-modifier 'meta)
+    (mac-right-command-modifier 'left)
+    (mac-right-option-modifier 'none)
+    (mac-function-modifier 'hyper))
 
-(use-package windmove
-  :bind (("C-c w l" . windmove-left)
-         ("C-c w r" . windmove-right)
-         ("C-c w p" . windmove-up)
-         ("C-c w n" . windmove-down))
-  :custom (windmove-default-keybindings 'shift))
+  (use-package windmove
+    :bind (("C-c w l" . windmove-left)
+           ("C-c w r" . windmove-right)
+           ("C-c w p" . windmove-up)
+           ("C-c w n" . windmove-down))
+    :custom (windmove-default-keybindings 'shift))
+
+(advice-add 'help-window-display-message :override #'ignore)
 
 (use-package focus-autosave-mode :init (focus-autosave-mode))
 
@@ -322,7 +359,7 @@
   :config
   (load-theme 'doom-gruvbox t)
   (setq doom-gruvbox-brighter-comments t)
-  ;(doom-themes-org-config)
+  (doom-themes-org-config)
   (dolist (face '(region hl-line secondary-selection))
     (set-face-attribute face nil :extend t))
   (with-eval-after-load 'org
@@ -350,6 +387,22 @@
   (tab-line-close-button-show nil)
   :init (global-tab-line-mode))
 
+(use-package page-break-lines
+  :demand t
+  :commands (global-page-break-lines-mode)
+  :config
+  (progn
+    (setq page-break-lines-modes
+          '(prog-mode
+            ibuffer-mode
+            text-mode
+            compilation-mode
+            help-mode
+            org-agenda-mode))
+    (global-page-break-lines-mode)))
+
+(use-package man)
+
 (use-package ace-window
   :bind (("C-x o" . ace-window)))
 
@@ -368,19 +421,18 @@
   :config (prescient-persist-mode))
 
 (use-package dimmer
+  :disabled t
   :custom
-  (dimmer-fraction 0.50)
-  (dimmer-exclusion-regexp (rx (or "posframe"
-                                   "which-key"
-                                   "LV"
-                                   "magit"
-                                   "transient"
-                                   "Messages*"
-                                   "Help"
-                                   "^Warnings*"
-                                   "Async*"
-                                   "Minibuf-.*")))
-
+  (dimmer-fraction 0.33)
+  (dimmer-exclusion-regexp-list '(".*Minibuf.*"
+                                  ".*which-key.*"
+                                  ".*Messages.*"
+                                  ".*Async.*"
+                                  ".*Warnings.*"
+                                  ".*LV.*"
+                                  ".*Ilist.*"
+                                  ".*posframe.*"
+                                  ".*transient.*"))
   :config (dimmer-mode))
 
 (use-package smartparens
@@ -642,7 +694,12 @@
   (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
 
 (use-package flycheck
-  :hook (after-init . global-flycheck-mode)
+  :hook ((after-init . global-flycheck-mode)
+         (prog-mode . flycheck-mode-on-safe))
+  :commands (flycheck-list-errors
+             flycheck-error-list-next-error
+             flycheck-error-list-previous-error
+             flycheck-error-list-goto-error)
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
   (flycheck-indication-mode 'right-fringe)
@@ -782,7 +839,7 @@
       (interactive)
       (when (derived-mode-p 'python-mode)
         (setq config-python-prev-source-buffer (current-buffer)))
-      (let ((shel-process
+      (let ((shell-process
              (or (python-shell-get-process)
                  (with-demoted-errors "Error: %S"
                    (call-interactively #'run-python)
@@ -829,35 +886,3 @@
       (if python-auto-format-mode
           (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
         (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
-
-(use-package dashboard
-  :init (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
-  :config
-  (set-face-bold 'dashboard-heading-face t))
-
-(use-package org
-  :straight org-plus-contrib
-  :hook (org-mode . visual-line-mode)
-  :requires (org-capture org-protocol)
-  :custom
-  (org-todo-keywords '((sequence "TODO" "DOING" "|" "DONE BUT" "DONE")
-                       (sequence "MAYBE" "CANCELED" "|")))
-  :config
-  (org-add-link-type "project" 'projectile-switch-project-by-name)
-  (use-package org-habit-plus
-    :straight (org-habit-plus :type git :host github
-                              :repo "oddious/org-habit-plus")
-    :custom
-    (org-habit-scheduled-past-days org-scheduled-past-days))
-  (use-package org-make-toc
-    :straight (org-make-toc :type git :host github
-                            :repo "alphapapa/org-make-toc")
-    :init (org-make-toc-mode 1)))
-
-(provide 'init)
-;;; init.el ends here

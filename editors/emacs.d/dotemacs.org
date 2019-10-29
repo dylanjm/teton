@@ -72,37 +72,37 @@ You can see how he implemented this at [[https://github.com/seagle0128/.emacs.d/
 TODO: Detail why we left out a few popular variables to set based on some /r/emacs posts.
 
 #+BEGIN_SRC emacs-lisp
-(defvar default-file-name-handler-alist file-name-handler-alist)
-(defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
-(defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
+  (defvar default-file-name-handler-alist file-name-handler-alist)
+  (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
+  (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
 
-(setq-default  inhibit-compacting-font-caches t
-               frame-inhibit-implied-resize t
-               gc-cons-percentage 0.6
-               auto-window-vscroll nil
-               file-name-handler-alist nil)
+  (setq-default  inhibit-compacting-font-caches t
+                 frame-inhibit-implied-resize t
+                 gc-cons-percentage 0.6
+                 auto-window-vscroll nil
+                 file-name-handler-alist nil)
 
-(add-hook 'after-init-hook
-          (lambda ()
-            (setq file-name-handler-alist default-file-name-handler-alist)
-            (setq gc-cons-threshold default-gc-cons-threshold)
-            (setq gc-cons-percentage 0.1)
+  (add-hook 'after-init-hook
+            (lambda ()
+              (setq file-name-handler-alist default-file-name-handler-alist)
+              (setq gc-cons-threshold default-gc-cons-threshold)
+              (setq gc-cons-percentage 0.1)
 
-            (defun djm/gc-on-lose-focus ()
-              (unless (frame-focus-state)
-                (garbage-collect)))
+              (defun djm/gc-on-lose-focus ()
+                (unless (frame-focus-state)
+                  (garbage-collect)))
 
-            (if (boundp 'after-focus-change-function)
-                (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
+              (if (boundp 'after-focus-change-function)
+                  (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
 
-            (defun djm/minibuffer-setup-hook ()
-              (setq gc-cons-threshold extended-gc-cons-threshold))
+              (defun djm/minibuffer-setup-hook ()
+                (setq gc-cons-threshold extended-gc-cons-threshold))
 
-            (defun djm/minibuffer-exit-hook ()
-              (setq gc-cons-threshold default-gc-cons-threshold))
+              (defun djm/minibuffer-exit-hook ()
+                (setq gc-cons-threshold default-gc-cons-threshold))
 
-            (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
-            (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
+              (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
+              (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -165,6 +165,7 @@ This concludes =early-init.el=.
     (auto-window-vscroll nil)
     (backup-by-copying t)
     (browse-urls-browser-function "firefox")
+    (confirm-kill-processes nil)
     (create-lockfiles nil)
     (cursor-in-non-selected-windows nil)
     (cursor-type 'bar)
@@ -173,6 +174,8 @@ This concludes =early-init.el=.
     (display-time-default-load-average nil)
     (echo-keystrokes 0.02)
     (enable-recursive-minibuffers t)
+    (eval-expression-print-length nil)
+    (eval-expression-print-level nil)
     (fill-column 80)
     (frame-inhibit-implied-resize t)
     (fast-but-imprecise-scrolling t)
@@ -199,7 +202,7 @@ This concludes =early-init.el=.
     (set-horizontal-scroll-bar-mode nil)
     (scroll-conservatively most-positive-fixnum)
     (scroll-margin 5)
-    (scroll-preserve-screen-position 'always)
+    (scroll-preserve-screen-position t)
     (scroll-step 1)
     (select-enable-clipboard t)
     (sentence-end-double-space nil)
@@ -283,6 +286,8 @@ This concludes =early-init.el=.
            ("C-c w p" . windmove-up)
            ("C-c w n" . windmove-down))
     :custom (windmove-default-keybindings 'shift))
+
+(advice-add 'help-window-display-message :override #'ignore)
 #+end_src
 
 ** Picking up where we left off
@@ -491,7 +496,7 @@ This concludes =early-init.el=.
     :config
     (load-theme 'doom-gruvbox t)
     (setq doom-gruvbox-brighter-comments t)
-    ;(doom-themes-org-config)
+    (doom-themes-org-config)
     (dolist (face '(region hl-line secondary-selection))
       (set-face-attribute face nil :extend t))
     (with-eval-after-load 'org
@@ -527,11 +532,28 @@ This concludes =early-init.el=.
     (tab-line-separator nil)
     (tab-line-close-button-show nil)
     :init (global-tab-line-mode))
+
+  (use-package page-break-lines
+    :demand t
+    :commands (global-page-break-lines-mode)
+    :config
+    (progn
+      (setq page-break-lines-modes
+            '(prog-mode
+              ibuffer-mode
+              text-mode
+              compilation-mode
+              help-mode
+              org-agenda-mode))
+      (global-page-break-lines-mode)))
+
 #+end_src
 
 * Features
 
 #+begin_src emacs-lisp
+  (use-package man)
+
   (use-package ace-window
     :bind (("C-x o" . ace-window)))
 
@@ -550,19 +572,18 @@ This concludes =early-init.el=.
     :config (prescient-persist-mode))
 
   (use-package dimmer
+    :disabled t
     :custom
-    (dimmer-fraction 0.50)
-    (dimmer-exclusion-regexp (rx (or "posframe"
-                                     "which-key"
-                                     "LV"
-                                     "magit"
-                                     "transient"
-                                     "Messages*"
-                                     "Help"
-                                     "^Warnings*"
-                                     "Async*"
-                                     "Minibuf-.*")))
-
+    (dimmer-fraction 0.33)
+    (dimmer-exclusion-regexp-list '(".*Minibuf.*"
+                                    ".*which-key.*"
+                                    ".*Messages.*"
+                                    ".*Async.*"
+                                    ".*Warnings.*"
+                                    ".*LV.*"
+                                    ".*Ilist.*"
+                                    ".*posframe.*"
+                                    ".*transient.*"))
     :config (dimmer-mode))
 #+end_src
 
@@ -857,7 +878,12 @@ This concludes =early-init.el=.
 
 #+begin_src emacs-lisp
   (use-package flycheck
-    :hook (after-init . global-flycheck-mode)
+    :hook ((after-init . global-flycheck-mode)
+           (prog-mode . flycheck-mode-on-safe))
+    :commands (flycheck-list-errors
+               flycheck-error-list-next-error
+               flycheck-error-list-previous-error
+               flycheck-error-list-goto-error)
     :custom
     (flycheck-emacs-lisp-load-path 'inherit)
     (flycheck-indication-mode 'right-fringe)

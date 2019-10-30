@@ -33,6 +33,9 @@
   (indent-tabs-mode nil)
   (inhibit-compacting-font-caches t)
   (inhibit-default-init t)
+  (inhibit-startup-echo-area-message t)
+  (inhibit-startup-screen t)
+  (initial-scratch-message "")
   (insert-directory-program "gls")
   (load-prefer-newer t)
   (message-log-max 10000)
@@ -60,15 +63,6 @@
   (view-read-only t)
   (window-combination-resize t))
 
-(use-package emacs
-  :straight nil
-  :init (setq inhibit-startup-screen t
-              initial-scratch-message ""
-              inhibit-startup-echo-area-message t))
-
-(use-package osx-trash :init (osx-trash-setup))
-(use-package vscode-icon)
-
 (use-package mule
   :straight nil
   :init
@@ -77,18 +71,19 @@
 
 (use-package files
   :straight nil
-  :init
-  (setq-default auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t))
-                backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))
-                backup-by-copying t
-                create-lockfiles nil
-                delete-old-versions t
-                kept-new-versions 6
-                kept-old-versions 2
-                require-final-newline t
-                version-control t))
+  :custom
+  (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+  (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
+  (backup-by-copying t)
+  (create-lockfiles nil)
+  (delete-old-versions t)
+  (kept-new-versions 6)
+  (kept-old-versions 2)
+  (require-final-newline t)
+  (version-control t))
 
 (use-package autorevert
+  :defer 2.0
   :straight nil
   :init (global-auto-revert-mode 1)
   :custom
@@ -97,9 +92,9 @@
   (auto-revert-use-notify nil))
 
 (use-package recentf
+  :defer 5.0
   :straight nil
   :functions (recentf-save-list)
-  :init (recentf-mode 1)
   :custom
   (recentf-save-file (djm/emacs-cache "recentf"))
   (recentf-max-saved-items 200)
@@ -122,42 +117,53 @@
                        (file-in-directory-p file package-user-dir))))
   :config
   (push (expand-file-name recentf-save-file) recentf-exclude)
-  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
+  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
+  (recentf-mode 1))
+
+(use-package osx-trash
+  :defer 5.0
+  :init (setq delete-by-moving-to-trash t)
+  :config (osx-trash-setup))
+
+(use-package vscode-icon)
 
 (use-package hl-line
+  :defer 1.0
   :straight nil
   :init (global-hl-line-mode 1))
 
 (use-package frame
+  :defer 1.0
   :straight nil
-  :init
+  :custom
+  (window-divider-default-places t)
+  (window-divider-default-bottom-width 1)
+  (window-divider-default-right-width 1)
+  (global-unset-key (kbd "C-z"))
+  :config
   (window-divider-mode 1)
-  (blink-cursor-mode 0)
-  (setq-default window-divider-default-places t
-                window-divider-default-bottom-width 1
-                window-divider-default-right-width 1
-                global-unset-key (kbd "C-z")))
+  (blink-cursor-mode 0))
 
 (use-package delsel
   :bind (:map mode-specific-map
               ("C-g" . minibuffer-keyboard-quit))
-  :init (delete-selection-mode 1))
+  :custom (delete-selection-mode 1))
 
 (use-package simple
   :straight nil
-  :init
-  (setq-default column-number-mode nil
-                line-number-mode nil
-                line-move-visual nil
-                set-mark-command-repeat-pop t
-                track-eol t))
+  :custom
+  (column-number-mode nil)
+  (line-number-mode nil)
+  (line-move-visual nil)
+  (set-mark-command-repeat-pop t)
+  (track-eol t))
 
 (use-package fringe
   :straight nil
-  :init
-  (setq-default fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                             fringe-indicator-alist))
-  (fringe-mode '(10 . 8)))
+  :init (fringe-mode '(10 . 8))
+  :custom
+  (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+                                fringe-indicator-alist)))
 
 (use-package pixel-scroll
   :straight nil
@@ -165,14 +171,14 @@
 
 (use-package ns-win
   :straight nil
-  :init
-  (setq-default mac-command-modifier 'meta
-                mac-option-modifier 'meta
-                mac-right-command-modifier 'left
-                mac-right-option-modifier 'none
-                mac-function-modifier 'hyper
-                ns-pop-up-frames nil
-                ns-use-native-fullscreen nil))
+  :custom
+  (mac-command-modifier 'meta)
+  (mac-option-modifier 'meta)
+  (mac-right-command-modifier 'left)
+  (mac-right-option-modifier 'none)
+  (mac-function-modifier 'hyper)
+  (ns-pop-up-frames nil)
+  (ns-use-native-fullscreen nil))
 
 (use-package windmove
   :bind (("C-c w l" . windmove-left)
@@ -184,22 +190,25 @@
   (advice-add 'help-window-display-message :override #'ignore))
 
 (use-package saveplace
+  :defer 1.0
   :straight nil
-  :init (save-place-mode 1)
-  :custom (save-place-file (djm/emacs-cache "places")))
+  :custom (save-place-file (djm/emacs-cache "places"))
+  :config (save-place-mode 1))
 
 (use-package savehist
+  :defer 1.0
   :straight nil
-  :init (savehist-mode 1)
   :custom
   (history-delete-duplicates t)
   (history-length 1000)
   (savehist-autosave-interval 300)
   (savehist-file (djm/emacs-cache "emacs-history"))
-  (savehist-save-minibuffer-history 1))
+  (savehist-save-minibuffer-history 1)
+  :config (savehist-mode 1))
 
 (use-package focus-autosave-mode
-  :init (focus-autosave-mode 1))
+  :defer 1.0
+  :config (focus-autosave-mode 1))
 
 (use-package prog-mode
   :straight nil
@@ -211,24 +220,21 @@
   (prettify-symbols-unprettify-at-point 'right-edge))
 
 (use-package term
+  :defer 1.0
   :straight nil
   :commands (ansi-term)
+  :hook (term-mode . config-basic-settings--shell-hl-line-off)
   :preface
   (defun config-basic-settings--shell-hl-line-off ()
     (when (bound-and-true-p hl-line-mode)
-      (hl-line-mode -1)))
-  :config
-  (add-hook 'term-mode-hook #'config-basic-settings--shell-hl-line-off))
+      (hl-line-mode -1))))
 
 (use-package dired
+  :defer 3
   :straight nil
   :functions (dired wdired-change-to-wdired-mode)
   :bind (:map dired-mode-map
-              ("C-c C-p" . wdired-change-to-wdired-mode)
-              ("C-c C-r" . dired-rsync)
-              ("TAB" . dired-subtree-insert)
-              (";" . dired-subtree-remove)
-              (":" . dired-git-info-mode))
+              ("C-c C-w" . wdired-change-to-wdired-mode))
   :custom
   (dired-auto-revert-buffer t)
   (dired-dwim-target t)
@@ -237,23 +243,50 @@
   (dired-ls-F-marks-symlinks t)
   (dired-recursive-deletes 'always)
   (dired-recursive-copies 'always)
-  (dired-use-ls-dired nil)
-  :config
-  (use-package dired-aux :straight nil)
-  (use-package dired-x :straight nil)
-  (use-package diredfl :init (diredfl-global-mode 1))
-  (use-package dired-ranger)
-  (use-package dired-git-info)
-  (use-package dired-rsync)
-  (use-package dired-subtree)
-  (use-package fd-dired)
-  (use-package dired-sidebar
-    :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-    :custom (dired-sidebar-theme 'vscode)))
+  (dired-use-ls-dired nil))
+
+(use-package dired-aux
+  :straight nil
+  :after (dired))
+
+(use-package dired-x
+  :straight nil
+  :after (dired))
+
+(use-package diredfl
+  :after (dired)
+  :config (diredfl-global-mode 1))
+
+(use-package dired-ranger
+  :bind (:map dired-mode-map
+              ("C-c C-c" . dired-ranger-copy)
+              ("C-c C-m" . dired-ranger-move)
+              ("C-c C-p" . dired-ranger-move)
+              ("C-c C-b" . dired-ranger-bookmark)
+              ("C-c b v" . dired-ranger-bookmark-visit)))
+
+(use-package dired-git-info
+  :bind (:map dired-mode-map
+              (":" . dired-git-info-mode)))
+
+(use-package dired-rsync
+  :bind (:map dired-mode-map
+              ("C-c C-r" . dired-rsync)))
+
+(use-package dired-subtree
+  :bind (:map dired-mode-map
+              ("TAB" . dired-subtree-insert)
+              (";" . dired-subtree-remove)))
+
+(use-package fd-dired
+  :after (dired))
+
+(use-package dired-sidebar
+  :bind ("M-\\" . dired-sidebar-toggle-sidebar)
+  :custom (dired-sidebar-theme 'vscode))
 
 (use-package ibuffer
   :bind (([remap list-buffers] . ibuffer))
-  :hook (ibuffer-mode . hl-line-mode)
   :custom
   (ibuffer-expert t)
   (ibuffer-show-empty-filter-groups nil)
@@ -270,8 +303,7 @@
 (use-package ibuf-ext
   :straight nil
   :hook (ibuffer-mode . ibuffer-auto-mode)
-  :config
-  (setq ibuffer-show-empty-filter-groups nil))
+  :custom (ibuffer-show-empty-filter-groups nil))
 
 (use-package ibuffer-projectile
   :commands (ibuffer-projectile-set-filter-groups)
@@ -289,10 +321,11 @@
       (page-break-lines--update-display-tables)))
   :init
   (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
-  :config
-  (setq ibuffer-projectile-prefix ""))
+  :custom
+  (ibuffer-projectile-prefix ""))
 
 (use-package tramp
+  :defer 1.0
   :custom
   (tramp-default-method "ssh")
   (tramp-backup-directory-alist backup-directory-alist)
@@ -301,6 +334,7 @@
   (put 'temporary-file-directory 'standard-value `(,temporary-file-directory)))
 
 (use-package ws-butler
+  :defer 1.0
   :commands (ws-butler-global-mode)
   :hook ((prog-mode . (lambda () (require 'ws-butler)))
          (text-mode . (lambda () (require 'ws-butler))))
@@ -311,15 +345,18 @@
          ("M-Z" . zop-up-to-char)))
 
 (use-package eldoc
+  :defer 1.0
   :custom (eldoc-idle-delay 2))
 
 (use-package which-key
+  :defer 1.0
   :custom (which-key-idle-delay 0.5)
   :config (which-key-mode))
 
 (use-package help
+  :defer 1.0
   :straight nil
-  :init (setq help-window-select t))
+  :custom (help-window-select t))
 
 (use-package helpful
   :custom
@@ -332,16 +369,16 @@
   ([remap describe-key] . helpful-key))
 
 (use-package async
+  :defer 1.5
   :preface
-  (progn
-    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t))
+  (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+  (autoload 'dired-async-mode "dired-async.el" nil t)
   :config
-  (progn
-    (async-bytecomp-package-mode 1)
-    (dired-async-mode 1)))
+  (async-bytecomp-package-mode 1)
+  (dired-async-mode 1))
 
 (use-package exec-path-from-shell
+  :defer 2.0
   :custom
   (exec-path-from-shell-check-startup-files nil)
   (exec-path-from-shell-variables '("PATH" "MANPATH"))
@@ -357,7 +394,7 @@
   (doom-themes-enable-bold t)
   :config
   (load-theme 'doom-gruvbox t)
-  (doom-themes-org-config)
+  ;(doom-themes-org-config)
 
   ;; Emacs 27 added new `:extend' keyword which breaks most themes
   (dolist (face '(region hl-line secondary-selection))
@@ -404,10 +441,11 @@
                       :height 180 :weight 'bold :slant 'italic))
 
 (use-package minions
-  :hook (after-init . minions-mode)
+  :defer 3.0
   :custom
   (minions-mode-line-lighter "...")
-  (minions-mode-line-delimiters '("" . "")))
+  (minions-mode-line-delimiters '("" . ""))
+  :config (minions-mode 1))
 
 (use-package tab-line
   :disabled t
@@ -419,7 +457,7 @@
   :init (global-tab-line-mode))
 
 (use-package page-break-lines
-  :demand t
+  :defer 1.0
   :commands (global-page-break-lines-mode)
   :config
   (progn
@@ -443,24 +481,26 @@
   (set-face-bold 'dashboard-heading-face t))
 
 (use-package org
+  :defer 1.0
   :general
   ("C-c a" #'org-agenda
    "C-c s" #'org-search-view
    "C-c t" #'org-todo-list
    "C-c /" #'org-tags-view)
   (:states '(emacs normal) :keymaps 'org-mode-map
-   "<backtab>" #'org-global-cycle
-   "<tab>" #'org-cycle
-   "C-c c" #'org-columns
-   "M-n" #'org-metadown
-   "M-p" #'org-metaup
-   "RET" #'org-return)
+           "<backtab>" #'org-global-cycle
+           "<tab>" #'org-cycle
+           "C-c c" #'org-columns
+           "M-n" #'org-metadown
+           "M-p" #'org-metaup
+           "RET" #'org-return)
   (:states '(normal motion insert emacs) :keymaps 'org-mode-map
-   "C-c C-." #'org-time-stamp-inactive
-   "C-c ." #'org-time-stamp))
+           "C-c C-." #'org-time-stamp-inactive
+           "C-c ." #'org-time-stamp))
 
 (use-package org-src
-:straight nil
+  :defer 1.0
+  :straight nil
   :preface
   (progn
     (defun config-org--supress-final-newline ()
@@ -476,12 +516,15 @@
 (use-package man)
 
 (use-package ace-window
+  :defer 10.0
   :bind (("C-x o" . ace-window)))
 
 (use-package aggressive-indent
+  :defer 10.0
   :commands (aggressive-indent-mode))
 
 (use-package hungry-delete
+  :defer 10.0
   :commands (hungry-delete-mode))
 
 (use-package key-chord
@@ -489,6 +532,7 @@
   :init (key-chord-mode 1))
 
 (use-package prescient
+  :defer 1.0
   :custom (prescient-save-file (djm/emacs-cache "prescient-save.el"))
   :config (prescient-persist-mode))
 
@@ -508,16 +552,20 @@
   :config (dimmer-mode))
 
 (use-package smartparens
+  :defer 10
   :functions (sp-backward-delete-char))
 
 (use-package rainbow-delimiters
+  :defer 1.0
   :hook (prog-mode . rainbow-delimiters-mode)
   :custom (rainbow-delimters-max-face-count 5))
 
 (use-package undo-tree
+  :defer 1.0
   :init (global-undo-tree-mode 1))
 
 (use-package posframe
+  :defer 1.0
   :custom
   (posframe-arghandler #'hemacs-posframe-arghandler)
   :config
@@ -531,17 +579,23 @@
            'posframe-poshandler-point-bottom-left-corner))
 
 (use-package yasnippet
+  :defer 5.0
   :commands (yas-reload-all)
   :hook ((term-mode . (lambda () (yas-minor-mode -1)))
          (company-mode . yas-minor-mode))
   :config
-  (use-package yasnippet-snippets)
-  (use-package ivy-yasnippet
-    :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
   (yas-reload-all)
   (yas-global-mode 1))
 
+(use-package yasnippet-snippets
+  :after (yasnippet))
+
+(use-package ivy-yasnippet
+  :after (yasnippet)
+  :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
+
 (use-package hippie-exp
+  :defer 1.0
   :bind (([remap dabbrev-expand] . hippie-expand))
   :custom
   (hippie-expand-try-functions-list '(try-expand-dabbrev
@@ -555,7 +609,7 @@
                                       try-complete-lisp-symbol)))
 
 (use-package company
-  :init (global-company-mode 1)
+  :defer 2.0
   :bind (:map company-active-map
               ("RET" . nil)
               ([return] . nil)
@@ -578,7 +632,9 @@
   (company-backends '(company-capf
                       company-files
                       company-xcode
-                      company-keywords)))
+                      company-keywords))
+  :config
+  (global-company-mode 1))
 
 (use-package company-statistics
   :after (company)
@@ -733,6 +789,7 @@
 
 
 (use-package ispell
+  :defer 5.0
   :straight nil
   :ensure-system-package (hunspell . "trizen -S hunspell")
   :custom
@@ -764,7 +821,7 @@
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode 1))
 
-(use-package vterm)
+(use-package vterm :defer 10)
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 
@@ -788,18 +845,23 @@
   (flycheck-indication-mode 'right-fringe)
   (when (fboundp 'define-fringe-bitmap)
     (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-      [16 48 112 240 112 48 16] nil nil 'center))
-  :config
-  (use-package flycheck-posframe
-    :hook (flycheck-mode . flycheck-posframe-mode)
-    :config (add-to-list 'flycheck-posframe-inhibit-functions
-                         #'(lambda () (bound-and-true-p company-backend))))
-  (use-package flycheck-pos-tip
-    :defines flycheck-pos-tip-timeout
-    :hook (global-flycheck-mode . flycheck-pos-tip-mode)
-    :config (setq flycheck-pos-tip-timeout 30))
-  (use-package flycheck-popup-tip
-    :hook (flycheck-mode . flycheck-popup-tip-mode)))
+      [16 48 112 240 112 48 16] nil nil 'center)))
+
+(use-package flycheck-posframe
+  :after (flycheck)
+  :hook (flycheck-mode . flycheck-posframe-mode)
+  :config (add-to-list 'flycheck-posframe-inhibit-functions
+                       #'(lambda () (bound-and-true-p company-backend))))
+
+(use-package flycheck-pos-tip
+  :after (flycheck)
+  :defines flycheck-pos-tip-timeout
+  :hook (global-flycheck-mode . flycheck-pos-tip-mode)
+  :config (setq flycheck-pos-tip-timeout 30))
+
+(use-package flycheck-popup-tip
+  :after (flycheck)
+  :hook (flycheck-mode . flycheck-popup-tip-mode))
 
 (use-package sh-script
   :ensure-system-package shfmt
@@ -820,14 +882,7 @@
                                                tab-mark newline-mark))))
 
 (use-package lsp-mode
-  :hook ((python-mode . lsp-deferred)
-         (sh-mode . lsp-deferred)
-         (c-mode-common . lsp-deferred)
-         (c++-mode . lsp-deferred))
-  :preface
-  (defun config-lsp--setup-buffer ()
-    (when (gethash "documentHighlightProvider" (lsp--server-capabilities))
-      (highlight-thing-mode -1)))
+  :hook ((python-mode sh-mode c-mode-common c++-mode) . lsp-deferred)
   :custom
   (flymake-fringe-indicator-position 'right-fringe)
   (lsp-auto-guess-root t)
@@ -837,12 +892,8 @@
   (lsp-restart 'ignore)
   (lsp-enable-on-type-formatting nil)
   :config
-  (progn
-    (when (and lsp-auto-configure lsp-auto-require-clients)
-      (require 'lsp-clients))
-
-    (add-hook 'lsp-after-open-hook #'config-lsp--setup-buffer)
-    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action)))
+  (require 'lsp-clients)
+  (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action))
 
 (use-package dap-mode
   :hook ((lsp-mode . dap-mode)

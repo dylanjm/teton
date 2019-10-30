@@ -1,4 +1,4 @@
-;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t; coding: utf-8-*-
+;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
 ;;; Emacs config by dylanjm
@@ -37,7 +37,6 @@
   (mode-line-in-non-selected-windows nil)
   (mouse-wheel-progressive-speed nil)
   (mouse-wheel-scroll-amount '(1))
-  (ns-use-thin-smoothing t)
   (ring-bell-function #'ignore)
   (select-enable-clipboard t)
   (set-horizontal-scroll-bar-mode nil)
@@ -55,126 +54,120 @@
   (window-combination-resize t))
 
 (use-package mule
+  :defer 0.5
   :straight nil
   :init
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8"))
 
 (use-package files
+  :defer 0.5
   :straight nil
-  :custom
-
-  (backup-by-copying t)
-  (confirm-kill-processes nil)
-  (create-lockfiles nil)
-  (delete-old-versions t)
-  (insert-directory-program "gls")
-  (kept-new-versions 6)
-  (kept-old-versions 2)
-  (require-final-newline t)
-  (view-read-only t)
-  (version-control t))
+  :init
+  (setq-default backup-by-copying t
+                confirm-kill-processes nil
+                create-lockfiles nil
+                delete-old-versions t
+                insert-directory-program "gls"
+                kept-new-versions 6
+                kept-old-versions 2
+                require-final-newline t
+                view-read-only t
+                version-control t))
 
 (use-package autorevert
   :defer 2.0
   :straight nil
-  :init (global-auto-revert-mode 1)
-  :custom
-  (auto-revert-verbose nil)
-  (global-auto-revert-non-file-buffers t)
-  (auto-revert-use-notify nil))
+  :init
+  (setq-default auto-revert-verbose nil
+                global-auto-revert-non-file-buffers t
+                auto-revert-use-notify nil)
+  (global-auto-revert-mode 1))
 
 (use-package recentf
-  :defer 5.0
+  :defer 2.0
   :straight nil
-  :custom
-  (recentf-save-file (djm/emacs-cache "recentf"))
-  (recentf-max-saved-items 200)
-  (recentf-max-menu-items 20)
-  (recentf-auto-cleanup 'never)
-  :config
-  (dolist (no-no '(no-littering-var-directory
-                   no-littering-etc-directory
-                   recentf-save-file))
-    (add-to-list 'recentf-exclude no-no))
-  (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
+  :init
+  (setq-default recentf-max-saved-items 200
+                recentf-max-menu-items 20)
+  (setq recentf-exclude
+        '(no-littering-var-directory
+          no-littering-etc-directory
+          recentf-save-file))
   (recentf-mode 1))
 
 (use-package osx-trash
-  :defer 5.0
-  :init (setq delete-by-moving-to-trash t)
-  :config (osx-trash-setup))
-
-(use-package vscode-icon)
+  :defer 2.0
+  :init
+  (setq-default delete-by-moving-to-trash t)
+  (osx-trash-setup))
 
 (use-package hl-line
-  :defer 1.0
+  :defer 0.5
   :straight nil
   :init (global-hl-line-mode 1))
 
 (use-package frame
-  :defer 1.0
+  :defer 0.5
   :straight nil
-  :custom
-  (window-divider-default-places t)
-  (window-divider-default-bottom-width 1)
-  (window-divider-default-right-width 1)
+  :init
+  (setq-default window-divider-default-places t
+                window-divider-default-bottom-width 1
+                window-divider-default-right-width 1)
   (global-unset-key (kbd "C-z"))
-  :config
   (window-divider-mode 1)
   (blink-cursor-mode 0))
 
 (use-package delsel
   :bind (:map mode-specific-map
               ("C-g" . minibuffer-keyboard-quit))
-  :custom (delete-selection-mode 1))
+  :init (delete-selection-mode 1))
 
 (use-package simple
+  :defer 0.5
   :straight nil
-  :custom
-  (column-number-mode nil)
-  (eval-expression-print-length nil)
-  (eval-expression-print-level nil)
-  (line-number-mode nil)
-  (line-move-visual nil)
-  (set-mark-command-repeat-pop t)
-  (track-eol t))
+  :init
+  (setq-default column-number-mode nil
+                eval-expression-print-length nil
+                eval-expression-print-level nil
+                line-number-mode nil
+                line-move-visual nil
+                set-mark-command-repeat-pop t
+                track-eol t))
 
 (use-package fringe
+  :defer 0.5
   :straight nil
-  :init (fringe-mode '(10 . 8))
-  :custom
-  (fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-                                fringe-indicator-alist)))
+  :init (fringe-mode '(10 . 8)))
 
 (use-package pixel-scroll
+  :demand t
   :straight nil
   :init (pixel-scroll-mode 1))
 
 (use-package ns-win
+  :defer 0.5
   :straight nil
-  :custom
-  (mac-command-modifier 'meta)
-  (mac-option-modifier 'meta)
-  (mac-right-command-modifier 'left)
-  (mac-right-option-modifier 'none)
-  (mac-function-modifier 'hyper)
-  (ns-pop-up-frames nil)
-  (ns-use-native-fullscreen nil))
+  :init
+  (setq-default mac-command-modifier 'meta
+                mac-option-modifier 'meta
+                mac-right-command-modifier 'left
+                mac-right-option-modifier 'none
+                mac-function-modifier 'hyper
+                ns-pop-up-frames nil
+                ns-use-native-fullscreen nil
+                ns-use-thin-smoothing t))
 
 (use-package windmove
   :bind (("C-c w l" . windmove-left)
          ("C-c w r" . windmove-right)
          ("C-c w p" . windmove-up)
          ("C-c w n" . windmove-down))
-  :custom (windmove-default-keybindings 'shift)
-  :config
-  (advice-add 'help-window-display-message :override #'ignore))
+  :custom (windmove-default-keybindings 'shift))
 
 (use-package saveplace
   :defer 1.0
   :straight nil
-  :custom (save-place-file (djm/emacs-cache "places"))
   :config (save-place-mode 1))
 
 (use-package savehist
@@ -182,10 +175,9 @@
   :straight nil
   :custom
   (history-delete-duplicates t)
-  (history-length 1000)
   (savehist-autosave-interval 300)
-  (savehist-file (djm/emacs-cache "emacs-history"))
   (savehist-save-minibuffer-history 1)
+  (savehist-additional-variables '(kill-ring search-ring))
   :config (savehist-mode 1))
 
 (use-package focus-autosave-mode
@@ -202,30 +194,23 @@
   (prettify-symbols-unprettify-at-point 'right-edge))
 
 (use-package term
-  :defer 1.0
   :straight nil
-  :commands (ansi-term)
-  :hook (term-mode . config-basic-settings--shell-hl-line-off)
-  :preface
-  (defun config-basic-settings--shell-hl-line-off ()
-    (when (bound-and-true-p hl-line-mode)
-      (hl-line-mode -1))))
+  :hook (term-mode . (lambda () (hl-line-mode -1))))
 
 (use-package dired
-  :defer 3
-  :straight nil
-  :functions (dired wdired-change-to-wdired-mode)
-  :bind (:map dired-mode-map
-              ("C-c C-w" . wdired-change-to-wdired-mode))
-  :custom
-  (dired-auto-revert-buffer t)
-  (dired-dwim-target t)
-  (dired-guess-shell-gnutar "tar")
-  (dired-listing-switches "-alhF --group-directories-first -v")
-  (dired-ls-F-marks-symlinks t)
-  (dired-recursive-deletes 'always)
-  (dired-recursive-copies 'always)
-  (dired-use-ls-dired nil))
+:defer 3
+:straight nil
+:functions (dired wdired-change-to-wdired-mode)
+:bind (:map dired-mode-map
+              ("C-c C-e" . wdired-change-to-wdired-mode))
+              :custom
+              (dired-auto-revert-buffer t)
+              (dired-dwim-target t)
+              (dired-guess-shell-gnutar "gtar")
+              (dired-listing-switches "-alhF --group-directories-first -v")
+              (dired-ls-F-marks-symlinks t)
+              (dired-recursive-deletes 'always)
+              (dired-recursive-copies 'always))
 
 (use-package dired-aux
   :straight nil
@@ -265,7 +250,9 @@
 
 (use-package dired-sidebar
   :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-  :custom (dired-sidebar-theme 'vscode))
+  :custom (dired-sidebar-theme 'vscode)
+  :config
+  (use-package vscode-icon))
 
 (use-package async
   :defer 1.5
@@ -297,6 +284,7 @@
   :custom (ibuffer-show-empty-filter-groups nil))
 
 (use-package ibuffer-projectile
+  :defer 5.0
   :commands (ibuffer-projectile-set-filter-groups)
   :functions (ibuffer-do-sort-by-alphabetic)
   :preface
@@ -315,17 +303,7 @@
   :custom
   (ibuffer-projectile-prefix ""))
 
-(use-package tramp
-  :defer 1.0
-  :custom
-  (tramp-default-method "ssh")
-  (tramp-backup-directory-alist backup-directory-alist)
-  (tramp-default-proxies-alist nil)
-  :config
-  (put 'temporary-file-directory 'standard-value `(,temporary-file-directory)))
-
 (use-package ws-butler
-  :defer 1.0
   :commands (ws-butler-global-mode)
   :hook ((prog-mode . (lambda () (require 'ws-butler)))
          (text-mode . (lambda () (require 'ws-butler))))
@@ -336,20 +314,23 @@
          ("M-Z" . zop-up-to-char)))
 
 (use-package eldoc
-  :defer 1.0
+  :defer 2.0
   :custom (eldoc-idle-delay 2))
 
 (use-package which-key
-  :defer 1.0
+  :defer 2.0
   :custom (which-key-idle-delay 0.5)
   :config (which-key-mode))
 
-(use-package man)
+(use-package man
+  :defer 2.0)
 
 (use-package help
-  :defer 1.0
+  :defer 2.0
   :straight nil
-  :custom (help-window-select t))
+  :custom (help-window-select t)
+  :config
+  (advice-add 'help-window-display-message :override #'ignore))
 
 (use-package helpful
   :custom
@@ -361,10 +342,16 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package multiple-cursors
+  :bind (("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)))
+
 (use-package eww
+  :defer 5.0
   :straight nil)
 
 (use-package browse-url
+  :defer 5.0
   :straight nil
   :custom (browse-urls-browser-function "firefox"))
 
@@ -385,7 +372,7 @@
   (doom-themes-enable-bold t)
   :config
   (load-theme 'doom-gruvbox t)
-  ;(doom-themes-org-config)
+  (doom-themes-org-config)
 
   ;; Emacs 27 added new `:extend' keyword which breaks most themes
   (dolist (face '(region hl-line secondary-selection))
@@ -398,41 +385,41 @@
                     org-quote))
       (set-face-attribute face nil :extend t)))
   (with-eval-after-load 'magit
-      (dolist (face '(magit-diff-hunk-heading
-                      magit-diff-hunk-heading-highlight
-                      magit-diff-hunk-heading-selection
-                      magit-diff-hunk-region
-                      magit-diff-lines-heading
-                      magit-diff-lines-boundary
-                      magit-diff-conflict-heading
-                      magit-diff-added
-                      magit-diff-removed
-                      magit-diff-our
-                      magit-diff-base
-                      magit-diff-their
-                      magit-diff-context
-                      magit-diff-added-highlight
-                      magit-diff-removed-highlight
-                      magit-diff-our-highlight
-                      magit-diff-base-highlight
-                      magit-diff-their-highlight
-                      magit-diff-context-highlight
-                      magit-diff-whitespace-warning
-                      magit-diffstat-added
-                      magit-diffstat-removed
-                      magit-section-heading
-                      magit-section-heading-selection
-                      magit-section-highlight
-                      magit-section-secondary-heading
-                      magit-diff-file-heading
-                      magit-diff-file-heading-highlight
-                      magit-diff-file-heading-selection))
-        (set-face-attribute face nil :extend t)))
+    (dolist (face '(magit-diff-hunk-heading
+                    magit-diff-hunk-heading-highlight
+                    magit-diff-hunk-heading-selection
+                    magit-diff-hunk-region
+                    magit-diff-lines-heading
+                    magit-diff-lines-boundary
+                    magit-diff-conflict-heading
+                    magit-diff-added
+                    magit-diff-removed
+                    magit-diff-our
+                    magit-diff-base
+                    magit-diff-their
+                    magit-diff-context
+                    magit-diff-added-highlight
+                    magit-diff-removed-highlight
+                    magit-diff-our-highlight
+                    magit-diff-base-highlight
+                    magit-diff-their-highlight
+                    magit-diff-context-highlight
+                    magit-diff-whitespace-warning
+                    magit-diffstat-added
+                    magit-diffstat-removed
+                    magit-section-heading
+                    magit-section-heading-selection
+                    magit-section-highlight
+                    magit-section-secondary-heading
+                    magit-diff-file-heading
+                    magit-diff-file-heading-highlight
+                    magit-diff-file-heading-selection))
+      (set-face-attribute face nil :extend t)))
   (set-face-attribute 'font-lock-comment-face nil :family "Iosevka Slab"
                       :height 180 :weight 'bold :slant 'italic))
 
 (use-package minions
-  :defer 3.0
+  :defer 0.5
   :custom
   (minions-mode-line-lighter "...")
   (minions-mode-line-delimiters '("" . ""))
@@ -449,6 +436,7 @@
 
 (use-package page-break-lines
   :defer 1.0
+  :diminish
   :commands (global-page-break-lines-mode)
   :config
   (progn
@@ -462,7 +450,8 @@
     (global-page-break-lines-mode)))
 
 (use-package dashboard
-  :init (dashboard-setup-startup-hook)
+  :init
+  (dashboard-setup-startup-hook)
   :custom
   (dashboard-items '((recents . 5)
                      (projects . 5)
@@ -522,7 +511,6 @@
 
 (use-package prescient
   :defer 1.0
-  :custom (prescient-save-file (djm/emacs-cache "prescient-save.el"))
   :config (prescient-persist-mode))
 
 (use-package dimmer
@@ -586,6 +574,7 @@
 
 (use-package hippie-exp
   :defer 1.0
+  :diminish
   :bind (([remap dabbrev-expand] . hippie-expand))
   :custom
   (hippie-expand-try-functions-list '(try-expand-dabbrev
@@ -597,6 +586,10 @@
                                       try-expand-list
                                       try-complete-lisp-symbol-partially
                                       try-complete-lisp-symbol)))
+
+(use-package auto-insert
+  :straight nil
+  :bind (("C-c ci a" . auto-insert)))
 
 (use-package company
   :defer 2.0
@@ -610,38 +603,32 @@
               ("C-p" . company-select-previous))
   :custom
   (company-require-match 'never)
-  (company-async-timeout 5)
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 2)
+  (company-async-timeout 10)
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 1)
   (company-tooltip-align-annotations t)
-  (company-transformers '(company-sort-by-statistics
+  (company-transformers '(company-prescient-transformer
+                          company-sort-by-backend-importance
+                          company-flx-transformer
+                          company-sort-by-statistics
                           company-sort-by-occurrence))
-  (company-frontends '(company-preview-common-frontend
-                       company-pseudo-tooltip-frontend
-                       company-echo-metadata-frontend))
-  (company-backends '(company-capf
-                      company-files
-                      company-xcode
-                      company-keywords))
   :config
   (global-company-mode 1))
 
 (use-package company-statistics
   :after (company)
-  :init
-  (company-statistics-mode 1)
-  :custom
-  (company-statistics-file (djm/emacs-cache "company-statistics-cache.el")))
+  :config
+  (company-statistics-mode 1))
 
 (use-package company-math
   :after (company)
-  :init
+  :config
   (add-to-list 'company-backends 'company-math-symbols-unicode)
   (add-to-list 'company-backends 'company-math-symbols-latex))
 
 (use-package company-flx
   :after (company)
-  :init (company-flx-mode 1))
+  :config (company-flx-mode 1))
 
 (use-package company-prescient
   :after (company prescient)
@@ -654,13 +641,23 @@
 
 (use-package company-anaconda
   :after (company anaconda-mode)
-  :init
-  (add-to-list 'company-backends 'company-anaconda))
+  :init (add-to-list 'company-backends 'company-anaconda))
+
+(use-package company-box
+  :after (company)
+  :init (company-box-mode 1))
+
+(use-package company-dabbrev
+  :straight nil
+  :after (company)
+  :custom
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-downcase nil))
 
 (use-package counsel
+  :diminish
   :hook ((after-init . ivy-mode)
          (ivy-mode . counsel-mode))
-
   :bind (("C-x b" . ivy-switch-buffer)
          ("C-x B" . ivy-switch-buffer-other-window)
          ("C-c C-r" . ivy-resume)
@@ -718,67 +715,57 @@
   (ivy-flx-limit 2000)
 
   :config
+  (use-package flx)
+  (use-package ivy-hydra)
+  (use-package amx :config (amx-mode 1))
+  (use-package ivy-prescient
+    :custom (ivy-prescient-retain-classic-highlighting t)
+    :config (ivy-prescient-mode 1))
+
   (when (executable-find "rg")
     (setq counsel-grep-base-command
           "rg -S --no-heading --line-number --color never '%s' %s"))
 
   (with-eval-after-load 'ivy
-    (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
-          ivy-re-builders-alist)
-    (push (cons #'swiper-isearch (cdr (assq t ivy-re-builders-alist)))
-          ivy-re-builders-alist)
+    (push (cons #'swiper #'ivy--regex-plus) ivy-re-builders-alist)
+    (push (cons #'swiper-isearch #'ivy--regex-plus) ivy-re-builders-alist)
     (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
-    (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
-
-(use-package ivy-hydra)
-(use-package ivy-prescient
-  :custom (ivy-prescient-retain-classic-highlighting t)
-  :init (ivy-prescient-mode 1))
+    (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)
+    (push (cons t #'ivy-prescient-re-builder) ivy-re-builders-alist)))
 
 (use-package ivy-posframe
-  :init (ivy-posframe-mode 1)
+  :diminish
   :functions (ivy-posframe-display-at-window-bottom-left
               ivy-posframe-display-at-frame-center)
   :custom
-  (ivy-posframe-border-width 20)
-  (ivy-posframe-style 'frame-center)
   (ivy-posframe-hide-minibuffer t)
-  (ivy-posframe-parameters '((alpha 100 100)))
-
   :config
+  (ivy-posframe-mode 1)
   (push (cons #'swiper nil)
         ivy-posframe-display-functions-alist)
   (push (cons t #'ivy-posframe-display-at-frame-center)
         ivy-posframe-display-functions-alist))
 
 (use-package counsel-projectile
+  :diminish
   :after (counsel projectile)
-  :custom
-  (counsel-projectile-switch-project-action #'dired)
+  :custom (counsel-projectile-switch-project-action #'dired)
   :config (counsel-projectile-mode 1))
 
-(use-package auto-insert
-  :straight nil
-  :bind (("C-c ci a" . auto-insert)))
-
-(use-package amx
-  :init (amx-mode 1)
-  :custom (amx-save-file (djm/emacs-cache "amx-items")))
-
-(use-package flx)
-
 (use-package avy
+  :diminish
   :bind (:map dired-mode-map
               ("." . avy-goto-word-or-subword-1))
-  :custom (avy-style 'de-bruijn)
   :chords
-  ("jj" . avy-goto-char-timer)
-  ("jk" . avy-goto-word-or-subword-1)
+  ("jx" . avy-kill-whole-line)
+  ("jj" . avy-push-mark)
+  ("jk" . avy-pop-mark)
   ("jl" . avy-goto-line)
   :config (avy-setup-default))
 
 (use-package ispell
   :defer 5.0
+  :diminish
   :straight nil
   :ensure-system-package (hunspell . "trizen -S hunspell")
   :custom
@@ -790,27 +777,31 @@
 (use-package magit
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch)
-         ("C-c M-g" . magit-file-popup))
-  :config
-  (use-package git-commit
-    :custom (git-commit-summary-max-length 50))
+         ("C-c M-g" . magit-file-popup)))
 
-  (use-package git-gutter
-    :commands (global-git-gutter-mode)
-    :init (global-git-gutter-mode 1)))
+(use-package git-commit
+  :after (magit)
+  :custom (git-commit-summary-max-length 50))
 
+(use-package git-gutter
+  :commands (global-git-gutter-mode)
+  :init (global-git-gutter-mode 1))
 
 (use-package projectile
   :custom
-  (projectile-cache-file (djm/emacs-cache "projectile.cache"))
   (projectile-completion-system 'ivy)
   (projectile-enable-caching t)
-  (projectile-known-projects-file (djm/emacs-cache "projectile-bookmarks.eld"))
   :config
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode 1))
 
-(use-package vterm :defer 10)
+(use-package vterm
+  :defer 10)
+
+(use-package vterm-toggle
+  :straight (:host github :repo "jixiuf/vterm-toggle")
+  :bind (("<f2>" . vterm-toggle)
+         ("S-<f2>" . term-toggle-cd)))
+
 (use-package eterm-256color
   :hook (term-mode . eterm-256color-mode))
 
@@ -852,12 +843,13 @@
   :after (flycheck)
   :hook (flycheck-mode . flycheck-popup-tip-mode))
 
-(use-package sh-script
-  :ensure-system-package shfmt
-  :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
-  :custom
-  (sh-indentation 2)
-  (sh-basic-offset 2))
+;; (use-package sh-script
+;;   :straight nil
+;;   :ensure-system-package shfmt
+;;   :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
+;;   :custom
+;;   (sh-indentation 2)
+;;   (sh-basic-offset 2))
 
 (use-package ess
   :init
@@ -878,7 +870,6 @@
   (lsp-auto-guess-root t)
   (lsp-edoc-render-all nil)
   (lsp-prefer-fly-make nil)
-  (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
   (lsp-restart 'ignore)
   (lsp-enable-on-type-formatting nil)
   :config

@@ -1,4 +1,4 @@
-;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; no-byte-compile: t-*-
+;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
 ;;;
 ;;; Commentary:
 ;;; Emacs config by dylanjm
@@ -60,11 +60,10 @@
 (put 'erase-buffer 'disabled nil)
 
 (push '(ns-transparent-titlebar . t) default-frame-alist)
-(push '(internal-border . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
-(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
-(push '(variable-pitch . "-*-Fira Sans-light-normal-normal-*-18-*-*-*-p-0-iso10646-1") default-frame-alist)
+(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
 
 (with-no-warnings
   (setq straight-cache-autoloads t)
@@ -93,20 +92,19 @@
 (straight-use-package 'use-package)
 
 (use-package no-littering
-  :straight t
   :demand t
+  :straight t
   :init
   (setq no-littering-etc-directory (djm/emacs-cache "config/"))
   (setq no-littering-var-directory (djm/emacs-cache "data/"))
   :config
   (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-  (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
+  (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
+  (setq recentf-save-file (djm/emacs-cache "recentf")))
 
 (use-package dash)
-(use-package dash-functional)
 (use-package f)
 (use-package s)
-(use-package memoize)
 (use-package general)
 (use-package el-patch)
 (use-package hydra)

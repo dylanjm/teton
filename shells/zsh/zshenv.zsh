@@ -16,8 +16,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 
 fpath+=($ZSH/functions)
 
-path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
-      $PYENV_ROOT/bin
+path=($PYENV_ROOT/bin
       $PYENV_ROOT/shims
       /usr/local/bin
       /usr/bin
@@ -27,7 +26,6 @@ path=($PYENV_ROOT/plugins/pyenv-virtualenv/shims
       /sbin
       $DOTFILES/bin
       /usr/local/texlive/2019/bin/x86_64-darwin/
-      /opt/X11/bin
       /usr/local/opt/texinfo/bin
       /usr/local/Cellar/modules/4.3.0/bin)
 

@@ -7,7 +7,7 @@
 ;;;
 ;;; Code:
 
-(defvar user-emacs-cache "~/.cache/emacs/")
+(defvar user-emacs-cache "~/.cache/emacs")
 
 (eval-and-compile
   (defun djm/emacs-path (path)
@@ -66,9 +66,15 @@
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 (push '(variable-pitch . "-*-Fira Sans-light-normal-normal-*-18-*-*-*-p-0-iso10646-1") default-frame-alist)
 
+(with-no-warnings
+  (setq straight-cache-autoloads t)
+  (setq straight-check-for-modifications 'live-with-find)
+  (setq straight-repository-branch "develop")
+  (setq straight-use-package-by-default t))
+
 (eval-and-compile
   (defvar bootstrap-version 5)
-  (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+  (defvar bootstrap-file (djm/emacs-path "straight/repos/straight.el/bootstrap.el")))
 
 (unless (file-exists-p bootstrap-file)
   (with-current-buffer
@@ -80,20 +86,21 @@
 
 (load bootstrap-file nil 'nomessage)
 
-(unless (fboundp 'straight-vc-built-in-get-commit)
-  (defun straight-vc-built-in-get-commit (&rest _)
-    "built-in"))
-
-(with-no-warnings
-  (setq straight-cache-autoloads t)
-  (setq straight-check-for-modifications '(find-when-checking check-on-save))
-  (setq straight-use-package-by-default t))
-
 (with-no-warnings
   (setq use-package-verbose t)
   (setq use-package-enable-imenu-support t))
 
 (straight-use-package 'use-package)
+
+(use-package no-littering
+  :straight t
+  :demand t
+  :init
+  (setq no-littering-etc-directory (djm/emacs-cache "config/"))
+  (setq no-littering-var-directory (djm/emacs-cache "data/"))
+  :config
+  (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+  (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
 
 (use-package dash)
 (use-package dash-functional)

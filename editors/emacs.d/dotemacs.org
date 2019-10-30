@@ -42,7 +42,7 @@ idea for this function from jwiegley's dot-files. You can find his version of
 the function in his github repo [[https://github.com/jwiegley/dot-emacs/blob/master/init.el][jwiegley/dot-emacs/init.el]].
 
 #+BEGIN_SRC emacs-lisp
-(defvar user-emacs-cache "~/.cache/emacs/")
+(defvar user-emacs-cache "~/.cache/emacs")
 
 (eval-and-compile
   (defun djm/emacs-path (path)
@@ -129,9 +129,15 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 ** Getting packages /straightened-out/ using =straight.el=
 
 #+BEGIN_SRC emacs-lisp
+  (with-no-warnings
+    (setq straight-cache-autoloads t)
+    (setq straight-check-for-modifications 'live-with-find)
+    (setq straight-repository-branch "develop")
+    (setq straight-use-package-by-default t))
+
   (eval-and-compile
     (defvar bootstrap-version 5)
-    (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+    (defvar bootstrap-file (djm/emacs-path "straight/repos/straight.el/bootstrap.el")))
 
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
@@ -143,20 +149,21 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 
   (load bootstrap-file nil 'nomessage)
 
-  (unless (fboundp 'straight-vc-built-in-get-commit)
-    (defun straight-vc-built-in-get-commit (&rest _)
-      "built-in"))
-
-  (with-no-warnings
-    (setq straight-cache-autoloads t)
-    (setq straight-check-for-modifications '(find-when-checking check-on-save))
-    (setq straight-use-package-by-default t))
-
   (with-no-warnings
     (setq use-package-verbose t)
     (setq use-package-enable-imenu-support t))
 
   (straight-use-package 'use-package)
+
+  (use-package no-littering
+    :straight t
+    :demand t
+    :init
+    (setq no-littering-etc-directory (djm/emacs-cache "config/"))
+    (setq no-littering-var-directory (djm/emacs-cache "data/"))
+    :config
+    (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
+    (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/")))))
 
   (use-package dash)
   (use-package dash-functional)
@@ -181,130 +188,110 @@ This concludes =early-init.el=.
 * General Settings
 ** Sane settings for the insane
 #+begin_src emacs-lisp
-  (use-package cus-start
-    :straight nil
-    :custom
-    (ad-redefinition-action 'accept)
-    (auto-save-list-file-prefix nil)
-    (auto-window-vscroll nil)
-    (browse-urls-browser-function "firefox")
-    (confirm-kill-processes nil)
-    (cursor-in-non-selected-windows nil)
-    (cursor-type 'bar)
-    (custom-file (make-temp-file "emacs-custom"))
-    (debug-on-error t)
-    (display-time-default-load-average nil)
-    (echo-keystrokes 0.02)
-    (enable-recursive-minibuffers t)
-    (eval-expression-print-length nil)
-    (eval-expression-print-level nil)
-    (fill-column 80)
-    (frame-inhibit-implied-resize t)
-    (fast-but-imprecise-scrolling t)
-    (ffap-machine-p-known 'reject)
-    (frame-resize-pixelwise t)
-    (frame-title-format '("%b - Emacs"))
-    (icon-title-format frame-title-format)
-    (indent-tabs-mode nil)
-    (inhibit-compacting-font-caches t)
-    (inhibit-default-init t)
-    (inhibit-startup-echo-area-message t)
-    (inhibit-startup-screen t)
-    (initial-scratch-message "")
-    (insert-directory-program "gls")
-    (load-prefer-newer t)
-    (message-log-max 10000)
-    (mode-line-in-non-selected-windows nil)
-    (mouse-wheel-progressive-speed nil)
-    (mouse-wheel-scroll-amount '(1))
-    (ns-use-thin-smoothing t)
-    (ring-bell-function #'ignore)
-    (set-horizontal-scroll-bar-mode nil)
-    (scroll-conservatively most-positive-fixnum)
-    (scroll-margin 5)
-    (scroll-preserve-screen-position t)
-    (scroll-step 1)
-    (select-enable-clipboard t)
-    (sentence-end-double-space nil)
-    (tab-always-indent 'complete)
-    (tab-width 4)
-    (transient-history-file (djm/emacs-cache "transient/history.el"))
-    (transient-levels-file (djm/emacs-cache "transient/levels.el"))
-    (transient-values-file (djm/emacs-cache "transient/values.el"))
-    (uniquify-buffer-name-style 'post-forward-angle-brackets)
-    (use-dialog-box nil)
-    (use-file-dialog nil)
-    (vc-follow-symlinks t)
-    (view-read-only t)
-    (window-combination-resize t))
+    (use-package cus-start
+      :straight nil
+      :custom
+      (ad-redefinition-action 'accept)
+      (auto-save-list-file-prefix nil)
+      (auto-window-vscroll nil)
+      (cursor-in-non-selected-windows nil)
+      (cursor-type 'bar)
+      (custom-file (make-temp-file "emacs-custom"))
+      (debug-on-error t)
+      (display-time-default-load-average nil)
+      (echo-keystrokes 0.02)
+      (enable-recursive-minibuffers t)
+      (fill-column 80)
+      (frame-inhibit-implied-resize t)
+      (fast-but-imprecise-scrolling t)
+      (ffap-machine-p-known 'reject)
+      (frame-resize-pixelwise t)
+      (frame-title-format '("%b - Emacs"))
+      (icon-title-format frame-title-format)
+      (indent-tabs-mode nil)
+      (inhibit-compacting-font-caches t)
+      (inhibit-default-init t)
+      (inhibit-startup-echo-area-message t)
+      (inhibit-startup-screen t)
+      (initial-scratch-message "")
+      (load-prefer-newer t)
+      (message-log-max 10000)
+      (mode-line-in-non-selected-windows nil)
+      (mouse-wheel-progressive-speed nil)
+      (mouse-wheel-scroll-amount '(1))
+      (ns-use-thin-smoothing t)
+      (ring-bell-function #'ignore)
+      (select-enable-clipboard t)
+      (set-horizontal-scroll-bar-mode nil)
+      (scroll-conservatively most-positive-fixnum)
+      (scroll-margin 5)
+      (scroll-preserve-screen-position t)
+      (scroll-step 1)
+      (sentence-end-double-space nil)
+      (tab-always-indent 'complete)
+      (tab-width 4)
+      (use-dialog-box nil)
+      (use-file-dialog nil)
+      (uniquify-buffer-name-style 'post-forward-angle-brackets)
+      (vc-follow-symlinks t)
+      (window-combination-resize t))
 #+end_src
 
 ** Auto-Save Madness
 
 #+begin_src emacs-lisp
-    (use-package mule
-      :straight nil
-      :init
-      (prefer-coding-system 'utf-8-unix)
-      (set-language-environment "UTF-8"))
+  (use-package mule
+    :straight nil
+    :init
+    (prefer-coding-system 'utf-8-unix)
+    (set-language-environment "UTF-8"))
 
-    (use-package files
-      :straight nil
-      :custom
-      (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-      (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
-      (backup-by-copying t)
-      (create-lockfiles nil)
-      (delete-old-versions t)
-      (kept-new-versions 6)
-      (kept-old-versions 2)
-      (require-final-newline t)
-      (version-control t))
+  (use-package files
+    :straight nil
+    :custom
 
-    (use-package autorevert
-      :defer 2.0
-      :straight nil
-      :init (global-auto-revert-mode 1)
-      :custom
-      (auto-revert-verbose nil)
-      (global-auto-revert-non-file-buffers t)
-      (auto-revert-use-notify nil))
+    (backup-by-copying t)
+    (confirm-kill-processes nil)
+    (create-lockfiles nil)
+    (delete-old-versions t)
+    (insert-directory-program "gls")
+    (kept-new-versions 6)
+    (kept-old-versions 2)
+    (require-final-newline t)
+    (view-read-only t)
+    (version-control t))
 
-    (use-package recentf
-      :defer 5.0
-      :straight nil
-      :functions (recentf-save-list)
-      :custom
-      (recentf-save-file (djm/emacs-cache "recentf"))
-      (recentf-max-saved-items 200)
-      (recentf-max-menu-items 20)
-      (recentf-auto-cleanup 'never)
-      (recentf-exclude '("\\.?cache"
-                         ".cask"
-                         "url"
-                         "COMMIT_EDITMSG\\'"
-                         "bookmarks"
-                         "NEWS"
-                         "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                         "^/tmp/"nnn
-                         "^/ssh:"
-                         "\\.?ido\\.last$"
-                         "\\.revive$"
-                         "/TAGS$"
-                         "^/var/folders/.+$"
-                         (lambda (file)
-                           (file-in-directory-p file package-user-dir))))
-      :config
-      (push (expand-file-name recentf-save-file) recentf-exclude)
-      (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
-      (recentf-mode 1))
+  (use-package autorevert
+    :defer 2.0
+    :straight nil
+    :init (global-auto-revert-mode 1)
+    :custom
+    (auto-revert-verbose nil)
+    (global-auto-revert-non-file-buffers t)
+    (auto-revert-use-notify nil))
 
-    (use-package osx-trash
-      :defer 5.0
-      :init (setq delete-by-moving-to-trash t)
-      :config (osx-trash-setup))
+  (use-package recentf
+    :defer 5.0
+    :straight nil
+    :custom
+    (recentf-save-file (djm/emacs-cache "recentf"))
+    (recentf-max-saved-items 200)
+    (recentf-max-menu-items 20)
+    (recentf-auto-cleanup 'never)
+    :config
+    (dolist (no-no '(no-littering-var-directory
+                     no-littering-etc-directory
+                     recentf-save-file))
+      (add-to-list 'recentf-exclude no-no))
+    (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
+    (recentf-mode 1))
 
-    (use-package vscode-icon)
+  (use-package osx-trash
+    :defer 5.0
+    :init (setq delete-by-moving-to-trash t)
+    :config (osx-trash-setup))
+
+  (use-package vscode-icon)
 #+end_src
 
 ** Window & Frame Settings
@@ -336,6 +323,8 @@ This concludes =early-init.el=.
       :straight nil
       :custom
       (column-number-mode nil)
+      (eval-expression-print-length nil)
+      (eval-expression-print-level nil)
       (line-number-mode nil)
       (line-move-visual nil)
       (set-mark-command-repeat-pop t)
@@ -421,61 +410,70 @@ This concludes =early-init.el=.
 
 ** Dired
 #+BEGIN_SRC emacs-lisp
-    (use-package dired
-      :defer 3
-      :straight nil
-      :functions (dired wdired-change-to-wdired-mode)
-      :bind (:map dired-mode-map
-                  ("C-c C-w" . wdired-change-to-wdired-mode))
-      :custom
-      (dired-auto-revert-buffer t)
-      (dired-dwim-target t)
-      (dired-guess-shell-gnutar "tar")
-      (dired-listing-switches "-alhF --group-directories-first -v")
-      (dired-ls-F-marks-symlinks t)
-      (dired-recursive-deletes 'always)
-      (dired-recursive-copies 'always)
-      (dired-use-ls-dired nil))
+  (use-package dired
+    :defer 3
+    :straight nil
+    :functions (dired wdired-change-to-wdired-mode)
+    :bind (:map dired-mode-map
+                ("C-c C-w" . wdired-change-to-wdired-mode))
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-dwim-target t)
+    (dired-guess-shell-gnutar "tar")
+    (dired-listing-switches "-alhF --group-directories-first -v")
+    (dired-ls-F-marks-symlinks t)
+    (dired-recursive-deletes 'always)
+    (dired-recursive-copies 'always)
+    (dired-use-ls-dired nil))
 
-    (use-package dired-aux
-      :straight nil
-      :after (dired))
+  (use-package dired-aux
+    :straight nil
+    :after (dired))
 
-    (use-package dired-x
-      :straight nil
-      :after (dired))
+  (use-package dired-x
+    :straight nil
+    :after (dired))
 
-    (use-package diredfl
-      :after (dired)
-      :config (diredfl-global-mode 1))
+  (use-package diredfl
+    :after (dired)
+    :config (diredfl-global-mode 1))
 
-    (use-package dired-ranger
-      :bind (:map dired-mode-map
-                  ("C-c C-c" . dired-ranger-copy)
-                  ("C-c C-m" . dired-ranger-move)
-                  ("C-c C-p" . dired-ranger-move)
-                  ("C-c C-b" . dired-ranger-bookmark)
-                  ("C-c b v" . dired-ranger-bookmark-visit)))
+  (use-package dired-ranger
+    :bind (:map dired-mode-map
+                ("C-c C-c" . dired-ranger-copy)
+                ("C-c C-m" . dired-ranger-move)
+                ("C-c C-p" . dired-ranger-move)
+                ("C-c C-b" . dired-ranger-bookmark)
+                ("C-c b v" . dired-ranger-bookmark-visit)))
 
-    (use-package dired-git-info
-      :bind (:map dired-mode-map
-                  (":" . dired-git-info-mode)))
+  (use-package dired-git-info
+    :bind (:map dired-mode-map
+                (":" . dired-git-info-mode)))
 
-    (use-package dired-rsync
-      :bind (:map dired-mode-map
-                  ("C-c C-r" . dired-rsync)))
+  (use-package dired-rsync
+    :bind (:map dired-mode-map
+                ("C-c C-r" . dired-rsync)))
 
-    (use-package dired-subtree
-      :bind (:map dired-mode-map
-                  ("TAB" . dired-subtree-insert)
-                  (";" . dired-subtree-remove)))
+  (use-package dired-subtree
+    :bind (:map dired-mode-map
+                ("TAB" . dired-subtree-insert)
+                (";" . dired-subtree-remove)))
 
-    (use-package fd-dired
-      :after (dired))
+  (use-package fd-dired
+    :after (dired))
 
-    (use-package dired-sidebar
-      :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-      :custom (dired-sidebar-theme 'vscode))
+  (use-package dired-sidebar
+    :bind ("M-\\" . dired-sidebar-toggle-sidebar)
+    :custom (dired-sidebar-theme 'vscode))
+
+  (use-package async
+    :defer 1.5
+    :preface
+    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+    (autoload 'dired-async-mode "dired-async.el" nil t)
+    :config
+    (async-bytecomp-package-mode 1)
+    (dired-async-mode 1))
 #+end_src
 
 ** IBuffer
@@ -553,6 +551,8 @@ This concludes =early-init.el=.
     :custom (which-key-idle-delay 0.5)
     :config (which-key-mode))
 
+  (use-package man)
+
   (use-package help
     :defer 1.0
     :straight nil
@@ -568,14 +568,17 @@ This concludes =early-init.el=.
     ([remap describe-variable] . helpful-variable)
     ([remap describe-key] . helpful-key))
 
-  (use-package async
-    :defer 1.5
-    :preface
-    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t)
-    :config
-    (async-bytecomp-package-mode 1)
-    (dired-async-mode 1))
+#+end_src
+
+** Web
+
+#+begin_src emacs-lisp
+  (use-package eww
+    :straight nil)
+
+  (use-package browse-url
+    :straight nil
+    :custom (browse-urls-browser-function "firefox"))
 #+end_src
 
 ** MacOS Specific
@@ -736,8 +739,6 @@ This concludes =early-init.el=.
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package man)
-
   (use-package ace-window
     :defer 10.0
     :bind (("C-x o" . ace-window)))
@@ -805,6 +806,7 @@ This concludes =early-init.el=.
         (or (plist-get info arg-name) value))))
 
   (use-package which-key-posframe
+    :defer 5.0
     :config (which-key-posframe-mode)
     :custom (which-key-posframe-poshandler
              'posframe-poshandler-point-bottom-left-corner))
@@ -975,43 +977,6 @@ This concludes =early-init.el=.
     (ivy-flx-limit 2000)
 
     :config
-    (use-package ivy-hydra)
-    (use-package ivy-prescient
-      :custom (ivy-prescient-retain-classic-highlighting t)
-      :init (ivy-prescient-mode 1))
-
-    (use-package ivy-posframe
-      :init (ivy-posframe-mode 1)
-      :functions (ivy-posframe-display-at-window-bottom-left
-                  ivy-posframe-display-at-frame-center)
-      :custom
-      (ivy-posframe-border-width 20)
-      (ivy-posframe-style 'frame-center)
-      ;(ivy-posframe-hide-minibuffer t)
-      (ivy-posframe-parameters '((alpha 100 100)))
-
-      :config
-      (push (cons #'swiper nil)
-            ivy-posframe-display-functions-alist)
-      (push (cons t #'ivy-posframe-display-at-frame-center)
-            ivy-posframe-display-functions-alist))
-
-    (use-package counsel-projectile
-      :after (counsel projectile)
-      :custom
-      (counsel-projectile-switch-project-action #'dired)
-      :config (counsel-projectile-mode 1))
-
-    (use-package auto-insert
-      :straight nil
-      :bind (("C-c ci a" . auto-insert)))
-
-    (use-package amx
-      :init (amx-mode 1)
-      :custom (amx-save-file (djm/emacs-cache "amx-items")))
-
-    (use-package flx)
-
     (when (executable-find "rg")
       (setq counsel-grep-base-command
             "rg -S --no-heading --line-number --color never '%s' %s"))
@@ -1024,6 +989,43 @@ This concludes =early-init.el=.
       (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
       (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
 
+  (use-package ivy-hydra)
+  (use-package ivy-prescient
+    :custom (ivy-prescient-retain-classic-highlighting t)
+    :init (ivy-prescient-mode 1))
+
+  (use-package ivy-posframe
+    :init (ivy-posframe-mode 1)
+    :functions (ivy-posframe-display-at-window-bottom-left
+                ivy-posframe-display-at-frame-center)
+    :custom
+    (ivy-posframe-border-width 20)
+    (ivy-posframe-style 'frame-center)
+    (ivy-posframe-hide-minibuffer t)
+    (ivy-posframe-parameters '((alpha 100 100)))
+
+    :config
+    (push (cons #'swiper nil)
+          ivy-posframe-display-functions-alist)
+    (push (cons t #'ivy-posframe-display-at-frame-center)
+          ivy-posframe-display-functions-alist))
+
+  (use-package counsel-projectile
+    :after (counsel projectile)
+    :custom
+    (counsel-projectile-switch-project-action #'dired)
+    :config (counsel-projectile-mode 1))
+
+  (use-package auto-insert
+    :straight nil
+    :bind (("C-c ci a" . auto-insert)))
+
+  (use-package amx
+    :init (amx-mode 1)
+    :custom (amx-save-file (djm/emacs-cache "amx-items")))
+
+  (use-package flx)
+
   (use-package avy
     :bind (:map dired-mode-map
                 ("." . avy-goto-word-or-subword-1))
@@ -1033,7 +1035,6 @@ This concludes =early-init.el=.
     ("jk" . avy-goto-word-or-subword-1)
     ("jl" . avy-goto-line)
     :config (avy-setup-default))
-
 
   (use-package ispell
     :defer 5.0
@@ -1139,64 +1140,66 @@ This concludes =early-init.el=.
 
 ** Language Server Setup
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :hook ((python-mode sh-mode c-mode-common c++-mode) . lsp-deferred)
-    :custom
-    (flymake-fringe-indicator-position 'right-fringe)
-    (lsp-auto-guess-root t)
-    (lsp-edoc-render-all nil)
-    (lsp-prefer-fly-make nil)
-    (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
-    (lsp-restart 'ignore)
-    (lsp-enable-on-type-formatting nil)
-    :config
-    (require 'lsp-clients)
-    (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action))
+    (use-package lsp-mode
+      :defer 3.0
+      :hook ((python-mode sh-mode c-mode-common c++-mode) . lsp-deferred)
+      :custom
+      (flymake-fringe-indicator-position 'right-fringe)
+      (lsp-auto-guess-root t)
+      (lsp-edoc-render-all nil)
+      (lsp-prefer-fly-make nil)
+      (lsp-session-file (djm/emacs-cache "lsp-session-v1"))
+      (lsp-restart 'ignore)
+      (lsp-enable-on-type-formatting nil)
+      :config
+      (require 'lsp-clients)
+      (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action))
 
-  (use-package dap-mode
-    :hook ((lsp-mode . dap-mode)
-           (lsp-mode . dap-ui-mode))
-    :preface
-    (defvar config-lsp--dap-cache-dir (djm/emacs-cache "dap"))
-    :init
-    (progn
-      (f-mkdir config-lsp--dap-cache-dir)
-      (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
-    :config
-    (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
+    (use-package dap-mode
+      :defer 3.0
+      :hook ((lsp-mode . dap-mode)
+             (lsp-mode . dap-ui-mode))
+      :preface
+      (defvar config-lsp--dap-cache-dir (djm/emacs-cache "dap"))
+      :init
+      (progn
+        (f-mkdir config-lsp--dap-cache-dir)
+        (setq dap-utils-extension-path (expand-file-name "extensions" config-lsp--dap-cache-dir)))
+      :config
+      (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
-  (use-package lsp-ui
-    :preface
-    (progn
-      (defun config-lsp-toggle-ui-overlays (&optional should-enable)
-        (interactive (list (not (bound-and-true-p lsp-ui-mode))))
-        (cond
-         (should-enable
-          (lsp-ui-mode +1)
-          (eldoc-mode -1))
-         (t
-          (lsp-ui-mode -1)
-          (eldoc-mode +1))))
+    (use-package lsp-ui
+      :defer 3.0
+      :preface
+      (progn
+        (defun config-lsp-toggle-ui-overlays (&optional should-enable)
+          (interactive (list (not (bound-and-true-p lsp-ui-mode))))
+          (cond
+           (should-enable
+            (lsp-ui-mode +1)
+            (eldoc-mode -1))
+           (t
+            (lsp-ui-mode -1)
+            (eldoc-mode +1))))
 
-      (defun config-lsp-configure-ui ()
-        (config-lsp-toggle-ui-overlays t)
-        (lsp-ui-flycheck-enable t)))
-    :init
-    (progn
-      (use-package lsp-ui-flycheck :straight nil)
+        (defun config-lsp-configure-ui ()
+          (config-lsp-toggle-ui-overlays t)
+          (lsp-ui-flycheck-enable t)))
+      :config
+      (use-package lsp-ui-flycheck
+        :straight nil)
       (with-eval-after-load 'lsp-mode
-        (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays)))
-    :config
-    (progn
-      (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
-      (setq lsp-ui-sideline-enable t
-            lsp-ui-sideline-show-code-actions nil
-            lsp-ui-sideline-show-flycheck nil
-            lsp-ui-doc-enable nil)
-      (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
-      (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
-      (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-      (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
+      (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays))
+      (progn
+        (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
+        (setq lsp-ui-sideline-enable t
+              lsp-ui-sideline-show-code-actions nil
+              lsp-ui-sideline-show-flycheck nil
+              lsp-ui-doc-enable nil)
+        (define-key lsp-ui-mode-map (kbd "C-c C-c") #'lsp-goto-type-definition)
+        (define-key lsp-ui-mode-map (kbd "C-c i") #'lsp-goto-implementation)
+        (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+        (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)))
 #+end_src
 
 ** Python

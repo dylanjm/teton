@@ -12,8 +12,6 @@
   (ad-redefinition-action 'accept)
   (auto-save-list-file-prefix nil)
   (auto-window-vscroll nil)
-  (browse-urls-browser-function "firefox")
-  (confirm-kill-processes nil)
   (cursor-in-non-selected-windows nil)
   (cursor-type 'bar)
   (custom-file (make-temp-file "emacs-custom"))
@@ -21,8 +19,6 @@
   (display-time-default-load-average nil)
   (echo-keystrokes 0.02)
   (enable-recursive-minibuffers t)
-  (eval-expression-print-length nil)
-  (eval-expression-print-level nil)
   (fill-column 80)
   (frame-inhibit-implied-resize t)
   (fast-but-imprecise-scrolling t)
@@ -36,7 +32,6 @@
   (inhibit-startup-echo-area-message t)
   (inhibit-startup-screen t)
   (initial-scratch-message "")
-  (insert-directory-program "gls")
   (load-prefer-newer t)
   (message-log-max 10000)
   (mode-line-in-non-selected-windows nil)
@@ -44,23 +39,19 @@
   (mouse-wheel-scroll-amount '(1))
   (ns-use-thin-smoothing t)
   (ring-bell-function #'ignore)
+  (select-enable-clipboard t)
   (set-horizontal-scroll-bar-mode nil)
   (scroll-conservatively most-positive-fixnum)
   (scroll-margin 5)
   (scroll-preserve-screen-position t)
   (scroll-step 1)
-  (select-enable-clipboard t)
   (sentence-end-double-space nil)
   (tab-always-indent 'complete)
   (tab-width 4)
-  (transient-history-file (djm/emacs-cache "transient/history.el"))
-  (transient-levels-file (djm/emacs-cache "transient/levels.el"))
-  (transient-values-file (djm/emacs-cache "transient/values.el"))
-  (uniquify-buffer-name-style 'post-forward-angle-brackets)
   (use-dialog-box nil)
   (use-file-dialog nil)
+  (uniquify-buffer-name-style 'post-forward-angle-brackets)
   (vc-follow-symlinks t)
-  (view-read-only t)
   (window-combination-resize t))
 
 (use-package mule
@@ -72,14 +63,16 @@
 (use-package files
   :straight nil
   :custom
-  (auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-  (backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
+
   (backup-by-copying t)
+  (confirm-kill-processes nil)
   (create-lockfiles nil)
   (delete-old-versions t)
+  (insert-directory-program "gls")
   (kept-new-versions 6)
   (kept-old-versions 2)
   (require-final-newline t)
+  (view-read-only t)
   (version-control t))
 
 (use-package autorevert
@@ -94,29 +87,16 @@
 (use-package recentf
   :defer 5.0
   :straight nil
-  :functions (recentf-save-list)
   :custom
   (recentf-save-file (djm/emacs-cache "recentf"))
   (recentf-max-saved-items 200)
   (recentf-max-menu-items 20)
   (recentf-auto-cleanup 'never)
-  (recentf-exclude '("\\.?cache"
-                     ".cask"
-                     "url"
-                     "COMMIT_EDITMSG\\'"
-                     "bookmarks"
-                     "NEWS"
-                     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                     "^/tmp/"nnn
-                     "^/ssh:"
-                     "\\.?ido\\.last$"
-                     "\\.revive$"
-                     "/TAGS$"
-                     "^/var/folders/.+$"
-                     (lambda (file)
-                       (file-in-directory-p file package-user-dir))))
   :config
-  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (dolist (no-no '(no-littering-var-directory
+                   no-littering-etc-directory
+                   recentf-save-file))
+    (add-to-list 'recentf-exclude no-no))
   (run-at-time nil (* 3 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
   (recentf-mode 1))
 
@@ -153,6 +133,8 @@
   :straight nil
   :custom
   (column-number-mode nil)
+  (eval-expression-print-length nil)
+  (eval-expression-print-level nil)
   (line-number-mode nil)
   (line-move-visual nil)
   (set-mark-command-repeat-pop t)
@@ -285,6 +267,15 @@
   :bind ("M-\\" . dired-sidebar-toggle-sidebar)
   :custom (dired-sidebar-theme 'vscode))
 
+(use-package async
+  :defer 1.5
+  :preface
+  (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+  (autoload 'dired-async-mode "dired-async.el" nil t)
+  :config
+  (async-bytecomp-package-mode 1)
+  (dired-async-mode 1))
+
 (use-package ibuffer
   :bind (([remap list-buffers] . ibuffer))
   :custom
@@ -353,6 +344,8 @@
   :custom (which-key-idle-delay 0.5)
   :config (which-key-mode))
 
+(use-package man)
+
 (use-package help
   :defer 1.0
   :straight nil
@@ -368,14 +361,12 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package async
-  :defer 1.5
-  :preface
-  (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-  (autoload 'dired-async-mode "dired-async.el" nil t)
-  :config
-  (async-bytecomp-package-mode 1)
-  (dired-async-mode 1))
+(use-package eww
+  :straight nil)
+
+(use-package browse-url
+  :straight nil
+  :custom (browse-urls-browser-function "firefox"))
 
 (use-package exec-path-from-shell
   :defer 2.0
@@ -513,8 +504,6 @@
     (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 
-(use-package man)
-
 (use-package ace-window
   :defer 10.0
   :bind (("C-x o" . ace-window)))
@@ -574,6 +563,7 @@
       (or (plist-get info arg-name) value))))
 
 (use-package which-key-posframe
+  :defer 5.0
   :config (which-key-posframe-mode)
   :custom (which-key-posframe-poshandler
            'posframe-poshandler-point-bottom-left-corner))
@@ -728,43 +718,6 @@
   (ivy-flx-limit 2000)
 
   :config
-  (use-package ivy-hydra)
-  (use-package ivy-prescient
-    :custom (ivy-prescient-retain-classic-highlighting t)
-    :init (ivy-prescient-mode 1))
-
-  (use-package ivy-posframe
-    :init (ivy-posframe-mode 1)
-    :functions (ivy-posframe-display-at-window-bottom-left
-                ivy-posframe-display-at-frame-center)
-    :custom
-    (ivy-posframe-border-width 20)
-    (ivy-posframe-style 'frame-center)
-    ;(ivy-posframe-hide-minibuffer t)
-    (ivy-posframe-parameters '((alpha 100 100)))
-
-    :config
-    (push (cons #'swiper nil)
-          ivy-posframe-display-functions-alist)
-    (push (cons t #'ivy-posframe-display-at-frame-center)
-          ivy-posframe-display-functions-alist))
-
-  (use-package counsel-projectile
-    :after (counsel projectile)
-    :custom
-    (counsel-projectile-switch-project-action #'dired)
-    :config (counsel-projectile-mode 1))
-
-  (use-package auto-insert
-    :straight nil
-    :bind (("C-c ci a" . auto-insert)))
-
-  (use-package amx
-    :init (amx-mode 1)
-    :custom (amx-save-file (djm/emacs-cache "amx-items")))
-
-  (use-package flx)
-
   (when (executable-find "rg")
     (setq counsel-grep-base-command
           "rg -S --no-heading --line-number --color never '%s' %s"))
@@ -777,6 +730,43 @@
     (push (cons #'counsel-M-x #'ivy--regex-fuzzy) ivy-re-builders-alist)
     (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist)))
 
+(use-package ivy-hydra)
+(use-package ivy-prescient
+  :custom (ivy-prescient-retain-classic-highlighting t)
+  :init (ivy-prescient-mode 1))
+
+(use-package ivy-posframe
+  :init (ivy-posframe-mode 1)
+  :functions (ivy-posframe-display-at-window-bottom-left
+              ivy-posframe-display-at-frame-center)
+  :custom
+  (ivy-posframe-border-width 20)
+  (ivy-posframe-style 'frame-center)
+  (ivy-posframe-hide-minibuffer t)
+  (ivy-posframe-parameters '((alpha 100 100)))
+
+  :config
+  (push (cons #'swiper nil)
+        ivy-posframe-display-functions-alist)
+  (push (cons t #'ivy-posframe-display-at-frame-center)
+        ivy-posframe-display-functions-alist))
+
+(use-package counsel-projectile
+  :after (counsel projectile)
+  :custom
+  (counsel-projectile-switch-project-action #'dired)
+  :config (counsel-projectile-mode 1))
+
+(use-package auto-insert
+  :straight nil
+  :bind (("C-c ci a" . auto-insert)))
+
+(use-package amx
+  :init (amx-mode 1)
+  :custom (amx-save-file (djm/emacs-cache "amx-items")))
+
+(use-package flx)
+
 (use-package avy
   :bind (:map dired-mode-map
               ("." . avy-goto-word-or-subword-1))
@@ -786,7 +776,6 @@
   ("jk" . avy-goto-word-or-subword-1)
   ("jl" . avy-goto-line)
   :config (avy-setup-default))
-
 
 (use-package ispell
   :defer 5.0
@@ -882,6 +871,7 @@
                                                tab-mark newline-mark))))
 
 (use-package lsp-mode
+  :defer 3.0
   :hook ((python-mode sh-mode c-mode-common c++-mode) . lsp-deferred)
   :custom
   (flymake-fringe-indicator-position 'right-fringe)
@@ -896,6 +886,7 @@
   (define-key lsp-mode-map (kbd "C-c SPC") #'lsp-execute-code-action))
 
 (use-package dap-mode
+  :defer 3.0
   :hook ((lsp-mode . dap-mode)
          (lsp-mode . dap-ui-mode))
   :preface
@@ -908,6 +899,7 @@
   (setq dap-breakpoints-file (expand-file-name "breakpoints" config-lsp--dap-cache-dir)))
 
 (use-package lsp-ui
+  :defer 3.0
   :preface
   (progn
     (defun config-lsp-toggle-ui-overlays (&optional should-enable)
@@ -923,12 +915,11 @@
     (defun config-lsp-configure-ui ()
       (config-lsp-toggle-ui-overlays t)
       (lsp-ui-flycheck-enable t)))
-  :init
-  (progn
-    (use-package lsp-ui-flycheck :straight nil)
-    (with-eval-after-load 'lsp-mode
-      (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays)))
   :config
+  (use-package lsp-ui-flycheck
+    :straight nil)
+  (with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "C-C u") #'config-lsp-toggle-ui-overlays))
   (progn
     (add-hook 'lsp-after-open-hook #'config-lsp-configure-ui)
     (setq lsp-ui-sideline-enable t

@@ -1,0 +1,25 @@
+#+title: DotEmacs with Org Mode
+#+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
+
+* About This Document
+-------------------------------------------------------------------
+* Early-Init
+** Header
+** Performance Tweaks
+** Package Manager
+** Clean Emacs
+** Required Packages
+** Footer
+-------------------------------------------------------------------
+* Init
+** Header
+** General User Settings
+** Theme & Aesthetics
+** Editing
+** Navigation
+** Productivity
+** Language Support
+** Footer
+-------------------------------------------------------------------
+* Conclusion
+* Citations

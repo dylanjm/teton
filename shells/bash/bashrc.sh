@@ -1,21 +1,12 @@
-ssh() {
-if [[ $1 == "falcon1" || $1 == "falcon2" || $1 == "flogin1" || $1 == "flogin2" || $1 == "bechler" || $1 == "hpclogin" || $1 == "hpclogin.inl.gov" || $1 == "lemhi1" || $1 == "lemhi2" ]]; then
-    command ssh mcdodyla@$1
-elif [ $1 == "icecream" ]; then
-    command ssh -Y mcdodj@134.20.196.52
-else
-    command ssh "$@"
-fi; }
+. /usr/local/Cellar/modules/4.3.0/init/bash
+. /usr/local/Cellar/modules/4.3.0/init/bash_completion
 
-#if [ -f /opt/moose/environments/moose_profile ]; then
-#    . /opt/moose/environments/moose_profile
-#fi
+export MODULEPATH="$MODULEPATH:/opt/moose/Modules/3.2.10/modulefiles"
 
-#source ~/git_completion.sh
-#source ~/git_prompt.sh
-#export PS1='$(__git_ps1 "(%s)")$ '
-
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+if [ -f /opt/moose/environments/moose_profile ]; then
+    . /opt/moose/environments/moose_profile
+    module load moose-dev-clang ccache icecream
+fi
 
 alias cubit='/Applications/Cubit.app/Contents/MacOS/cubitclx'
 alias ls='ls -G'
@@ -23,25 +14,12 @@ alias em='emacs'
 alias emc='emacsclient'
 alias notifyDone='terminal-notifier -title "Terminal" -message "Finished"'
 alias projects='cd ~/Documents/projects'
-alias bison='cd ~/Documents/projects/bison'
-alias bisond='cd ~/Documents/projects/bison_data'
-alias scripts='cd ~/Documents/scripts'
-alias validation='cd ~/Documents/projects/bison/assessment/LWR/validation'
+alias bis='cd ~/Documents/projects/bison'
+alias bisd='cd ~/Documents/projects/bison_data'
+alias dotbin='cd ~/dotz/bin/'
+alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
 alias moose='cd ~/Documents/projects/moose'
 
-#module load ccache icecream
-
-convert_to_md() { pandoc --ascii -f latex -t markdown-multiline_tables-simple_tables --atx-headers -o "$1" "$2";}
-
-nuke() {
-    read -r -p "Are you sure? [y/N] " response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]
-    then
-	git clean -dfx && git submodule foreach --recursive git clean -dfx
-    else
-	return 0
-    fi
-}
 
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'

@@ -7,16 +7,6 @@
 ;;;
 ;;; Code:
 
-(defvar user-emacs-cache "~/.cache/emacs")
-
-(eval-and-compile
-  (defun djm/emacs-path (path)
-    (expand-file-name path user-emacs-directory)))
-
-(eval-and-compile
-    (defun djm/emacs-cache (path)
-           (expand-file-name path user-emacs-cache)))
-
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
 (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
@@ -24,6 +14,7 @@
 (setq-default auto-window-vscroll nil
               file-name-handler-alist nil
               frame-inhibit-implied-resize t
+              frame-resize-pixelwise t
               gc-cons-percentage 0.6
               inhibit-compacting-font-caches t
               package-enable-at-startup nil)
@@ -60,8 +51,9 @@
 (put 'erase-buffer 'disabled nil)
 
 (push '(ns-transparent-titlebar . t) default-frame-alist)
+(push '(ns-appearance . nil) default-frame-alist)
 (push '(internal-border . 0) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(menu-bar-lines . 1) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(left-fringe . 5) default-frame-alist)
@@ -82,32 +74,40 @@
 (eval-and-compile
   (defvar straight-recipes-gnu-elpa-use-mirror t)
   (defvar bootstrap-version 5)
-  (defvar bootstrap-file (djm/emacs-path "straight/repos/straight.el/bootstrap.el")))
+  (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
 (unless (file-exists-p bootstrap-file)
   (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-       'silent 'inhibit-cookies)
+  (url-retrieve-synchronously
+   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+   'silent 'inhibit-cookies)
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
 (load bootstrap-file nil 'nomessage)
 (straight-use-package 'use-package)
 
-(use-package no-littering
+(use-package exec-path-from-shell
   :demand t
-  :straight t
   :init
-  (setq no-littering-etc-directory (djm/emacs-cache "config/"))
-  (setq no-littering-var-directory (djm/emacs-cache "data/"))
-  :config
-  (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-  (setq backup-directory-alist `((".*" . ,(djm/emacs-cache "backups/"))))
-  (setq recentf-save-file (djm/emacs-cache "recentf"))
-  (setq recentf-exclude '(no-littering-var-directory
-                          no-littering-etc-directory
-                          recentf-save-file)))
+  (setq exec-path-from-shell-check-startup-files nil)
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE_HOME" "FPATH" "PYENV_ROOT"))
+  (setq exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
+
+(defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
+(defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE_HOME")))
+(defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
+(defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
+(defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
+
+(setq no-littering-etc-directory djm--emacs-etc-cache)
+(setq no-littering-var-directory djm--emacs-var-cache)
+(setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+(setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+(setq recentf-exclude '(djm--emacs-cache djm--straight-directory))
+
+(use-package no-littering :demand t :straight t)
 
 (use-package dash)
 (use-package f)
@@ -118,8 +118,8 @@
 (use-package use-package-chords)
 (use-package use-package-ensure-system-package)
 (use-package use-package-hydra)
-(use-package diminish)
 (use-package bind-key)
+(use-package map :straight nil)
 (use-package org :straight t :defer t) ;load this early to avoid the built-in version
 
 (provide 'early-init)

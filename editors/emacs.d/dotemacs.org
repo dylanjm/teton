@@ -3,19 +3,7 @@
 
 * About this document
 
-This is my emacs configuration. It's heavily inspired by many different =init.el= files.
-
-#+BEGIN_SRC emacs-lisp
-;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
-;;;
-;;; Commentary:
-;;; Emacs config by dylanjm
-;;; Do not change this file.  Main config is located in emacs.d/dotemacs.org
-;;;
-;;; Code:
-#+END_SRC
-
-* Initial Setup with =early-init.el=
+* =early-init.el=
 :properties:
 :header-args: :tangle "~/dotz/editors/emacs.d/early-init.el"
 :end:
@@ -35,11 +23,9 @@ This section details the =early-init.el= section of the configuration.
 #+END_SRC
 
 ** Rolling my own =no-littering.el=
-I didn't really the like the =no-littering= package when I gave it a try. So I'm
-going to roll my own for the time being by declaring these variables. Maybe I'll
-come pack to the package later but for right now this works for me. I got the
-idea for this function from jwiegley's dot-files. You can find his version of
-the function in his github repo [[https://github.com/jwiegley/dot-emacs/blob/master/init.el][jwiegley/dot-emacs/init.el]].
+
+I got the idea for this function from jwiegley's dot-files. You can find his
+version of the function in his github repo [[https://github.com/jwiegley/dot-emacs/blob/master/init.el][jwiegley/dot-emacs/init.el]].
 
 #+BEGIN_SRC emacs-lisp
 (defvar user-emacs-cache "~/.cache/emacs")
@@ -109,20 +95,24 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 ** A few default settings before we create our frame
 
 #+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-(fset 'view-hello-file 'ignore)
-(fset 'display-startup-echo-area-message 'ignore)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (fset 'view-hello-file 'ignore)
+  (fset 'display-startup-echo-area-message 'ignore)
 
-(put 'narrow-to-region 'disabled nil)
-(put 'up-case-rgion 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'erase-buffer 'disabled nil)
+  (put 'narrow-to-region 'disabled nil)
+  (put 'up-case-rgion 'disabled nil)
+  (put 'downcase-region 'disabled nil)
+  (put 'erase-buffer 'disabled nil)
 
-(push '(ns-transparent-titlebar . t) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
-(push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
+  (push '(ns-transparent-titlebar . t) default-frame-alist)
+  (push '(internal-border . 0) default-frame-alist)
+  (push '(menu-bar-lines . 0) default-frame-alist)
+  (push '(tool-bar-lines . 0) default-frame-alist)
+  (push '(vertical-scroll-bars) default-frame-alist)
+  (push '(left-fringe . 5) default-frame-alist)
+  (push '(right-fringe . 5) default-frame-alist)
+  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+  (push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 #+END_SRC
 
 ** Getting packages /straightened-out/ using =straight.el=
@@ -134,7 +124,12 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
     (setq straight-repository-branch "develop")
     (setq straight-use-package-by-default t))
 
+  (with-no-warnings
+    (setq use-package-verbose t)
+    (setq use-package-enable-imenu-support t))
+
   (eval-and-compile
+    (defvar straight-recipes-gnu-elpa-use-mirror t)
     (defvar bootstrap-version 5)
     (defvar bootstrap-file (djm/emacs-path "straight/repos/straight.el/bootstrap.el")))
 
@@ -147,13 +142,10 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
       (eval-print-last-sexp)))
 
   (load bootstrap-file nil 'nomessage)
-
-  (with-no-warnings
-    (setq use-package-verbose t)
-    (setq use-package-enable-imenu-support t))
-
   (straight-use-package 'use-package)
+#+end_src
 
+#+begin_src emacs-lisp
   (use-package no-littering
     :demand t
     :straight t
@@ -162,9 +154,14 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
     (setq no-littering-var-directory (djm/emacs-cache "data/"))
     :config
     (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-    (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
-    (setq recentf-save-file (djm/emacs-cache "recentf")))
+    (setq backup-directory-alist `((".*" . ,(djm/emacs-cache "backups/"))))
+    (setq recentf-save-file (djm/emacs-cache "recentf"))
+    (setq recentf-exclude '(no-littering-var-directory
+                            no-littering-etc-directory
+                            recentf-save-file)))
+#+end_src
 
+#+begin_src emacs-lisp
   (use-package dash)
   (use-package f)
   (use-package s)
@@ -176,15 +173,33 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
   (use-package use-package-hydra)
   (use-package diminish)
   (use-package bind-key)
+  (use-package org :straight t :defer t) ;load this early to avoid the built-in version
+#+end_src
 
+This concludes =early-init.el=.
+
+#+begin_src emacs-lisp
   (provide 'early-init)
   ;;; early-init.el ends here
 #+END_SRC
 
-This concludes =early-init.el=.
+--------------------------------------------------------------------------------
 
-* General Settings
-** Sane settings for the insane
+* =init.el=
+
+This is my emacs configuration. It's heavily inspired by many different =init.el= files.
+
+#+BEGIN_SRC emacs-lisp
+;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
+;;;
+;;; Commentary:
+;;; Emacs config by dylanjm
+;;; Do not change this file.  Main config is located in emacs.d/dotemacs.org
+;;;
+;;; Code:
+#+END_SRC
+
+** Default Variables
 #+begin_src emacs-lisp
     (use-package cus-start
       :straight nil
@@ -242,7 +257,15 @@ This concludes =early-init.el=.
     :straight nil
     :init
     (prefer-coding-system 'utf-8-unix)
-    (set-language-environment "UTF-8"))
+    (set-language-environment "UTF-8")
+    (set-keyboard-coding-system 'utf-8)
+    (set-clipboard-coding-system 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-buffer-file-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (modify-coding-system-alist 'process "*" 'utf-8)
+    (set-file-name-coding-system 'utf-8))
 
   (use-package files
     :defer 0.5
@@ -272,18 +295,14 @@ This concludes =early-init.el=.
     :defer 2.0
     :straight nil
     :init
-    (setq-default recentf-max-saved-items 200
-                  recentf-max-menu-items 20)
-    (setq recentf-exclude
-          '(no-littering-var-directory
-            no-littering-etc-directory
-            recentf-save-file))
+    (setq recentf-max-saved-items 200
+          recentf-max-menu-items 20)
     (recentf-mode 1))
 
   (use-package osx-trash
     :defer 2.0
     :init
-    (setq-default delete-by-moving-to-trash t)
+    (setq delete-by-moving-to-trash t)
     (osx-trash-setup))
 #+end_src
 
@@ -299,34 +318,24 @@ This concludes =early-init.el=.
     :defer 0.5
     :straight nil
     :init
-    (setq-default window-divider-default-places t
-                  window-divider-default-bottom-width 1
-                  window-divider-default-right-width 1)
+    (setq window-divider-default-places t
+          window-divider-default-bottom-width 1
+          window-divider-default-right-width 1)
+    (blink-cursor-mode 0)
     (global-unset-key (kbd "C-z"))
-    (window-divider-mode 1)
-    (blink-cursor-mode 0))
-
-  (use-package delsel
-    :bind (:map mode-specific-map
-                ("C-g" . minibuffer-keyboard-quit))
-    :init (delete-selection-mode 1))
+    (window-divider-mode 1))
 
   (use-package simple
     :defer 0.5
     :straight nil
     :init
-    (setq-default column-number-mode nil
-                  eval-expression-print-length nil
-                  eval-expression-print-level nil
-                  line-number-mode nil
-                  line-move-visual nil
-                  set-mark-command-repeat-pop t
-                  track-eol t))
-
-  (use-package fringe
-    :defer 0.5
-    :straight nil
-    :init (fringe-mode '(10 . 8)))
+    (setq column-number-mode nil
+          eval-expression-print-length nil
+          eval-expression-print-level nil
+          line-number-mode nil
+          line-move-visual nil
+          set-mark-command-repeat-pop t
+          track-eol t))
 
   (use-package pixel-scroll
     :demand t
@@ -337,14 +346,14 @@ This concludes =early-init.el=.
     :defer 0.5
     :straight nil
     :init
-    (setq-default mac-command-modifier 'meta
-                  mac-option-modifier 'meta
-                  mac-right-command-modifier 'left
-                  mac-right-option-modifier 'none
-                  mac-function-modifier 'hyper
-                  ns-pop-up-frames nil
-                  ns-use-native-fullscreen nil
-                  ns-use-thin-smoothing t))
+    (setq mac-command-modifier 'meta
+          mac-option-modifier 'meta
+          mac-right-command-modifier 'left
+          mac-right-option-modifier 'none
+          mac-function-modifier 'hyper
+          ns-pop-up-frames nil
+          ns-use-native-fullscreen nil
+          ns-use-thin-smoothing t))
 
   (use-package windmove
     :bind (("C-c w l" . windmove-left)
@@ -378,6 +387,41 @@ This concludes =early-init.el=.
 #+end_src
 
 #+begin_src emacs-lisp
+  (use-package default-text-scale
+    :commands (default-text-scale-increase
+               default-text-scale-decrease
+               default-text-scale-reset)
+    :bind (("C-c <up>" . default-text-scale-increase)
+           ("C-c <down>" . default-text-scale-decrease)
+           ("C-M-]". default-text-scale-reset))
+    :custom (default-text-scale-amount 30))
+
+  (use-package delsel
+    :bind (:map mode-specific-map
+                ("C-g" . minibuffer-keyboard-quit))
+    :init (delete-selection-mode 1))
+
+  (use-package align
+    :disabled t
+    :straight nil
+    :general ("C-x a a" #'align-regexp))
+
+  (use-package zop-to-char
+    :bind (("M-z" . zop-to-char)
+           ("M-Z" . zop-up-to-char)))
+
+  (use-package undo-tree
+    :defer 1.0
+    :init (global-undo-tree-mode 1))
+
+  (use-package aggressive-indent
+    :defer 10.0
+    :commands (aggressive-indent-mode))
+
+  (use-package hungry-delete
+    :defer 10.0
+    :commands (hungry-delete-mode))
+
   (use-package prog-mode
     :straight nil
     :hook ((prog-mode . prettify-symbols-mode)
@@ -393,6 +437,7 @@ This concludes =early-init.el=.
 #+end_src
 
 ** Dired
+
 #+BEGIN_SRC emacs-lisp
   (use-package dired
   :defer 3
@@ -514,10 +559,6 @@ This concludes =early-init.el=.
            (text-mode . (lambda () (require 'ws-butler))))
     :config (ws-butler-global-mode 1))
 
-  (use-package zop-to-char
-    :bind (("M-z" . zop-to-char)
-           ("M-Z" . zop-up-to-char)))
-
   (use-package eldoc
     :defer 2.0
     :custom (eldoc-idle-delay 2))
@@ -578,8 +619,24 @@ This concludes =early-init.el=.
     (exec-path-from-shell-initialize))
 #+end_src
 
-* Theme
+* User Interface
+** Dashboard
+
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :init
+    (dashboard-setup-startup-hook)
+    :custom
+    (dashboard-items '((recents . 5)
+                       (projects . 5)
+                       (bookmarks . 5)
+                       (agenda . 5)))
+    :config
+    (set-face-bold 'dashboard-heading-face t))
+#+end_src
+
 ** Doom-Themes
+
 #+begin_src emacs-lisp
   (use-package doom-themes
     :demand t
@@ -662,79 +719,76 @@ This concludes =early-init.el=.
   (use-package page-break-lines
     :defer 1.0
     :diminish
-    :commands (global-page-break-lines-mode)
+    :custom
+    (page-break-lines-modes '(prog-mode
+                              ibuffer-mode
+                              text-mode
+                              compilation-mode
+                              help-mode
+                              org-agenda-mode))
+      :config
+      (global-page-break-lines-mode))
+#+end_src
+
+** Posframe
+#+begin_src emacs-lisp
+  (use-package posframe
+    :defer 1.0
+    :custom
+    (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
-    (progn
-      (setq page-break-lines-modes
-            '(prog-mode
-              ibuffer-mode
-              text-mode
-              compilation-mode
-              help-mode
-              org-agenda-mode))
-      (global-page-break-lines-mode)))
+    (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
+      (let ((info '(:internal-border-width 15 :min-width 80)))
+        (or (plist-get info arg-name) value))))
+
+  (use-package which-key-posframe
+    :defer 5.0
+    :config (which-key-posframe-mode)
+    :custom (which-key-posframe-poshandler
+             'posframe-poshandler-point-bottom-left-corner))
 #+end_src
 
 * Features
 ** Org-Mode
 #+begin_src emacs-lisp
-    (use-package dashboard
-      :init
-      (dashboard-setup-startup-hook)
-      :custom
-      (dashboard-items '((recents . 5)
-                         (projects . 5)
-                         (bookmarks . 5)
-                         (agenda . 5)))
-      :config
-      (set-face-bold 'dashboard-heading-face t))
+  (use-package org
+    :defer 1.0
+    :general
+    ("C-c a" #'org-agenda
+     "C-c s" #'org-search-view
+     "C-c t" #'org-todo-list
+     "C-c /" #'org-tags-view)
+    (:states '(emacs normal) :keymaps 'org-mode-map
+             "<backtab>" #'org-global-cycle
+             "<tab>" #'org-cycle
+             "C-c c" #'org-columns
+             "M-n" #'org-metadown
+             "M-p" #'org-metaup
+             "RET" #'org-return)
+    (:states '(normal motion insert emacs) :keymaps 'org-mode-map
+             "C-c C-." #'org-time-stamp-inactive
+             "C-c ." #'org-time-stamp))
 
-    (use-package org
-      :defer 1.0
-      :general
-      ("C-c a" #'org-agenda
-       "C-c s" #'org-search-view
-       "C-c t" #'org-todo-list
-       "C-c /" #'org-tags-view)
-      (:states '(emacs normal) :keymaps 'org-mode-map
-               "<backtab>" #'org-global-cycle
-               "<tab>" #'org-cycle
-               "C-c c" #'org-columns
-               "M-n" #'org-metadown
-               "M-p" #'org-metaup
-               "RET" #'org-return)
-      (:states '(normal motion insert emacs) :keymaps 'org-mode-map
-               "C-c C-." #'org-time-stamp-inactive
-               "C-c ." #'org-time-stamp))
+  (use-package org-src
+    :defer 1.0
+    :straight nil
+    :preface
+    (progn
+      (defun config-org--supress-final-newline ()
+        (setq-local require-final-newline nil))
 
-    (use-package org-src
-      :defer 1.0
-      :straight nil
-      :preface
-      (progn
-        (defun config-org--supress-final-newline ()
-          (setq-local require-final-newline nil))
-
-        (defun config-org--org-src-delete-trailing-space (&rest _)
-          (delete-trailing-whitespace)))
-      :config
-      (progn
-        (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
-        (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
+      (defun config-org--org-src-delete-trailing-space (&rest _)
+        (delete-trailing-whitespace)))
+    :config
+    (progn
+      (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
+      (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space)))
 #+end_src
 
 #+begin_src emacs-lisp
   (use-package ace-window
     :defer 10.0
     :bind (("C-x o" . ace-window)))
-
-  (use-package aggressive-indent
-    :defer 10.0
-    :commands (aggressive-indent-mode))
-
-  (use-package hungry-delete
-    :defer 10.0
-    :commands (hungry-delete-mode))
 
   (use-package key-chord
     :custom (key-chord-two-keys-delay 0.05)
@@ -774,45 +828,8 @@ This concludes =early-init.el=.
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package undo-tree
-    :defer 1.0
-    :init (global-undo-tree-mode 1))
 #+end_src
 
-#+begin_src emacs-lisp
-  (use-package posframe
-    :defer 1.0
-    :custom
-    (posframe-arghandler #'hemacs-posframe-arghandler)
-    :config
-    (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-      (let ((info '(:internal-border-width 15 :min-width 80)))
-        (or (plist-get info arg-name) value))))
-
-  (use-package which-key-posframe
-    :defer 5.0
-    :config (which-key-posframe-mode)
-    :custom (which-key-posframe-poshandler
-             'posframe-poshandler-point-bottom-left-corner))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :defer 5.0
-    :commands (yas-reload-all)
-    :hook ((term-mode . (lambda () (yas-minor-mode -1)))
-           (company-mode . yas-minor-mode))
-    :config
-    (yas-reload-all)
-    (yas-global-mode 1))
-
-  (use-package yasnippet-snippets
-    :after (yasnippet))
-
-  (use-package ivy-yasnippet
-    :after (yasnippet)
-    :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
-#+end_src
 
 ** Autocomplete
 *** Hippie-Exp
@@ -835,6 +852,7 @@ This concludes =early-init.el=.
 #+end_src
 
 *** Company
+
 #+begin_src emacs-lisp
   (use-package auto-insert
     :straight nil
@@ -902,6 +920,26 @@ This concludes =early-init.el=.
     :custom
     (company-dabbrev-ignore-case nil)
     (company-dabbrev-downcase nil))
+#+end_src
+
+*** Yasnippet
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :defer 5.0
+    :commands (yas-reload-all)
+    :hook ((term-mode . (lambda () (yas-minor-mode -1)))
+           (company-mode . yas-minor-mode))
+    :config
+    (yas-reload-all)
+    (yas-global-mode 1))
+
+  (use-package yasnippet-snippets
+    :after (yasnippet))
+
+  (use-package ivy-yasnippet
+    :after (yasnippet)
+    :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
 #+end_src
 
 ** Ivy/Counsel/Swiper
@@ -1104,13 +1142,13 @@ This concludes =early-init.el=.
     :after (flycheck)
     :hook (flycheck-mode . flycheck-popup-tip-mode))
 
-  ;; (use-package sh-script
-  ;;   :straight nil
-  ;;   :ensure-system-package shfmt
-  ;;   :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
-  ;;   :custom
-  ;;   (sh-indentation 2)
-  ;;   (sh-basic-offset 2))
+  (use-package sh-script
+    :straight nil
+    :ensure-system-package shfmt
+    :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
+    :custom
+    (sh-indentation 2)
+    (sh-basic-offset 2))
 
   (use-package ess
     :init
@@ -1274,12 +1312,15 @@ This concludes =early-init.el=.
 #+end_src
 
 ** C++
+
 #+begin_src emacs-lisp
   (use-package ccls
     :custom
     (ccls-executable "/usr/local/bin/ccls"))
 #+end_src
+
 * Finale
+
 #+begin_src emacs-lisp
 (provide 'init)
 ;;; init.el ends here

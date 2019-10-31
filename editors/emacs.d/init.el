@@ -58,7 +58,15 @@
   :straight nil
   :init
   (prefer-coding-system 'utf-8-unix)
-  (set-language-environment "UTF-8"))
+  (set-language-environment "UTF-8")
+  (set-keyboard-coding-system 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (modify-coding-system-alist 'process "*" 'utf-8)
+  (set-file-name-coding-system 'utf-8))
 
 (use-package files
   :defer 0.5
@@ -88,18 +96,14 @@
   :defer 2.0
   :straight nil
   :init
-  (setq-default recentf-max-saved-items 200
-                recentf-max-menu-items 20)
-  (setq recentf-exclude
-        '(no-littering-var-directory
-          no-littering-etc-directory
-          recentf-save-file))
+  (setq recentf-max-saved-items 200
+        recentf-max-menu-items 20)
   (recentf-mode 1))
 
 (use-package osx-trash
   :defer 2.0
   :init
-  (setq-default delete-by-moving-to-trash t)
+  (setq delete-by-moving-to-trash t)
   (osx-trash-setup))
 
 (use-package hl-line
@@ -111,34 +115,24 @@
   :defer 0.5
   :straight nil
   :init
-  (setq-default window-divider-default-places t
-                window-divider-default-bottom-width 1
-                window-divider-default-right-width 1)
+  (setq window-divider-default-places t
+        window-divider-default-bottom-width 1
+        window-divider-default-right-width 1)
+  (blink-cursor-mode 0)
   (global-unset-key (kbd "C-z"))
-  (window-divider-mode 1)
-  (blink-cursor-mode 0))
-
-(use-package delsel
-  :bind (:map mode-specific-map
-              ("C-g" . minibuffer-keyboard-quit))
-  :init (delete-selection-mode 1))
+  (window-divider-mode 1))
 
 (use-package simple
   :defer 0.5
   :straight nil
   :init
-  (setq-default column-number-mode nil
-                eval-expression-print-length nil
-                eval-expression-print-level nil
-                line-number-mode nil
-                line-move-visual nil
-                set-mark-command-repeat-pop t
-                track-eol t))
-
-(use-package fringe
-  :defer 0.5
-  :straight nil
-  :init (fringe-mode '(10 . 8)))
+  (setq column-number-mode nil
+        eval-expression-print-length nil
+        eval-expression-print-level nil
+        line-number-mode nil
+        line-move-visual nil
+        set-mark-command-repeat-pop t
+        track-eol t))
 
 (use-package pixel-scroll
   :demand t
@@ -149,14 +143,14 @@
   :defer 0.5
   :straight nil
   :init
-  (setq-default mac-command-modifier 'meta
-                mac-option-modifier 'meta
-                mac-right-command-modifier 'left
-                mac-right-option-modifier 'none
-                mac-function-modifier 'hyper
-                ns-pop-up-frames nil
-                ns-use-native-fullscreen nil
-                ns-use-thin-smoothing t))
+  (setq mac-command-modifier 'meta
+        mac-option-modifier 'meta
+        mac-right-command-modifier 'left
+        mac-right-option-modifier 'none
+        mac-function-modifier 'hyper
+        ns-pop-up-frames nil
+        ns-use-native-fullscreen nil
+        ns-use-thin-smoothing t))
 
 (use-package windmove
   :bind (("C-c w l" . windmove-left)
@@ -183,6 +177,41 @@
 (use-package focus-autosave-mode
   :defer 1.0
   :config (focus-autosave-mode 1))
+
+(use-package default-text-scale
+  :commands (default-text-scale-increase
+             default-text-scale-decrease
+             default-text-scale-reset)
+  :bind (("C-c <up>" . default-text-scale-increase)
+         ("C-c <down>" . default-text-scale-decrease)
+         ("C-M-]". default-text-scale-reset))
+  :custom (default-text-scale-amount 30))
+
+(use-package delsel
+  :bind (:map mode-specific-map
+              ("C-g" . minibuffer-keyboard-quit))
+  :init (delete-selection-mode 1))
+
+(use-package align
+  :disabled t
+  :straight nil
+  :general ("C-x a a" #'align-regexp))
+
+(use-package zop-to-char
+  :bind (("M-z" . zop-to-char)
+         ("M-Z" . zop-up-to-char)))
+
+(use-package undo-tree
+  :defer 1.0
+  :init (global-undo-tree-mode 1))
+
+(use-package aggressive-indent
+  :defer 10.0
+  :commands (aggressive-indent-mode))
+
+(use-package hungry-delete
+  :defer 10.0
+  :commands (hungry-delete-mode))
 
 (use-package prog-mode
   :straight nil
@@ -309,10 +338,6 @@
          (text-mode . (lambda () (require 'ws-butler))))
   :config (ws-butler-global-mode 1))
 
-(use-package zop-to-char
-  :bind (("M-z" . zop-to-char)
-         ("M-Z" . zop-up-to-char)))
-
 (use-package eldoc
   :defer 2.0
   :custom (eldoc-idle-delay 2))
@@ -363,6 +388,17 @@
   (exec-path-from-shell-arguments '("-l"))
   :config
   (exec-path-from-shell-initialize))
+
+(use-package dashboard
+  :init
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-items '((recents . 5)
+                     (projects . 5)
+                     (bookmarks . 5)
+                     (agenda . 5)))
+  :config
+  (set-face-bold 'dashboard-heading-face t))
 
 (use-package doom-themes
   :demand t
@@ -437,28 +473,30 @@
 (use-package page-break-lines
   :defer 1.0
   :diminish
-  :commands (global-page-break-lines-mode)
-  :config
-  (progn
-    (setq page-break-lines-modes
-          '(prog-mode
-            ibuffer-mode
-            text-mode
-            compilation-mode
-            help-mode
-            org-agenda-mode))
-    (global-page-break-lines-mode)))
-
-(use-package dashboard
-  :init
-  (dashboard-setup-startup-hook)
   :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
+  (page-break-lines-modes '(prog-mode
+                            ibuffer-mode
+                            text-mode
+                            compilation-mode
+                            help-mode
+                            org-agenda-mode))
+    :config
+    (global-page-break-lines-mode))
+
+(use-package posframe
+  :defer 1.0
+  :custom
+  (posframe-arghandler #'hemacs-posframe-arghandler)
   :config
-  (set-face-bold 'dashboard-heading-face t))
+  (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
+    (let ((info '(:internal-border-width 15 :min-width 80)))
+      (or (plist-get info arg-name) value))))
+
+(use-package which-key-posframe
+  :defer 5.0
+  :config (which-key-posframe-mode)
+  :custom (which-key-posframe-poshandler
+           'posframe-poshandler-point-bottom-left-corner))
 
 (use-package org
   :defer 1.0
@@ -497,14 +535,6 @@
   :defer 10.0
   :bind (("C-x o" . ace-window)))
 
-(use-package aggressive-indent
-  :defer 10.0
-  :commands (aggressive-indent-mode))
-
-(use-package hungry-delete
-  :defer 10.0
-  :commands (hungry-delete-mode))
-
 (use-package key-chord
   :custom (key-chord-two-keys-delay 0.05)
   :init (key-chord-mode 1))
@@ -537,40 +567,7 @@
   :hook (prog-mode . rainbow-delimiters-mode)
   :custom (rainbow-delimters-max-face-count 5))
 
-(use-package undo-tree
-  :defer 1.0
-  :init (global-undo-tree-mode 1))
 
-(use-package posframe
-  :defer 1.0
-  :custom
-  (posframe-arghandler #'hemacs-posframe-arghandler)
-  :config
-  (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-    (let ((info '(:internal-border-width 15 :min-width 80)))
-      (or (plist-get info arg-name) value))))
-
-(use-package which-key-posframe
-  :defer 5.0
-  :config (which-key-posframe-mode)
-  :custom (which-key-posframe-poshandler
-           'posframe-poshandler-point-bottom-left-corner))
-
-(use-package yasnippet
-  :defer 5.0
-  :commands (yas-reload-all)
-  :hook ((term-mode . (lambda () (yas-minor-mode -1)))
-         (company-mode . yas-minor-mode))
-  :config
-  (yas-reload-all)
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets
-  :after (yasnippet))
-
-(use-package ivy-yasnippet
-  :after (yasnippet)
-  :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
 
 (use-package hippie-exp
   :defer 1.0
@@ -653,6 +650,22 @@
   :custom
   (company-dabbrev-ignore-case nil)
   (company-dabbrev-downcase nil))
+
+(use-package yasnippet
+  :defer 5.0
+  :commands (yas-reload-all)
+  :hook ((term-mode . (lambda () (yas-minor-mode -1)))
+         (company-mode . yas-minor-mode))
+  :config
+  (yas-reload-all)
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :after (yasnippet))
+
+(use-package ivy-yasnippet
+  :after (yasnippet)
+  :custom (ivy-yasnippet-new-snippet yas-new-snippet-default))
 
 (use-package counsel
   :diminish
@@ -843,13 +856,13 @@
   :after (flycheck)
   :hook (flycheck-mode . flycheck-popup-tip-mode))
 
-;; (use-package sh-script
-;;   :straight nil
-;;   :ensure-system-package shfmt
-;;   :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
-;;   :custom
-;;   (sh-indentation 2)
-;;   (sh-basic-offset 2))
+(use-package sh-script
+  :straight nil
+  :ensure-system-package shfmt
+  :mode ((rx (and (? ".") (or "bash" "zsh"))) . sh-mode)
+  :custom
+  (sh-indentation 2)
+  (sh-basic-offset 2))
 
 (use-package ess
   :init

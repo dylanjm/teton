@@ -60,10 +60,14 @@
 (put 'erase-buffer 'disabled nil)
 
 (push '(ns-transparent-titlebar . t) default-frame-alist)
+(push '(internal-border . 0) default-frame-alist)
+(push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
-(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
-(push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-20-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(left-fringe . 5) default-frame-alist)
+(push '(right-fringe . 5) default-frame-alist)
+(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 
 (with-no-warnings
   (setq straight-cache-autoloads t)
@@ -71,7 +75,12 @@
   (setq straight-repository-branch "develop")
   (setq straight-use-package-by-default t))
 
+(with-no-warnings
+  (setq use-package-verbose t)
+  (setq use-package-enable-imenu-support t))
+
 (eval-and-compile
+  (defvar straight-recipes-gnu-elpa-use-mirror t)
   (defvar bootstrap-version 5)
   (defvar bootstrap-file (djm/emacs-path "straight/repos/straight.el/bootstrap.el")))
 
@@ -84,11 +93,6 @@
     (eval-print-last-sexp)))
 
 (load bootstrap-file nil 'nomessage)
-
-(with-no-warnings
-  (setq use-package-verbose t)
-  (setq use-package-enable-imenu-support t))
-
 (straight-use-package 'use-package)
 
 (use-package no-littering
@@ -99,8 +103,11 @@
   (setq no-littering-var-directory (djm/emacs-cache "data/"))
   :config
   (setq auto-save-file-name-transforms `((".*" ,(djm/emacs-cache "backups/") t)))
-  (setq backup-directory-alist `(("." . ,(djm/emacs-cache "backups/"))))
-  (setq recentf-save-file (djm/emacs-cache "recentf")))
+  (setq backup-directory-alist `((".*" . ,(djm/emacs-cache "backups/"))))
+  (setq recentf-save-file (djm/emacs-cache "recentf"))
+  (setq recentf-exclude '(no-littering-var-directory
+                          no-littering-etc-directory
+                          recentf-save-file)))
 
 (use-package dash)
 (use-package f)
@@ -113,6 +120,7 @@
 (use-package use-package-hydra)
 (use-package diminish)
 (use-package bind-key)
+(use-package org :straight t :defer t) ;load this early to avoid the built-in version
 
 (provide 'early-init)
 ;;; early-init.el ends here

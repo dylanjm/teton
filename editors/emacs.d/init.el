@@ -11,38 +11,52 @@
 
 
 
-
+(add-hook 'write-file-hooks 'time-stamp)
 
 (use-package cus-start
-  :straight nil
-  :custom
-  (ad-redefinition-action 'accept)
-  (cursor-in-non-selected-windows nil)
-  (cursor-type 'bar)
-  (display-time-default-load-average nil)
-  (echo-keystrokes 0.02)
-  (fill-column 80)
-  (ffap-machine-p-known 'reject)
-  (frame-title-format '("%b - Emacs"))
-  (icon-title-format frame-title-format)
-  (indent-tabs-mode nil)
-  (mode-line-in-non-selected-windows nil)
-  (mouse-wheel-progressive-speed nil)
-  (mouse-wheel-scroll-amount '(1))
-  (ring-bell-function #'ignore)
-  (select-enable-clipboard t)
-  (scroll-conservatively most-positive-fixnum)
-  (scroll-margin 5)
-  (scroll-preserve-screen-position t)
-  (scroll-step 1)
-  (sentence-end-double-space nil)
-  (tab-always-indent 'complete)
-  (tab-width 4)
-  (use-dialog-box nil)
-  (use-file-dialog nil)
-  (uniquify-buffer-name-style 'post-forward-angle-brackets)
-  (vc-follow-symlinks t)
-  (window-combination-resize t))
+    :straight nil
+    :custom
+    (ad-redefinition-action 'accept)
+    (cursor-in-non-selected-windows nil)
+    (cursor-type 'bar)
+    (display-time-default-load-average nil)
+    (echo-keystrokes 0.02)
+    (fill-column 80)
+    (ffap-machine-p-known 'reject)
+    (frame-title-format '("%b - Emacs"))
+    (icon-title-format frame-title-format)
+    (indent-tabs-mode nil)
+    (mode-line-in-non-selected-windows nil)
+    (mouse-wheel-progressive-speed nil)
+    (mouse-wheel-scroll-amount '(1))
+    (ring-bell-function #'ignore)
+    (select-enable-clipboard t)
+    (scroll-conservatively most-positive-fixnum)
+    (scroll-margin 5)
+    (scroll-preserve-screen-position t)
+    (scroll-step 1)
+    (sentence-end-double-space nil)
+    (tab-always-indent 'complete)
+    (tab-width 4)
+    (use-dialog-box nil)
+    (use-file-dialog nil)
+    (uniquify-buffer-name-style 'post-forward-angle-brackets)
+    (vc-follow-symlinks t)
+    (window-combination-resize t))
+
+(global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
+(global-unset-key (kbd "C-z"))
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(put 'narrow-to-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'up-case-rgion 'disabled nil)
+(put 'erase-buffer 'disabled nil)
+
+(blink-cursor-mode 0)
+
+(load custom-file :noerror)
 
 (use-package pixel-scroll
   :demand t

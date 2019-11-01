@@ -11,16 +11,10 @@
 (defvar extended-gc-cons-threshold 400000000)
 (defvar default-gc-cons-threshold 800000)
 
-(setq auto-window-vscroll nil
-      file-name-handler-alist nil
-      frame-inhibit-implied-resize t
-      frame-resize-pixelwise t
+(setq file-name-handler-alist nil
       gc-cons-percentage 0.8
       gc-cons-threshold extended-gc-cons-threshold
       inhibit-compacting-font-caches t
-      initial-scratch-message ""
-      inhibit-startup-echo-area-message t
-      inhibit-startup-screen t
       load-prefer-newer t
       message-log-max 10000
       package-enable-at-startup nil)
@@ -53,14 +47,13 @@
 
 (fset 'display-startup-echo-area-message 'ignore)
 (fset 'view-hello-file 'ignore)
-(fset 'yes-or-no-p 'y-or-n-p)
 
-(put 'narrow-to-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'up-case-rgion 'disabled nil)
-(put 'erase-buffer 'disabled nil)
-
-(blink-cursor-mode 0)
+(setq auto-window-vscroll nil
+      initial-scratch-message ""
+      inhibit-startup-echo-area-message t
+      inhibit-startup-screen t
+      frame-inhibit-implied-resize t
+      frame-resize-pixelwise t)
 
 (push '(window-divider-bottom-width . 1) initial-frame-alist)
 (push '(window-divider-right-width . 1) initial-frame-alist)
@@ -70,11 +63,10 @@
 (push '(width . 188) initial-frame-alist)
 (push '(height . 188) initial-frame-alist)
 
-
 (push '(ns-transparent-titlebar . t) default-frame-alist)
+(push '(ns-appearance . nil) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(internal-border . 0) default-frame-alist)
-(push '(ns-appearance . nil) default-frame-alist)
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(right-fringe . 5) default-frame-alist)
@@ -82,9 +74,6 @@
 
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-ultracondensed-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 (push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
-
-(global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
-(global-unset-key (kbd "C-z"))
 
 (prefer-coding-system 'utf-8-unix)
 (set-language-environment "UTF-8")
@@ -96,8 +85,6 @@
 (set-selection-coding-system 'utf-8)
 (modify-coding-system-alist 'process "*" 'utf-8)
 (set-file-name-coding-system 'utf-8)
-
-
 
 (with-no-warnings
   (setq straight-cache-autoloads t)
@@ -139,14 +126,15 @@
 (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
 (defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
 (defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
+(defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
 (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
 
 (setq no-littering-etc-directory djm--emacs-etc-cache)
 (setq no-littering-var-directory djm--emacs-var-cache)
 (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
 (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+(setq custom-file djm--custom-file)
 (setq recentf-exclude '(djm--emacs-cache djm--straight-directory "/private/var*"))
-(setq custom-file (expand-file-name djm--emacs-etc-cache "custom.el"))
 
 (use-package no-littering :demand t :straight t)
 

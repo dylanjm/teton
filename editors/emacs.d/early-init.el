@@ -34,8 +34,7 @@
 
             (defun djm/gc-on-lose-focus ()
               (unless (frame-focus-state)
-                (let ((inhibit-message t))
-                  (save-buffer))
+                (save-some-buffers '!)
                 (garbage-collect)))
 
             (if (boundp 'after-focus-change-function)
@@ -98,6 +97,8 @@
 (modify-coding-system-alist 'process "*" 'utf-8)
 (set-file-name-coding-system 'utf-8)
 
+
+
 (with-no-warnings
   (setq straight-cache-autoloads t)
   (setq straight-check-for-modifications 'live-with-find)
@@ -131,6 +132,8 @@
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE_HOME" "FPATH" "PYENV_ROOT"))
   (setq exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
+
+
 
 (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
 (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE_HOME")))

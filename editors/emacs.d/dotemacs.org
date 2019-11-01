@@ -41,34 +41,45 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 
 #+BEGIN_SRC emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
-  (defvar default-gc-cons-threshold (if (display-graphic-p) 800000 800000))
-  (defvar extended-gc-cons-threshold (if (display-graphic-p) 400000000 100000000))
+  (defvar extended-gc-cons-threshold 400000000)
+  (defvar default-gc-cons-threshold 800000)
 
-  (setq-default auto-window-vscroll nil
-                file-name-handler-alist nil
-                frame-inhibit-implied-resize t
-                frame-resize-pixelwise t
-                gc-cons-percentage 0.6
-                inhibit-compacting-font-caches t
-                package-enable-at-startup nil)
+  (setq auto-window-vscroll nil
+        file-name-handler-alist nil
+        frame-inhibit-implied-resize t
+        frame-resize-pixelwise t
+        gc-cons-percentage 0.8
+        gc-cons-threshold extended-gc-cons-threshold
+        inhibit-compacting-font-caches t
+        initial-scratch-message ""
+        inhibit-startup-echo-area-message t
+        inhibit-startup-screen t
+        load-prefer-newer t
+        message-log-max 10000
+        package-enable-at-startup nil)
 
   (add-hook 'after-init-hook
             (lambda ()
               (setq file-name-handler-alist default-file-name-handler-alist)
               (setq gc-cons-threshold default-gc-cons-threshold)
               (setq gc-cons-percentage 0.1)
+              (setq debug-on-error nil)
 
               (defun djm/gc-on-lose-focus ()
                 (unless (frame-focus-state)
+                  (let ((inhibit-message t))
+                    (save-buffer))
                   (garbage-collect)))
 
               (if (boundp 'after-focus-change-function)
                   (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
 
               (defun djm/minibuffer-setup-hook ()
+                (setq gc-cons-percentage .8)
                 (setq gc-cons-threshold extended-gc-cons-threshold))
 
               (defun djm/minibuffer-exit-hook ()
+                (setq gc-cons-percentage .1)
                 (setq gc-cons-threshold default-gc-cons-threshold))
 
               (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
@@ -76,25 +87,51 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (fset 'view-hello-file 'ignore)
   (fset 'display-startup-echo-area-message 'ignore)
+  (fset 'view-hello-file 'ignore)
+  (fset 'yes-or-no-p 'y-or-n-p)
 
   (put 'narrow-to-region 'disabled nil)
-  (put 'up-case-rgion 'disabled nil)
   (put 'downcase-region 'disabled nil)
+  (put 'up-case-rgion 'disabled nil)
   (put 'erase-buffer 'disabled nil)
 
+  (blink-cursor-mode 0)
+
+  (push '(window-divider-bottom-width . 1) initial-frame-alist)
+  (push '(window-divider-right-width . 1) initial-frame-alist)
+  (push '(window-divider-default-places . t) initial-frame-alist)
+  (push '(right-divider-width . 1) initial-frame-alist)
+  (push '(bottom-divider-width . 1) initial-frame-alist)
+  (push '(width . 188) initial-frame-alist)
+  (push '(height . 188) initial-frame-alist)
+
+
   (push '(ns-transparent-titlebar . t) default-frame-alist)
-  (push '(ns-appearance . nil) default-frame-alist)
-  (push '(internal-border . 0) default-frame-alist)
-  (push '(menu-bar-lines . 1) default-frame-alist)
-  (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(vertical-scroll-bars) default-frame-alist)
-  (push '(left-fringe . 5) default-frame-alist)
+  (push '(internal-border . 0) default-frame-alist)
+  (push '(ns-appearance . nil) default-frame-alist)
+  (push '(menu-bar-lines . 0) default-frame-alist)
+  (push '(tool-bar-lines . 0) default-frame-alist)
   (push '(right-fringe . 5) default-frame-alist)
-  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+  (push '(left-fringe . 5) default-frame-alist)
+
+  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-ultracondensed-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
   (push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+
+  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
+  (global-unset-key (kbd "C-z"))
+
+  (prefer-coding-system 'utf-8-unix)
+  (set-language-environment "UTF-8")
+  (set-keyboard-coding-system 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (modify-coding-system-alist 'process "*" 'utf-8)
+  (set-file-name-coding-system 'utf-8)
 #+END_SRC
 
 ** Package Manager
@@ -141,7 +178,7 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
 
 ** No Littering
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
   (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
   (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE_HOME")))
   (defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
@@ -152,23 +189,25 @@ TODO: Detail why we left out a few popular variables to set based on some /r/ema
   (setq no-littering-var-directory djm--emacs-var-cache)
   (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
   (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-  (setq recentf-exclude '(djm--emacs-cache djm--straight-directory))
+  (setq recentf-exclude '(djm--emacs-cache djm--straight-directory "/private/var*"))
+  (setq custom-file (expand-file-name djm--emacs-etc-cache "custom.el"))
 
   (use-package no-littering :demand t :straight t)
 #+end_src
 
 ** Required Packages
 #+begin_src emacs-lisp
+  (use-package use-package-ensure-system-package)
+  (use-package use-package-chords)
+  (use-package use-package-hydra)
+  (use-package el-patch)
+  (use-package bind-key)
+  (use-package general)
   (use-package dash)
   (use-package f)
   (use-package s)
-  (use-package general)
-  (use-package el-patch)
   (use-package hydra)
-  (use-package use-package-chords)
-  (use-package use-package-ensure-system-package)
-  (use-package use-package-hydra)
-  (use-package bind-key)
+
   (use-package map :straight nil)
   (use-package org :straight t :defer t) ;load this early to avoid the built-in version
 #+end_src
@@ -204,31 +243,20 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
       :straight nil
       :custom
       (ad-redefinition-action 'accept)
-      (auto-save-list-file-prefix nil)
       (cursor-in-non-selected-windows nil)
       (cursor-type 'bar)
-      (custom-file (make-temp-file "emacs-custom"))
-      (debug-on-error t)
       (display-time-default-load-average nil)
       (echo-keystrokes 0.02)
-      (enable-recursive-minibuffers t)
       (fill-column 80)
       (ffap-machine-p-known 'reject)
       (frame-title-format '("%b - Emacs"))
       (icon-title-format frame-title-format)
       (indent-tabs-mode nil)
-      (inhibit-compacting-font-caches t)
-      (inhibit-startup-echo-area-message t)
-      (inhibit-startup-screen t)
-      (initial-scratch-message "")
-      (load-prefer-newer t)
-      (message-log-max 10000)
       (mode-line-in-non-selected-windows nil)
       (mouse-wheel-progressive-speed nil)
       (mouse-wheel-scroll-amount '(1))
       (ring-bell-function #'ignore)
       (select-enable-clipboard t)
-      (set-horizontal-scroll-bar-mode nil)
       (scroll-conservatively most-positive-fixnum)
       (scroll-margin 5)
       (scroll-preserve-screen-position t)
@@ -243,82 +271,63 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
       (window-combination-resize t))
 #+end_src
 
-*** Auto-Save Madness
+** Auto-Save Madness
 
 #+begin_src emacs-lisp
-    (use-package mule
-      :demand t
-      :straight nil
-      :init
-      (prefer-coding-system 'utf-8-unix)
-      (set-language-environment "UTF-8")
-      (set-keyboard-coding-system 'utf-8)
-      (set-clipboard-coding-system 'utf-8)
-      (set-terminal-coding-system 'utf-8)
-      (set-buffer-file-coding-system 'utf-8)
-      (set-default-coding-systems 'utf-8)
-      (set-selection-coding-system 'utf-8)
-      (modify-coding-system-alist 'process "*" 'utf-8)
-      (set-file-name-coding-system 'utf-8))
+  (use-package saveplace
+    :straight nil
+    :init (save-place-mode 1))
 
-    (use-package files
-      :demand t
-      :straight nil
-      :init
-      (setq-default backup-by-copying t
-                    confirm-kill-processes nil
-                    create-lockfiles nil
-                    delete-old-versions t
-                    insert-directory-program "gls"
-                    kept-new-versions 6
-                    kept-old-versions 2
-                    require-final-newline t
-                    view-read-only t
-                    version-control t))
+  (use-package savehist
+    :straight nil
+    :init
+    (setq history-delete-duplicates t
+          savehist-autosave-interval 300
+          savehist-save-minibuffer-history 1
+          savehist-additional-variables '(kill-ring search-ring))
+    (savehist-mode 1))
 
-    (use-package autorevert
-      :demand t
-      :straight nil
-      :init
-      (setq-default auto-revert-verbose nil
-                    global-auto-revert-non-file-buffers t
-                    auto-revert-use-notify nil)
-      (global-auto-revert-mode 1))
+  (use-package files
+    :straight nil
+    :init
+    (setq backup-by-copying t
+          confirm-kill-processes nil
+          create-lockfiles nil
+          delete-old-versions t
+          insert-directory-program "gls"
+          require-final-newline t
+          view-read-only t))
 
-    (use-package recentf
-      :demand t
-      :straight nil
-      :init
-      (setq recentf-max-saved-items 200
-            recentf-max-menu-items 20
-            recentf-auto-cleanup-timer 'never)
-      (recentf-mode 1))
+  (use-package autorevert
+    :straight nil
+    :init
+    (setq auto-revert-verbose nil
+          global-auto-revert-non-file-buffers t
+          auto-revert-use-notify nil)
+    (global-auto-revert-mode 1))
 
-    (use-package osx-trash
-      :defer 2.0
-      :init
-      (setq delete-by-moving-to-trash t)
-      (osx-trash-setup))
+  (use-package recentf
+    :straight nil
+    :init
+    (setq recentf-max-saved-items 200
+          recentf-max-menu-items 20
+          recentf-auto-cleanup 'never)
+    (recentf-mode 1))
+
+  (use-package osx-trash
+    :defer 2.0
+    :init
+    (setq delete-by-moving-to-trash t)
+    (osx-trash-setup))
 #+end_src
 
-** Window & Frame Settings
+** window & frame settings
 
 #+begin_src emacs-lisp
     (use-package hl-line
       :defer 3
       :straight nil
       :commands (hl-line-mode global-hl-line-mode))
-
-    (use-package frame
-      :demand t
-      :straight nil
-      :init
-      (setq window-divider-default-places t
-            window-divider-default-bottom-width 1
-            window-divider-default-right-width 1)
-      (blink-cursor-mode 0)
-      (global-unset-key (kbd "C-z"))
-      (window-divider-mode 1))
 
     (use-package simple
       :demand t
@@ -358,28 +367,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
       :custom (windmove-default-keybindings 'shift))
 #+end_src
 
-** Picking up where we left off
-
-#+begin_src emacs-lisp
-  (use-package saveplace
-    :demand t
-    :straight nil
-    :init (save-place-mode 1))
-
-  (use-package savehist
-    :demand t
-    :straight nil
-    :init
-    (setq history-delete-duplicates t
-          savehist-autosave-interval 300
-          savehist-save-minibuffer-history 1
-          savehist-additional-variables '(kill-ring search-ring))
-    (savehist-mode 1))
-
-  (use-package focus-autosave-mode
-    :defer 10
-    :config (focus-autosave-mode 1))
-#+end_src
+** editing
 
 #+begin_src emacs-lisp
   (use-package default-text-scale
@@ -393,9 +381,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :custom (default-text-scale-amount 30))
 
   (use-package delsel
-    :demand t
-    :bind (:map mode-specific-map
-                ("C-g" . minibuffer-keyboard-quit))
+    :straight nil
     :init (delete-selection-mode 1))
 
   (use-package align
@@ -405,7 +391,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
 
   (use-package zop-to-char
     :bind (("M-z" . zop-to-char)
-           ("M-Z" . zop-up-to-char)))
+           ("M-z" . zop-up-to-char)))
 
   (use-package undo-tree
     :defer 10.0
@@ -424,18 +410,16 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :hook ((prog-mode . prettify-symbols-mode)
            (prog-mode . show-paren-mode)
            (prog-mode . display-line-numbers-mode)
-           (prog-mode . display-fill-column-indicator-mode))
-    :custom
-    (prettify-symbols-unprettify-at-point 'right-edge))
+           (prog-mode . display-fill-column-indicator-mode)))
 
   (use-package term
     :straight nil
     :hook (term-mode . (lambda () (hl-line-mode -1))))
 #+end_src
 
-** Dired
+** dired
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package dired
   :defer 3
   :straight nil
@@ -446,8 +430,8 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
                 (dired-auto-revert-buffer t)
                 (dired-dwim-target t)
                 (dired-guess-shell-gnutar "gtar")
-                (dired-listing-switches "-alhF --group-directories-first -v")
-                (dired-ls-F-marks-symlinks t)
+                (dired-listing-switches "-alhf --group-directories-first -v")
+                (dired-ls-f-marks-symlinks t)
                 (dired-recursive-deletes 'always)
                 (dired-recursive-copies 'always))
 
@@ -490,8 +474,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
   (use-package dired-sidebar
     :bind ("M-\\" . dired-sidebar-toggle-sidebar)
     :custom (dired-sidebar-theme 'vscode)
-    :config
-    (use-package vscode-icon))
+    :config (use-package vscode-icon))
 
   (use-package async
     :defer 1.5
@@ -503,7 +486,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (dired-async-mode 1))
 #+end_src
 
-** IBuffer
+** ibuffer
 
 #+begin_src emacs-lisp
   (use-package ibuffer
@@ -512,14 +495,13 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (ibuffer-expert t)
     (ibuffer-show-empty-filter-groups nil)
     (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
-    (ibuffer-never-show-predicates (list (rx (or "*Messages*"
-                                                 "*magit-"
+    (ibuffer-never-show-predicates (list (rx (or "*magit-"
                                                  "*git-auto-push*"
-                                                 "*Backtrace*"
+                                                 "*backtrace*"
                                                  "*new*"
-                                                 "*Org*"
-                                                 "*Flycheck error messages*"
-                                                 "*Help*")))))
+                                                 "*org*"
+                                                 "*flycheck error messages*"
+                                                 "*help*")))))
 
   (use-package ibuf-ext
     :straight nil
@@ -533,10 +515,9 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :preface
     (defun config-ibuffer--setup-buffer ()
       (ibuffer-projectile-set-filter-groups)
-      (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
-      (add-to-list 'ibuffer-filter-groups '("Ensime" (predicate . (s-matches? "Ensime" (buffer-name)))))
-      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*") (buffer-name)))))
-      (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
+      (add-to-list 'ibuffer-filter-groups '("dired" (mode . dired-mode)))
+      (add-to-list 'ibuffer-filter-groups '("system" (predicate . (-contains? '("*messages*" "*scratch*") (buffer-name)))))
+      (add-to-list 'ibuffer-filter-groups '("shells" (mode . eshell-mode)))
       (unless (eq ibuffer-sorting-mode 'alphabetic)
         (ibuffer-do-sort-by-alphabetic))
       (when (bound-and-true-p page-break-lines-mode)
@@ -547,13 +528,12 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (ibuffer-projectile-prefix ""))
 #+end_src
 
-** Utilities
+** utilities
 
 #+begin_src emacs-lisp
   (use-package ws-butler
+    :defer 2.0
     :commands (ws-butler-global-mode)
-    :hook ((prog-mode . (lambda () (require 'ws-butler)))
-           (text-mode . (lambda () (require 'ws-butler))))
     :config (ws-butler-global-mode 1))
 
   (use-package eldoc
@@ -591,21 +571,21 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
            ("C-<" . mc/mark-previous-like-this)))
 #+end_src
 
-** Web
+** web
 
 #+begin_src emacs-lisp
   (use-package eww
-    :defer 5.0
+    :defer t
     :straight nil)
 
   (use-package browse-url
-    :defer 5.0
+    :defer t
     :straight nil
     :custom (browse-urls-browser-function "firefox"))
 #+end_src
 
-** User Interface
-** Dashboard
+** user interface
+** dashboard
 
 #+begin_src emacs-lisp
   (use-package dashboard
@@ -620,7 +600,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (set-face-bold 'dashboard-heading-face t))
 #+end_src
 
-** Doom-Themes
+** doom-themes
 
 #+begin_src emacs-lisp
   (use-package doom-themes
@@ -632,7 +612,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (load-theme 'doom-gruvbox t)
     (doom-themes-org-config))
 
-  ;; Emacs 27 added new `:extend' keyword which breaks most themes
+  ;; emacs 27 added new `:extend' keyword which breaks most themes
   (if (boundp 'hl-line)
       (set-face-attribute hl-line nil :extend t))
 
@@ -680,7 +660,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
       (set-face-attribute face nil :extend t)))
 #+end_src
 
-** Minions
+** minions
 
 #+begin_src emacs-lisp
   (use-package minions
@@ -691,7 +671,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :config (minions-mode 1))
 #+end_src
 
-** Tab Line (built-in)
+** tab line (built-in)
 
 #+begin_src emacs-lisp
   (use-package tab-line
@@ -715,7 +695,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
       (global-page-break-lines-mode))
 #+end_src
 
-** Posframe
+** posframe
 #+begin_src emacs-lisp
   (use-package posframe
     :defer 1.0
@@ -723,21 +703,15 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
     (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-      (let ((info '(:internal-border-width 15 :min-width 80)))
+      (let ((info '(:internal-border-width 10 :min-width 90)))
         (or (plist-get info arg-name) value))))
-
-  (use-package which-key-posframe
-    :defer 5.0
-    :config (which-key-posframe-mode)
-    :custom (which-key-posframe-poshandler
-             'posframe-poshandler-point-bottom-left-corner))
 #+end_src
 
-** Features
-** Org-Mode
+** features
+** org-mode
 #+begin_src emacs-lisp
   (use-package org-src
-    :defer 1.0
+    :after (org)
     :straight nil
     :preface
     (defun config-org--supress-final-newline ()
@@ -753,12 +727,11 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
 
 #+begin_src emacs-lisp
   (use-package ace-window
-    :defer 10.0
     :bind (("C-x o" . ace-window)))
 
   (use-package key-chord
     :custom (key-chord-two-keys-delay 0.05)
-    :init (key-chord-mode 1))
+    :config (key-chord-mode 1))
 
   (use-package prescient
     :defer 1.0
@@ -768,36 +741,25 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :disabled t
     :custom
     (dimmer-fraction 0.33)
-    (dimmer-exclusion-regexp-list '(".*Minibuf.*"
+    (dimmer-exclusion-regexp-list '(".*minibuf.*"
                                     ".*which-key.*"
-                                    ".*Messages.*"
-                                    ".*Async.*"
-                                    ".*Warnings.*"
-                                    ".*LV.*"
-                                    ".*Ilist.*"
+                                    ".*messages.*"
+                                    ".*async.*"
+                                    ".*warnings.*"
+                                    ".*lv.*"
+                                    ".*ilist.*"
                                     ".*posframe.*"
                                     ".*transient.*"))
     :config (dimmer-mode))
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package smartparens
-    :defer 10
-    :functions (sp-backward-delete-char))
-#+end_src
-
-#+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :defer 1.0
-    :hook (prog-mode . rainbow-delimiters-mode)
-    :custom (rainbow-delimters-max-face-count 5))
+    :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
-#+begin_src emacs-lisp
-#+end_src
-
-** Autocomplete
-*** Hippie-Exp
+** autocomplete
+*** hippie-exp
 
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -816,13 +778,9 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
             try-complete-lisp-symbol)))
 #+end_src
 
-*** Company
+*** company
 
 #+begin_src emacs-lisp
-  (use-package auto-insert
-    :straight nil
-    :bind (("C-c ci a" . auto-insert)))
-
   (use-package company
     :defer 2.0
     :bind (:map company-active-map
@@ -841,24 +799,21 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
           company-dabbrev-other-buffers nil
           company-dabbrev-ignore-case nil
           company-dabbrev-downcase nil
-          company-minimum-prefix-length 1
+          company-minimum-prefix-length 2
           company-tooltip-align-annotations t)
     (global-company-mode 1))
 
   (use-package company-prescient
-    :demand t
     :after (company)
     :config (company-prescient-mode 1))
 
   (use-package company-math
-    :demand t
     :after (company)
     :config
     (add-to-list 'company-backends 'company-math-symbols-unicode)
     (add-to-list 'company-backends 'company-math-symbols-latex))
 
   (use-package company-flx
-    :demand t
     :after (company)
     :config (company-flx-mode 1))
 
@@ -876,7 +831,7 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :config (company-box-mode 1))
 #+end_src
 
-*** Yasnippet
+*** yasnippet
 
 #+begin_src emacs-lisp
   (use-package yasnippet
@@ -891,121 +846,125 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
     :after (yasnippet))
 #+end_src
 
-** Ivy/Counsel/Swiper
+*** auto-insert
 
 #+begin_src emacs-lisp
-    (use-package counsel
-      :diminish
-      :hook ((after-init . ivy-mode)
-             (ivy-mode . counsel-mode))
-      :bind (("C-x b" . ivy-switch-buffer)
-             ("C-x B" . ivy-switch-buffer-other-window)
-             ("C-c C-r" . ivy-resume)
-             ("C-c v p" . ivy-push-view)
-             ("C-c v o" . ivy-pop-view)
-             ("C-c v ." . ivy-switch-view)
-             :map ivy-minibuffer-map
-             ("<tab>" . ivy-alt-done)
-             ("C-w" . ivy-yank-word)
-             ("C-r" . ivy-previous-line)
-             (:map ivy-switch-buffer-map
-                   ("C-x k" . ivy-switch-buffer-kill))
+  (use-package auto-insert
+    :straight nil
+    :bind (("C-c ci a" . auto-insert)))
+#+end_src
 
-             (:map counsel-mode-map
-                   ([remap dired] . counsel-dired)
-                   ("M-x" . counsel-M-x)
-                   ("C-x C-f" . counsel-find-file)
-                   ("C-x C-d" . counsel-dired-jump)
-                   ("C-x C-l" . counsel-find-library)
-                   ("C-x C-r" . counsel-recentf)
-                   ("C-x C-v" . counsel-set-variable)
-                   ("C-x C-u" . counsel-unicode-char)
-                   ("C-x j" . counsel-mark-ring)
-                   ("C-c g" . counsel-grep)
-                   ("C-c h" . counsel-command-history)
-                   ("C-c j" . counsel-git)
-                   ("C-c j" . counsel-git-grep)
-                   ("C-c r" . counsel-rg)
-                   ("C-c z" . counsel-fzf)
-                   ("C-c c w" . counsel-colors-web)
-                   ("C-h F" . counsel-describe-face)
-                   ("C-h f" . counsel-describe-function)
-                   ("C-h v" . counsel-describe-variable))
+** ivy/counsel/swiper
 
-             ("C-s" . swiper)
-             ("C-c c s" . swiper-isearch)
-             ("C-c c r" . swiper-isearch-backward)
-             ("C-S-s" . swiper-all)
-             :map swiper-map
-             ("M-%" . swiper-query-replace)
-             ("M-s" . swiper-isearch-toggle)
-             :map isearch-mode-map
-             ("M-s" . swiper-isearch-toggle))
+#+begin_src emacs-lisp
+  (use-package counsel
+    :hook ((after-init . ivy-mode)
+           (ivy-mode . counsel-mode))
+    :bind (([remap ido-switch-buffer] . ivy-switch-buffer)
+           ("C-x B" . ivy-switch-buffer-other-window)
+           ("C-c C-r" . ivy-resume)
+           ("C-c v p" . ivy-push-view)
+           ("C-c v o" . ivy-pop-view)
+           ("C-c v ." . ivy-switch-view)
+           ([remap kill-ring-save] . ivy-kill-ring-save)
+           :map ivy-minibuffer-map
+           ("<tab>" . ivy-alt-done)
+           ("C-w" . ivy-yank-word)
+           (:map ivy-switch-buffer-map
+                 ([remap kill-buffer] . ivy-switch-buffer-kill))
 
-      :custom
-      (ivy-dynamic-exhibit-delay-ms 250)
-      (ivy-use-selectable-prompt t)
-      (ivy-initial-inputs-alist nil)
-      (ivy-case-fold-search-default t)
-      (ivy-use-virtual-buffers t)
-      (ivy-virtual-abbreviate 'name)
-      (ivy-count-format "")
-      (ivy-flx-limit 2000)
+           (:map counsel-mode-map
+                 ([remap dired] . counsel-dired)
+                 ("M-x" . counsel-M-x)
+                 ([remap find-file] . counsel-find-file)
+                 ([remap dired-jump] . counsel-dired-jump)
+                 ("C-x C-l" . counsel-find-library)
+                 ("C-x C-r" . counsel-recentf)
+                 ("C-x C-v" . counsel-set-variable)
+                 ("C-x C-u" . counsel-unicode-char)
+                 ("C-x j" . counsel-mark-ring)
+                 ("C-c g" . counsel-grep)
+                 ("C-c h" . counsel-command-history)
+                 ("C-c j" . counsel-git)
+                 ("C-c j" . counsel-git-grep)
+                 ("C-c r" . counsel-rg)
+                 ("C-c z" . counsel-fzf)
+                 ("C-c c w" . counsel-colors-web)
+                 ("C-h F" . counsel-describe-face)
+                 ("C-h f" . counsel-describe-function)
+                 ("C-h v" . counsel-describe-variable))
 
-      :config
-      (use-package ivy-hydra)
+           ("C-s" . swiper)
+           ("C-c c s" . swiper-isearch)
+           ("C-c c r" . swiper-isearch-backward)
+           ("C-S-s" . swiper-all)
+           :map swiper-map
+           ("M-%" . swiper-query-replace)
+           ("M-s" . swiper-isearch-toggle)
+           :map isearch-mode-map
+           ("M-s" . swiper-isearch-toggle))
 
-      (use-package ivy-prescient
-        :config (ivy-prescient-mode 1))
+    :custom
+    (enable-recursive-minibuffers t)
+    (ivy-dynamic-exhibit-delay-ms 250)
+    (ivy-use-selectable-prompt t)
+    (ivy-initial-inputs-alist nil)
+    (ivy-case-fold-search-default t)
+    (ivy-use-virtual-buffers t)
+    (ivy-virtual-abbreviate 'name)
+    (ivy-count-format "")
+    (ivy-flx-limit 2000)
 
-      (setq counsel-grep-base-command
-            "rg -S --no-heading --line-number --color never '%s' %s")
+    :config
+    (use-package ivy-hydra)
 
-      (setq ivy-re-builders-alist '((t . ivy-prescient-re-builder)
-                                    (t . ivy--regex-fuzzy)
-                                    (swiper . ivy--regex-plus)
-                                    (swiper-isearch . ivy--regex-plus))))
+    (use-package ivy-prescient
+      :config (ivy-prescient-mode 1))
 
-    (use-package amx
-      :hook (ivy-mode . amx-mode))
+    (setq counsel-grep-base-command
+          "rg -S --no-heading --line-number --color never '%s' %s")
 
-    (use-package ivy-posframe
-      :hook (ivy-mode . ivy-posframe-mode)
-      :config
-      (setq ivy-posframe-hide-minibuffer t)
-      (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)
-                                                   (swiper . nil))))
+    (setq ivy-re-builders-alist '((t . ivy-prescient-re-builder)
+                                  (t . ivy--regex-fuzzy)
+                                  (swiper . ivy--regex-plus)
+                                  (swiper-isearch . ivy--regex-plus))))
+
+  (use-package amx
+    :hook (ivy-mode . amx-mode))
+
+  (use-package ivy-posframe
+    :hook (ivy-mode . ivy-posframe-mode)
+    :config
+    (setq ivy-posframe-hide-minibuffer t)
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)
+                                                 (swiper . nil))))
 
 
-    (use-package counsel-projectile
-      :after (counsel projectile)
-      :custom (counsel-projectile-switch-project-action #'dired)
-      :config (counsel-projectile-mode 1))
+  (use-package counsel-projectile
+    :after (counsel projectile)
+    :custom (counsel-projectile-switch-project-action #'dired)
+    :config (counsel-projectile-mode 1))
 
-    (use-package avy
-      :diminish
-      :bind (:map dired-mode-map
-                  ("." . avy-goto-word-or-subword-1))
-      :chords
-      ("jk" . avy-pop-mark)
-      ("jl" . avy-goto-line)
-      :config (avy-setup-default))
+  (use-package avy
+    :chords
+    ("jk" . avy-pop-mark)
+    ("jl" . avy-goto-line)
+    :config (avy-setup-default))
 
-    (use-package projectile
-      :custom
-      (projectile-completion-system 'ivy)
-      (projectile-enable-caching t)
-      :config
-      (projectile-mode 1))
+  (use-package projectile
+    :custom
+    (projectile-completion-system 'ivy)
+    (projectile-enable-caching t)
+    :config
+    (projectile-mode 1))
 
-    (use-package ispell
-      :defer 5.0
-      :straight nil
-      :custom
-      (ispell-dictionary "en_US")
-      (ispell-program-name (executable-find "hunspell"))
-      (ispell-really-hunspell t)
-      (ispell-silently-savep t))
+  (use-package ispell
+    :straight nil
+    :custom
+    (ispell-dictionary "en_US")
+    (ispell-program-name (executable-find "hunspell"))
+    (ispell-really-hunspell t)
+    (ispell-silently-savep t))
 #+end_src
 
 ** Version Control
@@ -1196,38 +1155,38 @@ This is my emacs configuration. It's heavily inspired by many different =init.el
 ** C++
 
 #+begin_src emacs-lisp
-  (defconst moose-c-style
-    '((c-tab-always-indent . t)
-      (c-basic-offset . 2)
-      (c-hanging-braces-alist . ((substatement-open before after)))
-      (c-offsets-alist . ((innamespace .0)
-                          (member-init-intro . 4)
-                          (statement-block-into . +)
-                          (substatement-open . 0)
-                          (substatement-label .0)
-                          (label .0)
-                          (statement-cont . +)
-                          (case-label . +))))
-    "Moose C++ Programming Style.")
+  ;; (defconst moose-c-style
+  ;;   '((c-tab-always-indent . t)
+  ;;     (c-basic-offset . 2)
+  ;;     (c-hanging-braces-alist . ((substatement-open before after)))
+  ;;     (c-offsets-alist . ((innamespace .0)
+  ;;                         (member-init-intro . 4)
+  ;;                         (statement-block-into . +)
+  ;;                         (substatement-open . 0)
+  ;;                         (substatement-label .0)
+  ;;                         (label .0)
+  ;;                         (statement-cont . +)
+  ;;                         (case-label . +))))
+  ;;   "Moose C++ Programming Style.")
 
-  (c-add-style "MOOSE" moose-c-style)
+  ;; (c-add-style "MOOSE" moose-c-style)
 
-  (setq auto-mode-alist
-        (append '(("\\.h$" . c++-mode)
-                  ("\\.i$" . conf-mode)
-                  ("tests" . conf-mode)
-                  ("\\.cu". c++-mode))
-                auto-mode-alist))
+  ;; (setq auto-mode-alist
+  ;;       (append '(("\\.h$" . c++-mode)
+  ;;                 ("\\.i$" . conf-mode)
+  ;;                 ("tests" . conf-mode)
+  ;;                 ("\\.cu". c++-mode))
+  ;;               auto-mode-alist))
 
-  (defun djm--moose-hook ()
-    (c-set-style "MOOSE")
-    (setq-local indent-tabs-mode nil)
-    (c-toggle-auto-hungry-state)
-    (c-toggle-auto-newline)
-    (c-toggle-auto-state)
-    (c-set-offset 'case-label '+))
+  ;; (defun djm--moose-hook ()
+  ;;   (c-set-style "MOOSE")
+  ;;   (setq-local indent-tabs-mode nil)
+  ;;   (c-toggle-auto-hungry-state)
+  ;;   (c-toggle-auto-newline)
+  ;;   (c-toggle-auto-state)
+  ;;   (c-set-offset 'case-label '+))
 
-  (add-hook 'c-mode-common-hook 'djm--moose-hook)
+  ;; (add-hook 'c-mode-common-hook 'djm--moose-hook)
 #+end_src
 
 ** Finale

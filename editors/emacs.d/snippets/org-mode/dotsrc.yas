@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: dotemacs-src-block
+# key: dotsrc
+# --
+
+#+name: $0
+#+begin_src emacs-lisp
+
+#+end_src

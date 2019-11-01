@@ -1,6 +1,64 @@
 #+title: DotEmacs with Org Mode
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
+* Table of Contents :TOC@3:
+- [[#about-this-document][About This Document]]
+- [[#early-init][Early-Init]]
+  - [[#header][Header]]
+  - [[#performance-tweaks][Performance Tweaks]]
+    - [[#garbage-collection][Garbage Collection]]
+  - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#pre-gui-customization][Pre-GUI Customization]]
+    - [[#miscellaneous][Miscellaneous]]
+  - [[#package-manager][Package Manager]]
+    - [[#straight][Straight]]
+  - [[#environment][Environment]]
+    - [[#exec-path-from-shell][Exec Path From Shell]]
+    - [[#custom-variables][Custom Variables]]
+  - [[#keeping-emacsd-clean][Keeping =~/.emacs.d= Clean]]
+  - [[#required-packages][Required Packages]]
+  - [[#footer][Footer]]
+- [[#init][Init]]
+  - [[#header-1][Header]]
+  - [[#general-user-settings--tools][General User Settings & Tools]]
+    - [[#personal-tweaks][Personal Tweaks]]
+    - [[#defaults][Defaults]]
+    - [[#frame--window][Frame & Window]]
+    - [[#files-history--system][Files, History, & System]]
+  - [[#theme--aesthetics][Theme & Aesthetics]]
+    - [[#dashboard][Dashboard]]
+    - [[#themes][Themes]]
+    - [[#modelines][Modelines]]
+    - [[#aesthetics][Aesthetics]]
+  - [[#utilities][Utilities]]
+    - [[#terminal][Terminal]]
+    - [[#projectile][Projectile]]
+    - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
+  - [[#editing][Editing]]
+    - [[#documentation][Documentation]]
+    - [[#editing-utilities][Editing Utilities]]
+    - [[#minor-modes][Minor Modes]]
+  - [[#navigation][Navigation]]
+    - [[#navigation-utilities][Navigation Utilities]]
+    - [[#dired][Dired]]
+    - [[#ibuffer][iBuffer]]
+  - [[#productivity][Productivity]]
+    - [[#org][Org]]
+    - [[#email][Email]]
+    - [[#calendar][Calendar]]
+    - [[#web-browsing][Web Browsing]]
+  - [[#programming-support][Programming Support]]
+    - [[#version-control][Version Control]]
+    - [[#language-server-support][Language Server Support]]
+    - [[#syntax--linting][Syntax & Linting]]
+  - [[#languages][Languages]]
+    - [[#ess][ESS]]
+    - [[#python][Python]]
+    - [[#c][C++]]
+  - [[#footer-1][Footer]]
+- [[#conclusion][Conclusion]]
+- [[#citations][Citations]]
+
 * About This Document
 -------------------------------------------------------------------
 * Early-Init
@@ -172,7 +230,7 @@
     :demand t
     :init
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE_HOME" "FPATH" "PYENV_ROOT"))
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
     (setq exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -189,7 +247,7 @@
 #+name: no-littering-init-block
 #+begin_src emacs-lisp
   (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-  (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE_HOME")))
+  (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
   (defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
   (defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
   (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
@@ -1044,6 +1102,13 @@
     (setq org-src-window-setup 'split-window-below)
     (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
+#+end_src
+
+#+name: init-toc-org-block
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :hook ((org-mode . toc-org-mode)
+           (markdown-mode . toc-org-mode)))
 #+end_src
 
 *** Email

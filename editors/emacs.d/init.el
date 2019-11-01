@@ -666,6 +666,10 @@
     (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
 
+(use-package toc-org
+  :hook ((org-mode . toc-org-mode)
+         (markdown-mode . toc-org-mode)))
+
 (use-package eww
   :defer t
   :straight nil)

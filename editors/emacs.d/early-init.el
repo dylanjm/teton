@@ -129,14 +129,14 @@
   :demand t
   :init
   (setq exec-path-from-shell-check-startup-files nil)
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE_HOME" "FPATH" "PYENV_ROOT"))
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
   (setq exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
 
 
 (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-(defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE_HOME")))
+(defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
 (defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
 (defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
 (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))

@@ -1,9 +1,5 @@
 #!/usr/local/bin/zsh
-typeset -A ZPLGM
 typeset -F4 SECONDS=0
-
-ZPLGM[HOME_DIR]="$CACHE_HOME/zsh/zplugin"
-ZPLGM[ZCOMPDUMP_PATH]=$CACHE_HOME/zsh/zcompdump
 
 if [[ ! -f $ZPLGM[HOME_DIR]/bin/zplugin.zsh ]]; then
     git clone https://github.com/psprint/zplugin $ZPLGM[HOME_DIR]/bin
@@ -13,7 +9,6 @@ source $ZPLGM[HOME_DIR]/bin/zplugin.zsh
 autoload -Uz _zplugin
 (( ${+_comps} )) && _comps[zplugin]=_zplugin
 
-module_path+=( "$HOME/.cache/zsh/zplugin/bin/zmodules/Src" )
 zmodload zdharma/zplugin
 
 load=light

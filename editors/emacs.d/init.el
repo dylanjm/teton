@@ -14,38 +14,34 @@
 (add-hook 'write-file-hooks 'time-stamp)
 
 (use-package cus-start
-    :straight nil
-    :custom
-    (ad-redefinition-action 'accept)
-    (cursor-in-non-selected-windows nil)
-    (cursor-type 'bar)
-    (display-time-default-load-average nil)
-    (echo-keystrokes 0.02)
-    (fill-column 80)
-    (ffap-machine-p-known 'reject)
-    (frame-title-format '("%b - Emacs"))
-    (icon-title-format frame-title-format)
-    (indent-tabs-mode nil)
-    (mode-line-in-non-selected-windows nil)
-    (mouse-wheel-progressive-speed nil)
-    (mouse-wheel-scroll-amount '(1))
-    (ring-bell-function #'ignore)
-    (select-enable-clipboard t)
-    (scroll-conservatively most-positive-fixnum)
-    (scroll-margin 5)
-    (scroll-preserve-screen-position t)
-    (scroll-step 1)
-    (sentence-end-double-space nil)
-    (tab-always-indent 'complete)
-    (tab-width 4)
-    (use-dialog-box nil)
-    (use-file-dialog nil)
-    (uniquify-buffer-name-style 'post-forward-angle-brackets)
-    (vc-follow-symlinks t)
-    (window-combination-resize t))
-
-(global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
-(global-unset-key (kbd "C-z"))
+  :straight nil
+  :custom
+  (ad-redefinition-action 'accept)
+  (cursor-in-non-selected-windows nil)
+  (cursor-type 'bar)
+  (display-time-default-load-average nil)
+  (echo-keystrokes 0.02)
+  (fill-column 80)
+  (frame-title-format '("%b - Emacs"))
+  (icon-title-format frame-title-format)
+  (indent-tabs-mode nil)
+  (mode-line-in-non-selected-windows nil)
+  (mouse-wheel-progressive-speed nil)
+  (mouse-wheel-scroll-amount '(1))
+  (ring-bell-function #'ignore)
+  (scroll-conservatively most-positive-fixnum)
+  (scroll-margin 5)
+  (scroll-preserve-screen-position t)
+  (scroll-step 1)
+  (select-enable-clipboard t)
+  (sentence-end-double-space nil)
+  (tab-always-indent 'complete)
+  (tab-width 4)
+  (uniquify-buffer-name-style 'post-forward)
+  (use-dialog-box nil)
+  (use-file-dialog nil)
+  (vc-follow-symlinks t)
+  (window-combination-resize t))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -54,34 +50,27 @@
 (put 'up-case-rgion 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 
-(blink-cursor-mode 0)
+(global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
+(global-unset-key (kbd "C-z"))
 
-(load custom-file :noerror)
+(when (file-exists-p custom-file)
+  (load custom-file :noerror))
+
+(when (file-exists-p djm--secret-file)
+  (load djm--secret-file :noerror))
 
 (use-package pixel-scroll
-  :demand t
   :straight nil
   :init (pixel-scroll-mode 1))
 
-(use-package windmove
-  :bind (("C-c w l" . windmove-left)
-         ("C-c w r" . windmove-right)
-         ("C-c w p" . windmove-up)
-         ("C-c w n" . windmove-down))
-  :custom (windmove-default-keybindings 'shift))
-
 (use-package ns-win
-  :demand t
   :straight nil
   :init
   (setq mac-command-modifier 'meta
         mac-option-modifier 'meta
         mac-right-command-modifier 'left
         mac-right-option-modifier 'none
-        mac-function-modifier 'hyper
-        ns-pop-up-frames nil
-        ns-use-native-fullscreen nil
-        ns-use-thin-smoothing t))
+        mac-function-modifier 'hyper))
 
 (use-package saveplace
   :straight nil
@@ -89,7 +78,7 @@
 
 (use-package savehist
   :straight nil
-  :init
+  :config
   (setq history-delete-duplicates t
         savehist-autosave-interval 300
         savehist-save-minibuffer-history 1
@@ -98,7 +87,7 @@
 
 (use-package files
   :straight nil
-  :init
+  :config
   (setq backup-by-copying t
         confirm-kill-processes nil
         create-lockfiles nil
@@ -109,7 +98,7 @@
 
 (use-package autorevert
   :straight nil
-  :init
+  :config
   (setq auto-revert-verbose nil
         global-auto-revert-non-file-buffers t
         auto-revert-use-notify nil)
@@ -117,7 +106,7 @@
 
 (use-package recentf
   :straight nil
-  :init
+  :config
   (setq recentf-max-saved-items 200
         recentf-max-menu-items 20
         recentf-auto-cleanup 'never)
@@ -125,7 +114,7 @@
 
 (use-package osx-trash
   :defer 2.0
-  :init
+  :config
   (setq delete-by-moving-to-trash t)
   (osx-trash-setup))
 
@@ -148,6 +137,8 @@
         doom-themes-enable-bold t)
   (load-theme 'doom-gruvbox t)
   (doom-themes-org-config))
+
+(blink-cursor-mode 0)
 
 ;; emacs 27 added new `:extend' keyword which breaks most themes
 (if (boundp 'hl-line)
@@ -249,18 +240,20 @@
     (let ((info '(:internal-border-width 10 :min-width 90)))
       (or (plist-get info arg-name) value))))
 
+(use-package eterm-256color
+  :hook (vterm-mode . eterm-256color-mode))
+
 (use-package vterm
-  :defer 10)
+  :defer 10
+  :custom  (vterm-term-environment-variable "eterm-color"))
 
 (use-package vterm-toggle
   :straight (:host github :repo "jixiuf/vterm-toggle")
   :bind (("C-c C-t" . vterm-toggle)
          ("C-c C-y" . term-toggle-cd)))
 
-(use-package eterm-256color
-  :hook (term-mode . eterm-256color-mode))
-
 (use-package projectile
+  :defer 5
   :custom
   (projectile-completion-system 'ivy)
   (projectile-enable-caching t)
@@ -349,22 +342,7 @@
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)
                                                (swiper . nil))))
 
-(use-package ws-butler
-  :defer 2.0
-  :commands (ws-butler-global-mode)
-  :config (ws-butler-global-mode 1))
-
-(use-package eldoc
-  :defer 2.0
-  :custom (eldoc-idle-delay 2))
-
-(use-package which-key
-  :defer 2.0
-  :custom (which-key-idle-delay 0.5)
-  :config (which-key-mode))
-
-(use-package man
-  :defer 2.0)
+(use-package man :defer 2.0)
 
 (use-package help
   :defer 2.0
@@ -383,10 +361,14 @@
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package multiple-cursors
-  :disabled t
-  :bind (("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)))
+(use-package eldoc
+  :defer 2.0
+  :custom (eldoc-idle-delay 2))
+
+(use-package which-key
+  :defer 2.0
+  :custom (which-key-idle-delay 0.5)
+  :config (which-key-mode))
 
 (use-package ispell
   :straight nil
@@ -475,6 +457,16 @@
   :straight nil
   :bind (("C-c ci a" . auto-insert)))
 
+(use-package ws-butler
+  :defer 2.0
+  :commands (ws-butler-global-mode)
+  :config (ws-butler-global-mode 1))
+
+(use-package multiple-cursors
+  :disabled t
+  :bind (("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)))
+
 (use-package default-text-scale
   :defer 10
   :commands (default-text-scale-increase
@@ -527,15 +519,15 @@
   ("jl" . avy-goto-line)
   :config (avy-setup-default))
 
-(use-package projectile
-  :custom
-  (projectile-completion-system 'ivy)
-  (projectile-enable-caching t)
-  :config
-  (projectile-mode 1))
-
 (use-package ace-window
   :bind (("C-x o" . ace-window)))
+
+  (use-package windmove
+    :bind (("C-c w l" . windmove-left)
+           ("C-c w r" . windmove-right)
+           ("C-c w p" . windmove-up)
+           ("C-c w n" . windmove-down))
+    :custom (windmove-default-keybindings 'shift))
 
 (use-package key-chord
   :custom (key-chord-two-keys-delay 0.05)

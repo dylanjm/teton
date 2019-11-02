@@ -1,11 +1,10 @@
 #+title: Dot-Z-Macs
 #+author: Dylan McDowell
-#+date: 2019.11.02 09:50:22
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019.11.02 09:52:06
+/last updated/: 2019-11-02 15:38:35
 
-* Table of Contents :TOC@2:
+* Table of Contents :TOC@2:noexport:
 - [[#about-this-document][About This Document]]
 - [[#early-init][Early-Init]]
   - [[#header][Header]]
@@ -50,7 +49,6 @@
 #+end_src
 
 ** Performance Tweaks
-
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -103,6 +101,9 @@
         initial-scratch-message ""
         inhibit-startup-echo-area-message t
         inhibit-startup-screen t
+        ns-pop-up-frames nil
+        ns-use-native-fullscreen nil
+        ns-use-thin-smoothing t
         frame-inhibit-implied-resize t
         frame-resize-pixelwise t)
 
@@ -136,7 +137,6 @@
   (set-selection-coding-system 'utf-8)
   (modify-coding-system-alist 'process "*" 'utf-8)
   (set-file-name-coding-system 'utf-8)
-
 #+end_src
 
 ** Package Manager
@@ -176,8 +176,8 @@
 #+name: early-init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :demand t
-    :init
+    :if (memq window-system '(mac ns nil))
+    :config
     (setq exec-path-from-shell-check-startup-files nil)
     (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
     (setq exec-path-from-shell-arguments '("-l"))
@@ -188,30 +188,31 @@
 
 #+name: custom-var-init-block
 #+begin_src emacs-lisp
-
+  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
+  (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
+  (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
+  (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
+  (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
+  (defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
+  (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
 #+end_src
 
 ** Keeping =~/.emacs.d= Clean
 
 #+name: no-littering-init-block
 #+begin_src emacs-lisp
-  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-  (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
-  (defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
-  (defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
-  (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
-  (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
-  (defvar djm--save-list-prefix (expand-file-name "auto-save/sessions/" djm--emacs-var-cache))
-
-  (setq no-littering-etc-directory djm--emacs-etc-cache)
-  (setq no-littering-var-directory djm--emacs-var-cache)
-  (setq auto-save-list-file-prefix djm--save-list-prefix)
-  (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-  (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-  (setq custom-file djm--custom-file)
-  (setq recentf-exclude '(djm--emacs-cache djm--straight-directory "/private/var*"))
-
-  (use-package no-littering :demand t :straight t)
+  (use-package no-littering
+    :straight t
+    :custom
+    (no-littering-etc-directory djm--emacs-etc-cache)
+    (no-littering-var-directory djm--emacs-var-cache)
+    (auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+    (backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+    (custom-file djm--custom-file)
+    (auto-save-list-file-name (expand-file-name "auto-save-list/" djm--emacs-var-cache))
+    (recentf-exclude '(djm--emacs-cache
+                       djm--straight-directory
+                       "/private/var/*")))
 #+end_src
 
 ** Required Packages
@@ -230,7 +231,7 @@
   (use-package hydra)
 
   (use-package map :straight nil)
-  (use-package org :straight t :defer t) ;load this early to avoid the built-in version
+  (use-package org :straight t :defer t) ;; Avoid loading built-in
 #+end_src
 
 ** Footer
@@ -280,40 +281,39 @@
 
 #+name: init-settings-block
 #+begin_src emacs-lisp
-    (use-package cus-start
-      :straight nil
-      :custom
-      (ad-redefinition-action 'accept)
-      (cursor-in-non-selected-windows nil)
-      (cursor-type 'bar)
-      (display-time-default-load-average nil)
-      (echo-keystrokes 0.02)
-      (fill-column 80)
-      (ffap-machine-p-known 'reject)
-      (frame-title-format '("%b - Emacs"))
-      (icon-title-format frame-title-format)
-      (indent-tabs-mode nil)
-      (mode-line-in-non-selected-windows nil)
-      (mouse-wheel-progressive-speed nil)
-      (mouse-wheel-scroll-amount '(1))
-      (ring-bell-function #'ignore)
-      (select-enable-clipboard t)
-      (scroll-conservatively most-positive-fixnum)
-      (scroll-margin 5)
-      (scroll-preserve-screen-position t)
-      (scroll-step 1)
-      (sentence-end-double-space nil)
-      (tab-always-indent 'complete)
-      (tab-width 4)
-      (use-dialog-box nil)
-      (use-file-dialog nil)
-      (uniquify-buffer-name-style 'post-forward-angle-brackets)
-      (vc-follow-symlinks t)
-      (window-combination-resize t))
+  (use-package cus-start
+    :straight nil
+    :custom
+    (ad-redefinition-action 'accept)
+    (cursor-in-non-selected-windows nil)
+    (cursor-type 'bar)
+    (display-time-default-load-average nil)
+    (echo-keystrokes 0.02)
+    (fill-column 80)
+    (frame-title-format '("%b - Emacs"))
+    (icon-title-format frame-title-format)
+    (indent-tabs-mode nil)
+    (mode-line-in-non-selected-windows nil)
+    (mouse-wheel-progressive-speed nil)
+    (mouse-wheel-scroll-amount '(1))
+    (ring-bell-function #'ignore)
+    (scroll-conservatively most-positive-fixnum)
+    (scroll-margin 5)
+    (scroll-preserve-screen-position t)
+    (scroll-step 1)
+    (select-enable-clipboard t)
+    (sentence-end-double-space nil)
+    (tab-always-indent 'complete)
+    (tab-width 4)
+    (uniquify-buffer-name-style 'post-forward)
+    (use-dialog-box nil)
+    (use-file-dialog nil)
+    (vc-follow-symlinks t)
+    (window-combination-resize t))
+#+end_src
 
-  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
-  (global-unset-key (kbd "C-z"))
-
+#+name: init-settings-02-block
+#+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
 
   (put 'narrow-to-region 'disabled nil)
@@ -321,42 +321,38 @@
   (put 'up-case-rgion 'disabled nil)
   (put 'erase-buffer 'disabled nil)
 
-  (blink-cursor-mode 0)
+  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
+  (global-unset-key (kbd "C-z"))
 #+end_src
 
 #+name: init-custom-load-block
 #+begin_src emacs-lisp
-(load custom-file :noerror)
+  (when (file-exists-p custom-file)
+    (load custom-file :noerror))
+#+end_src
+
+#+name: init-secret-load-block
+#+begin_src emacs-lisp
+  (when (file-exists-p djm--secret-file)
+    (load djm--secret-file :noerror))
 #+end_src
 
 *** Frame & Window
 
 #+name: init-frame-block
 #+begin_src emacs-lisp
-    (use-package pixel-scroll
-      :demand t
-      :straight nil
-      :init (pixel-scroll-mode 1))
+  (use-package pixel-scroll
+    :straight nil
+    :init (pixel-scroll-mode 1))
 
-    (use-package windmove
-      :bind (("C-c w l" . windmove-left)
-             ("C-c w r" . windmove-right)
-             ("C-c w p" . windmove-up)
-             ("C-c w n" . windmove-down))
-      :custom (windmove-default-keybindings 'shift))
-
-    (use-package ns-win
-      :demand t
-      :straight nil
-      :init
-      (setq mac-command-modifier 'meta
-            mac-option-modifier 'meta
-            mac-right-command-modifier 'left
-            mac-right-option-modifier 'none
-            mac-function-modifier 'hyper
-            ns-pop-up-frames nil
-            ns-use-native-fullscreen nil
-            ns-use-thin-smoothing t))
+  (use-package ns-win
+    :straight nil
+    :init
+    (setq mac-command-modifier 'meta
+          mac-option-modifier 'meta
+          mac-right-command-modifier 'left
+          mac-right-option-modifier 'none
+          mac-function-modifier 'hyper))
 #+end_src
 
 *** Files, History, & System
@@ -369,7 +365,7 @@
 
   (use-package savehist
     :straight nil
-    :init
+    :config
     (setq history-delete-duplicates t
           savehist-autosave-interval 300
           savehist-save-minibuffer-history 1
@@ -378,7 +374,7 @@
 
   (use-package files
     :straight nil
-    :init
+    :config
     (setq backup-by-copying t
           confirm-kill-processes nil
           create-lockfiles nil
@@ -389,7 +385,7 @@
 
   (use-package autorevert
     :straight nil
-    :init
+    :config
     (setq auto-revert-verbose nil
           global-auto-revert-non-file-buffers t
           auto-revert-use-notify nil)
@@ -397,7 +393,7 @@
 
   (use-package recentf
     :straight nil
-    :init
+    :config
     (setq recentf-max-saved-items 200
           recentf-max-menu-items 20
           recentf-auto-cleanup 'never)
@@ -405,13 +401,12 @@
 
   (use-package osx-trash
     :defer 2.0
-    :init
+    :config
     (setq delete-by-moving-to-trash t)
     (osx-trash-setup))
 #+end_src
 
 ** Theme & Aesthetics
-
 *** Dashboard
 
 #+name: init-dashboard-block
@@ -429,7 +424,6 @@
 #+end_src
 
 *** Themes
-
 **** Doom-Themes
 #+name: init-doom-themes-block
 #+begin_src emacs-lisp
@@ -441,6 +435,8 @@
           doom-themes-enable-bold t)
     (load-theme 'doom-gruvbox t)
     (doom-themes-org-config))
+
+  (blink-cursor-mode 0)
 #+end_src
 
 **** Emacs 27 Keyword Fix
@@ -528,7 +524,6 @@
 #+end_src
 
 *** Aesthetics
-
 **** Tab-Line
 
 #+name: init-tab-line-block
@@ -575,26 +570,26 @@
 
 ** Utilities
 *** Terminal
-
 #+name: init-terminal-block
 #+begin_src emacs-lisp
+  (use-package eterm-256color
+    :hook (vterm-mode . eterm-256color-mode))
+
   (use-package vterm
-    :defer 10)
+    :defer 10
+    :custom  (vterm-term-environment-variable "eterm-color"))
 
   (use-package vterm-toggle
     :straight (:host github :repo "jixiuf/vterm-toggle")
     :bind (("C-c C-t" . vterm-toggle)
            ("C-c C-y" . term-toggle-cd)))
-
-  (use-package eterm-256color
-    :hook (term-mode . eterm-256color-mode))
 #+end_src
 
 *** Projectile
-
 #+name: init-projectile-block
 #+begin_src emacs-lisp
   (use-package projectile
+    :defer 5
     :custom
     (projectile-completion-system 'ivy)
     (projectile-enable-caching t)
@@ -603,7 +598,6 @@
 #+end_src
 
 *** Ivy/Counsel/Swiper
-
 #+name: init-ivy-block
 #+begin_src emacs-lisp
   (use-package counsel
@@ -690,26 +684,11 @@
 #+end_src
 
 ** Editing
-
 *** Documentation
+
 #+name: init-help-block
 #+begin_src emacs-lisp
-  (use-package ws-butler
-    :defer 2.0
-    :commands (ws-butler-global-mode)
-    :config (ws-butler-global-mode 1))
-
-  (use-package eldoc
-    :defer 2.0
-    :custom (eldoc-idle-delay 2))
-
-  (use-package which-key
-    :defer 2.0
-    :custom (which-key-idle-delay 0.5)
-    :config (which-key-mode))
-
-  (use-package man
-    :defer 2.0)
+  (use-package man :defer 2.0)
 
   (use-package help
     :defer 2.0
@@ -728,13 +707,17 @@
     ([remap describe-variable] . helpful-variable)
     ([remap describe-key] . helpful-key))
 
-  (use-package multiple-cursors
-    :disabled t
-    :bind (("C->" . mc/mark-next-like-this)
-           ("C-<" . mc/mark-previous-like-this)))
-#+end_src
-*** Editing Utilities
+  (use-package eldoc
+    :defer 2.0
+    :custom (eldoc-idle-delay 2))
 
+  (use-package which-key
+    :defer 2.0
+    :custom (which-key-idle-delay 0.5)
+    :config (which-key-mode))
+#+end_src
+
+*** Editing Utilities
 **** Spell Check
 
 #+name: init-ispell-block
@@ -749,6 +732,7 @@
 #+end_src
 
 **** Autocomplete
+
 #+name: init-hippie-block
 #+begin_src emacs-lisp
  (use-package hippie-exp
@@ -840,8 +824,21 @@
     :bind (("C-c ci a" . auto-insert)))
 #+end_src
 
-*** Minor Modes
+**** Editing
+#+name: init-edit-utils-block
+#+begin_src emacs-lisp
+  (use-package ws-butler
+    :defer 2.0
+    :commands (ws-butler-global-mode)
+    :config (ws-butler-global-mode 1))
 
+  (use-package multiple-cursors
+    :disabled t
+    :bind (("C->" . mc/mark-next-like-this)
+           ("C-<" . mc/mark-previous-like-this)))
+#+end_src
+
+*** Minor Modes
 #+name: init-edit-block
 #+begin_src emacs-lisp
   (use-package default-text-scale
@@ -877,6 +874,7 @@
 
   (use-package hungry-delete
     :defer 10.0
+
     :commands (hungry-delete-mode))
 
   (use-package prog-mode
@@ -902,15 +900,15 @@
     ("jl" . avy-goto-line)
     :config (avy-setup-default))
 
-  (use-package projectile
-    :custom
-    (projectile-completion-system 'ivy)
-    (projectile-enable-caching t)
-    :config
-    (projectile-mode 1))
-
   (use-package ace-window
     :bind (("C-x o" . ace-window)))
+
+    (use-package windmove
+      :bind (("C-c w l" . windmove-left)
+             ("C-c w r" . windmove-right)
+             ("C-c w p" . windmove-up)
+             ("C-c w n" . windmove-down))
+      :custom (windmove-default-keybindings 'shift))
 
   (use-package key-chord
     :custom (key-chord-two-keys-delay 0.05)
@@ -1187,7 +1185,6 @@
 
 ** Languages
 *** ESS
-
 #+name: init-ess-block
 #+begin_src emacs-lisp
   (use-package ess
@@ -1315,7 +1312,6 @@
 #+end_src
 
 ** Footer
-
 #+name: init-footer-block
 #+begin_src emacs-lisp
 (provide 'init)
@@ -1332,7 +1328,7 @@
 * COMMENT Local file settings for Emacs
 # Local Variables:
 # time-stamp-line-limit: 2000
-# time-stamp-format: "%Y.%m.%d %H:%M:%S"
+# time-stamp-format: "%Y-%m-%d %H:%M:%S"
 # time-stamp-active: t
 # time-stamp-start: "\/last updated\/:[ ]*"
 # time-stamp-end: "$"

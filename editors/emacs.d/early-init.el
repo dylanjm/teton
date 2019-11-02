@@ -52,6 +52,9 @@
       initial-scratch-message ""
       inhibit-startup-echo-area-message t
       inhibit-startup-screen t
+      ns-pop-up-frames nil
+      ns-use-native-fullscreen nil
+      ns-use-thin-smoothing t
       frame-inhibit-implied-resize t
       frame-resize-pixelwise t)
 
@@ -113,32 +116,33 @@
 (straight-use-package 'use-package)
 
 (use-package exec-path-from-shell
-  :demand t
-  :init
+  :if (memq window-system '(mac ns nil))
+  :config
   (setq exec-path-from-shell-check-startup-files nil)
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
   (setq exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 
-
-
 (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
 (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
-(defvar djm--emacs-etc-cache (expand-file-name "config/" djm--emacs-cache))
-(defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
+(defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
+(defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
 (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
+(defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
 (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
-(defvar djm--save-list-prefix (expand-file-name "auto-save/sessions/" djm--emacs-var-cache))
 
-(setq no-littering-etc-directory djm--emacs-etc-cache)
-(setq no-littering-var-directory djm--emacs-var-cache)
-(setq auto-save-list-file-prefix djm--save-list-prefix)
-(setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-(setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-(setq custom-file djm--custom-file)
-(setq recentf-exclude '(djm--emacs-cache djm--straight-directory "/private/var*"))
-
-(use-package no-littering :demand t :straight t)
+(use-package no-littering
+  :straight t
+  :custom
+  (no-littering-etc-directory djm--emacs-etc-cache)
+  (no-littering-var-directory djm--emacs-var-cache)
+  (auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+  (backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+  (custom-file djm--custom-file)
+  (auto-save-list-file-name (expand-file-name "auto-save-list/" djm--emacs-var-cache))
+  (recentf-exclude '(djm--emacs-cache
+                     djm--straight-directory
+                     "/private/var/*")))
 
 (use-package use-package-ensure-system-package)
 (use-package use-package-chords)
@@ -152,7 +156,7 @@
 (use-package hydra)
 
 (use-package map :straight nil)
-(use-package org :straight t :defer t) ;load this early to avoid the built-in version
+(use-package org :straight t :defer t) ;; Avoid loading built-in
 
 (provide 'early-init)
 ;;; early-init.el ends here

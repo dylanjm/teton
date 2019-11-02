@@ -72,8 +72,8 @@
 (push '(right-fringe . 5) default-frame-alist)
 (push '(left-fringe . 5) default-frame-alist)
 
-(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-ultracondensed-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
-(push '(variable-pitch . "-*-Iosevka Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(font . "-*-Iosevka SS01-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(variable-pitch . "-*-Iosevka SS01-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 
 (prefer-coding-system 'utf-8-unix)
 (set-language-environment "UTF-8")
@@ -128,9 +128,11 @@
 (defvar djm--emacs-var-cache (expand-file-name "data/" djm--emacs-cache))
 (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
 (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
+(defvar djm--save-list-prefix (expand-file-name "auto-save/sessions/" djm--emacs-var-cache))
 
 (setq no-littering-etc-directory djm--emacs-etc-cache)
 (setq no-littering-var-directory djm--emacs-var-cache)
+(setq auto-save-list-file-prefix djm--save-list-prefix)
 (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
 (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
 (setq custom-file djm--custom-file)

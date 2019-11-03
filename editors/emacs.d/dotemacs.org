@@ -2,9 +2,9 @@
 #+author: Dylan McDowell
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-02 15:38:35
+/last updated/: 2019-11-02 18:23:44
 
-* Table of Contents :TOC@2:noexport:
+* Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
 - [[#early-init][Early-Init]]
   - [[#header][Header]]
@@ -12,19 +12,54 @@
   - [[#preliminary-configuration][Preliminary Configuration]]
   - [[#package-manager][Package Manager]]
   - [[#environment][Environment]]
+    - [[#exec-path-from-shell][Exec Path From Shell]]
+    - [[#custom-variables][Custom Variables]]
   - [[#keeping-emacsd-clean][Keeping =~/.emacs.d= Clean]]
   - [[#required-packages][Required Packages]]
   - [[#footer][Footer]]
 - [[#init][Init]]
   - [[#header-1][Header]]
   - [[#general-user-settings--tools][General User Settings & Tools]]
+    - [[#personal-tweaks][Personal Tweaks]]
+    - [[#defaults][Defaults]]
+    - [[#frame--window][Frame & Window]]
+    - [[#files-history--system][Files, History, & System]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
+    - [[#dashboard][Dashboard]]
+    - [[#themes][Themes]]
+    - [[#modelines][Modelines]]
+    - [[#aesthetics][Aesthetics]]
   - [[#utilities][Utilities]]
+    - [[#prescient][Prescient]]
+    - [[#posframe][Posframe]]
+    - [[#terminal][Terminal]]
+    - [[#projectile][Projectile]]
+    - [[#autocomplete][Autocomplete]]
+    - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
   - [[#editing][Editing]]
+    - [[#documentation][Documentation]]
+    - [[#spell-check][Spell Check]]
+    - [[#editing-1][Editing]]
+    - [[#minor-modes][Minor Modes]]
   - [[#navigation][Navigation]]
+    - [[#avy][Avy]]
+    - [[#ace-window][Ace-Window]]
+    - [[#windower][Windower]]
+    - [[#dired][Dired]]
+    - [[#ibuffer][iBuffer]]
   - [[#productivity][Productivity]]
+    - [[#org][Org]]
+    - [[#email][Email]]
+    - [[#calendar][Calendar]]
+    - [[#web-browsing][Web Browsing]]
   - [[#programming-support][Programming Support]]
+    - [[#version-control][Version Control]]
+    - [[#language-server-support][Language Server Support]]
+    - [[#syntax--linting][Syntax & Linting]]
   - [[#languages][Languages]]
+    - [[#ess][ESS]]
+    - [[#python][Python]]
+    - [[#c][C++]]
   - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
@@ -143,6 +178,20 @@
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
+  (eval-and-compile
+    (defvar straight-recipes-gnu-elpa-use-mirror t)
+    (defvar bootstrap-version 5)
+    (defvar bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+    (url-retrieve-synchronously
+     "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+     'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+
   (with-no-warnings
     (setq straight-cache-autoloads t)
     (setq straight-check-for-modifications 'live-with-find)
@@ -152,19 +201,6 @@
   (with-no-warnings
     (setq use-package-verbose t)
     (setq use-package-enable-imenu-support t))
-
-  (eval-and-compile
-    (defvar straight-recipes-gnu-elpa-use-mirror t)
-    (defvar bootstrap-version 5)
-    (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
-
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-	(url-retrieve-synchronously
-	 "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	 'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
 
   (load bootstrap-file nil 'nomessage)
   (straight-use-package 'use-package)
@@ -176,11 +212,12 @@
 #+name: early-init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :if (memq window-system '(mac ns nil))
     :config
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
     (setq exec-path-from-shell-arguments '("-l"))
+    (when-let* ((gls (executable-find "gls")))
+      (setq insert-directory-program "gls"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -203,16 +240,22 @@
 #+begin_src emacs-lisp
   (use-package no-littering
     :straight t
-    :custom
-    (no-littering-etc-directory djm--emacs-etc-cache)
-    (no-littering-var-directory djm--emacs-var-cache)
-    (auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-    (backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-    (custom-file djm--custom-file)
-    (auto-save-list-file-name (expand-file-name "auto-save-list/" djm--emacs-var-cache))
-    (recentf-exclude '(djm--emacs-cache
-                       djm--straight-directory
-                       "/private/var/*")))
+    :init
+    (progn
+      (setq no-littering-etc-directory djm--emacs-etc-cache)
+      (setq no-littering-var-directory djm--emacs-var-cache))
+    :config
+    (progn
+      (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+      (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+      (setq custom-file djm--custom-file)
+      (setq auto-save-list-file-name nil)
+      (eval-when-compile
+	(require 'recentf))
+      (with-eval-after-load 'recentf
+	(add-to-list 'recentf-exclude no-littering-var-directory)
+	(add-to-list 'recentf-exclude no-littering-etc-directory)
+	(add-to-list 'recentf-exclude djm--straight-directory))))
 #+end_src
 
 ** Required Packages
@@ -361,16 +404,15 @@
 #+begin_src emacs-lisp
   (use-package saveplace
     :straight nil
-    :init (save-place-mode 1))
+    :config (save-place-mode +1))
 
   (use-package savehist
     :straight nil
-    :config
+    :init
     (setq history-delete-duplicates t
-          savehist-autosave-interval 300
-          savehist-save-minibuffer-history 1
-          savehist-additional-variables '(kill-ring search-ring))
-    (savehist-mode 1))
+          savehist-additional-variables '(kill-ring regexp-search-ring))
+    :config
+    (savehist-mode +1))
 
   (use-package files
     :straight nil
@@ -379,31 +421,46 @@
           confirm-kill-processes nil
           create-lockfiles nil
           delete-old-versions t
-          insert-directory-program "gls"
           require-final-newline t
           view-read-only t))
 
   (use-package autorevert
     :straight nil
-    :config
+    :init
     (setq auto-revert-verbose nil
           global-auto-revert-non-file-buffers t
           auto-revert-use-notify nil)
+    :config
     (global-auto-revert-mode 1))
 
   (use-package recentf
+    :defer t
     :straight nil
-    :config
-    (setq recentf-max-saved-items 200
-          recentf-max-menu-items 20
+    :init
+    (setq recentf-max-saved-items 1000
           recentf-auto-cleanup 'never)
+    :config
     (recentf-mode 1))
 
+  (use-package auth-source
+    :config
+    (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
+
   (use-package osx-trash
-    :defer 2.0
+    :defer 10.0
     :config
     (setq delete-by-moving-to-trash t)
     (osx-trash-setup))
+
+  (use-package async
+    :defer 3.0
+    :hook ((dired-mode . dired-async-mode))
+    :preface
+    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+    (autoload 'dired-async-mode "dired-async.el" nil t)
+    :config
+    (setq async-bytecomp-allowed-packages '(all))
+    (async-bytecomp-package-mode 1))
 #+end_src
 
 ** Theme & Aesthetics
@@ -428,7 +485,6 @@
 #+name: init-doom-themes-block
 #+begin_src emacs-lisp
   (use-package doom-themes
-    :demand t
     :config
     (setq doom-gruvbox-brighter-comments t
           doom-themes-enable-italic t
@@ -491,14 +547,12 @@
       (set-face-attribute face nil :extend t)))
 
     (use-package hl-line
-      :defer 3
       :straight nil
       :commands (hl-line-mode global-hl-line-mode))
 
     (use-package simple
-      :demand t
       :straight nil
-      :init
+      :config
       (setq column-number-mode nil
             eval-expression-print-length nil
             eval-expression-print-level nil
@@ -510,9 +564,7 @@
 #+end_src
 
 *** Modelines
-
 **** Minions
-
 #+name: init-minions-block
 #+begin_src emacs-lisp
   (use-package minions
@@ -521,6 +573,12 @@
     (minions-mode-line-lighter "...")
     (minions-mode-line-delimiters '("" . ""))
     :config (minions-mode 1))
+#+end_src
+
+**** Doom-Modelines
+#+name: init-doom-modeline-block
+#+begin_src emacs-lisp
+
 #+end_src
 
 *** Aesthetics
@@ -543,7 +601,7 @@
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
   (use-package page-break-lines
-    :defer 1.0
+    :defer 3.0
     :config
     (setq page-break-lines-modes '(prog-mode
                                    ibuffer-mode
@@ -554,12 +612,43 @@
       (global-page-break-lines-mode))
 #+end_src
 
-**** Posframe
+**** Dimmer Mode
+#+name: init-dimmer-block
+#+begin_src emacs-lisp
+  (use-package dimmer
+    :disabled t
+    :custom
+    (dimmer-fraction 0.33)
+    (dimmer-exclusion-regexp-list '(".*minibuf.*"
+                                    ".*which-key.*"
+                                    ".*messages.*"
+                                    ".*async.*"
+                                    ".*warnings.*"
+                                    ".*lv.*"
+                                    ".*ilist.*"
+                                    ".*posframe.*"
+                                    ".*transient.*"))
+    :config (dimmer-mode))
+#+end_src
 
+** Utilities
+*** Prescient
+#+name: init-prescient-block
+#+begin_src emacs-lisp
+  (use-package key-chord
+    :custom (key-chord-two-keys-delay 0.05)
+    :config (key-chord-mode 1))
+
+  (use-package prescient
+    :defer 1.0
+    :config (prescient-persist-mode))
+#+end_src
+
+*** Posframe
 #+name: init-posframe-block
 #+begin_src emacs-lisp
   (use-package posframe
-    :defer 1.0
+    :defer 2.0
     :custom
     (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
@@ -568,7 +657,6 @@
         (or (plist-get info arg-name) value))))
 #+end_src
 
-** Utilities
 *** Terminal
 #+name: init-terminal-block
 #+begin_src emacs-lisp
@@ -577,7 +665,7 @@
 
   (use-package vterm
     :defer 10
-    :custom  (vterm-term-environment-variable "eterm-color"))
+    :config (setq vterm-term-environment-variable "eterm-color"))
 
   (use-package vterm-toggle
     :straight (:host github :repo "jixiuf/vterm-toggle")
@@ -597,7 +685,103 @@
     (projectile-mode 1))
 #+end_src
 
+*** Autocomplete
+**** Hippie Expand
+#+name: init-hippie-block
+#+begin_src emacs-lisp
+ (use-package hippie-exp
+    :bind (([remap dabbrev-expand] . hippie-expand))
+    :config
+    (setq hippie-expand-try-functions-list
+          '(try-expand-dabbrev
+            try-expand-dabbrev-all-buffers
+            try-expand-dabbrev-from-kill
+            try-complete-file-name-partially
+            try-complete-file-name
+            try-expand-all-abbrevs
+            try-expand-list
+            try-complete-lisp-symbol-partially
+            try-complete-lisp-symbol)))
+#+end_src
+
+**** Company
+#+name: init-company-block
+#+begin_src emacs-lisp
+  (use-package company
+    :hook (after-init . global-company-mode)
+    :bind (:map company-active-map
+                ("RET" . nil)
+                ([return] . nil)
+                ("TAB" . company-complete-selection)
+                ([tab] . company-complete-selection)
+                ("C-f" . company-complete-common)
+                ("C-n" . company-select-next)
+                ("C-p" . company-select-previous))
+    :config
+    (setq company-require-match 'never
+          company-async-timeout 10
+          company-idle-delay 0.15
+          company-auto-complete-chars nil
+          company-dabbrev-other-buffers nil
+          company-dabbrev-ignore-case nil
+          company-dabbrev-downcase nil
+          company-minimum-prefix-length 2
+          company-tooltip-align-annotations t))
+
+  (use-package company-prescient
+    :after (company)
+    :config (company-prescient-mode 1))
+
+  (use-package company-math
+    :after (company)
+    :config
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    (add-to-list 'company-backends 'company-math-symbols-latex))
+
+  (use-package company-lsp
+    :after (lsp-mode)
+    :config (setq company-lsp-cache-canidates 'auto))
+
+  (use-package company-anaconda
+    :after (anaconda-mode)
+    :config (add-to-list 'company-backends 'company-anaconda))
+
+  (use-package company-box
+    :disabled t
+    :after (company)
+    :config (company-box-mode 1))
+#+end_src
+
+**** Yasnippet
+#+name: init-yasnippet-block
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :defer 5.0
+    :config
+    (yas-load-directory (expand-file-name "snippets/" user-emacs-directory))
+    (yas-load-directory (no-littering-expand-etc-file-name "yasnippet/snippets/"))
+    (yas-global-mode +1))
+
+  (use-package yasnippet-snippets
+    :after (yasnippet)
+    :config
+    (yas-reload-all))
+
+  (use-package ivy-yasnippet
+    :after (yasnippet))
+#+end_src
+
+**** Auto-Insert
+#+name: init-autoinsert-block
+#+begin_src emacs-lisp
+  (use-package auto-insert
+    :straight nil
+    :bind (("C-c ci a" . auto-insert)))
+#+end_src
+
 *** Ivy/Counsel/Swiper
+
+
 #+name: init-ivy-block
 #+begin_src emacs-lisp
   (use-package counsel
@@ -693,7 +877,7 @@
   (use-package help
     :defer 2.0
     :straight nil
-    :init
+    :config
     (setq help-window-select t)
     (advice-add 'help-window-display-message :override #'ignore))
 
@@ -717,8 +901,7 @@
     :config (which-key-mode))
 #+end_src
 
-*** Editing Utilities
-**** Spell Check
+*** Spell Check
 
 #+name: init-ispell-block
 #+begin_src emacs-lisp
@@ -731,100 +914,7 @@
     (ispell-silently-savep t))
 #+end_src
 
-**** Autocomplete
-
-#+name: init-hippie-block
-#+begin_src emacs-lisp
- (use-package hippie-exp
-    :defer 5.0
-    :bind (([remap dabbrev-expand] . hippie-expand))
-    :config
-    (setq hippie-expand-try-functions-list
-          '(try-expand-dabbrev
-            try-expand-dabbrev-all-buffers
-            try-expand-dabbrev-from-kill
-            try-complete-file-name-partially
-            try-complete-file-name
-            try-expand-all-abbrevs
-            try-expand-list
-            try-complete-lisp-symbol-partially
-            try-complete-lisp-symbol)))
-#+end_src
-
-#+name: init-company-block
-#+begin_src emacs-lisp
-  (use-package company
-    :defer 2.0
-    :bind (:map company-active-map
-                ("RET" . nil)
-                ([return] . nil)
-                ("TAB" . company-complete-selection)
-                ([tab] . company-complete-selection)
-                ("C-f" . company-complete-common)
-                ("C-n" . company-select-next)
-                ("C-p" . company-select-previous))
-    :config
-    (setq company-require-match 'never
-          company-async-timeout 10
-          company-idle-delay 0.15
-          company-auto-complete-chars nil
-          company-dabbrev-other-buffers nil
-          company-dabbrev-ignore-case nil
-          company-dabbrev-downcase nil
-          company-minimum-prefix-length 2
-          company-tooltip-align-annotations t)
-    (global-company-mode 1))
-
-  (use-package company-prescient
-    :after (company)
-    :config (company-prescient-mode 1))
-
-  (use-package company-math
-    :after (company)
-    :config
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
-    (add-to-list 'company-backends 'company-math-symbols-latex))
-
-  (use-package company-flx
-    :after (company)
-    :config (company-flx-mode 1))
-
-  (use-package company-lsp
-    :after (lsp-mode)
-    :config (setq company-lsp-cache-canidates 'auto))
-
-  (use-package company-anaconda
-    :after (anaconda-mode)
-    :config (add-to-list 'company-backends 'company-anaconda))
-
-  (use-package company-box
-    :disabled t
-    :after (company)
-    :config (company-box-mode 1))
-#+end_src
-
-#+name: init-yasnippet-block
-#+begin_src emacs-lisp
-  (use-package yasnippet
-    :defer 5.0
-    :commands (yas-reload-all
-               yas-global-mode))
-
-  (use-package yasnippet-snippets
-    :after (yasnippet))
-
-  (use-package ivy-yasnippet
-    :after (yasnippet))
-#+end_src
-
-#+name: init-autoinsert-block
-#+begin_src emacs-lisp
-  (use-package auto-insert
-    :straight nil
-    :bind (("C-c ci a" . auto-insert)))
-#+end_src
-
-**** Editing
+*** Editing
 #+name: init-edit-utils-block
 #+begin_src emacs-lisp
   (use-package ws-butler
@@ -841,6 +931,11 @@
 *** Minor Modes
 #+name: init-edit-block
 #+begin_src emacs-lisp
+(use-package editorconfig
+  :straight t
+  :config
+  (editorconfig-mode 1))
+
   (use-package default-text-scale
     :defer 10
     :commands (default-text-scale-increase
@@ -853,7 +948,7 @@
 
   (use-package delsel
     :straight nil
-    :init (delete-selection-mode 1))
+    :config (delete-selection-mode 1))
 
   (use-package align
     :disabled t
@@ -866,7 +961,7 @@
 
   (use-package undo-tree
     :defer 10.0
-    :init (global-undo-tree-mode 1))
+    :config (global-undo-tree-mode 1))
 
   (use-package aggressive-indent
     :defer 10.0
@@ -874,7 +969,6 @@
 
   (use-package hungry-delete
     :defer 10.0
-
     :commands (hungry-delete-mode))
 
   (use-package prog-mode
@@ -884,57 +978,45 @@
            (prog-mode . display-line-numbers-mode)
            (prog-mode . display-fill-column-indicator-mode)))
 
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
   (use-package term
     :straight nil
     :hook (term-mode . (lambda () (hl-line-mode -1))))
 #+end_src
 
 ** Navigation
-*** Navigation Utilities
-
+*** Avy
 #+name: init-nav-utils-block
 #+begin_src emacs-lisp
-  (use-package avy
-    :chords
-    ("jk" . avy-pop-mark)
-    ("jl" . avy-goto-line)
-    :config (avy-setup-default))
+    (use-package avy
+      :chords
+      ("jk" . avy-pop-mark)
+      ("jl" . avy-goto-line)
+      :config (avy-setup-default))
+#+end_src
 
+*** Ace-Window
+#+name: init-ace-window-block
+#+begin_src emacs-lisp
   (use-package ace-window
     :bind (("C-x o" . ace-window)))
+#+end_src
 
-    (use-package windmove
-      :bind (("C-c w l" . windmove-left)
-             ("C-c w r" . windmove-right)
-             ("C-c w p" . windmove-up)
-             ("C-c w n" . windmove-down))
-      :custom (windmove-default-keybindings 'shift))
+*** Windower
+#+name: init-windower-block
+#+begin_src emacs-lisp
+  (use-package windower
+    :straight (:repo "https://gitlab.com/ambrevar/emacs-windower")
+    :bind (("C-c w o" . windower-switch-to-last-buffer)
+           ("C-c w t" . windower-toggle-split)))
 
-  (use-package key-chord
-    :custom (key-chord-two-keys-delay 0.05)
-    :config (key-chord-mode 1))
-
-  (use-package prescient
-  :defer 1.0
-    :config (prescient-persist-mode))
-
-  (use-package dimmer
-    :disabled t
-    :custom
-    (dimmer-fraction 0.33)
-    (dimmer-exclusion-regexp-list '(".*minibuf.*"
-                                    ".*which-key.*"
-                                    ".*messages.*"
-                                    ".*async.*"
-                                    ".*warnings.*"
-                                    ".*lv.*"
-                                    ".*ilist.*"
-                                    ".*posframe.*"
-                                    ".*transient.*"))
-    :config (dimmer-mode))
-
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package windmove
+    :bind (("C-c w j" . windmove-left)
+           ("C-c w k" . windmove-right)
+           ("C-c w n" . windmove-down)
+           ("C-c w u" . windmove-up)))
 #+end_src
 
 *** Dired
@@ -996,15 +1078,6 @@
     :bind ("M-\\" . dired-sidebar-toggle-sidebar)
     :custom (dired-sidebar-theme 'vscode)
     :config (use-package vscode-icon))
-
-  (use-package async
-    :defer 1.5
-    :preface
-    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t)
-    :config
-    (async-bytecomp-package-mode 1)
-    (dired-async-mode 1))
 #+end_src
 
 *** iBuffer

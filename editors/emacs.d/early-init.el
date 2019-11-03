@@ -89,6 +89,20 @@
 (modify-coding-system-alist 'process "*" 'utf-8)
 (set-file-name-coding-system 'utf-8)
 
+(eval-and-compile
+  (defvar straight-recipes-gnu-elpa-use-mirror t)
+  (defvar bootstrap-version 5)
+  (defvar bootstrap-file
+    (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+  (url-retrieve-synchronously
+   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+   'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+
 (with-no-warnings
   (setq straight-cache-autoloads t)
   (setq straight-check-for-modifications 'live-with-find)
@@ -99,28 +113,16 @@
   (setq use-package-verbose t)
   (setq use-package-enable-imenu-support t))
 
-(eval-and-compile
-  (defvar straight-recipes-gnu-elpa-use-mirror t)
-  (defvar bootstrap-version 5)
-  (defvar bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
-
-(unless (file-exists-p bootstrap-file)
-  (with-current-buffer
-  (url-retrieve-synchronously
-   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-   'silent 'inhibit-cookies)
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-
 (load bootstrap-file nil 'nomessage)
 (straight-use-package 'use-package)
 
 (use-package exec-path-from-shell
-  :if (memq window-system '(mac ns nil))
   :config
   (setq exec-path-from-shell-check-startup-files nil)
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH" "PYENV_ROOT"))
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
   (setq exec-path-from-shell-arguments '("-l"))
+  (when-let* ((gls (executable-find "gls")))
+    (setq insert-directory-program "gls"))
   (exec-path-from-shell-initialize))
 
 (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
@@ -133,16 +135,22 @@
 
 (use-package no-littering
   :straight t
-  :custom
-  (no-littering-etc-directory djm--emacs-etc-cache)
-  (no-littering-var-directory djm--emacs-var-cache)
-  (auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-  (backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-  (custom-file djm--custom-file)
-  (auto-save-list-file-name (expand-file-name "auto-save-list/" djm--emacs-var-cache))
-  (recentf-exclude '(djm--emacs-cache
-                     djm--straight-directory
-                     "/private/var/*")))
+  :init
+  (progn
+    (setq no-littering-etc-directory djm--emacs-etc-cache)
+    (setq no-littering-var-directory djm--emacs-var-cache))
+  :config
+  (progn
+    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+    (setq custom-file djm--custom-file)
+    (setq auto-save-list-file-name nil)
+    (eval-when-compile
+  (require 'recentf))
+    (with-eval-after-load 'recentf
+  (add-to-list 'recentf-exclude no-littering-var-directory)
+  (add-to-list 'recentf-exclude no-littering-etc-directory)
+  (add-to-list 'recentf-exclude djm--straight-directory))))
 
 (use-package use-package-ensure-system-package)
 (use-package use-package-chords)

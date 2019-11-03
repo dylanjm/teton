@@ -53,8 +53,9 @@
 (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
 (global-unset-key (kbd "C-z"))
 
-(when (file-exists-p custom-file)
-  (load custom-file :noerror))
+(add-hook 'after-init-hook (lambda ()
+                             (when (file-exists-p custom-file)
+                               (load custom-file :noerror))))
 
 (when (file-exists-p djm--secret-file)
   (load djm--secret-file :noerror))
@@ -74,16 +75,15 @@
 
 (use-package saveplace
   :straight nil
-  :init (save-place-mode 1))
+  :config (save-place-mode +1))
 
 (use-package savehist
   :straight nil
-  :config
+  :init
   (setq history-delete-duplicates t
-        savehist-autosave-interval 300
-        savehist-save-minibuffer-history 1
-        savehist-additional-variables '(kill-ring search-ring))
-  (savehist-mode 1))
+        savehist-additional-variables '(kill-ring regexp-search-ring))
+  :config
+  (savehist-mode +1))
 
 (use-package files
   :straight nil
@@ -92,31 +92,46 @@
         confirm-kill-processes nil
         create-lockfiles nil
         delete-old-versions t
-        insert-directory-program "gls"
         require-final-newline t
         view-read-only t))
 
 (use-package autorevert
   :straight nil
-  :config
+  :init
   (setq auto-revert-verbose nil
         global-auto-revert-non-file-buffers t
         auto-revert-use-notify nil)
+  :config
   (global-auto-revert-mode 1))
 
 (use-package recentf
+  :defer t
   :straight nil
-  :config
-  (setq recentf-max-saved-items 200
-        recentf-max-menu-items 20
+  :init
+  (setq recentf-max-saved-items 1000
         recentf-auto-cleanup 'never)
+  :config
   (recentf-mode 1))
 
+(use-package auth-source
+  :config
+  (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
+
 (use-package osx-trash
-  :defer 2.0
+  :defer 10.0
   :config
   (setq delete-by-moving-to-trash t)
   (osx-trash-setup))
+
+(use-package async
+  :defer 3.0
+  :hook ((dired-mode . dired-async-mode))
+  :preface
+  (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+  (autoload 'dired-async-mode "dired-async.el" nil t)
+  :config
+  (setq async-bytecomp-allowed-packages '(all))
+  (async-bytecomp-package-mode 1))
 
 (use-package dashboard
   :init
@@ -130,7 +145,6 @@
   (set-face-bold 'dashboard-heading-face t))
 
 (use-package doom-themes
-  :demand t
   :config
   (setq doom-gruvbox-brighter-comments t
         doom-themes-enable-italic t
@@ -188,14 +202,12 @@
     (set-face-attribute face nil :extend t)))
 
   (use-package hl-line
-    :defer 3
     :straight nil
     :commands (hl-line-mode global-hl-line-mode))
 
   (use-package simple
-    :demand t
     :straight nil
-    :init
+    :config
     (setq column-number-mode nil
           eval-expression-print-length nil
           eval-expression-print-level nil
@@ -211,6 +223,8 @@
   (minions-mode-line-delimiters '("" . ""))
   :config (minions-mode 1))
 
+
+
 (use-package tab-line
   :disabled t
   :straight nil
@@ -221,7 +235,7 @@
   :init (global-tab-line-mode))
 
 (use-package page-break-lines
-  :defer 1.0
+  :defer 3.0
   :config
   (setq page-break-lines-modes '(prog-mode
                                  ibuffer-mode
@@ -231,8 +245,31 @@
                                  org-agenda-mode))
     (global-page-break-lines-mode))
 
-(use-package posframe
+(use-package dimmer
+  :disabled t
+  :custom
+  (dimmer-fraction 0.33)
+  (dimmer-exclusion-regexp-list '(".*minibuf.*"
+                                  ".*which-key.*"
+                                  ".*messages.*"
+                                  ".*async.*"
+                                  ".*warnings.*"
+                                  ".*lv.*"
+                                  ".*ilist.*"
+                                  ".*posframe.*"
+                                  ".*transient.*"))
+  :config (dimmer-mode))
+
+(use-package key-chord
+  :custom (key-chord-two-keys-delay 0.05)
+  :config (key-chord-mode 1))
+
+(use-package prescient
   :defer 1.0
+  :config (prescient-persist-mode))
+
+(use-package posframe
+  :defer 2.0
   :custom
   (posframe-arghandler #'hemacs-posframe-arghandler)
   :config
@@ -245,7 +282,7 @@
 
 (use-package vterm
   :defer 10
-  :custom  (vterm-term-environment-variable "eterm-color"))
+  :config (setq vterm-term-environment-variable "eterm-color"))
 
 (use-package vterm-toggle
   :straight (:host github :repo "jixiuf/vterm-toggle")
@@ -347,7 +384,7 @@
 (use-package help
   :defer 2.0
   :straight nil
-  :init
+  :config
   (setq help-window-select t)
   (advice-add 'help-window-display-message :override #'ignore))
 
@@ -379,7 +416,6 @@
   (ispell-silently-savep t))
 
 (use-package hippie-exp
-   :defer 5.0
    :bind (([remap dabbrev-expand] . hippie-expand))
    :config
    (setq hippie-expand-try-functions-list
@@ -394,7 +430,7 @@
            try-complete-lisp-symbol)))
 
 (use-package company
-  :defer 2.0
+  :hook (after-init . global-company-mode)
   :bind (:map company-active-map
               ("RET" . nil)
               ([return] . nil)
@@ -412,8 +448,7 @@
         company-dabbrev-ignore-case nil
         company-dabbrev-downcase nil
         company-minimum-prefix-length 2
-        company-tooltip-align-annotations t)
-  (global-company-mode 1))
+        company-tooltip-align-annotations t))
 
 (use-package company-prescient
   :after (company)
@@ -424,10 +459,6 @@
   :config
   (add-to-list 'company-backends 'company-math-symbols-unicode)
   (add-to-list 'company-backends 'company-math-symbols-latex))
-
-(use-package company-flx
-  :after (company)
-  :config (company-flx-mode 1))
 
 (use-package company-lsp
   :after (lsp-mode)
@@ -444,11 +475,15 @@
 
 (use-package yasnippet
   :defer 5.0
-  :commands (yas-reload-all
-             yas-global-mode))
+  :config
+  (yas-load-directory (expand-file-name "snippets/" user-emacs-directory))
+  (yas-load-directory (no-littering-expand-etc-file-name "yasnippet/snippets/"))
+  (yas-global-mode +1))
 
 (use-package yasnippet-snippets
-  :after (yasnippet))
+  :after (yasnippet)
+  :config
+  (yas-reload-all))
 
 (use-package ivy-yasnippet
   :after (yasnippet))
@@ -479,7 +514,7 @@
 
 (use-package delsel
   :straight nil
-  :init (delete-selection-mode 1))
+  :config (delete-selection-mode 1))
 
 (use-package align
   :disabled t
@@ -492,7 +527,7 @@
 
 (use-package undo-tree
   :defer 10.0
-  :init (global-undo-tree-mode 1))
+  :config (global-undo-tree-mode 1))
 
 (use-package aggressive-indent
   :defer 10.0
@@ -509,6 +544,9 @@
          (prog-mode . display-line-numbers-mode)
          (prog-mode . display-fill-column-indicator-mode)))
 
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 (use-package term
   :straight nil
   :hook (term-mode . (lambda () (hl-line-mode -1))))
@@ -522,38 +560,16 @@
 (use-package ace-window
   :bind (("C-x o" . ace-window)))
 
-  (use-package windmove
-    :bind (("C-c w l" . windmove-left)
-           ("C-c w r" . windmove-right)
-           ("C-c w p" . windmove-up)
-           ("C-c w n" . windmove-down))
-    :custom (windmove-default-keybindings 'shift))
+(use-package windower
+  :straight (:repo "https://gitlab.com/ambrevar/emacs-windower")
+  :bind (("C-c w o" . windower-switch-to-last-buffer)
+         ("C-c w t" . windower-toggle-split)))
 
-(use-package key-chord
-  :custom (key-chord-two-keys-delay 0.05)
-  :config (key-chord-mode 1))
-
-(use-package prescient
-:defer 1.0
-  :config (prescient-persist-mode))
-
-(use-package dimmer
-  :disabled t
-  :custom
-  (dimmer-fraction 0.33)
-  (dimmer-exclusion-regexp-list '(".*minibuf.*"
-                                  ".*which-key.*"
-                                  ".*messages.*"
-                                  ".*async.*"
-                                  ".*warnings.*"
-                                  ".*lv.*"
-                                  ".*ilist.*"
-                                  ".*posframe.*"
-                                  ".*transient.*"))
-  :config (dimmer-mode))
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+(use-package windmove
+  :bind (("C-c w j" . windmove-left)
+         ("C-c w k" . windmove-right)
+         ("C-c w n" . windmove-down)
+         ("C-c w u" . windmove-up)))
 
 (use-package dired
 :defer 3
@@ -610,15 +626,6 @@
   :bind ("M-\\" . dired-sidebar-toggle-sidebar)
   :custom (dired-sidebar-theme 'vscode)
   :config (use-package vscode-icon))
-
-(use-package async
-  :defer 1.5
-  :preface
-  (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-  (autoload 'dired-async-mode "dired-async.el" nil t)
-  :config
-  (async-bytecomp-package-mode 1)
-  (dired-async-mode 1))
 
 (use-package ibuffer
   :bind (([remap list-buffers] . ibuffer))

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-03 19:00:48
+/last updated/: 2019-11-03 19:10:19
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -1223,6 +1223,12 @@
     :hook (org-mode . org-indent-mode))
 #+end_src
 
+#+name: init-org-babel-block
+#+begin_src emacs-lisp
+  (use-package org-babel
+    :straight nil
+    :bind ("C-c v g" . org-babel-goto-named-src-block))
+#+end_src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-src

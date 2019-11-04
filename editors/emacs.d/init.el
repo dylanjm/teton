@@ -729,6 +729,10 @@
   :straight nil
   :hook (org-mode . org-indent-mode))
 
+(use-package org-babel
+  :straight nil
+  :bind ("C-c v g" . org-babel-goto-named-src-block))
+
 (use-package org-src
   :straight nil
   :preface

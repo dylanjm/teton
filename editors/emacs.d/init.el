@@ -138,15 +138,16 @@
   :config
   (set-face-bold 'dashboard-heading-face t))
 
-;; (use-package gruvbox-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruvbox-dark-hard t))
-
 (use-package doom-themes
+  :disabled t
   :demand t
   :config
   (load-theme 'doom-gruvbox t))
+
+(use-package gruvbox-theme
+  :demand t
+  :config
+  (load-theme 'gruvbox-dark-hard t))
 
 (blink-cursor-mode 0)
 
@@ -207,7 +208,7 @@
     (setq column-number-mode nil
           eval-expression-print-length nil
           eval-expression-print-level nil
-          line-number-mode nil
+          line-number-mode t
           line-move-visual nil
           set-mark-command-repeat-pop t
           track-eol t))
@@ -702,12 +703,31 @@
    "C-c /" #'org-tags-view)
 
   :hook (org-mode . visual-line-mode)
+  :hook (after-save . djm/tangle-init-org-file-on-save)
+  :preface
+  (defun djm/tangle-init-org-file-on-save ()
+    (when (string= buffer-file-name
+                   (file-truename "~/.emacs.d/dotemacs.org"))
+      (org-babel-tangle)))
 
   :custom
-  (org-hide-emphasis-markers t))
+  (org-hide-emphasis-markers t)
+  (org-insert-heading-respect-content t)
+  (org-startup-folded 'content)
+  (org-enforce-todo-dependencies t)
+  (org-special-ctrl-a/e t)
+  (org-highlight-sparse-tree-matches nil)
+  (org-special-ctrl-k t))
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode))
+
+(use-package org-agenda
+  :straight nil)
+
+(use-package org-indent
+  :straight nil
+  :hook (org-mode . org-indent-mode))
 
 (use-package org-src
   :straight nil

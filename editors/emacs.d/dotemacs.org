@@ -1,8 +1,9 @@
 #+title: Dot-Z-Macs
 #+author: Dylan McDowell
+#+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-03 18:33:31
+/last updated/: 2019-11-03 19:00:48
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -10,8 +11,10 @@
   - [[#header][Header]]
   - [[#performance-tweaks][Performance Tweaks]]
   - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#pre-gui-optimization][Pre-Gui Optimization]]
     - [[#important-paths][Important Paths]]
   - [[#package-manager][Package Manager]]
+    - [[#straight][Straight]]
   - [[#environment][Environment]]
     - [[#exec-path-from-shell][Exec Path From Shell]]
   - [[#no-littering][No-Littering]]
@@ -134,7 +137,7 @@
 #+end_src
 
 ** Preliminary Configuration
-
+*** Pre-Gui Optimization
 #+name: early-init-gui-block
 #+begin_src emacs-lisp
   (fset 'display-startup-echo-area-message 'ignore)
@@ -196,7 +199,7 @@
 #+end_src
 
 ** Package Manager
-
+*** Straight
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
   (eval-and-compile
@@ -492,21 +495,26 @@
 **** Doom-Themes
 #+name: init-doom-themes-block
 #+begin_src emacs-lisp
-  ;; (use-package gruvbox-theme
-  ;;   :demand t
-  ;;   :config
-  ;;   (load-theme 'gruvbox-dark-hard t))
-
   (use-package doom-themes
+    :disabled t
     :demand t
     :config
     (load-theme 'doom-gruvbox t))
+#+end_src
+
+**** Gruvbox Theme
+#+name: init-gruvbox-theme-block
+#+begin_src emacs-lisp
+  (use-package gruvbox-theme
+    :demand t
+    :config
+    (load-theme 'gruvbox-dark-hard t))
 
   (blink-cursor-mode 0)
+
 #+end_src
 
 **** Emacs 27 Keyword Fix
-
 #+name: init-keyword-fix-block
 #+begin_src emacs-lisp
   ;; emacs 27 added new `:extend' keyword which breaks most themes
@@ -566,7 +574,7 @@
       (setq column-number-mode nil
             eval-expression-print-length nil
             eval-expression-print-level nil
-            line-number-mode nil
+            line-number-mode t
             line-move-visual nil
             set-mark-command-repeat-pop t
             track-eol t))
@@ -1179,15 +1187,40 @@
      "C-c /" #'org-tags-view)
 
     :hook (org-mode . visual-line-mode)
+    :hook (after-save . djm/tangle-init-org-file-on-save)
+    :preface
+    (defun djm/tangle-init-org-file-on-save ()
+      (when (string= buffer-file-name
+                     (file-truename "~/.emacs.d/dotemacs.org"))
+        (org-babel-tangle)))
 
     :custom
-    (org-hide-emphasis-markers t))
+    (org-hide-emphasis-markers t)
+    (org-insert-heading-respect-content t)
+    (org-startup-folded 'content)
+    (org-enforce-todo-dependencies t)
+    (org-special-ctrl-a/e t)
+    (org-highlight-sparse-tree-matches nil)
+    (org-special-ctrl-k t))
 #+end_src
 
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
   (use-package org-bullets
     :hook (org-mode . org-bullets-mode))
+#+end_src
+
+#+name: init-org-agenda-block
+#+begin_src emacs-lisp
+  (use-package org-agenda
+    :straight nil)
+#+end_src
+
+#+name: init-org-indent-block
+#+begin_src emacs-lisp
+  (use-package org-indent
+    :straight nil
+    :hook (org-mode . org-indent-mode))
 #+end_src
 
 #+name: init-org-src-block

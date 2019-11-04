@@ -2,7 +2,7 @@
 #+author: Dylan McDowell
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-02 18:23:44
+/last updated/: 2019-11-03 18:33:31
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -10,11 +10,11 @@
   - [[#header][Header]]
   - [[#performance-tweaks][Performance Tweaks]]
   - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#important-paths][Important Paths]]
   - [[#package-manager][Package Manager]]
   - [[#environment][Environment]]
     - [[#exec-path-from-shell][Exec Path From Shell]]
-    - [[#custom-variables][Custom Variables]]
-  - [[#keeping-emacsd-clean][Keeping =~/.emacs.d= Clean]]
+  - [[#no-littering][No-Littering]]
   - [[#required-packages][Required Packages]]
   - [[#footer][Footer]]
 - [[#init][Init]]
@@ -73,7 +73,7 @@
 ** Header
 #+name: early-init-header-block
 #+begin_src emacs-lisp
-;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
+;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
 ;;;
 ;;; Commentary:
 ;;; Emacs `early-init.el' config by dylanjm
@@ -87,42 +87,50 @@
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
-  (defvar extended-gc-cons-threshold 400000000)
+  (defvar extended-gc-cons-threshold most-positive-fixnum)
   (defvar default-gc-cons-threshold 800000)
 
   (setq file-name-handler-alist nil
         gc-cons-percentage 0.8
         gc-cons-threshold extended-gc-cons-threshold
         inhibit-compacting-font-caches t
-        load-prefer-newer t
         message-log-max 10000
         package-enable-at-startup nil)
 
+  (defun djm/init-startup-time ()
+    (message "Emacs ready in %s with %d garbage collections."
+             (format "%.2f seconds"
+                     (float-time
+                      (time-subtract after-init-time before-init-time)))
+             gcs-done))
+
+  (defun djm/gc-on-lose-focus ()
+    (unless (frame-focus-state)
+      (garbage-collect)))
+
+  (defun djm/minibuffer-setup-hook ()
+    (setq gc-cons-percentage .8)
+    (setq gc-cons-threshold extended-gc-cons-threshold))
+
+  (defun djm/minibuffer-exit-hook ()
+    (setq gc-cons-percentage .1)
+    (setq gc-cons-threshold default-gc-cons-threshold))
+
+  (defun djm/return-vars-to-normal ()
+    (setq file-name-handler-alist default-file-name-handler-alist)
+    (setq gc-cons-threshold default-gc-cons-threshold)
+    (setq gc-cons-percentage 0.1)
+    (setq debug-on-error nil))
+
   (add-hook 'after-init-hook
             (lambda ()
-              (setq file-name-handler-alist default-file-name-handler-alist)
-              (setq gc-cons-threshold default-gc-cons-threshold)
-              (setq gc-cons-percentage 0.1)
-              (setq debug-on-error nil)
-
-              (defun djm/gc-on-lose-focus ()
-                (unless (frame-focus-state)
-                  (save-some-buffers '!)
-                  (garbage-collect)))
-
+              (djm/return-vars-to-normal)
               (if (boundp 'after-focus-change-function)
                   (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-
-              (defun djm/minibuffer-setup-hook ()
-                (setq gc-cons-percentage .8)
-                (setq gc-cons-threshold extended-gc-cons-threshold))
-
-              (defun djm/minibuffer-exit-hook ()
-                (setq gc-cons-percentage .1)
-                (setq gc-cons-threshold default-gc-cons-threshold))
-
               (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
               (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
+
+  (add-hook 'after-init-hook #'djm/init-startup-time)
 #+end_src
 
 ** Preliminary Configuration
@@ -142,25 +150,23 @@
         frame-inhibit-implied-resize t
         frame-resize-pixelwise t)
 
-  (push '(window-divider-bottom-width . 1) initial-frame-alist)
-  (push '(window-divider-right-width . 1) initial-frame-alist)
-  (push '(window-divider-default-places . t) initial-frame-alist)
-  (push '(right-divider-width . 1) initial-frame-alist)
-  (push '(bottom-divider-width . 1) initial-frame-alist)
-  (push '(width . 188) initial-frame-alist)
-  (push '(height . 188) initial-frame-alist)
+  (setq initial-frame-alist '((window-divider-bottom-width . 1)
+                              (window-divider-right-width . 1)
+                              (window-divider-default-places . t)
+                              (right-divider-width . 1)
+                              (bottom-divider-width . 1)
+                              (width . 188)
+                              (height . 188)
+                              (ns-transparent-titlebar . t)
+                              (ns-appearance . dark)
+                              (vertical-scroll-bars)
+                              (internal-border . 0)
+                              (menu-bar-lines . 0)
+                              (tool-bar-lines . 0)
+                              (right-fringe . 5)
+                              (left-fringe . 5)))
 
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
-  (push '(ns-appearance . nil) default-frame-alist)
-  (push '(vertical-scroll-bars) default-frame-alist)
-  (push '(internal-border . 0) default-frame-alist)
-  (push '(menu-bar-lines . 0) default-frame-alist)
-  (push '(tool-bar-lines . 0) default-frame-alist)
-  (push '(right-fringe . 5) default-frame-alist)
-  (push '(left-fringe . 5) default-frame-alist)
-
-  (push '(font . "-*-Iosevka SS01-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
-  (push '(variable-pitch . "-*-Iosevka SS01-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -172,6 +178,21 @@
   (set-selection-coding-system 'utf-8)
   (modify-coding-system-alist 'process "*" 'utf-8)
   (set-file-name-coding-system 'utf-8)
+#+end_src
+
+*** Important Paths
+
+#+name: early-init-paths-block
+#+begin_src emacs-lisp
+  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
+  (defvar djm--emacs-cache "~/.cache/emacs/")
+  (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
+  (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
+  (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
+  (defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
+  (defvar djm--yasnippet-dir (expand-file-name "snippets" user-emacs-directory))
+  (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
+  (defvar djm--personal-lisp-dir (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 
 ** Package Manager
@@ -200,6 +221,7 @@
 
   (with-no-warnings
     (setq use-package-verbose t)
+    (setq use-package-always-defer t)
     (setq use-package-enable-imenu-support t))
 
   (load bootstrap-file nil 'nomessage)
@@ -212,69 +234,57 @@
 #+name: early-init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
+    :demand t
     :config
     (setq exec-path-from-shell-check-startup-files nil)
     (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
     (setq exec-path-from-shell-arguments '("-l"))
     (when-let* ((gls (executable-find "gls")))
+      (setq ls-lisp-use-insert-directory-program nil)
       (setq insert-directory-program "gls"))
     (exec-path-from-shell-initialize))
 #+end_src
 
-*** Custom Variables
+** No-Littering
 
-#+name: custom-var-init-block
-#+begin_src emacs-lisp
-  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-  (defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
-  (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
-  (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
-  (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
-  (defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
-  (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
-#+end_src
-
-** Keeping =~/.emacs.d= Clean
-
-#+name: no-littering-init-block
+#+name: early-init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
+    :demand t
     :straight t
     :init
-    (progn
-      (setq no-littering-etc-directory djm--emacs-etc-cache)
-      (setq no-littering-var-directory djm--emacs-var-cache))
+    (setq no-littering-etc-directory djm--emacs-etc-cache)
+    (setq no-littering-var-directory djm--emacs-var-cache)
     :config
-    (progn
-      (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-      (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-      (setq custom-file djm--custom-file)
-      (setq auto-save-list-file-name nil)
-      (eval-when-compile
-	(require 'recentf))
-      (with-eval-after-load 'recentf
-	(add-to-list 'recentf-exclude no-littering-var-directory)
-	(add-to-list 'recentf-exclude no-littering-etc-directory)
-	(add-to-list 'recentf-exclude djm--straight-directory))))
+    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+    (setq custom-file djm--custom-file)
+    (setq auto-save-list-file-name nil)
+    (eval-when-compile
+      (require 'recentf))
+    (with-eval-after-load 'recentf
+      (add-to-list 'recentf-exclude no-littering-var-directory)
+      (add-to-list 'recentf-exclude no-littering-etc-directory)
+      (add-to-list 'recentf-exclude djm--straight-directory)))
 #+end_src
 
 ** Required Packages
 
 #+name: early-init-req-packages-block
 #+begin_src emacs-lisp
-  (use-package use-package-ensure-system-package)
-  (use-package use-package-chords)
-  (use-package use-package-hydra)
-  (use-package el-patch)
-  (use-package bind-key)
-  (use-package general)
-  (use-package dash)
-  (use-package f)
-  (use-package s)
-  (use-package hydra)
+    (use-package use-package-chords :demand t)
+    (use-package use-package-hydra)
+    (use-package el-patch)
+    (use-package bind-key :demand t)
+    (use-package general :demand t)
+    (use-package dash)
+    (use-package f)
+    (use-package s)
+    (use-package hydra)
 
-  (use-package map :straight nil)
-  (use-package org :straight t :defer t) ;; Avoid loading built-in
+    (use-package map :straight nil)
+    (use-package org
+      :straight (:repo "https://code.orgmode.org/bzg/org-mode.git"))
 #+end_src
 
 ** Footer
@@ -320,6 +330,11 @@
 (add-hook 'write-file-hooks 'time-stamp)
 #+end_src
 
+#+name: init-personal-packages-block
+#+begin_src emacs-lisp
+
+#+end_src
+
 *** Defaults
 
 #+name: init-settings-block
@@ -330,6 +345,7 @@
     (ad-redefinition-action 'accept)
     (cursor-in-non-selected-windows nil)
     (cursor-type 'bar)
+    (disabled-command-function nil)
     (display-time-default-load-average nil)
     (echo-keystrokes 0.02)
     (fill-column 80)
@@ -358,11 +374,6 @@
 #+name: init-settings-02-block
 #+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
-
-  (put 'narrow-to-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
-  (put 'up-case-rgion 'disabled nil)
-  (put 'erase-buffer 'disabled nil)
 
   (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
   (global-unset-key (kbd "C-z"))
@@ -393,7 +404,7 @@
     :init
     (setq mac-command-modifier 'meta
           mac-option-modifier 'meta
-          mac-right-command-modifier 'left
+          mac-right-command-modifier 'super
           mac-right-option-modifier 'none
           mac-function-modifier 'hyper))
 #+end_src
@@ -434,7 +445,6 @@
     (global-auto-revert-mode 1))
 
   (use-package recentf
-    :defer t
     :straight nil
     :init
     (setq recentf-max-saved-items 1000
@@ -447,13 +457,11 @@
     (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
 
   (use-package osx-trash
-    :defer 10.0
-    :config
+    :init
     (setq delete-by-moving-to-trash t)
-    (osx-trash-setup))
+    :config (osx-trash-setup))
 
   (use-package async
-    :defer 3.0
     :hook ((dired-mode . dired-async-mode))
     :preface
     (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
@@ -484,13 +492,15 @@
 **** Doom-Themes
 #+name: init-doom-themes-block
 #+begin_src emacs-lisp
+  ;; (use-package gruvbox-theme
+  ;;   :demand t
+  ;;   :config
+  ;;   (load-theme 'gruvbox-dark-hard t))
+
   (use-package doom-themes
+    :demand t
     :config
-    (setq doom-gruvbox-brighter-comments t
-          doom-themes-enable-italic t
-          doom-themes-enable-bold t)
-    (load-theme 'doom-gruvbox t)
-    (doom-themes-org-config))
+    (load-theme 'doom-gruvbox t))
 
   (blink-cursor-mode 0)
 #+end_src
@@ -640,8 +650,7 @@
     :config (key-chord-mode 1))
 
   (use-package prescient
-    :defer 1.0
-    :config (prescient-persist-mode))
+    :config (prescient-persist-mode +1))
 #+end_src
 
 *** Posframe
@@ -686,6 +695,13 @@
 #+end_src
 
 *** Autocomplete
+**** Abbrev
+#+name: init-abbrev-block
+#+begin_src emacs-lisp
+  (use-package abbrev
+    :straight nil)
+#+end_src
+
 **** Hippie Expand
 #+name: init-hippie-block
 #+begin_src emacs-lisp
@@ -708,7 +724,7 @@
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
-    :hook (after-init . global-company-mode)
+    :defer 0.5
     :bind (:map company-active-map
                 ("RET" . nil)
                 ([return] . nil)
@@ -718,19 +734,23 @@
                 ("C-n" . company-select-next)
                 ("C-p" . company-select-previous))
     :config
-    (setq company-require-match 'never
+    (setq company-frontends '(company-pseudo-tooltip-frontend))
+    (setq company-auto-complete-chars nil
           company-async-timeout 10
-          company-idle-delay 0.15
-          company-auto-complete-chars nil
-          company-dabbrev-other-buffers nil
-          company-dabbrev-ignore-case nil
           company-dabbrev-downcase nil
+          company-dabbrev-ignore-case nil
+          company-dabbrev-other-buffers nil
+          company-idle-delay 0.15
           company-minimum-prefix-length 2
-          company-tooltip-align-annotations t))
+          company-require-match 'never
+          company-show-numbers t
+          company-tooltip-align-annotations t)
+    (global-company-mode +1))
 
   (use-package company-prescient
+    :demand t
     :after (company)
-    :config (company-prescient-mode 1))
+    :config (company-prescient-mode +1))
 
   (use-package company-math
     :after (company)
@@ -756,11 +776,25 @@
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :defer 5.0
+    :hook ((prog-mode org-mode text-mode) . (lambda () (require 'yasnippet)))
+    :commands
+    (yas-global-mode
+     yas-new-snippet
+     yas-insert-snippet
+     yas-next-field
+     yas-prev-field
+     yas-visit-snippet-file)
+    :custom
+    (yas-verbosity 1)
+    (yas-wrap-around-region t)
+    (yas-prompt-functions '(yas-completing-prompt))
+    (yas-snippet-dirs '(djm--yasnippet-dir))
     :config
-    (yas-load-directory (expand-file-name "snippets/" user-emacs-directory))
-    (yas-load-directory (no-littering-expand-etc-file-name "yasnippet/snippets/"))
     (yas-global-mode +1))
+
+  (use-package yas-funcs
+    :straight nil
+    :after yasnippet)
 
   (use-package yasnippet-snippets
     :after (yasnippet)
@@ -780,8 +814,6 @@
 #+end_src
 
 *** Ivy/Counsel/Swiper
-
-
 #+name: init-ivy-block
 #+begin_src emacs-lisp
   (use-package counsel
@@ -844,9 +876,10 @@
 
     :config
     (use-package ivy-hydra)
-
     (use-package ivy-prescient
-      :config (ivy-prescient-mode 1))
+      :demand t
+      :after (counsel)
+      :config (ivy-prescient-mode +1))
 
     (setq counsel-grep-base-command
           "rg -S --no-heading --line-number --color never '%s' %s")
@@ -858,6 +891,7 @@
 
   (use-package amx
     :hook (ivy-mode . amx-mode))
+
 
   (use-package ivy-posframe
     :hook (ivy-mode . ivy-posframe-mode)
@@ -1033,7 +1067,8 @@
                 (dired-auto-revert-buffer t)
                 (dired-dwim-target t)
                 (dired-guess-shell-gnutar "gtar")
-                (dired-listing-switches "-alhf --group-directories-first -v")
+                (dired-use-ls-dired nil)
+                (dired-listing-switches "-alhF")
                 (dired-ls-f-marks-symlinks t)
                 (dired-recursive-deletes 'always)
                 (dired-recursive-copies 'always))
@@ -1126,10 +1161,38 @@
 ** Productivity
 *** Org
 
+#+name: init-org-hydra-block
+#+begin_src emacs-lisp
+  (use-package org-hydras
+    :straight nil
+    :commands (org-babel/body))
+#+end_src
+
 #+name: init-org-block
 #+begin_src emacs-lisp
-(use-package org-src
-    :after (org)
+  (use-package org
+    :straight nil
+    :general
+    ("C-c a" #'org-agenda
+     "C-c s" #'org-search-view
+     "C-c t" #'org-todo-list
+     "C-c /" #'org-tags-view)
+
+    :hook (org-mode . visual-line-mode)
+
+    :custom
+    (org-hide-emphasis-markers t))
+#+end_src
+
+#+name: init-org-bullets-block
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
+#+end_src
+
+#+name: init-org-src-block
+#+begin_src emacs-lisp
+  (use-package org-src
     :straight nil
     :preface
     (defun config-org--supress-final-newline ()
@@ -1148,6 +1211,11 @@
   (use-package toc-org
     :hook ((org-mode . toc-org-mode)
            (markdown-mode . toc-org-mode)))
+#+end_src
+
+#+name: init-org-htmlize-block
+#+begin_src emacs-lisp
+  (use-package htmlize)
 #+end_src
 
 *** Email
@@ -1171,6 +1239,16 @@
 
 #+name: init-vc-block
 #+begin_src emacs-lisp
+  (use-package vc-hooks
+    :straight nil
+    :config
+    (setq vc-handled-backends nil))
+
+  (use-package smerge-mode)
+  (use-package transient
+    :config
+    (transient-bind-q-to-quit))
+
   (use-package magit
     :bind (("C-x g" . magit-status)
            ("C-x M-g" . magit-dispatch)

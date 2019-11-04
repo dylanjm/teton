@@ -6,6 +6,9 @@
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
+straight/
+transient/
+dotemacs.bak.org
 *~
 \#*\#
 /.emacs.desktop

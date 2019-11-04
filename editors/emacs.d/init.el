@@ -13,12 +13,15 @@
 
 (add-hook 'write-file-hooks 'time-stamp)
 
+
+
 (use-package cus-start
   :straight nil
   :custom
   (ad-redefinition-action 'accept)
   (cursor-in-non-selected-windows nil)
   (cursor-type 'bar)
+  (disabled-command-function nil)
   (display-time-default-load-average nil)
   (echo-keystrokes 0.02)
   (fill-column 80)
@@ -45,17 +48,11 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(put 'narrow-to-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-(put 'up-case-rgion 'disabled nil)
-(put 'erase-buffer 'disabled nil)
-
 (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
 (global-unset-key (kbd "C-z"))
 
-(add-hook 'after-init-hook (lambda ()
-                             (when (file-exists-p custom-file)
-                               (load custom-file :noerror))))
+(when (file-exists-p custom-file)
+  (load custom-file :noerror))
 
 (when (file-exists-p djm--secret-file)
   (load djm--secret-file :noerror))
@@ -69,7 +66,7 @@
   :init
   (setq mac-command-modifier 'meta
         mac-option-modifier 'meta
-        mac-right-command-modifier 'left
+        mac-right-command-modifier 'super
         mac-right-option-modifier 'none
         mac-function-modifier 'hyper))
 
@@ -105,7 +102,6 @@
   (global-auto-revert-mode 1))
 
 (use-package recentf
-  :defer t
   :straight nil
   :init
   (setq recentf-max-saved-items 1000
@@ -118,13 +114,11 @@
   (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
 
 (use-package osx-trash
-  :defer 10.0
-  :config
+  :init
   (setq delete-by-moving-to-trash t)
-  (osx-trash-setup))
+  :config (osx-trash-setup))
 
 (use-package async
-  :defer 3.0
   :hook ((dired-mode . dired-async-mode))
   :preface
   (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
@@ -144,13 +138,15 @@
   :config
   (set-face-bold 'dashboard-heading-face t))
 
+;; (use-package gruvbox-theme
+;;   :demand t
+;;   :config
+;;   (load-theme 'gruvbox-dark-hard t))
+
 (use-package doom-themes
+  :demand t
   :config
-  (setq doom-gruvbox-brighter-comments t
-        doom-themes-enable-italic t
-        doom-themes-enable-bold t)
-  (load-theme 'doom-gruvbox t)
-  (doom-themes-org-config))
+  (load-theme 'doom-gruvbox t))
 
 (blink-cursor-mode 0)
 
@@ -265,8 +261,7 @@
   :config (key-chord-mode 1))
 
 (use-package prescient
-  :defer 1.0
-  :config (prescient-persist-mode))
+  :config (prescient-persist-mode +1))
 
 (use-package posframe
   :defer 2.0
@@ -296,6 +291,104 @@
   (projectile-enable-caching t)
   :config
   (projectile-mode 1))
+
+(use-package abbrev
+  :straight nil)
+
+(use-package hippie-exp
+   :bind (([remap dabbrev-expand] . hippie-expand))
+   :config
+   (setq hippie-expand-try-functions-list
+         '(try-expand-dabbrev
+           try-expand-dabbrev-all-buffers
+           try-expand-dabbrev-from-kill
+           try-complete-file-name-partially
+           try-complete-file-name
+           try-expand-all-abbrevs
+           try-expand-list
+           try-complete-lisp-symbol-partially
+           try-complete-lisp-symbol)))
+
+(use-package company
+  :defer 0.5
+  :bind (:map company-active-map
+              ("RET" . nil)
+              ([return] . nil)
+              ("TAB" . company-complete-selection)
+              ([tab] . company-complete-selection)
+              ("C-f" . company-complete-common)
+              ("C-n" . company-select-next)
+              ("C-p" . company-select-previous))
+  :config
+  (setq company-frontends '(company-pseudo-tooltip-frontend))
+  (setq company-auto-complete-chars nil
+        company-async-timeout 10
+        company-dabbrev-downcase nil
+        company-dabbrev-ignore-case nil
+        company-dabbrev-other-buffers nil
+        company-idle-delay 0.15
+        company-minimum-prefix-length 2
+        company-require-match 'never
+        company-show-numbers t
+        company-tooltip-align-annotations t)
+  (global-company-mode +1))
+
+(use-package company-prescient
+  :demand t
+  :after (company)
+  :config (company-prescient-mode +1))
+
+(use-package company-math
+  :after (company)
+  :config
+  (add-to-list 'company-backends 'company-math-symbols-unicode)
+  (add-to-list 'company-backends 'company-math-symbols-latex))
+
+(use-package company-lsp
+  :after (lsp-mode)
+  :config (setq company-lsp-cache-canidates 'auto))
+
+(use-package company-anaconda
+  :after (anaconda-mode)
+  :config (add-to-list 'company-backends 'company-anaconda))
+
+(use-package company-box
+  :disabled t
+  :after (company)
+  :config (company-box-mode 1))
+
+(use-package yasnippet
+  :hook ((prog-mode org-mode text-mode) . (lambda () (require 'yasnippet)))
+  :commands
+  (yas-global-mode
+   yas-new-snippet
+   yas-insert-snippet
+   yas-next-field
+   yas-prev-field
+   yas-visit-snippet-file)
+  :custom
+  (yas-verbosity 1)
+  (yas-wrap-around-region t)
+  (yas-prompt-functions '(yas-completing-prompt))
+  (yas-snippet-dirs '(djm--yasnippet-dir))
+  :config
+  (yas-global-mode +1))
+
+(use-package yas-funcs
+  :straight nil
+  :after yasnippet)
+
+(use-package yasnippet-snippets
+  :after (yasnippet)
+  :config
+  (yas-reload-all))
+
+(use-package ivy-yasnippet
+  :after (yasnippet))
+
+(use-package auto-insert
+  :straight nil
+  :bind (("C-c ci a" . auto-insert)))
 
 (use-package counsel
   :hook ((after-init . ivy-mode)
@@ -357,9 +450,10 @@
 
   :config
   (use-package ivy-hydra)
-
   (use-package ivy-prescient
-    :config (ivy-prescient-mode 1))
+    :demand t
+    :after (counsel)
+    :config (ivy-prescient-mode +1))
 
   (setq counsel-grep-base-command
         "rg -S --no-heading --line-number --color never '%s' %s")
@@ -371,6 +465,7 @@
 
 (use-package amx
   :hook (ivy-mode . amx-mode))
+
 
 (use-package ivy-posframe
   :hook (ivy-mode . ivy-posframe-mode)
@@ -415,83 +510,6 @@
   (ispell-really-hunspell t)
   (ispell-silently-savep t))
 
-(use-package hippie-exp
-   :bind (([remap dabbrev-expand] . hippie-expand))
-   :config
-   (setq hippie-expand-try-functions-list
-         '(try-expand-dabbrev
-           try-expand-dabbrev-all-buffers
-           try-expand-dabbrev-from-kill
-           try-complete-file-name-partially
-           try-complete-file-name
-           try-expand-all-abbrevs
-           try-expand-list
-           try-complete-lisp-symbol-partially
-           try-complete-lisp-symbol)))
-
-(use-package company
-  :hook (after-init . global-company-mode)
-  :bind (:map company-active-map
-              ("RET" . nil)
-              ([return] . nil)
-              ("TAB" . company-complete-selection)
-              ([tab] . company-complete-selection)
-              ("C-f" . company-complete-common)
-              ("C-n" . company-select-next)
-              ("C-p" . company-select-previous))
-  :config
-  (setq company-require-match 'never
-        company-async-timeout 10
-        company-idle-delay 0.15
-        company-auto-complete-chars nil
-        company-dabbrev-other-buffers nil
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil
-        company-minimum-prefix-length 2
-        company-tooltip-align-annotations t))
-
-(use-package company-prescient
-  :after (company)
-  :config (company-prescient-mode 1))
-
-(use-package company-math
-  :after (company)
-  :config
-  (add-to-list 'company-backends 'company-math-symbols-unicode)
-  (add-to-list 'company-backends 'company-math-symbols-latex))
-
-(use-package company-lsp
-  :after (lsp-mode)
-  :config (setq company-lsp-cache-canidates 'auto))
-
-(use-package company-anaconda
-  :after (anaconda-mode)
-  :config (add-to-list 'company-backends 'company-anaconda))
-
-(use-package company-box
-  :disabled t
-  :after (company)
-  :config (company-box-mode 1))
-
-(use-package yasnippet
-  :defer 5.0
-  :config
-  (yas-load-directory (expand-file-name "snippets/" user-emacs-directory))
-  (yas-load-directory (no-littering-expand-etc-file-name "yasnippet/snippets/"))
-  (yas-global-mode +1))
-
-(use-package yasnippet-snippets
-  :after (yasnippet)
-  :config
-  (yas-reload-all))
-
-(use-package ivy-yasnippet
-  :after (yasnippet))
-
-(use-package auto-insert
-  :straight nil
-  :bind (("C-c ci a" . auto-insert)))
-
 (use-package ws-butler
   :defer 2.0
   :commands (ws-butler-global-mode)
@@ -502,54 +520,59 @@
   :bind (("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)))
 
-(use-package default-text-scale
-  :defer 10
-  :commands (default-text-scale-increase
-             default-text-scale-decrease
-             default-text-scale-reset)
-  :bind (("C-c <up>" . default-text-scale-increase)
-         ("C-c <down>" . default-text-scale-decrease)
-         ("C-M-]". default-text-scale-reset))
-  :custom (default-text-scale-amount 30))
+(use-package editorconfig
+  :straight t
+  :config
+  (editorconfig-mode 1))
 
-(use-package delsel
-  :straight nil
-  :config (delete-selection-mode 1))
+  (use-package default-text-scale
+    :defer 10
+    :commands (default-text-scale-increase
+               default-text-scale-decrease
+               default-text-scale-reset)
+    :bind (("C-c <up>" . default-text-scale-increase)
+           ("C-c <down>" . default-text-scale-decrease)
+           ("C-M-]". default-text-scale-reset))
+    :custom (default-text-scale-amount 30))
 
-(use-package align
-  :disabled t
-  :straight nil
-  :general ("C-x a a" #'align-regexp))
+  (use-package delsel
+    :straight nil
+    :config (delete-selection-mode 1))
 
-(use-package zop-to-char
-  :bind (("M-z" . zop-to-char)
-         ("M-z" . zop-up-to-char)))
+  (use-package align
+    :disabled t
+    :straight nil
+    :general ("C-x a a" #'align-regexp))
 
-(use-package undo-tree
-  :defer 10.0
-  :config (global-undo-tree-mode 1))
+  (use-package zop-to-char
+    :bind (("M-z" . zop-to-char)
+           ("M-z" . zop-up-to-char)))
 
-(use-package aggressive-indent
-  :defer 10.0
-  :commands (aggressive-indent-mode))
+  (use-package undo-tree
+    :defer 10.0
+    :config (global-undo-tree-mode 1))
 
-(use-package hungry-delete
-  :defer 10.0
-  :commands (hungry-delete-mode))
+  (use-package aggressive-indent
+    :defer 10.0
+    :commands (aggressive-indent-mode))
 
-(use-package prog-mode
-  :straight nil
-  :hook ((prog-mode . prettify-symbols-mode)
-         (prog-mode . show-paren-mode)
-         (prog-mode . display-line-numbers-mode)
-         (prog-mode . display-fill-column-indicator-mode)))
+  (use-package hungry-delete
+    :defer 10.0
+    :commands (hungry-delete-mode))
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package prog-mode
+    :straight nil
+    :hook ((prog-mode . prettify-symbols-mode)
+           (prog-mode . show-paren-mode)
+           (prog-mode . display-line-numbers-mode)
+           (prog-mode . display-fill-column-indicator-mode)))
 
-(use-package term
-  :straight nil
-  :hook (term-mode . (lambda () (hl-line-mode -1))))
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+  (use-package term
+    :straight nil
+    :hook (term-mode . (lambda () (hl-line-mode -1))))
 
 (use-package avy
   :chords
@@ -581,7 +604,8 @@
               (dired-auto-revert-buffer t)
               (dired-dwim-target t)
               (dired-guess-shell-gnutar "gtar")
-              (dired-listing-switches "-alhf --group-directories-first -v")
+              (dired-use-ls-dired nil)
+              (dired-listing-switches "-alhF")
               (dired-ls-f-marks-symlinks t)
               (dired-recursive-deletes 'always)
               (dired-recursive-copies 'always))
@@ -665,23 +689,44 @@
   :custom
   (ibuffer-projectile-prefix ""))
 
-(use-package org-src
-    :after (org)
-    :straight nil
-    :preface
-    (defun config-org--supress-final-newline ()
-      (setq-local require-final-newline nil))
+(use-package org-hydras
+  :straight nil
+  :commands (org-babel/body))
 
-    (defun config-org--org-src-delete-trailing-space (&rest _)
-      (delete-trailing-whitespace))
-    :config
-    (setq org-src-window-setup 'split-window-below)
-    (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
-    (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
+(use-package org
+  :straight nil
+  :general
+  ("C-c a" #'org-agenda
+   "C-c s" #'org-search-view
+   "C-c t" #'org-todo-list
+   "C-c /" #'org-tags-view)
+
+  :hook (org-mode . visual-line-mode)
+
+  :custom
+  (org-hide-emphasis-markers t))
+
+(use-package org-bullets
+  :hook (org-mode . org-bullets-mode))
+
+(use-package org-src
+  :straight nil
+  :preface
+  (defun config-org--supress-final-newline ()
+    (setq-local require-final-newline nil))
+
+  (defun config-org--org-src-delete-trailing-space (&rest _)
+    (delete-trailing-whitespace))
+  :config
+  (setq org-src-window-setup 'split-window-below)
+  (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
+  (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
 
 (use-package toc-org
   :hook ((org-mode . toc-org-mode)
          (markdown-mode . toc-org-mode)))
+
+(use-package htmlize)
 
 (use-package eww
   :defer t
@@ -691,6 +736,16 @@
   :defer t
   :straight nil
   :custom (browse-urls-browser-function "firefox"))
+
+(use-package vc-hooks
+  :straight nil
+  :config
+  (setq vc-handled-backends nil))
+
+(use-package smerge-mode)
+(use-package transient
+  :config
+  (transient-bind-q-to-quit))
 
 (use-package magit
   :bind (("C-x g" . magit-status)

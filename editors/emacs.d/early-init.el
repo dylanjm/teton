@@ -1,4 +1,4 @@
-;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
+;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
 ;;;
 ;;; Commentary:
 ;;; Emacs `early-init.el' config by dylanjm
@@ -8,42 +8,50 @@
 ;;; Code:
 
 (defvar default-file-name-handler-alist file-name-handler-alist)
-(defvar extended-gc-cons-threshold 400000000)
+(defvar extended-gc-cons-threshold most-positive-fixnum)
 (defvar default-gc-cons-threshold 800000)
 
 (setq file-name-handler-alist nil
       gc-cons-percentage 0.8
       gc-cons-threshold extended-gc-cons-threshold
       inhibit-compacting-font-caches t
-      load-prefer-newer t
       message-log-max 10000
       package-enable-at-startup nil)
 
+(defun djm/init-startup-time ()
+  (message "Emacs ready in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                    (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(defun djm/gc-on-lose-focus ()
+  (unless (frame-focus-state)
+    (garbage-collect)))
+
+(defun djm/minibuffer-setup-hook ()
+  (setq gc-cons-percentage .8)
+  (setq gc-cons-threshold extended-gc-cons-threshold))
+
+(defun djm/minibuffer-exit-hook ()
+  (setq gc-cons-percentage .1)
+  (setq gc-cons-threshold default-gc-cons-threshold))
+
+(defun djm/return-vars-to-normal ()
+  (setq file-name-handler-alist default-file-name-handler-alist)
+  (setq gc-cons-threshold default-gc-cons-threshold)
+  (setq gc-cons-percentage 0.1)
+  (setq debug-on-error nil))
+
 (add-hook 'after-init-hook
           (lambda ()
-            (setq file-name-handler-alist default-file-name-handler-alist)
-            (setq gc-cons-threshold default-gc-cons-threshold)
-            (setq gc-cons-percentage 0.1)
-            (setq debug-on-error nil)
-
-            (defun djm/gc-on-lose-focus ()
-              (unless (frame-focus-state)
-                (save-some-buffers '!)
-                (garbage-collect)))
-
+            (djm/return-vars-to-normal)
             (if (boundp 'after-focus-change-function)
                 (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-
-            (defun djm/minibuffer-setup-hook ()
-              (setq gc-cons-percentage .8)
-              (setq gc-cons-threshold extended-gc-cons-threshold))
-
-            (defun djm/minibuffer-exit-hook ()
-              (setq gc-cons-percentage .1)
-              (setq gc-cons-threshold default-gc-cons-threshold))
-
             (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
             (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
+
+(add-hook 'after-init-hook #'djm/init-startup-time)
 
 (fset 'display-startup-echo-area-message 'ignore)
 (fset 'view-hello-file 'ignore)
@@ -58,25 +66,23 @@
       frame-inhibit-implied-resize t
       frame-resize-pixelwise t)
 
-(push '(window-divider-bottom-width . 1) initial-frame-alist)
-(push '(window-divider-right-width . 1) initial-frame-alist)
-(push '(window-divider-default-places . t) initial-frame-alist)
-(push '(right-divider-width . 1) initial-frame-alist)
-(push '(bottom-divider-width . 1) initial-frame-alist)
-(push '(width . 188) initial-frame-alist)
-(push '(height . 188) initial-frame-alist)
+(setq initial-frame-alist '((window-divider-bottom-width . 1)
+                            (window-divider-right-width . 1)
+                            (window-divider-default-places . t)
+                            (right-divider-width . 1)
+                            (bottom-divider-width . 1)
+                            (width . 188)
+                            (height . 188)
+                            (ns-transparent-titlebar . t)
+                            (ns-appearance . dark)
+                            (vertical-scroll-bars)
+                            (internal-border . 0)
+                            (menu-bar-lines . 0)
+                            (tool-bar-lines . 0)
+                            (right-fringe . 5)
+                            (left-fringe . 5)))
 
-(push '(ns-transparent-titlebar . t) default-frame-alist)
-(push '(ns-appearance . nil) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-(push '(internal-border . 0) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(right-fringe . 5) default-frame-alist)
-(push '(left-fringe . 5) default-frame-alist)
-
-(push '(font . "-*-Iosevka SS01-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
-(push '(variable-pitch . "-*-Iosevka SS01-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
 
 (prefer-coding-system 'utf-8-unix)
 (set-language-environment "UTF-8")
@@ -88,6 +94,16 @@
 (set-selection-coding-system 'utf-8)
 (modify-coding-system-alist 'process "*" 'utf-8)
 (set-file-name-coding-system 'utf-8)
+
+(defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
+(defvar djm--emacs-cache "~/.cache/emacs/")
+(defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
+(defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
+(defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
+(defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
+(defvar djm--yasnippet-dir (expand-file-name "snippets" user-emacs-directory))
+(defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
+(defvar djm--personal-lisp-dir (expand-file-name "lisp/" user-emacs-directory))
 
 (eval-and-compile
   (defvar straight-recipes-gnu-elpa-use-mirror t)
@@ -111,60 +127,54 @@
 
 (with-no-warnings
   (setq use-package-verbose t)
+  (setq use-package-always-defer t)
   (setq use-package-enable-imenu-support t))
 
 (load bootstrap-file nil 'nomessage)
 (straight-use-package 'use-package)
 
 (use-package exec-path-from-shell
+  :demand t
   :config
   (setq exec-path-from-shell-check-startup-files nil)
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
   (setq exec-path-from-shell-arguments '("-l"))
   (when-let* ((gls (executable-find "gls")))
+    (setq ls-lisp-use-insert-directory-program nil)
     (setq insert-directory-program "gls"))
   (exec-path-from-shell-initialize))
 
-(defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-(defvar djm--emacs-cache (expand-file-name "emacs/" (getenv "CACHE")))
-(defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
-(defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
-(defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
-(defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
-(defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
-
 (use-package no-littering
+  :demand t
   :straight t
   :init
-  (progn
-    (setq no-littering-etc-directory djm--emacs-etc-cache)
-    (setq no-littering-var-directory djm--emacs-var-cache))
+  (setq no-littering-etc-directory djm--emacs-etc-cache)
+  (setq no-littering-var-directory djm--emacs-var-cache)
   :config
-  (progn
-    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-    (setq custom-file djm--custom-file)
-    (setq auto-save-list-file-name nil)
-    (eval-when-compile
-  (require 'recentf))
-    (with-eval-after-load 'recentf
-  (add-to-list 'recentf-exclude no-littering-var-directory)
-  (add-to-list 'recentf-exclude no-littering-etc-directory)
-  (add-to-list 'recentf-exclude djm--straight-directory))))
+  (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+  (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+  (setq custom-file djm--custom-file)
+  (setq auto-save-list-file-name nil)
+  (eval-when-compile
+    (require 'recentf))
+  (with-eval-after-load 'recentf
+    (add-to-list 'recentf-exclude no-littering-var-directory)
+    (add-to-list 'recentf-exclude no-littering-etc-directory)
+    (add-to-list 'recentf-exclude djm--straight-directory)))
 
-(use-package use-package-ensure-system-package)
-(use-package use-package-chords)
+(use-package use-package-chords :demand t)
 (use-package use-package-hydra)
 (use-package el-patch)
-(use-package bind-key)
-(use-package general)
+(use-package bind-key :demand t)
+(use-package general :demand t)
 (use-package dash)
 (use-package f)
 (use-package s)
 (use-package hydra)
 
 (use-package map :straight nil)
-(use-package org :straight t :defer t) ;; Avoid loading built-in
+(use-package org
+  :straight (:repo "https://code.orgmode.org/bzg/org-mode.git"))
 
 (provide 'early-init)
 ;;; early-init.el ends here

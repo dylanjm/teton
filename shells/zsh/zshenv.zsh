@@ -35,4 +35,4 @@ path=($PYENV_ROOT/bin
       /usr/local/texlive/2019/bin/x86_64-darwin
       /usr/local/opt/texinfo/bin)
 
-autoload -Uz time-shell nuke convert-to-md colorlist
+autoload -Uz time-shell nuke convert-to-md colorlist _zpcompinit_fast

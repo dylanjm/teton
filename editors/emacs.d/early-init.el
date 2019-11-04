@@ -56,33 +56,33 @@
 (fset 'display-startup-echo-area-message 'ignore)
 (fset 'view-hello-file 'ignore)
 
-(setq auto-window-vscroll nil
+(setq-default auto-window-vscroll nil
+      bidi-display-reordering 'left-to-right
       initial-scratch-message ""
       inhibit-startup-echo-area-message t
       inhibit-startup-screen t
+      ffap-machine-p-known nil
       ns-pop-up-frames nil
       ns-use-native-fullscreen nil
       ns-use-thin-smoothing t
       frame-inhibit-implied-resize t
+      window-resize-pixelwise t
       frame-resize-pixelwise t)
 
-(setq initial-frame-alist '((window-divider-bottom-width . 1)
-                            (window-divider-right-width . 1)
-                            (window-divider-default-places . t)
-                            (right-divider-width . 1)
-                            (bottom-divider-width . 1)
-                            (width . 188)
-                            (height . 188)
-                            (ns-transparent-titlebar . t)
-                            (ns-appearance . dark)
-                            (vertical-scroll-bars)
-                            (internal-border . 0)
-                            (menu-bar-lines . 0)
-                            (tool-bar-lines . 0)
-                            (right-fringe . 5)
-                            (left-fringe . 5)))
-
+(push '(window-divider-default-bottom-width . 1) initial-frame-alist)
+(push '(window-divider-default-right-width . 1) initial-frame-alist)
+(push '(window-divider-default-places . t) initial-frame-alist)
+(push '(width . 188) initial-frame-alist)
+(push '(height . 188) initial-frame-alist)
+(push '(ns-transparent-titlebar . t) initial-frame-alist)
+(push '(ns-appearance . dark) initial-frame-alist)
+(push '(vertical-scroll-bars) initial-frame-alist)
+(push '(tool-bar-lines . 0) initial-frame-alist)
+(push '(menu-bar-lines . 1) initial-frame-alist)
+(push '(right-fringe . 5) initial-frame-alist)
+(push '(left-fringe . 5) initial-frame-alist)
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(inhibit-double-buffering . t) default-frame-alist)
 
 (prefer-coding-system 'utf-8-unix)
 (set-language-environment "UTF-8")
@@ -94,6 +94,8 @@
 (set-selection-coding-system 'utf-8)
 (modify-coding-system-alist 'process "*" 'utf-8)
 (set-file-name-coding-system 'utf-8)
+
+(advice-add #'x-apply-session-resources :override #'ignore)
 
 (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
 (defvar djm--emacs-cache "~/.cache/emacs/")
@@ -163,18 +165,17 @@
     (add-to-list 'recentf-exclude djm--straight-directory)))
 
 (use-package use-package-chords :demand t)
-(use-package use-package-hydra)
-(use-package el-patch)
+(use-package use-package-hydra :demand t)
+(use-package el-patch :demand t)
 (use-package bind-key :demand t)
 (use-package general :demand t)
 (use-package dash)
 (use-package f)
 (use-package s)
-(use-package hydra)
+(use-package hydra :demand t)
 
 (use-package map :straight nil)
-(use-package org
-  :straight (:repo "https://code.orgmode.org/bzg/org-mode.git"))
+(use-package org :demand t)
 
 (provide 'early-init)
 ;;; early-init.el ends here

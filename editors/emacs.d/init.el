@@ -12,6 +12,9 @@
 
 
 (add-hook 'write-file-hooks 'time-stamp)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'text-mode-hook #'display-line-numbers-mode)
+(add-hook 'conf-mode-hook #'display-line-numbers-mode)
 
 
 
@@ -19,32 +22,42 @@
   :straight nil
   :custom
   (ad-redefinition-action 'accept)
+  (command-line-x-option-alist nil)
   (cursor-in-non-selected-windows nil)
   (cursor-type 'bar)
   (disabled-command-function nil)
   (display-time-default-load-average nil)
   (echo-keystrokes 0.02)
+  (fast-but-imprecise-scrolling t)
   (fill-column 80)
-  (frame-title-format '("%b - Emacs"))
+  (frame-title-format '("%b - Zmacs"))
+  (highlight-nonselected-windows nil)
   (icon-title-format frame-title-format)
   (indent-tabs-mode nil)
+  (indicate-buffer-boundaries nil)
+  (indicate-empty-lines nil)
   (mode-line-in-non-selected-windows nil)
   (mouse-wheel-progressive-speed nil)
   (mouse-wheel-scroll-amount '(1))
   (ring-bell-function #'ignore)
   (scroll-conservatively most-positive-fixnum)
-  (scroll-margin 5)
+  (scroll-margin 2)
   (scroll-preserve-screen-position t)
   (scroll-step 1)
   (select-enable-clipboard t)
   (sentence-end-double-space nil)
+  (split-width-threshold 160)
+  (split-height-threshold nil)
   (tab-always-indent 'complete)
   (tab-width 4)
   (uniquify-buffer-name-style 'post-forward)
   (use-dialog-box nil)
   (use-file-dialog nil)
   (vc-follow-symlinks t)
-  (window-combination-resize t))
+  (visible-cursor nil)
+  (window-combination-resize t)
+  (x-stretch-cursor nil)
+  (x-underline-at-descent-line t))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -89,6 +102,7 @@
         confirm-kill-processes nil
         create-lockfiles nil
         delete-old-versions t
+        find-file-visit-truename t
         require-final-newline t
         view-read-only t))
 
@@ -145,11 +159,24 @@
   (load-theme 'doom-gruvbox t))
 
 (use-package gruvbox-theme
+    :disabled t
+    :demand t
+    :config
+    (load-theme 'gruvbox-dark-hard t))
+
+(use-package darktooth-theme
   :demand t
   :config
-  (load-theme 'gruvbox-dark-hard t))
+  (load-theme 'darktooth t))
 
-(blink-cursor-mode 0)
+(use-package color
+  :straight nil
+  :functions (color-darken-name))
+
+
+
+  (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
+  (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
 
 ;; emacs 27 added new `:extend' keyword which breaks most themes
 (if (boundp 'hl-line)
@@ -205,10 +232,12 @@
   (use-package simple
     :straight nil
     :config
-    (setq column-number-mode nil
+    (setq blink-matching-paren nil
+          column-number-mode nil
           eval-expression-print-length nil
           eval-expression-print-level nil
           line-number-mode t
+          inhibit-point-motion-hooks t
           line-move-visual nil
           set-mark-command-repeat-pop t
           track-eol t))
@@ -704,6 +733,8 @@
 
   :hook (org-mode . visual-line-mode)
   :hook (after-save . djm/tangle-init-org-file-on-save)
+  :custom-face
+
   :preface
   (defun djm/tangle-init-org-file-on-save ()
     (when (string= buffer-file-name
@@ -715,9 +746,12 @@
   (org-insert-heading-respect-content t)
   (org-startup-folded 'content)
   (org-enforce-todo-dependencies t)
-  (org-special-ctrl-a/e t)
   (org-highlight-sparse-tree-matches nil)
-  (org-special-ctrl-k t))
+  :config
+  (require 'color)
+  (set-face-attribute 'org-block nil :background
+                      (color-lighten-name
+                       (face-attribute 'default :background) 3)))
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode))
@@ -742,6 +776,7 @@
   (defun config-org--org-src-delete-trailing-space (&rest _)
     (delete-trailing-whitespace))
   :config
+  (setq org-src-tab-acts-natively t)
   (setq org-src-window-setup 'split-window-below)
   (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
   (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))

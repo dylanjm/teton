@@ -13,8 +13,6 @@
 
 (add-hook 'write-file-hooks 'time-stamp)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
-(add-hook 'text-mode-hook #'display-line-numbers-mode)
-(add-hook 'conf-mode-hook #'display-line-numbers-mode)
 
 
 
@@ -164,10 +162,10 @@
   (load-theme 'doom-gruvbox t))
 
 (use-package gruvbox-theme
-    ;:disabled t
-    :demand t
-    :config
-    (load-theme 'gruvbox-dark-hard t))
+  :disabled t
+  :demand t
+  :config
+  (load-theme 'gruvbox-dark-hard t))
 
 (use-package darktooth-theme
   :disabled t
@@ -175,12 +173,18 @@
   :config
   (load-theme 'darktooth t))
 
+(use-package zerodark-theme
+  :disabled t
+  :demand t
+  :config
+  (load-theme 'zerodark t))
+
 (use-package color
   :straight nil
   :functions (color-darken-name))
 
-  (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
-  (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
+(if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
+(if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
 
 ;; emacs 27 added new `:extend' keyword which breaks most themes
 (if (boundp 'hl-line)
@@ -247,13 +251,74 @@
           track-eol t))
 
 (use-package minions
-  :defer 0.5
+  :commands (minions-mode)
   :custom
   (minions-mode-line-lighter "...")
   (minions-mode-line-delimiters '("" . ""))
   :config (minions-mode 1))
 
 
+
+(defun radian-mode-line-buffer-modified-status ()
+  "Return a mode line construct indicating buffer modification status.
+This is [*] if the buffer has been modified and whitespace
+otherwise. (Non-file-visiting buffers are never considered to be
+modified.) It is shown in the same color as the buffer name, i.e.
+`mode-line-buffer-id'."
+  (propertize
+   (if (and (buffer-modified-p)
+            (buffer-file-name))
+       "[*]"
+     "   ")
+   'face 'mode-line-buffer-id))
+
+;; Normally the buffer name is right-padded with whitespace until it
+;; is at least 12 characters. This is a waste of space, so we
+;; eliminate the padding here. Check the docstrings for more
+;; information.
+(setq-default mode-line-buffer-identification
+              (propertized-buffer-identification "%b"))
+
+;; Make `mode-line-position' show the column, not just the row.
+(column-number-mode +1)
+
+;; https://emacs.stackexchange.com/a/7542/12534
+(defun radian--mode-line-align (left right)
+  "Render a left/right aligned string for the mode line.
+LEFT and RIGHT are strings, and the return value is a string that
+displays them left- and right-aligned respectively, separated by
+spaces."
+  (let ((width (- (window-total-width) (length left))))
+    (format (format "%%s%%%ds" width) left right)))
+
+(defcustom radian-mode-line-left
+  '(;; Show [*] if the buffer is modified.
+    (:eval (radian-mode-line-buffer-modified-status))
+    " "
+    ;; Show the name of the current buffer.
+    mode-line-buffer-identification
+    "   "
+    ;; Show the row and column of point.
+    mode-line-position
+    ;; Show the active major and minor modes.
+    "  "
+    mode-line-modes)
+  "Composite mode line construct to be shown left-aligned."
+  :type 'sexp)
+
+(defcustom radian-mode-line-right nil
+  "Composite mode line construct to be shown right-aligned."
+  :type 'sexp)
+
+;; Actually reset the mode line format to show all the things we just
+;; defined.
+(setq-default mode-line-format
+              '(:eval (replace-regexp-in-string
+                       "%" "%%"
+                       (radian--mode-line-align
+                        (format-mode-line radian-mode-line-left)
+                        (format-mode-line radian-mode-line-right))
+                       'fixedcase 'literal)))
 
 (use-package tab-line
   :disabled t
@@ -781,12 +846,7 @@
   (org-insert-heading-respect-content t)
   (org-startup-folded 'content)
   (org-enforce-todo-dependencies t)
-  (org-highlight-sparse-tree-matches nil)
-  :config
-  (require 'color)
-  (set-face-attribute 'org-block nil :background
-                      (color-lighten-name
-                       (face-attribute 'default :background) 3)))
+  (org-highlight-sparse-tree-matches nil))
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode))
@@ -796,7 +856,9 @@
 
 (use-package org-indent
   :straight nil
-  :hook (org-mode . org-indent-mode))
+  :hook (org-mode . org-indent-mode)
+  :config
+  (setq org-indent-mode-turns-off-org-adapt-indentation nil))
 
 (use-package org-babel
   :straight nil
@@ -821,6 +883,11 @@
          (markdown-mode . toc-org-mode)))
 
 (use-package htmlize)
+
+(use-package notmuch
+  :commands (notmuch-tree
+             notmuch-search
+             notmuch-hello))
 
 (use-package eww
   :defer t

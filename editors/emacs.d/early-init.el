@@ -78,7 +78,7 @@
 (push '(ns-appearance . dark) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
-(push '(menu-bar-lines . 1) default-frame-alist)
+(push '(menu-bar-lines . 0) default-frame-alist)
 (push '(right-fringe . 5) default-frame-alist)
 (push '(left-fringe . 5) default-frame-alist)
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)

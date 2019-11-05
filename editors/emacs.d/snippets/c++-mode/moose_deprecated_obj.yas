@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: moose-sm-dep-obj
+# key: depmoo
+# --
+registerMooseObjectDeprecated("BisonApp", `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`, "06/30/2020 24:00");

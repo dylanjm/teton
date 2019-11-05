@@ -3,7 +3,7 @@
 
 ## ZSH
 *.zwc
-
+.envrc
 ### Emacs ###
 # -*- mode: gitignore; -*-
 straight/

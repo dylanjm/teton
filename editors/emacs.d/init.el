@@ -141,6 +141,11 @@
   (setq async-bytecomp-allowed-packages '(all))
   (async-bytecomp-package-mode 1))
 
+(use-package direnv
+  :commands (direnv-mode)
+  :config
+  (direnv-mode))
+
 (use-package dashboard
   :init
   (dashboard-setup-startup-hook)
@@ -159,12 +164,13 @@
   (load-theme 'doom-gruvbox t))
 
 (use-package gruvbox-theme
-    :disabled t
+    ;:disabled t
     :demand t
     :config
     (load-theme 'gruvbox-dark-hard t))
 
 (use-package darktooth-theme
+  :disabled t
   :demand t
   :config
   (load-theme 'darktooth t))
@@ -172,8 +178,6 @@
 (use-package color
   :straight nil
   :functions (color-darken-name))
-
-
 
   (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
   (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
@@ -315,12 +319,32 @@
          ("C-c C-y" . term-toggle-cd)))
 
 (use-package projectile
-  :defer 5
   :custom
   (projectile-completion-system 'ivy)
   (projectile-enable-caching t)
+  (projectile-switch-project-action 'projectile-dired)
   :config
   (projectile-mode 1))
+
+(use-package compile
+  :straight nil
+  :preface
+  (autoload 'ansi-color-apply-on-region "ansi-color")
+  (defvar compilation-filter-start)
+  (defun config-compilation-buffer ()
+    (unless (derived-mode-p 'rg-mode)
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region compilation-filter-start (point)))))
+
+  (defface compilation-base-face nil
+    "Base Face for compilation highlights"
+    :group 'config-basic-settings)
+  :config
+  (add-hook 'compilation-filter-hook #'config-compilation-buffer)
+  (setq compilation-message-face 'compilation-base-face)
+  (setq compilation-always-kill t
+        compilation-ask-about-save nil
+        compilation-scroll-output 'first-error))
 
 (use-package abbrev
   :straight nil)
@@ -560,9 +584,9 @@
     :commands (default-text-scale-increase
                default-text-scale-decrease
                default-text-scale-reset)
-    :bind (("C-c <up>" . default-text-scale-increase)
-           ("C-c <down>" . default-text-scale-decrease)
-           ("C-M-]". default-text-scale-reset))
+    :bind (("C-x t <up>" . default-text-scale-increase)
+           ("C-x t <down>" . default-text-scale-decrease)
+           ("C-x t ]". default-text-scale-reset))
     :custom (default-text-scale-amount 30))
 
   (use-package delsel
@@ -640,13 +664,24 @@
               (dired-recursive-deletes 'always)
               (dired-recursive-copies 'always))
 
+(use-package dired+
+  :straight nil
+  :after (dired)
+  :config
+  (diredp-toggle-find-file-reuse-dir 1))
+
 (use-package dired-aux
   :straight nil
   :after (dired))
 
 (use-package dired-x
   :straight nil
-  :after (dired))
+  :after (dired)
+  :bind (("C-x C-j" . dired-jump)
+         ("C-x 4 C-j" . dired-jump-other-window))
+  :config
+  (setq dired-omit-verbose 1)
+  (advice-add :override dired-guess-default "open"))
 
 (use-package diredfl
   :after (dired)
@@ -889,6 +924,20 @@
                                              space-after-tab::space space-mark
                                              tab-mark newline-mark)))
 
+(use-package pyenv-mode
+  :config
+  (defun projectile-pyenv-mode-set ()
+    (let ((project (projectile-project-name)))
+      (if (member project (pyenv-mode-versions))
+          (pyenv-mode-set project)
+        (pyenv-mode-unset))))
+
+  (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+  (add-hook 'python-mode-hook 'pyenv-mode))
+
+(use-package pyenv-mode-auto
+  :hook (projectile-switch-project . pyenv-mode))
+
 (use-package python
   :hook (python-mode . config-python--init-python-mode)
   :preface
@@ -957,38 +1006,38 @@
           (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
         (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
 
-;; (defconst moose-c-style
-;;   '((c-tab-always-indent . t)
-;;     (c-basic-offset . 2)
-;;     (c-hanging-braces-alist . ((substatement-open before after)))
-;;     (c-offsets-alist . ((innamespace .0)
-;;                         (member-init-intro . 4)
-;;                         (statement-block-into . +)
-;;                         (substatement-open . 0)
-;;                         (substatement-label .0)
-;;                         (label .0)
-;;                         (statement-cont . +)
-;;                         (case-label . +))))
-;;   "Moose C++ Programming Style.")
+(defconst moose-c-style
+  '("Moose C++ Programming Style."
+    (c-tab-always-indent . t)
+    (c-basic-offset . 2)
+    (c-hanging-braces-alist . ((substatement-open before after)))
+    (c-offsets-alist . ((innamespace . 0)
+                        (member-init-intro . 4)
+                        (statement-block-into . +)
+                        (substatement-open . 0)
+                        (substatement-label . 0)
+                        (label . 0)
+                        (statement-cont . +)
+                        (case-label . +)))))
 
-;; (c-add-style "MOOSE" moose-c-style)
 
-;; (setq auto-mode-alist
-;;       (append '(("\\.h$" . c++-mode)
-;;                 ("\\.i$" . conf-mode)
-;;                 ("tests" . conf-mode)
-;;                 ("\\.cu". c++-mode))
-;;               auto-mode-alist))
+(c-add-style "MOOSE" moose-c-style)
+(setf (map-elt c-default-style 'other) "MOOSE")
 
-;; (defun djm--moose-hook ()
-;;   (c-set-style "MOOSE")
-;;   (setq-local indent-tabs-mode nil)
-;;   (c-toggle-auto-hungry-state)
-;;   (c-toggle-auto-newline)
-;;   (c-toggle-auto-state)
-;;   (c-set-offset 'case-label '+))
+(setq auto-mode-alist
+      (append '(("\\.h$" . c++-mode)
+                ("\\.C$" . c++-mode)
+                ("\\.i$" . conf-mode)
+                ("tests" . conf-mode)
+                ("\\.cu". c++-mode))
+              auto-mode-alist))
 
-;; (add-hook 'c-mode-common-hook 'djm--moose-hook)
+(use-package c-mode
+  :straight nil
+  :config
+  (c-toggle-auto-hungry-state)
+  (c-toggle-auto-newline)
+  (c-toggle-auto-state))
 
 (provide 'init)
 ;;; init.el ends here

@@ -1,5 +1,5 @@
 #!/usr/bin/local/zsh
-ITERM2_DIR=$CACHE/zsh/iterm2
+ITERM2_DIR=~/.cache/zsh/iterm2
 
 if [[ ! -r $ITERM2_DIR/startup.zsh ]]; then
 	mkdir -p $ITERM2_DIR/bin
@@ -14,4 +14,5 @@ if [[ ! -r $ITERM2_DIR/startup.zsh ]]; then
 		print Installed iTerm2 utility: $cmd
 	done
 fi
+
 path+=($ITERM2_DIR/bin)

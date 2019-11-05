@@ -1,3 +1,5 @@
+#!/usr/local/zsh
+
 function nuke() {
     read -r "response?Are you sure? [y/N] "
     read -r "dry?Would you like to do a dry-run first? "

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-04 23:07:59
+/last updated/: 2019-11-05 11:15:46
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -91,51 +91,53 @@
 *** Garbage Collection
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
-  (defvar default-file-name-handler-alist file-name-handler-alist)
-  (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 800000)
+    (defvar default-file-name-handler-alist file-name-handler-alist)
+    (defvar extended-gc-cons-threshold most-positive-fixnum)
+    (defvar default-gc-cons-threshold 800000)
 
-  (setq file-name-handler-alist nil
-        gc-cons-percentage 0.8
-        gc-cons-threshold extended-gc-cons-threshold
-        inhibit-compacting-font-caches t
-        message-log-max 10000
-        package-enable-at-startup nil)
+    (setq file-name-handler-alist nil
+          gc-cons-percentage 0.8
+          gc-cons-threshold extended-gc-cons-threshold
+          inhibit-compacting-font-caches t
+          message-log-max 10000
+          load-prefer-newer t
+          package-enable-at-startup nil)
 
-  (defun djm/init-startup-time ()
-    (message "Emacs ready in %s with %d garbage collections."
-             (format "%.2f seconds"
-                     (float-time
-                      (time-subtract after-init-time before-init-time)))
-             gcs-done))
+    (defun djm/init-startup-time ()
+      (message "Emacs ready in %s with %d garbage collections."
+               (format "%.2f seconds"
+                       (float-time
+                        (time-subtract after-init-time before-init-time)))
+               gcs-done))
 
-  (defun djm/gc-on-lose-focus ()
-    (unless (frame-focus-state)
-      (garbage-collect)))
+    (defun djm/gc-on-lose-focus ()
+      (unless (frame-focus-state)
+        (garbage-collect)))
 
-  (defun djm/minibuffer-setup-hook ()
-    (setq gc-cons-percentage .8)
-    (setq gc-cons-threshold extended-gc-cons-threshold))
+    (defun djm/minibuffer-setup-hook ()
+      (setq gc-cons-percentage .8)
+      (setq gc-cons-threshold extended-gc-cons-threshold))
 
-  (defun djm/minibuffer-exit-hook ()
-    (setq gc-cons-percentage .1)
-    (setq gc-cons-threshold default-gc-cons-threshold))
+    (defun djm/minibuffer-exit-hook ()
+      (setq gc-cons-percentage .1)
+      (setq gc-cons-threshold default-gc-cons-threshold))
 
-  (defun djm/return-vars-to-normal ()
-    (setq file-name-handler-alist default-file-name-handler-alist)
-    (setq gc-cons-threshold default-gc-cons-threshold)
-    (setq gc-cons-percentage 0.1)
-    (setq debug-on-error nil))
+    (defun djm/return-vars-to-normal ()
+      (setq file-name-handler-alist default-file-name-handler-alist)
+      (setq gc-cons-threshold default-gc-cons-threshold)
+      (setq gc-cons-percentage 0.1)
+      (setq load-prefer-newer nil)
+      (setq debug-on-error nil))
 
-  (add-hook 'after-init-hook
-            (lambda ()
-              (djm/return-vars-to-normal)
-              (if (boundp 'after-focus-change-function)
-                  (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-              (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
-              (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
+    (add-hook 'after-init-hook
+              (lambda ()
+                (djm/return-vars-to-normal)
+                (if (boundp 'after-focus-change-function)
+                    (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
+                (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
+                (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 
-  (add-hook 'after-init-hook #'djm/init-startup-time)
+    (add-hook 'after-init-hook #'djm/init-startup-time)
 #+end_src
 
 ** Preliminary Configuration
@@ -212,17 +214,9 @@
     (defvar bootstrap-file
       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-    (url-retrieve-synchronously
-     "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-     'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-
   (with-no-warnings
     (setq straight-cache-autoloads t)
-    (setq straight-check-for-modifications 'live-with-find)
+    (setq straight-check-for-modifications '(check-on-save))
     (setq straight-repository-branch "develop")
     (setq straight-use-package-by-default t))
 
@@ -230,6 +224,14 @@
     (setq use-package-verbose t)
     (setq use-package-always-defer t)
     (setq use-package-enable-imenu-support t))
+
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
 
   (load bootstrap-file nil 'nomessage)
   (straight-use-package 'use-package)
@@ -530,8 +532,9 @@
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
   (use-package gruvbox-theme
-    :disabled t
+    ;; :disabled t
     :demand t
+    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
     :config
     (load-theme 'gruvbox-dark-hard t))
 
@@ -546,6 +549,13 @@
     :demand t
     :config
     (load-theme 'zerodark t))
+
+  (use-package gbox-theme
+    :disabled t
+    :demand t
+    :straight (:repo "https://github.com/dylanjm/emacs-theme-gbox")
+    :config
+    (load-theme 'gbox t))
 
   (use-package color
     :straight nil
@@ -686,8 +696,7 @@
       ;; Show the row and column of point.
       mode-line-position
       ;; Show the active major and minor modes.
-      "  "
-      mode-line-modes)
+      "  ")
     "Composite mode line construct to be shown left-aligned."
     :type 'sexp)
 

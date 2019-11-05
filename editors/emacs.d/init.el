@@ -162,8 +162,9 @@
   (load-theme 'doom-gruvbox t))
 
 (use-package gruvbox-theme
-  :disabled t
+  ;; :disabled t
   :demand t
+  :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
   :config
   (load-theme 'gruvbox-dark-hard t))
 
@@ -178,6 +179,13 @@
   :demand t
   :config
   (load-theme 'zerodark t))
+
+(use-package gbox-theme
+  :disabled t
+  :demand t
+  :straight (:repo "https://github.com/dylanjm/emacs-theme-gbox")
+  :config
+  (load-theme 'gbox t))
 
 (use-package color
   :straight nil
@@ -301,8 +309,7 @@ spaces."
     ;; Show the row and column of point.
     mode-line-position
     ;; Show the active major and minor modes.
-    "  "
-    mode-line-modes)
+    "  ")
   "Composite mode line construct to be shown left-aligned."
   :type 'sexp)
 

@@ -16,6 +16,7 @@
       gc-cons-threshold extended-gc-cons-threshold
       inhibit-compacting-font-caches t
       message-log-max 10000
+      load-prefer-newer t
       package-enable-at-startup nil)
 
 (defun djm/init-startup-time ()
@@ -41,6 +42,7 @@
   (setq file-name-handler-alist default-file-name-handler-alist)
   (setq gc-cons-threshold default-gc-cons-threshold)
   (setq gc-cons-percentage 0.1)
+  (setq load-prefer-newer nil)
   (setq debug-on-error nil))
 
 (add-hook 'after-init-hook
@@ -113,17 +115,9 @@
   (defvar bootstrap-file
     (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-(unless (file-exists-p bootstrap-file)
-  (with-current-buffer
-  (url-retrieve-synchronously
-   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-   'silent 'inhibit-cookies)
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-
 (with-no-warnings
   (setq straight-cache-autoloads t)
-  (setq straight-check-for-modifications 'live-with-find)
+  (setq straight-check-for-modifications '(check-on-save))
   (setq straight-repository-branch "develop")
   (setq straight-use-package-by-default t))
 
@@ -131,6 +125,14 @@
   (setq use-package-verbose t)
   (setq use-package-always-defer t)
   (setq use-package-enable-imenu-support t))
+
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+       'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
 
 (load bootstrap-file nil 'nomessage)
 (straight-use-package 'use-package)

@@ -73149,7 +73149,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>650 602 620 392 0 0 1920 1177 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 71 1729 1106 0 0 1920 1177 </string>
+	<string>2560 0 1279 2137 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>212 101 1050 517 0 0 1680 1027 </string>
 	<key>New Bookmarks</key>
@@ -77600,7 +77600,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>185</integer>
+	<integer>193</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -78335,6 +78335,8 @@
 	</dict>
 	<key>NoSyncTipOfTheDayEligibilityBeganTime</key>
 	<real>586836807.44295895</real>
+	<key>PMPrintingExpandedStateForPrint2</key>
+	<false/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -78370,6 +78372,8 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/mcdodj/dotz/apps/iterm2</string>
+	<key>Print In Black And White</key>
+	<true/>
 	<key>PromptOnQuit</key>
 	<false/>
 	<key>SUEnableAutomaticChecks</key>
@@ -78381,7 +78385,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-11-05T15:26:23Z</date>
+	<date>2019-11-06T16:54:46Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>

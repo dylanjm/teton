@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: moose-down-col-row
+# key: col-row
+# --
+!row!
+!col! small=${1:var1} medium=${2:var2} large=${3:var3}
+
+!col-end!
+
+!col small=$1 medium=$2 large=$2
+
+!col-end!
+
+!col small=$1 medium=$2 large=$3
+
+!col-end!
+!row-end!
+
+$0

@@ -161,7 +161,7 @@
 
 (use-package map :demand t :straight nil)
 (use-package gv :demand t :straight nil)
-(use-package org :demand t :straight t :ensure org-plus-contrib)
+(use-package org :demand t :straight t)
 
 (provide 'early-init)
 ;;; early-init.el ends here

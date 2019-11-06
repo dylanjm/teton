@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-05 22:33:36
+/last updated/: 2019-11-06 08:00:08
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -279,7 +279,7 @@
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
-  (use-package org :demand t :straight t :ensure org-plus-contrib)
+  (use-package org :demand t :straight t)
 #+end_src
 
 ** Footer

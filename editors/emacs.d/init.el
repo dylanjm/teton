@@ -19,6 +19,8 @@
   :straight nil
   :custom
   (ad-redefinition-action 'accept)
+  (auto-save-list-file-prefix nil)
+  (auto-save-list-file-name nil)
   (command-line-x-option-alist nil)
   (cursor-in-non-selected-windows nil)
   (cursor-type 'bar)
@@ -101,7 +103,9 @@
         delete-old-versions t
         find-file-visit-truename t
         require-final-newline t
-        view-read-only t))
+        view-read-only t)
+(when-let* ((gls (executable-find "gls")))
+  (setq insert-directory-program "gls")))
 
 (use-package autorevert
   :straight nil
@@ -125,9 +129,9 @@
   (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
 
 (use-package osx-trash
+  :hook (after-init . (lambda () (osx-trash-setup)))
   :init
-  (setq delete-by-moving-to-trash t)
-  :config (osx-trash-setup))
+  (setq delete-by-moving-to-trash t))
 
 (use-package async
   :hook ((dired-mode . dired-async-mode))
@@ -351,18 +355,17 @@ spaces."
   :init (global-tab-line-mode))
 
 (use-package page-break-lines
-  :defer 3.0
+  :hook (after-init . global-page-break-lines-mode)
   :config
   (setq page-break-lines-modes '(prog-mode
                                  ibuffer-mode
                                  text-mode
                                  compilation-mode
                                  help-mode
-                                 org-agenda-mode))
-    (global-page-break-lines-mode))
+                                 org-agenda-mode)))
 
 (use-package dimmer
-  :disabled t
+  :commands (dimmer-mode)
   :custom
   (dimmer-fraction 0.33)
   (dimmer-exclusion-regexp-list '(".*minibuf.*"
@@ -373,8 +376,7 @@ spaces."
                                   ".*lv.*"
                                   ".*ilist.*"
                                   ".*posframe.*"
-                                  ".*transient.*"))
-  :config (dimmer-mode))
+                                  ".*transient.*")))
 
 (use-package key-chord
   :custom (key-chord-two-keys-delay 0.05)
@@ -617,7 +619,7 @@ spaces."
                                                (swiper . nil)))
   (set-face-attribute 'ivy-posframe nil :background (color-darken-name (face-attribute 'default :background) 3)))
 
-(use-package man :defer 2.0)
+(use-package man)
 
 (use-package help
   :defer 2.0
@@ -635,6 +637,8 @@ spaces."
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-key] . helpful-key))
+
+(use-package devdocs)
 
 (use-package eldoc
   :defer 2.0
@@ -738,26 +742,20 @@ spaces."
          ("C-c w u" . windmove-up)))
 
 (use-package dired
-:defer 3
-:straight nil
-:functions (dired wdired-change-to-wdired-mode)
-:bind (:map dired-mode-map
-              ("C-c C-e" . wdired-change-to-wdired-mode))
-              :custom
-              (dired-auto-revert-buffer t)
-              (dired-dwim-target t)
-              (dired-guess-shell-gnutar "gtar")
-              (dired-use-ls-dired nil)
-              (dired-listing-switches "-alhF")
-              (dired-ls-f-marks-symlinks t)
-              (dired-recursive-deletes 'always)
-              (dired-recursive-copies 'always))
-
-(use-package dired+
   :straight nil
-  :after (dired)
+  :functions (dired wdired-change-to-wdired-mode)
+  :bind (:map dired-mode-map
+              ("C-c C-e" . wdired-change-to-wdired-mode))
+  :custom
+  (dired-auto-revert-buffer t)
+  (dired-dwim-target t)
+  (dired-use-ls-dired t)
+  (dired-ls-F-marks-symlinks t)
+  (dired-listing-switches "-alh --group-directories-first --time-style \"iso\"")
+  (dired-recursive-deletes 'always)
+  (dired-recursive-copies 'always)
   :config
-  (diredp-toggle-find-file-reuse-dir 1))
+  (setq dired-deletion-confirmer '(lambda (x) t)))
 
 (use-package dired-aux
   :straight nil
@@ -766,8 +764,6 @@ spaces."
 (use-package dired-x
   :straight nil
   :after (dired)
-  :bind (("C-x C-j" . dired-jump)
-         ("C-x 4 C-j" . dired-jump-other-window))
   :config
   (setq dired-omit-verbose 1)
   (advice-add :override dired-guess-default "open"))
@@ -780,7 +776,7 @@ spaces."
   :bind (:map dired-mode-map
               ("C-c C-c" . dired-ranger-copy)
               ("C-c C-m" . dired-ranger-move)
-              ("C-c C-p" . dired-ranger-move)
+              ("C-c C-p" . dired-ranger-paste)
               ("C-c C-b" . dired-ranger-bookmark)
               ("C-c b v" . dired-ranger-bookmark-visit)))
 
@@ -930,7 +926,9 @@ spaces."
 (use-package notmuch
   :commands (notmuch-tree
              notmuch-search
-             notmuch-hello))
+             notmuch-hello)
+  :config
+  (setq notmuch-search-oldest-first nil))
 
 (use-package eww
   :defer t

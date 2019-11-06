@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-05 18:22:25
+/last updated/: 2019-11-05 22:33:36
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -94,53 +94,42 @@
 
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
-    (defvar default-file-name-handler-alist file-name-handler-alist)
-    (defvar extended-gc-cons-threshold most-positive-fixnum)
-    (defvar default-gc-cons-threshold 800000)
+  (defvar default-file-name-handler-alist file-name-handler-alist)
+  (defvar extended-gc-cons-threshold most-positive-fixnum)
+  (defvar default-gc-cons-threshold 800000)
 
-    (setq file-name-handler-alist nil
-          gc-cons-percentage 0.8
-          gc-cons-threshold extended-gc-cons-threshold
-          inhibit-compacting-font-caches t
-          message-log-max 10000
-          load-prefer-newer t
-          package-enable-at-startup nil)
+  (setq file-name-handler-alist nil
+        gc-cons-percentage 0.8
+        gc-cons-threshold extended-gc-cons-threshold
+        inhibit-compacting-font-caches t
+        package-enable-at-startup nil)
 
-    (defun djm/init-startup-time ()
-      (message "Emacs ready in %s with %d garbage collections."
-               (format "%.2f seconds"
-                       (float-time
-                        (time-subtract after-init-time before-init-time)))
-               gcs-done))
+  (defun djm/gc-on-lose-focus ()
+    (unless (frame-focus-state)
+      (garbage-collect)))
 
-    (defun djm/gc-on-lose-focus ()
-      (unless (frame-focus-state)
-        (garbage-collect)))
+  (defun djm/minibuffer-setup-hook ()
+    (setq gc-cons-percentage .8)
+    (setq gc-cons-threshold extended-gc-cons-threshold))
 
-    (defun djm/minibuffer-setup-hook ()
-      (setq gc-cons-percentage .8)
-      (setq gc-cons-threshold extended-gc-cons-threshold))
+  (defun djm/minibuffer-exit-hook ()
+    (setq gc-cons-percentage .1)
+    (setq gc-cons-threshold default-gc-cons-threshold))
 
-    (defun djm/minibuffer-exit-hook ()
-      (setq gc-cons-percentage .1)
-      (setq gc-cons-threshold default-gc-cons-threshold))
+  (defun djm/return-vars-to-normal ()
+    (setq file-name-handler-alist default-file-name-handler-alist)
+    (setq gc-cons-threshold default-gc-cons-threshold)
+    (setq gc-cons-percentage 0.1)
+    (setq load-prefer-newer nil)
+    (setq debug-on-error nil))
 
-    (defun djm/return-vars-to-normal ()
-      (setq file-name-handler-alist default-file-name-handler-alist)
-      (setq gc-cons-threshold default-gc-cons-threshold)
-      (setq gc-cons-percentage 0.1)
-      (setq load-prefer-newer nil)
-      (setq debug-on-error nil))
-
-    (add-hook 'after-init-hook
-              (lambda ()
-                (djm/return-vars-to-normal)
-                (if (boundp 'after-focus-change-function)
-                    (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-                (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
-                (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
-
-    ;; (add-hook 'after-init-hook #'djm/init-startup-time)
+  (add-hook 'after-init-hook
+            (lambda ()
+              (djm/return-vars-to-normal)
+              (if (boundp 'after-focus-change-function)
+                  (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
+              (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
+              (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 #+end_src
 
 ** Preliminary Configuration
@@ -155,7 +144,6 @@
         initial-scratch-message ""
         inhibit-startup-echo-area-message t
         inhibit-startup-screen t
-        ffap-machine-p-known nil
         ns-pop-up-frames nil
         ns-use-native-fullscreen nil
         ns-use-thin-smoothing t
@@ -172,7 +160,7 @@
   (push '(ns-appearance . dark) default-frame-alist)
   (push '(vertical-scroll-bars) default-frame-alist)
   (push '(tool-bar-lines . 0) default-frame-alist)
-  (push '(menu-bar-lines . 0) default-frame-alist)
+  (push '(menu-bar-lines . 1) default-frame-alist)
   (push '(right-fringe . 5) default-frame-alist)
   (push '(left-fringe . 5) default-frame-alist)
   (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1") default-frame-alist)
@@ -211,35 +199,36 @@
 *** Straight
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-  (eval-and-compile
-    (defvar straight-recipes-gnu-elpa-use-mirror t)
-    (defvar bootstrap-version 5)
-    (defvar bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+    (eval-and-compile
+      (defvar straight-recipes-gnu-elpa-use-mirror t)
+      (defvar bootstrap-version 5)
+      (defvar bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-  ;; Clear out recipe overrides (in case of re-init).
-  (with-no-warnings
-    (setq straight-cache-autoloads t)
-    (setq straight-recipe-overrides nil)
-    (setq straight-check-for-modifications '(find-when-checking))
-    (setq straight-repository-branch "develop")
-    (setq straight-use-package-by-default t))
+    ;; Clear out recipe overrides (in case of re-init).
+    (with-no-warnings
+      (setq straight-cache-autoloads t)
+      (setq straight-recipe-overrides nil)
+      (setq straight-check-for-modifications '(find-when-checking check-on-save))
+      (setq straight-repository-branch "develop")
+      (setq straight-use-package-by-default t))
 
-  (with-no-warnings
-    (setq use-package-verbose nil)
-    (setq use-package-always-defer t)
-    (setq use-package-enable-imenu-support t))
+    (with-no-warnings
+      (setq use-package-verbose nil)
+      (setq use-package-always-defer t)
+      (setq use-package-enable-imenu-support t)
+      (setq use-package-compute-statistics t))
 
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
 
-  (load bootstrap-file nil 'nomessage)
-  (straight-use-package 'use-package)
+    (load bootstrap-file nil 'nomessage)
+    (straight-use-package 'use-package)
 #+end_src
 
 ** Environment
@@ -253,9 +242,6 @@
     (setq exec-path-from-shell-check-startup-files nil)
     (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
     (setq exec-path-from-shell-arguments '("-l" "-i"))
-    (when-let* ((gls (executable-find "gls")))
-      (setq ls-lisp-use-insert-directory-program nil)
-      (setq insert-directory-program "gls"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -273,13 +259,8 @@
     (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
     (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
     (setq custom-file djm--custom-file)
-    (setq auto-save-list-file-name nil)
-    (eval-when-compile
-      (require 'recentf))
-    (with-eval-after-load 'recentf
-      (add-to-list 'recentf-exclude no-littering-var-directory)
-      (add-to-list 'recentf-exclude no-littering-etc-directory)
-      (add-to-list 'recentf-exclude djm--straight-directory)))
+    (setq recentf-exclude `(,djm--emacs-cache
+                            ,djm--straight-directory)))
 #+end_src
 
 ** Required Packages
@@ -298,7 +279,7 @@
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
-  (use-package org :demand t)
+  (use-package org :demand t :straight t :ensure org-plus-contrib)
 #+end_src
 
 ** Footer
@@ -359,6 +340,8 @@
     :straight nil
     :custom
     (ad-redefinition-action 'accept)
+    (auto-save-list-file-prefix nil)
+    (auto-save-list-file-name nil)
     (command-line-x-option-alist nil)
     (cursor-in-non-selected-windows nil)
     (cursor-type 'bar)
@@ -439,70 +422,72 @@
 
 #+name: init-files-block
 #+begin_src emacs-lisp
-    (use-package saveplace
-      :straight nil
-      :config (save-place-mode +1))
+  (use-package saveplace
+    :straight nil
+    :config (save-place-mode +1))
 
-    (use-package savehist
-      :straight nil
-      :init
-      (setq history-delete-duplicates t
-            savehist-additional-variables '(kill-ring regexp-search-ring))
-      :config
-      (savehist-mode +1))
+  (use-package savehist
+    :straight nil
+    :init
+    (setq history-delete-duplicates t
+          savehist-additional-variables '(kill-ring regexp-search-ring))
+    :config
+    (savehist-mode +1))
 
-    (use-package files
-      :straight nil
-      :config
-      (setq backup-by-copying t
-            confirm-kill-processes nil
-            create-lockfiles nil
-            delete-old-versions t
-            find-file-visit-truename t
-            require-final-newline t
-            view-read-only t))
+  (use-package files
+    :straight nil
+    :config
+    (setq backup-by-copying t
+          confirm-kill-processes nil
+          create-lockfiles nil
+          delete-old-versions t
+          find-file-visit-truename t
+          require-final-newline t
+          view-read-only t)
+  (when-let* ((gls (executable-find "gls")))
+    (setq insert-directory-program "gls")))
 
-    (use-package autorevert
-      :straight nil
-      :init
-      (setq auto-revert-verbose nil
-            global-auto-revert-non-file-buffers t
-            auto-revert-use-notify nil)
-      :config
-      (global-auto-revert-mode 1))
+  (use-package autorevert
+    :straight nil
+    :init
+    (setq auto-revert-verbose nil
+          global-auto-revert-non-file-buffers t
+          auto-revert-use-notify nil)
+    :config
+    (global-auto-revert-mode 1))
 
-    (use-package recentf
-      :straight nil
-      :init
-      (setq recentf-max-saved-items 1000
-            recentf-auto-cleanup 'never)
-      :config
-      (recentf-mode 1))
+  (use-package recentf
+    :straight nil
+    :init
+    (setq recentf-max-saved-items 1000
+          recentf-auto-cleanup 'never)
+    :config
+    (recentf-mode 1))
 
-    (use-package auth-source
-      :config
-      (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
+  (use-package auth-source
+    :config
+    (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
 
-    (use-package osx-trash
-      :init
-      (setq delete-by-moving-to-trash t)
-      :config (osx-trash-setup))
+  (use-package osx-trash
+    :hook (after-init . (lambda () (osx-trash-setup)))
+    :init
+    (setq delete-by-moving-to-trash t))
 
-    (use-package async
-      :hook ((dired-mode . dired-async-mode))
-      :preface
-      (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-      (autoload 'dired-async-mode "dired-async.el" nil t)
-      :config
-      (setq async-bytecomp-allowed-packages '(all))
-      (async-bytecomp-package-mode 1))
+  (use-package async
+    :hook ((dired-mode . dired-async-mode))
+    :preface
+    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+    (autoload 'dired-async-mode "dired-async.el" nil t)
+    :config
+    (setq async-bytecomp-allowed-packages '(all))
+    (async-bytecomp-package-mode 1))
 
-    (use-package direnv
-      :demand t
-      :after (exec-path-from-shell)
-      :config
-      (direnv-mode +1)
-      (add-to-list 'direnv-non-file-modes '(comint-mode term-mode vterm-mode compilation-mode)))
+  (use-package direnv
+    :demand t
+    :after (exec-path-from-shell)
+    :config
+    (direnv-mode +1)
+    (add-to-list 'direnv-non-file-modes '(comint-mode term-mode vterm-mode compilation-mode)))
 #+end_src
 
 ** Theme & Aesthetics
@@ -760,22 +745,21 @@
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
   (use-package page-break-lines
-    :defer 3.0
+    :hook (after-init . global-page-break-lines-mode)
     :config
     (setq page-break-lines-modes '(prog-mode
                                    ibuffer-mode
                                    text-mode
                                    compilation-mode
                                    help-mode
-                                   org-agenda-mode))
-      (global-page-break-lines-mode))
+                                   org-agenda-mode)))
 #+end_src
 
 **** Dimmer Mode
 #+name: init-dimmer-block
 #+begin_src emacs-lisp
   (use-package dimmer
-    :disabled t
+    :commands (dimmer-mode)
     :custom
     (dimmer-fraction 0.33)
     (dimmer-exclusion-regexp-list '(".*minibuf.*"
@@ -786,8 +770,7 @@
                                     ".*lv.*"
                                     ".*ilist.*"
                                     ".*posframe.*"
-                                    ".*transient.*"))
-    :config (dimmer-mode))
+                                    ".*transient.*")))
 #+end_src
 
 ** Utilities
@@ -1079,7 +1062,7 @@
 
 #+name: init-help-block
 #+begin_src emacs-lisp
-  (use-package man :defer 2.0)
+  (use-package man)
 
   (use-package help
     :defer 2.0
@@ -1097,6 +1080,8 @@
     ([remap describe-command] . helpful-command)
     ([remap describe-variable] . helpful-variable)
     ([remap describe-key] . helpful-key))
+
+  (use-package devdocs)
 
   (use-package eldoc
     :defer 2.0
@@ -1231,26 +1216,20 @@
 #+name: init-dired-block
 #+begin_src emacs-lisp
   (use-package dired
-  :defer 3
-  :straight nil
-  :functions (dired wdired-change-to-wdired-mode)
-  :bind (:map dired-mode-map
-                ("C-c C-e" . wdired-change-to-wdired-mode))
-                :custom
-                (dired-auto-revert-buffer t)
-                (dired-dwim-target t)
-                (dired-guess-shell-gnutar "gtar")
-                (dired-use-ls-dired nil)
-                (dired-listing-switches "-alhF")
-                (dired-ls-f-marks-symlinks t)
-                (dired-recursive-deletes 'always)
-                (dired-recursive-copies 'always))
-
-  (use-package dired+
     :straight nil
-    :after (dired)
+    :functions (dired wdired-change-to-wdired-mode)
+    :bind (:map dired-mode-map
+                ("C-c C-e" . wdired-change-to-wdired-mode))
+    :custom
+    (dired-auto-revert-buffer t)
+    (dired-dwim-target t)
+    (dired-use-ls-dired t)
+    (dired-ls-F-marks-symlinks t)
+    (dired-listing-switches "-alh --group-directories-first --time-style \"iso\"")
+    (dired-recursive-deletes 'always)
+    (dired-recursive-copies 'always)
     :config
-    (diredp-toggle-find-file-reuse-dir 1))
+    (setq dired-deletion-confirmer '(lambda (x) t)))
 
   (use-package dired-aux
     :straight nil
@@ -1259,8 +1238,6 @@
   (use-package dired-x
     :straight nil
     :after (dired)
-    :bind (("C-x C-j" . dired-jump)
-           ("C-x 4 C-j" . dired-jump-other-window))
     :config
     (setq dired-omit-verbose 1)
     (advice-add :override dired-guess-default "open"))
@@ -1273,7 +1250,7 @@
     :bind (:map dired-mode-map
                 ("C-c C-c" . dired-ranger-copy)
                 ("C-c C-m" . dired-ranger-move)
-                ("C-c C-p" . dired-ranger-move)
+                ("C-c C-p" . dired-ranger-paste)
                 ("C-c C-b" . dired-ranger-bookmark)
                 ("C-c b v" . dired-ranger-bookmark-visit)))
 
@@ -1468,7 +1445,9 @@
   (use-package notmuch
     :commands (notmuch-tree
                notmuch-search
-               notmuch-hello))
+               notmuch-hello)
+    :config
+    (setq notmuch-search-oldest-first nil))
 #+end_src
 
 *** Calendar

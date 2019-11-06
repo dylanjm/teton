@@ -15,16 +15,7 @@
       gc-cons-percentage 0.8
       gc-cons-threshold extended-gc-cons-threshold
       inhibit-compacting-font-caches t
-      message-log-max 10000
-      load-prefer-newer t
       package-enable-at-startup nil)
-
-(defun djm/init-startup-time ()
-  (message "Emacs ready in %s with %d garbage collections."
-           (format "%.2f seconds"
-                   (float-time
-                    (time-subtract after-init-time before-init-time)))
-           gcs-done))
 
 (defun djm/gc-on-lose-focus ()
   (unless (frame-focus-state)
@@ -53,8 +44,6 @@
             (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
             (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 
-;; (add-hook 'after-init-hook #'djm/init-startup-time)
-
 (fset 'display-startup-echo-area-message 'ignore)
 (fset 'view-hello-file 'ignore)
 
@@ -63,7 +52,6 @@
       initial-scratch-message ""
       inhibit-startup-echo-area-message t
       inhibit-startup-screen t
-      ffap-machine-p-known nil
       ns-pop-up-frames nil
       ns-use-native-fullscreen nil
       ns-use-thin-smoothing t
@@ -80,7 +68,7 @@
 (push '(ns-appearance . dark) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(menu-bar-lines . 1) default-frame-alist)
 (push '(right-fringe . 5) default-frame-alist)
 (push '(left-fringe . 5) default-frame-alist)
 (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1") default-frame-alist)
@@ -119,14 +107,15 @@
 (with-no-warnings
   (setq straight-cache-autoloads t)
   (setq straight-recipe-overrides nil)
-  (setq straight-check-for-modifications '(find-when-checking))
+  (setq straight-check-for-modifications '(find-when-checking check-on-save))
   (setq straight-repository-branch "develop")
   (setq straight-use-package-by-default t))
 
 (with-no-warnings
   (setq use-package-verbose nil)
   (setq use-package-always-defer t)
-  (setq use-package-enable-imenu-support t))
+  (setq use-package-enable-imenu-support t)
+  (setq use-package-compute-statistics t))
 
 (unless (file-exists-p bootstrap-file)
   (with-current-buffer
@@ -145,9 +134,6 @@
   (setq exec-path-from-shell-check-startup-files nil)
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
   (setq exec-path-from-shell-arguments '("-l" "-i"))
-  (when-let* ((gls (executable-find "gls")))
-    (setq ls-lisp-use-insert-directory-program nil)
-    (setq insert-directory-program "gls"))
   (exec-path-from-shell-initialize))
 
 (use-package no-littering
@@ -160,13 +146,8 @@
   (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
   (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
   (setq custom-file djm--custom-file)
-  (setq auto-save-list-file-name nil)
-  (eval-when-compile
-    (require 'recentf))
-  (with-eval-after-load 'recentf
-    (add-to-list 'recentf-exclude no-littering-var-directory)
-    (add-to-list 'recentf-exclude no-littering-etc-directory)
-    (add-to-list 'recentf-exclude djm--straight-directory)))
+  (setq recentf-exclude `(,djm--emacs-cache
+                          ,djm--straight-directory)))
 
 (use-package use-package-chords :demand t)
 (use-package use-package-hydra :demand t)
@@ -180,7 +161,7 @@
 
 (use-package map :demand t :straight nil)
 (use-package gv :demand t :straight nil)
-(use-package org :demand t)
+(use-package org :demand t :straight t :ensure org-plus-contrib)
 
 (provide 'early-init)
 ;;; early-init.el ends here

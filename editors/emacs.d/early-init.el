@@ -53,7 +53,7 @@
             (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
             (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 
-(add-hook 'after-init-hook #'djm/init-startup-time)
+;; (add-hook 'after-init-hook #'djm/init-startup-time)
 
 (fset 'display-startup-echo-area-message 'ignore)
 (fset 'view-hello-file 'ignore)
@@ -83,7 +83,7 @@
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(right-fringe . 5) default-frame-alist)
 (push '(left-fringe . 5) default-frame-alist)
-(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+(push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1") default-frame-alist)
 (push '(inhibit-double-buffering . t) default-frame-alist)
 
 (prefer-coding-system 'utf-8-unix)
@@ -115,14 +115,16 @@
   (defvar bootstrap-file
     (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
+;; Clear out recipe overrides (in case of re-init).
 (with-no-warnings
   (setq straight-cache-autoloads t)
-  (setq straight-check-for-modifications '(check-on-save))
+  (setq straight-recipe-overrides nil)
+  (setq straight-check-for-modifications '(find-when-checking))
   (setq straight-repository-branch "develop")
   (setq straight-use-package-by-default t))
 
 (with-no-warnings
-  (setq use-package-verbose t)
+  (setq use-package-verbose nil)
   (setq use-package-always-defer t)
   (setq use-package-enable-imenu-support t))
 
@@ -142,7 +144,7 @@
   :config
   (setq exec-path-from-shell-check-startup-files nil)
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
-  (setq exec-path-from-shell-arguments '("-l"))
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
   (when-let* ((gls (executable-find "gls")))
     (setq ls-lisp-use-insert-directory-program nil)
     (setq insert-directory-program "gls"))

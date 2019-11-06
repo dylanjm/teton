@@ -23,7 +23,7 @@ modulepath=(/usr/local/Cellar/modules/4.3.0/modulefiles)
 
 fpath+=($ZSH/functions)
 
-path=(/usr/local/opt/make/libexec/gnubin
+path=(# /usr/local/opt/make/libexec/gnubin
       $ZPLGM[HOME_DIR]/plugins/direnv---direnv
       $PYENV_ROOT/bin
       $PYENV_ROOT/shims

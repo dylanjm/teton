@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-05 11:15:46
+/last updated/: 2019-11-05 18:22:25
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -29,6 +29,7 @@
     - [[#frame--window][Frame & Window]]
     - [[#files-history--system][Files, History, & System]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
+    - [[#icons][Icons]]
     - [[#dashboard][Dashboard]]
     - [[#themes][Themes]]
     - [[#modelines][Modelines]]
@@ -75,6 +76,7 @@
 :header-args: :tangle "~/dotz/editors/emacs.d/early-init.el"
 :end:
 ** Header
+
 #+name: early-init-header-block
 #+begin_src emacs-lisp
 ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
@@ -89,6 +91,7 @@
 
 ** Performance Tweaks
 *** Garbage Collection
+
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
     (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -137,7 +140,7 @@
                 (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
                 (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)))
 
-    (add-hook 'after-init-hook #'djm/init-startup-time)
+    ;; (add-hook 'after-init-hook #'djm/init-startup-time)
 #+end_src
 
 ** Preliminary Configuration
@@ -172,7 +175,7 @@
   (push '(menu-bar-lines . 0) default-frame-alist)
   (push '(right-fringe . 5) default-frame-alist)
   (push '(left-fringe . 5) default-frame-alist)
-  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1") default-frame-alist)
+  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1") default-frame-alist)
   (push '(inhibit-double-buffering . t) default-frame-alist)
 
   (prefer-coding-system 'utf-8-unix)
@@ -214,14 +217,16 @@
     (defvar bootstrap-file
       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
+  ;; Clear out recipe overrides (in case of re-init).
   (with-no-warnings
     (setq straight-cache-autoloads t)
-    (setq straight-check-for-modifications '(check-on-save))
+    (setq straight-recipe-overrides nil)
+    (setq straight-check-for-modifications '(find-when-checking))
     (setq straight-repository-branch "develop")
     (setq straight-use-package-by-default t))
 
   (with-no-warnings
-    (setq use-package-verbose t)
+    (setq use-package-verbose nil)
     (setq use-package-always-defer t)
     (setq use-package-enable-imenu-support t))
 
@@ -247,7 +252,7 @@
     :config
     (setq exec-path-from-shell-check-startup-files nil)
     (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
-    (setq exec-path-from-shell-arguments '("-l"))
+    (setq exec-path-from-shell-arguments '("-l" "-i"))
     (when-let* ((gls (executable-find "gls")))
       (setq ls-lisp-use-insert-directory-program nil)
       (setq insert-directory-program "gls"))
@@ -305,7 +310,6 @@
 #+end_src
 
 -------------------------------------------------------------------
-
 * Init
 ** Header
 
@@ -339,7 +343,6 @@
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (add-hook 'write-file-hooks 'time-stamp)
-  (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 #+end_src
 
 **** Personal Packages/Hacks
@@ -436,85 +439,104 @@
 
 #+name: init-files-block
 #+begin_src emacs-lisp
-  (use-package saveplace
-    :straight nil
-    :config (save-place-mode +1))
+    (use-package saveplace
+      :straight nil
+      :config (save-place-mode +1))
 
-  (use-package savehist
-    :straight nil
-    :init
-    (setq history-delete-duplicates t
-          savehist-additional-variables '(kill-ring regexp-search-ring))
-    :config
-    (savehist-mode +1))
+    (use-package savehist
+      :straight nil
+      :init
+      (setq history-delete-duplicates t
+            savehist-additional-variables '(kill-ring regexp-search-ring))
+      :config
+      (savehist-mode +1))
 
-  (use-package files
-    :straight nil
-    :config
-    (setq backup-by-copying t
-          confirm-kill-processes nil
-          create-lockfiles nil
-          delete-old-versions t
-          find-file-visit-truename t
-          require-final-newline t
-          view-read-only t))
+    (use-package files
+      :straight nil
+      :config
+      (setq backup-by-copying t
+            confirm-kill-processes nil
+            create-lockfiles nil
+            delete-old-versions t
+            find-file-visit-truename t
+            require-final-newline t
+            view-read-only t))
 
-  (use-package autorevert
-    :straight nil
-    :init
-    (setq auto-revert-verbose nil
-          global-auto-revert-non-file-buffers t
-          auto-revert-use-notify nil)
-    :config
-    (global-auto-revert-mode 1))
+    (use-package autorevert
+      :straight nil
+      :init
+      (setq auto-revert-verbose nil
+            global-auto-revert-non-file-buffers t
+            auto-revert-use-notify nil)
+      :config
+      (global-auto-revert-mode 1))
 
-  (use-package recentf
-    :straight nil
-    :init
-    (setq recentf-max-saved-items 1000
-          recentf-auto-cleanup 'never)
-    :config
-    (recentf-mode 1))
+    (use-package recentf
+      :straight nil
+      :init
+      (setq recentf-max-saved-items 1000
+            recentf-auto-cleanup 'never)
+      :config
+      (recentf-mode 1))
 
-  (use-package auth-source
-    :config
-    (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
+    (use-package auth-source
+      :config
+      (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
 
-  (use-package osx-trash
-    :init
-    (setq delete-by-moving-to-trash t)
-    :config (osx-trash-setup))
+    (use-package osx-trash
+      :init
+      (setq delete-by-moving-to-trash t)
+      :config (osx-trash-setup))
 
-  (use-package async
-    :hook ((dired-mode . dired-async-mode))
-    :preface
-    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t)
-    :config
-    (setq async-bytecomp-allowed-packages '(all))
-    (async-bytecomp-package-mode 1))
+    (use-package async
+      :hook ((dired-mode . dired-async-mode))
+      :preface
+      (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
+      (autoload 'dired-async-mode "dired-async.el" nil t)
+      :config
+      (setq async-bytecomp-allowed-packages '(all))
+      (async-bytecomp-package-mode 1))
 
-  (use-package direnv
-    :commands (direnv-mode)
-    :config
-    (direnv-mode))
+    (use-package direnv
+      :demand t
+      :after (exec-path-from-shell)
+      :config
+      (direnv-mode +1)
+      (add-to-list 'direnv-non-file-modes '(comint-mode term-mode vterm-mode compilation-mode)))
 #+end_src
 
 ** Theme & Aesthetics
-*** Dashboard
+*** Icons
+#+name: init-icons-block
+#+begin_src emacs-lisp
+  (use-package all-the-icons)
+#+end_src
 
+*** Dashboard
 #+name: init-dashboard-block
 #+begin_src emacs-lisp
   (use-package dashboard
+    :hook (dashboard-mode . hide-mode-line-mode)
     :init
     (dashboard-setup-startup-hook)
     :custom
-    (dashboard-items '((recents . 5)
-                       (projects . 5)
-                       (bookmarks . 5)
+    (dashboard-items '((recents . 3)
+                       (projects . 3)
+                       (bookmarks . 3)
                        (agenda . 5)))
     :config
-    (set-face-bold 'dashboard-heading-face t))
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-heading-icons t)
+    (setq dashboard-startup-banner 4)
+    (setq dashboard-page-separator "\n\n")
+    (setq dashboard-center-content t)
+    (setq dashboard-footer "djm emacs configuration 2019")
+    (setq dashboard-footer-icon (all-the-icons-wicon "moon-4"
+                                                     :height 1.05
+                                                     :v-adjust -0.05
+                                                     :face 'font-lock-keyword-face))
+    (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
+    (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
 #+end_src
 
 *** Themes
@@ -576,10 +598,7 @@
     (set-face-attribute face nil :extend t))
 
   (with-eval-after-load 'org
-    (dolist (face '(org-block
-                    org-block-begin-line
-                    org-block-end-line
-                    org-level-1
+    (dolist (face '(org-level-1
                     org-quote))
       (set-face-attribute face nil :extend t)))
 
@@ -634,6 +653,12 @@
 #+end_src
 
 *** Modelines
+**** Hide Modeline
+#+name: init-hide-modelines-block
+#+begin_src emacs-lisp
+  (use-package hide-mode-line)
+#+end_src
+
 **** Minions
 #+name: init-minions-block
 #+begin_src emacs-lisp
@@ -786,7 +811,7 @@
     (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
     (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-      (let ((info '(:internal-border-width 10 :min-width 90)))
+      (let ((info '(:internal-border-width 12 :min-width 80)))
         (or (plist-get info arg-name) value))))
 #+end_src
 
@@ -814,6 +839,7 @@
     (projectile-completion-system 'ivy)
     (projectile-enable-caching t)
     (projectile-switch-project-action 'projectile-dired)
+    (projectile-verbose nil)
     :config
     (projectile-mode 1))
 
@@ -1040,9 +1066,12 @@
   (use-package ivy-posframe
     :hook (ivy-mode . ivy-posframe-mode)
     :config
+    (setq ivy-posframe-style 'frame-center)
     (setq ivy-posframe-hide-minibuffer t)
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)
-                                                 (swiper . nil))))
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
+                                                 (swiper . nil)))
+    (set-face-attribute 'ivy-posframe nil :background (color-darken-name (face-attribute 'default :background) 3)))
+
 #+end_src
 
 ** Editing
@@ -1347,7 +1376,27 @@
     (org-insert-heading-respect-content t)
     (org-startup-folded 'content)
     (org-enforce-todo-dependencies t)
-    (org-highlight-sparse-tree-matches nil))
+    (org-highlight-sparse-tree-matches nil)
+    (org-imenu-depth 4)
+    (org-catch-invisible-edits 'smart)
+    (org-indirect-buffer-display 'current-window)
+    (org-outline-path-complete-in-steps nil)
+    (org-pretty-entities nil)
+    (org-refile-allow-creating-parent-nodes 'confirm)
+    (org-refile-use-outline-path)
+    (org-startup-indented t)
+    (org-src-fontify-natively t)
+    (org-src-window-setup 'current-window)
+    (org-confirm-babel-evaluate nil)
+    (org-html-html5-fancy t)
+    (org-html-postamble nil)
+    (org-export-coding-system 'utf-8))
+#+end_src
+
+#+name: init-org-funcs-block
+#+begin_src emacs-lisp
+  (use-package org-funcs
+    :straight nil)
 #+end_src
 
 #+name: init-org-bullets-block
@@ -1390,7 +1439,6 @@
       (delete-trailing-whitespace))
     :config
     (setq org-src-tab-acts-natively t)
-    (setq org-src-window-setup 'split-window-below)
     (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
 #+end_src
@@ -1402,12 +1450,19 @@
            (markdown-mode . toc-org-mode)))
 #+end_src
 
+#+name: init-org-archive-block
+#+begin_src emacs-lisp
+  (use-package org-archive
+    :straight nil)
+#+end_src
+
 #+name: init-org-htmlize-block
 #+begin_src emacs-lisp
   (use-package htmlize)
 #+end_src
 
 *** Email
+
 #+name: init-email-block
 #+begin_src emacs-lisp
   (use-package notmuch

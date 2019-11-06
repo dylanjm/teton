@@ -12,7 +12,6 @@
 
 
 (add-hook 'write-file-hooks 'time-stamp)
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 
 
@@ -140,20 +139,36 @@
   (async-bytecomp-package-mode 1))
 
 (use-package direnv
-  :commands (direnv-mode)
+  :demand t
+  :after (exec-path-from-shell)
   :config
-  (direnv-mode))
+  (direnv-mode +1)
+  (add-to-list 'direnv-non-file-modes '(comint-mode term-mode vterm-mode compilation-mode)))
+
+(use-package all-the-icons)
 
 (use-package dashboard
+  :hook (dashboard-mode . hide-mode-line-mode)
   :init
   (dashboard-setup-startup-hook)
   :custom
-  (dashboard-items '((recents . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
+  (dashboard-items '((recents . 3)
+                     (projects . 3)
+                     (bookmarks . 3)
                      (agenda . 5)))
   :config
-  (set-face-bold 'dashboard-heading-face t))
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-heading-icons t)
+  (setq dashboard-startup-banner 4)
+  (setq dashboard-page-separator "\n\n")
+  (setq dashboard-center-content t)
+  (setq dashboard-footer "djm emacs configuration 2019")
+  (setq dashboard-footer-icon (all-the-icons-wicon "moon-4"
+                                                   :height 1.05
+                                                   :v-adjust -0.05
+                                                   :face 'font-lock-keyword-face))
+  (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
+  (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
 
 (use-package doom-themes
   :disabled t
@@ -202,10 +217,7 @@
   (set-face-attribute face nil :extend t))
 
 (with-eval-after-load 'org
-  (dolist (face '(org-block
-                  org-block-begin-line
-                  org-block-end-line
-                  org-level-1
+  (dolist (face '(org-level-1
                   org-quote))
     (set-face-attribute face nil :extend t)))
 
@@ -257,6 +269,8 @@
           line-move-visual nil
           set-mark-command-repeat-pop t
           track-eol t))
+
+(use-package hide-mode-line)
 
 (use-package minions
   :commands (minions-mode)
@@ -375,7 +389,7 @@ spaces."
   (posframe-arghandler #'hemacs-posframe-arghandler)
   :config
   (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-    (let ((info '(:internal-border-width 10 :min-width 90)))
+    (let ((info '(:internal-border-width 12 :min-width 80)))
       (or (plist-get info arg-name) value))))
 
 (use-package eterm-256color
@@ -395,6 +409,7 @@ spaces."
   (projectile-completion-system 'ivy)
   (projectile-enable-caching t)
   (projectile-switch-project-action 'projectile-dired)
+  (projectile-verbose nil)
   :config
   (projectile-mode 1))
 
@@ -596,9 +611,11 @@ spaces."
 (use-package ivy-posframe
   :hook (ivy-mode . ivy-posframe-mode)
   :config
+  (setq ivy-posframe-style 'frame-center)
   (setq ivy-posframe-hide-minibuffer t)
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)
-                                               (swiper . nil))))
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
+                                               (swiper . nil)))
+  (set-face-attribute 'ivy-posframe nil :background (color-darken-name (face-attribute 'default :background) 3)))
 
 (use-package man :defer 2.0)
 
@@ -853,7 +870,24 @@ spaces."
   (org-insert-heading-respect-content t)
   (org-startup-folded 'content)
   (org-enforce-todo-dependencies t)
-  (org-highlight-sparse-tree-matches nil))
+  (org-highlight-sparse-tree-matches nil)
+  (org-imenu-depth 4)
+  (org-catch-invisible-edits 'smart)
+  (org-indirect-buffer-display 'current-window)
+  (org-outline-path-complete-in-steps nil)
+  (org-pretty-entities nil)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  (org-refile-use-outline-path)
+  (org-startup-indented t)
+  (org-src-fontify-natively t)
+  (org-src-window-setup 'current-window)
+  (org-confirm-babel-evaluate nil)
+  (org-html-html5-fancy t)
+  (org-html-postamble nil)
+  (org-export-coding-system 'utf-8))
+
+(use-package org-funcs
+  :straight nil)
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode))
@@ -881,13 +915,15 @@ spaces."
     (delete-trailing-whitespace))
   :config
   (setq org-src-tab-acts-natively t)
-  (setq org-src-window-setup 'split-window-below)
   (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
   (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
 
 (use-package toc-org
   :hook ((org-mode . toc-org-mode)
          (markdown-mode . toc-org-mode)))
+
+(use-package org-archive
+  :straight nil)
 
 (use-package htmlize)
 

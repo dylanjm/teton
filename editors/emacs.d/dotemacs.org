@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-06 08:00:08
+/last updated/: 2019-11-06 17:24:01
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -27,15 +27,16 @@
     - [[#personal-tweaks][Personal Tweaks]]
     - [[#defaults][Defaults]]
     - [[#frame--window][Frame & Window]]
-    - [[#files-history--system][Files, History, & System]]
+    - [[#files-history--system-settings][Files, History, & System Settings]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
     - [[#icons][Icons]]
     - [[#dashboard][Dashboard]]
     - [[#themes][Themes]]
     - [[#modelines][Modelines]]
-    - [[#aesthetics][Aesthetics]]
+    - [[#ui-features][UI Features]]
   - [[#utilities][Utilities]]
     - [[#prescient][Prescient]]
+    - [[#key-chords][Key Chords]]
     - [[#posframe][Posframe]]
     - [[#terminal][Terminal]]
     - [[#projectile][Projectile]]
@@ -134,37 +135,34 @@
 
 ** Preliminary Configuration
 *** Pre-Gui Optimization
-#+name: early-init-gui-block
+#+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (fset 'display-startup-echo-area-message 'ignore)
   (fset 'view-hello-file 'ignore)
 
   (setq-default auto-window-vscroll nil
-        bidi-display-reordering 'left-to-right
-        initial-scratch-message ""
-        inhibit-startup-echo-area-message t
-        inhibit-startup-screen t
-        ns-pop-up-frames nil
-        ns-use-native-fullscreen nil
-        ns-use-thin-smoothing t
-        frame-inhibit-implied-resize t
-        window-resize-pixelwise t
-        frame-resize-pixelwise t)
+                bidi-display-reordering 'left-to-right
+                frame-inhibit-implied-resize t
+                window-resize-pixelwise t
+                frame-resize-pixelwise t)
 
-  (push '(window-divider-default-bottom-width . 1) default-frame-alist)
-  (push '(window-divider-default-right-width . 1) default-frame-alist)
-  (push '(window-divider-default-places . t) default-frame-alist)
-  (push '(width . 188) default-frame-alist)
-  (push '(height . 188) default-frame-alist)
-  (push '(ns-transparent-titlebar . t) default-frame-alist)
-  (push '(ns-appearance . dark) default-frame-alist)
-  (push '(vertical-scroll-bars) default-frame-alist)
-  (push '(tool-bar-lines . 0) default-frame-alist)
-  (push '(menu-bar-lines . 1) default-frame-alist)
-  (push '(right-fringe . 5) default-frame-alist)
-  (push '(left-fringe . 5) default-frame-alist)
-  (push '(font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1") default-frame-alist)
-  (push '(inhibit-double-buffering . t) default-frame-alist)
+  (setq initial-frame-alist
+        '((window-divider-default-bottom-width . 1)
+          (window-divider-default-right-width . 1)
+          (window-divider-default-places . t)
+          (width . 188)
+          (height . 188)))
+
+  (setq default-frame-alist
+        '((ns-transparent-titlebar . t)
+          (ns-appearance . dark)
+          (vertical-scroll-bars)
+          (tool-bar-lines . 0)
+          (menu-bar-lines . 1)
+          (right-fringe . 5)
+          (left-fringe . 5)
+          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1")
+          (inhibit-double-buffering . t)))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -240,8 +238,8 @@
     :demand t
     :config
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "FPATH"))
-    (setq exec-path-from-shell-arguments '("-l" "-i"))
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
+    (setq exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -254,14 +252,8 @@
     :straight t
     :init
     (setq no-littering-etc-directory djm--emacs-etc-cache)
-    (setq no-littering-var-directory djm--emacs-var-cache)
-    :config
-    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
-    (setq custom-file djm--custom-file)
-    (setq recentf-exclude `(,djm--emacs-cache
-                            ,djm--straight-directory)))
-#+end_src
+    (setq no-littering-var-directory djm--emacs-var-cache))
+    #+end_src
 
 ** Required Packages
 
@@ -296,7 +288,7 @@
 
 #+name: init-header-block
 #+begin_src emacs-lisp
-;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; coding: utf-8-*-
+;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t-*-
 ;;;
 ;;; Commentary:
 ;;; Emacs `init.el' config by dylanjm.
@@ -334,7 +326,7 @@
 
 *** Defaults
 
-#+name: init-settings-block
+#+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
     :straight nil
@@ -353,6 +345,9 @@
     (frame-title-format '("%b - Zmacs"))
     (highlight-nonselected-windows nil)
     (icon-title-format frame-title-format)
+    (initial-scratch-message "")
+    (inhibit-startup-echo-area-message t)
+    (inhibit-startup-screen t)
     (indent-tabs-mode nil)
     (indicate-buffer-boundaries nil)
     (indicate-empty-lines nil)
@@ -380,20 +375,26 @@
     (x-underline-at-descent-line t))
 #+end_src
 
-#+name: init-settings-02-blockp
+#+name: init-settings-block
 #+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
+
+  (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
+  (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
 
   (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
   (global-unset-key (kbd "C-z"))
 #+end_src
 
+**** Custom File
 #+name: init-custom-load-block
 #+begin_src emacs-lisp
+  (setq custom-file djm--custom-file)
   (when (file-exists-p custom-file)
     (load custom-file :noerror))
 #+end_src
 
+**** Secret File
 #+name: init-secret-load-block
 #+begin_src emacs-lisp
   (when (file-exists-p djm--secret-file)
@@ -401,7 +402,6 @@
 #+end_src
 
 *** Frame & Window
-
 #+name: init-frame-block
 #+begin_src emacs-lisp
   (use-package pixel-scroll
@@ -415,11 +415,14 @@
           mac-option-modifier 'meta
           mac-right-command-modifier 'super
           mac-right-option-modifier 'none
-          mac-function-modifier 'hyper))
+          mac-function-modifier 'hyper)
+
+    (setq ns-pop-up-frames nil
+          ns-use-native-fullscreen nil
+          ns-use-thin-smoothing t))
 #+end_src
 
-*** Files, History, & System
-
+*** Files, History, & System Settings
 #+name: init-files-block
 #+begin_src emacs-lisp
   (use-package saveplace
@@ -444,23 +447,27 @@
           find-file-visit-truename t
           require-final-newline t
           view-read-only t)
-  (when-let* ((gls (executable-find "gls")))
-    (setq insert-directory-program "gls")))
+    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
+    (when-let* ((gls (executable-find "gls")))
+      (setq insert-directory-program "gls")))
 
   (use-package autorevert
     :straight nil
-    :init
+    :config
     (setq auto-revert-verbose nil
           global-auto-revert-non-file-buffers t
           auto-revert-use-notify nil)
-    :config
-    (global-auto-revert-mode 1))
+    (global-auto-revert-mode +1))
 
   (use-package recentf
     :straight nil
     :init
-    (setq recentf-max-saved-items 1000
-          recentf-auto-cleanup 'never)
+    (setq recentf-max-saved-items 2000
+          recentf-max-menu-items 20
+          recentf-auto-cleanup 'auto)
+    (setq recentf-exclude `(,djm--emacs-cache
+                            ,djm--straight-directory))
     :config
     (recentf-mode 1))
 
@@ -480,14 +487,38 @@
     (autoload 'dired-async-mode "dired-async.el" nil t)
     :config
     (setq async-bytecomp-allowed-packages '(all))
-    (async-bytecomp-package-mode 1))
+    (async-bytecomp-package-mode +1))
+
+  (use-package compile
+    :straight nil
+    :preface
+    (autoload 'ansi-color-apply-on-region "ansi-color")
+    (defvar compilation-filter-start)
+    (defun config-compilation-buffer ()
+      (unless (derived-mode-p 'rg-mode)
+        (let ((inhibit-read-only t))
+          (ansi-color-apply-on-region compilation-filter-start (point)))))
+
+    (defface compilation-base-face nil
+      "Base Face for compilation highlights"
+      :group 'config-basic-settings)
+    :config
+    (add-hook 'compilation-filter-hook #'config-compilation-buffer)
+    (setq compilation-message-face 'compilation-base-face)
+    (setq compilation-always-kill t
+          compilation-ask-about-save nil
+          compilation-scroll-output 'first-error))
+
 
   (use-package direnv
     :demand t
     :after (exec-path-from-shell)
     :config
-    (direnv-mode +1)
-    (add-to-list 'direnv-non-file-modes '(comint-mode term-mode vterm-mode compilation-mode)))
+    (add-to-list 'direnv-non-file-modes '(comint-mode
+                                          term-mode
+                                          vterm-mode
+                                          compilation-mode))
+    (direnv-mode +1))
 #+end_src
 
 ** Theme & Aesthetics
@@ -525,14 +556,29 @@
 #+end_src
 
 *** Themes
-**** Doom-Themes
-#+name: init-doom-themes-block
+**** Aesthetic Settings
+#+name: init-ui-settings-block
 #+begin_src emacs-lisp
-  (use-package doom-themes
-    :disabled t
-    :demand t
+  (use-package hl-line
+    :straight nil
+    :commands (hl-line-mode global-hl-line-mode))
+
+  (use-package simple
+    :straight nil
     :config
-    (load-theme 'doom-gruvbox t))
+    (setq blink-matching-paren nil
+          column-number-mode nil
+          eval-expression-print-length nil
+          eval-expression-print-level nil
+          line-number-mode t
+          inhibit-point-motion-hooks t
+          line-move-visual nil
+          set-mark-command-repeat-pop t
+          track-eol t))
+
+  (use-package color
+    :straight nil
+    :functions (color-darken-name))
 #+end_src
 
 **** Gruvbox Theme
@@ -544,104 +590,32 @@
     :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
     :config
     (load-theme 'gruvbox-dark-hard t))
+#+end_src
 
-  (use-package darktooth-theme
+**** Doom-Themes
+#+name: init-doom-themes-block
+#+begin_src emacs-lisp
+  (use-package doom-themes
     :disabled t
     :demand t
     :config
-    (load-theme 'darktooth t))
-
-  (use-package zerodark-theme
-    :disabled t
-    :demand t
-    :config
-    (load-theme 'zerodark t))
-
-  (use-package gbox-theme
-    :disabled t
-    :demand t
-    :straight (:repo "https://github.com/dylanjm/emacs-theme-gbox")
-    :config
-    (load-theme 'gbox t))
-
-  (use-package color
-    :straight nil
-    :functions (color-darken-name))
-
-  (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
-  (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
+    (load-theme 'doom-gruvbox t))
 #+end_src
 
 **** Emacs 27 Keyword Fix
-#+name: init-keyword-fix-block
+#+name: init-extend-fix-block
 #+begin_src emacs-lisp
-  ;; emacs 27 added new `:extend' keyword which breaks most themes
-  (if (boundp 'hl-line)
-      (set-face-attribute hl-line nil :extend t))
 
-  (dolist (face '(region secondary-selection))
-    (set-face-attribute face nil :extend t))
-
-  (with-eval-after-load 'org
-    (dolist (face '(org-level-1
-                    org-quote))
-      (set-face-attribute face nil :extend t)))
-
-  (with-eval-after-load 'magit
-    (dolist (face '(magit-diff-hunk-heading
-                    magit-diff-hunk-heading-highlight
-                    magit-diff-hunk-heading-selection
-                    magit-diff-hunk-region
-                    magit-diff-lines-heading
-                    magit-diff-lines-boundary
-                    magit-diff-conflict-heading
-                    magit-diff-added
-                    magit-diff-removed
-                    magit-diff-our
-                    magit-diff-base
-                    magit-diff-their
-                    magit-diff-context
-                    magit-diff-added-highlight
-                    magit-diff-removed-highlight
-                    magit-diff-our-highlight
-                    magit-diff-base-highlight
-                    magit-diff-their-highlight
-                    magit-diff-context-highlight
-                    magit-diff-whitespace-warning
-                    magit-diffstat-added
-                    magit-diffstat-removed
-                    magit-section-heading
-                    magit-section-heading-selection
-                    magit-section-highlight
-                    magit-section-secondary-heading
-                    magit-diff-file-heading
-                    magit-diff-file-heading-highlight
-                    magit-diff-file-heading-selection))
-      (set-face-attribute face nil :extend t)))
-
-    (use-package hl-line
-      :straight nil
-      :commands (hl-line-mode global-hl-line-mode))
-
-    (use-package simple
-      :straight nil
-      :config
-      (setq blink-matching-paren nil
-            column-number-mode nil
-            eval-expression-print-length nil
-            eval-expression-print-level nil
-            line-number-mode t
-            inhibit-point-motion-hooks t
-            line-move-visual nil
-            set-mark-command-repeat-pop t
-            track-eol t))
 #+end_src
 
 *** Modelines
 **** Hide Modeline
 #+name: init-hide-modelines-block
 #+begin_src emacs-lisp
-  (use-package hide-mode-line)
+  (use-package hide-mode-line
+    :commands (hide-mode-line-mode
+               hide-mode-line-reset
+               global-hide-mode-line-mode))
 #+end_src
 
 **** Minions
@@ -658,74 +632,73 @@
 **** Doom-Modelines
 #+name: init-doom-modeline-block
 #+begin_src emacs-lisp
-
+  (use-package doom-modeline
+    :disabled t)
 #+end_src
 
 **** Custom Modeline
 #+name: init-custom-modeline-block
 #+begin_src emacs-lisp
-  (defun radian-mode-line-buffer-modified-status ()
-    "Return a mode line construct indicating buffer modification status.
-  This is [*] if the buffer has been modified and whitespace
-  otherwise. (Non-file-visiting buffers are never considered to be
-  modified.) It is shown in the same color as the buffer name, i.e.
-  `mode-line-buffer-id'."
-    (propertize
-     (if (and (buffer-modified-p)
-              (buffer-file-name))
-         "[*]"
-       "   ")
-     'face 'mode-line-buffer-id))
+    (defun radian-mode-line-buffer-modified-status ()
+      "Return a mode line construct indicating buffer modification status.
+    This is [*] if the buffer has been modified and whitespace
+    otherwise. (Non-file-visiting buffers are never considered to be
+    modified.) It is shown in the same color as the buffer name, i.e.
+    `mode-line-buffer-id'."
+      (propertize
+       (if (and (buffer-modified-p)
+                (buffer-file-name))
+           "[*]"
+         "   ")
+       'face 'mode-line-buffer-id))
 
-  ;; Normally the buffer name is right-padded with whitespace until it
-  ;; is at least 12 characters. This is a waste of space, so we
-  ;; eliminate the padding here. Check the docstrings for more
-  ;; information.
-  (setq-default mode-line-buffer-identification
-                (propertized-buffer-identification "%b"))
+    ;; Normally the buffer name is right-padded with whitespace until it
+    ;; is at least 12 characters. This is a waste of space, so we
+    ;; eliminate the padding here. Check the docstrings for more
+    ;; information.
+    (setq-default mode-line-buffer-identification
+                  (propertized-buffer-identification "%b"))
 
-  ;; Make `mode-line-position' show the column, not just the row.
-  (column-number-mode +1)
+    ;; https://emacs.stackexchange.com/a/7542/12534
+    (defun radian--mode-line-align (left right)
+      "Render a left/right aligned string for the mode line.
+    LEFT and RIGHT are strings, and the return value is a string that
+    displays them left- and right-aligned respectively, separated by
+    spaces."
+      (let ((width (- (window-total-width) (length left))))
+        (format (format "%%s%%%ds" width) left right)))
 
-  ;; https://emacs.stackexchange.com/a/7542/12534
-  (defun radian--mode-line-align (left right)
-    "Render a left/right aligned string for the mode line.
-  LEFT and RIGHT are strings, and the return value is a string that
-  displays them left- and right-aligned respectively, separated by
-  spaces."
-    (let ((width (- (window-total-width) (length left))))
-      (format (format "%%s%%%ds" width) left right)))
+    (defcustom radian-mode-line-left
+      '(;; Show [*] if the buffer is modified.
+        (:eval (radian-mode-line-buffer-modified-status))
+        " "
+        ;; Show the name of the current buffer.
+        mode-line-buffer-identification
+        "   "
+        ;; Show the row and column of point.
+        mode-line-position
+        ;; Show the active major and minor modes.
+        "  "
+        mode-line-modes)
+      "Composite mode line construct to be shown left-aligned."
+      :type 'sexp)
 
-  (defcustom radian-mode-line-left
-    '(;; Show [*] if the buffer is modified.
-      (:eval (radian-mode-line-buffer-modified-status))
-      " "
-      ;; Show the name of the current buffer.
-      mode-line-buffer-identification
-      "   "
-      ;; Show the row and column of point.
-      mode-line-position
-      ;; Show the active major and minor modes.
-      "  ")
-    "Composite mode line construct to be shown left-aligned."
-    :type 'sexp)
+    (defcustom radian-mode-line-right nil
+      "Composite mode line construct to be shown right-aligned."
+      :type 'sexp)
 
-  (defcustom radian-mode-line-right nil
-    "Composite mode line construct to be shown right-aligned."
-    :type 'sexp)
-
-  ;; Actually reset the mode line format to show all the things we just
-  ;; defined.
-  (setq-default mode-line-format
-                '(:eval (replace-regexp-in-string
-                         "%" "%%"
-                         (radian--mode-line-align
-                          (format-mode-line radian-mode-line-left)
-                          (format-mode-line radian-mode-line-right))
-                         'fixedcase 'literal)))
+    ;; Actually reset the mode line format to show all the things we just
+    ;; defined.
+    (setq-default mode-line-format
+                  '(:eval (replace-regexp-in-string
+                           "%" "%%"
+                           (radian--mode-line-align
+                            (format-mode-line radian-mode-line-left)
+                            (format-mode-line radian-mode-line-right))
+                           'fixedcase 'literal)))
 #+end_src
 
-*** Aesthetics
+*** UI Features
 **** Tab-Line
 
 #+name: init-tab-line-block
@@ -750,6 +723,7 @@
     (setq page-break-lines-modes '(prog-mode
                                    ibuffer-mode
                                    text-mode
+                                   comint-mode
                                    compilation-mode
                                    help-mode
                                    org-agenda-mode)))
@@ -759,6 +733,7 @@
 #+name: init-dimmer-block
 #+begin_src emacs-lisp
   (use-package dimmer
+    :disabled t
     :commands (dimmer-mode)
     :custom
     (dimmer-fraction 0.33)
@@ -777,19 +752,22 @@
 *** Prescient
 #+name: init-prescient-block
 #+begin_src emacs-lisp
+  (use-package prescient
+    :config (prescient-persist-mode +1))
+#+end_src
+
+*** Key Chords
+#+name: init-key-chords-block
+#+begin_src emacs-lisp
   (use-package key-chord
     :custom (key-chord-two-keys-delay 0.05)
     :config (key-chord-mode 1))
-
-  (use-package prescient
-    :config (prescient-persist-mode +1))
 #+end_src
 
 *** Posframe
 #+name: init-posframe-block
 #+begin_src emacs-lisp
   (use-package posframe
-    :defer 2.0
     :custom
     (posframe-arghandler #'hemacs-posframe-arghandler)
     :config
@@ -801,17 +779,17 @@
 *** Terminal
 #+name: init-terminal-block
 #+begin_src emacs-lisp
-  (use-package eterm-256color
-    :hook (vterm-mode . eterm-256color-mode))
+    (use-package eterm-256color
+      :hook (vterm-mode . eterm-256color-mode))
 
-  (use-package vterm
-    :defer 10
-    :config (setq vterm-term-environment-variable "eterm-color"))
+    (use-package vterm
+      :config
+      (setq vterm-term-environment-variable "eterm-color"))
 
-  (use-package vterm-toggle
-    :straight (:host github :repo "jixiuf/vterm-toggle")
-    :bind (("C-c C-t" . vterm-toggle)
-           ("C-c C-y" . term-toggle-cd)))
+    (use-package vterm-toggle
+      :straight (:host github :repo "jixiuf/vterm-toggle")
+      :bind (("C-c C-t" . vterm-toggle)
+             ("C-c C-y" . term-toggle-cd)))
 #+end_src
 
 *** Projectile
@@ -825,26 +803,6 @@
     (projectile-verbose nil)
     :config
     (projectile-mode 1))
-
-  (use-package compile
-    :straight nil
-    :preface
-    (autoload 'ansi-color-apply-on-region "ansi-color")
-    (defvar compilation-filter-start)
-    (defun config-compilation-buffer ()
-      (unless (derived-mode-p 'rg-mode)
-        (let ((inhibit-read-only t))
-          (ansi-color-apply-on-region compilation-filter-start (point)))))
-
-    (defface compilation-base-face nil
-      "Base Face for compilation highlights"
-      :group 'config-basic-settings)
-    :config
-    (add-hook 'compilation-filter-hook #'config-compilation-buffer)
-    (setq compilation-message-face 'compilation-base-face)
-    (setq compilation-always-kill t
-          compilation-ask-about-save nil
-          compilation-scroll-output 'first-error))
 #+end_src
 
 *** Autocomplete
@@ -1225,11 +1183,11 @@
     (dired-dwim-target t)
     (dired-use-ls-dired t)
     (dired-ls-F-marks-symlinks t)
-    (dired-listing-switches "-alh --group-directories-first --time-style \"iso\"")
+    (dired-listing-switches "-alh --group-directories-first --time-style iso")
     (dired-recursive-deletes 'always)
     (dired-recursive-copies 'always)
     :config
-    (setq dired-deletion-confirmer '(lambda (x) t)))
+    (setq dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm on deleting files :)
 
   (use-package dired-aux
     :straight nil
@@ -1340,8 +1298,6 @@
 
     :hook (org-mode . visual-line-mode)
     :hook (after-save . djm/tangle-init-org-file-on-save)
-    :custom-face
-
     :preface
     (defun djm/tangle-init-org-file-on-save ()
       (when (string= buffer-file-name
@@ -1439,7 +1395,6 @@
 #+end_src
 
 *** Email
-
 #+name: init-email-block
 #+begin_src emacs-lisp
   (use-package notmuch
@@ -1476,22 +1431,21 @@
     (setq vc-handled-backends nil))
 
   (use-package smerge-mode)
+
   (use-package transient
     :config
     (transient-bind-q-to-quit))
 
   (use-package magit
-    :bind (("C-x g" . magit-status)
-           ("C-x M-g" . magit-dispatch)
-           ("C-c M-g" . magit-file-popup)))
+    :bind (("C-x g" . magit-status)))
 
   (use-package git-commit
     :after (magit)
     :custom (git-commit-summary-max-length 50))
 
   (use-package git-gutter
-    :commands (global-git-gutter-mode)
-    :config (global-git-gutter-mode 1))
+    :hook (after-init . (lambda () (global-git-gutter-mode +1)))
+    :commands (global-git-gutter-mode))
 #+end_src
 
 *** Language Server Support
@@ -1528,25 +1482,24 @@
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
   (use-package flycheck
-    :defer 4
+    :commands (flycheck-mode
+               flycheck-list-errors
+               flycheck-error-list-next-error
+               flycheck-error-list-previous-error
+               flycheck-error-list-goto-error)
+    ;; :hook (after-init . (lambda () (global-flycheck-mode +1)))
     :init
     (defun flycheck-disable-checkers (&rest checkers)
       (unless (bounp 'flycheck-disabled-checkers)
         (setq flycheck-disabled-checkers nil))
       (dolist (checker checkers)
         (cl-pushnew checker flycheck-disabled-checkers)))
-    :commands (flycheck-list-errors
-               flycheck-error-list-next-error
-               flycheck-error-list-previous-error
-               flycheck-error-list-goto-error)
     :custom
     (flycheck-emacs-lisp-load-path 'inherit)
     (flycheck-indication-mode 'right-fringe)
     (when (fboundp 'define-fringe-bitmap)
       (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-        [16 48 112 240 112 48 16] nil nil 'center))
-    :config
-    (global-flycheck-mode 1))
+        [16 48 112 240 112 48 16] nil nil 'center)))
 
   (use-package flycheck-posframe
     :after (flycheck)

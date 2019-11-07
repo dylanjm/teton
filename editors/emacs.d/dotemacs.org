@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-06 17:24:01
+/last updated/: 2019-11-06 22:53:16
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -161,7 +161,7 @@
           (menu-bar-lines . 1)
           (right-fringe . 5)
           (left-fringe . 5)
-          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-24-*-*-*-m-0-iso10646-1")
+          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1")
           (inhibit-double-buffering . t)))
 
   (prefer-coding-system 'utf-8-unix)
@@ -184,6 +184,7 @@
 #+begin_src emacs-lisp
   (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
   (defvar djm--emacs-cache "~/.cache/emacs/")
+  (defvar djm--assets-directory (expand-file-name "assets/" user-emacs-directory))
   (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
   (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
   (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
@@ -271,7 +272,7 @@
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
-  (use-package org :demand t :straight t)
+  (use-package org :straight (:repo "https://code.orgmode.org/bzg/org-mode.git"))
 #+end_src
 
 ** Footer
@@ -461,11 +462,12 @@
     (global-auto-revert-mode +1))
 
   (use-package recentf
+    :demand t
     :straight nil
     :init
     (setq recentf-max-saved-items 2000
           recentf-max-menu-items 20
-          recentf-auto-cleanup 'auto)
+          recentf-auto-cleanup 'never)
     (setq recentf-exclude `(,djm--emacs-cache
                             ,djm--straight-directory))
     :config
@@ -533,7 +535,11 @@
 #+begin_src emacs-lisp
   (use-package dashboard
     :hook (dashboard-mode . hide-mode-line-mode)
-    :init
+    :init/el-patch
+    (defun dashboard-get-banner-path (index)
+    "Return the full path to banner with index INDEX."
+    (concat djm--assests-directory (format "%d.txt" index)))
+
     (dashboard-setup-startup-hook)
     :custom
     (dashboard-items '((recents . 3)
@@ -779,17 +785,21 @@
 *** Terminal
 #+name: init-terminal-block
 #+begin_src emacs-lisp
-    (use-package eterm-256color
-      :hook (vterm-mode . eterm-256color-mode))
+  (use-package term
+    :straight nil
+    :hook (term-mode . (lambda () (hl-line-mode -1))))
 
-    (use-package vterm
-      :config
-      (setq vterm-term-environment-variable "eterm-color"))
+  (use-package eterm-256color
+    :hook (vterm-mode . eterm-256color-mode))
 
-    (use-package vterm-toggle
-      :straight (:host github :repo "jixiuf/vterm-toggle")
-      :bind (("C-c C-t" . vterm-toggle)
-             ("C-c C-y" . term-toggle-cd)))
+  (use-package vterm
+    :config
+    (setq vterm-term-environment-variable "eterm-color"))
+
+  (use-package vterm-toggle
+    :straight (:host github :repo "jixiuf/vterm-toggle")
+    :bind (("C-c C-t" . vterm-toggle)
+           ("C-c C-y" . term-toggle-cd)))
 #+end_src
 
 *** Projectile
@@ -945,7 +955,7 @@
 
            (:map counsel-mode-map
                  ([remap dired] . counsel-dired)
-                 ("M-x" . counsel-M-x)
+                 ([remap execute-extended-command] . counsel-M-x)
                  ([remap find-file] . counsel-find-file)
                  ([remap dired-jump] . counsel-dired-jump)
                  ("C-x C-l" . counsel-find-library)
@@ -960,9 +970,9 @@
                  ("C-c r" . counsel-rg)
                  ("C-c z" . counsel-fzf)
                  ("C-c c w" . counsel-colors-web)
-                 ("C-h F" . counsel-describe-face)
-                 ("C-h f" . counsel-describe-function)
-                 ("C-h v" . counsel-describe-variable))
+                 ([remap describe-face] . counsel-describe-face)
+                 ([remap describe-function] . counsel-describe-function)
+                 ([remap describe-variable] . counsel-describe-variable))
 
            ("C-s" . swiper)
            ("C-c c s" . swiper-isearch)
@@ -1000,10 +1010,6 @@
                                   (swiper . ivy--regex-plus)
                                   (swiper-isearch . ivy--regex-plus))))
 
-  (use-package amx
-    :hook (ivy-mode . amx-mode))
-
-
   (use-package ivy-posframe
     :hook (ivy-mode . ivy-posframe-mode)
     :config
@@ -1012,7 +1018,6 @@
     (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
                                                  (swiper . nil)))
     (set-face-attribute 'ivy-posframe nil :background (color-darken-name (face-attribute 'default :background) 3)))
-
 #+end_src
 
 ** Editing
@@ -1023,7 +1028,6 @@
   (use-package man)
 
   (use-package help
-    :defer 2.0
     :straight nil
     :config
     (setq help-window-select t)
@@ -1068,9 +1072,8 @@
 #+name: init-edit-utils-block
 #+begin_src emacs-lisp
   (use-package ws-butler
-    :defer 2.0
-    :commands (ws-butler-global-mode)
-    :config (ws-butler-global-mode 1))
+    :hook (after-init . (lambda () (ws-butler-global-mode +1)))
+    :commands (ws-butler-global-mode))
 
   (use-package multiple-cursors
     :disabled t
@@ -1087,21 +1090,19 @@
     (editorconfig-mode 1))
 
     (use-package default-text-scale
-      :defer 10
       :commands (default-text-scale-increase
                  default-text-scale-decrease
                  default-text-scale-reset)
       :bind (("C-x t <up>" . default-text-scale-increase)
              ("C-x t <down>" . default-text-scale-decrease)
              ("C-x t ]". default-text-scale-reset))
-      :custom (default-text-scale-amount 30))
+      :custom (default-text-scale-amount 20))
 
     (use-package delsel
       :straight nil
-      :config (delete-selection-mode 1))
+      :init (delete-selection-mode 1))
 
     (use-package align
-      :disabled t
       :straight nil
       :general ("C-x a a" #'align-regexp))
 
@@ -1110,30 +1111,22 @@
              ("M-z" . zop-up-to-char)))
 
     (use-package undo-tree
-      :defer 10.0
-      :config (global-undo-tree-mode 1))
+      :hook (after-init . (lambda () (global-undo-tree-mode +1))))
 
     (use-package aggressive-indent
-      :defer 10.0
       :commands (aggressive-indent-mode))
 
     (use-package hungry-delete
-      :defer 10.0
       :commands (hungry-delete-mode))
 
     (use-package prog-mode
       :straight nil
       :hook ((prog-mode . prettify-symbols-mode)
              (prog-mode . show-paren-mode)
-             (prog-mode . display-line-numbers-mode)
              (prog-mode . display-fill-column-indicator-mode)))
 
     (use-package rainbow-delimiters
       :hook (prog-mode . rainbow-delimiters-mode))
-
-    (use-package term
-      :straight nil
-      :hook (term-mode . (lambda () (hl-line-mode -1))))
 #+end_src
 
 ** Navigation
@@ -1389,6 +1382,12 @@
     :straight nil)
 #+end_src
 
+#+name: init-org-mime-block
+#+begin_src emacs-lisp
+  (use-package org-mime
+    :straight nil)
+#+end_src
+
 #+name: init-org-htmlize-block
 #+begin_src emacs-lisp
   (use-package htmlize)
@@ -1397,6 +1396,43 @@
 *** Email
 #+name: init-email-block
 #+begin_src emacs-lisp
+  (use-package mu4e
+    :disabled t
+    :config
+    (setq mu4e-get-mail-command "mbsync -c ~/.mbsyncrc -a"
+          mu4e-html2text-command "w3m -T text/html"
+          mu4e-view-prefer-html t
+          mu4e-update-interval 180
+          mu4e-headers-auto-update t
+          mu4e-view-show-images t
+          mu4e-view-use-gnus t
+          mu4e-change-filenames-when-moving t
+          mu4e-sent-messages-behavior 'delete
+          mu4e-completing-read-function 'completing-read
+          mu4e-compose-signature-auto-include nil
+          mu4e-compose-format-flowed t)
+
+    (setq-default mu4e-attachment-dir "~/Downloads")
+    (setq-default mu4e-maildir "~/.cache/mail")
+    (setq-default mu4e-hide-index-messages t)
+    (setq-default mu4e-index-update-in-background t)
+
+    (add-to-list 'mu4e-view-actions
+                 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+
+    (when (fboundp 'imagemagick-register-types)
+      (imagemagick-register-types))
+
+    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
+    (setq mail-user-agent 'mu4e-user-agent)
+    (setq send-mail-function 'send-mail-send-it
+          mail-specify-envelope-from t
+          mail-envelope-from 'header
+          message-sendmail-envelope-from 'header))
+
+
   (use-package notmuch
     :commands (notmuch-tree
                notmuch-search

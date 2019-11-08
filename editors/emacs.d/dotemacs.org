@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-06 22:53:16
+/last updated/: 2019-11-07 16:38:51
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -51,6 +51,7 @@
     - [[#avy][Avy]]
     - [[#ace-window][Ace-Window]]
     - [[#windower][Windower]]
+    - [[#windmove][Windmove]]
     - [[#dired][Dired]]
     - [[#ibuffer][iBuffer]]
   - [[#productivity][Productivity]]
@@ -161,7 +162,7 @@
           (menu-bar-lines . 1)
           (right-fringe . 5)
           (left-fringe . 5)
-          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-22-*-*-*-m-0-iso10646-1")
           (inhibit-double-buffering . t)))
 
   (prefer-coding-system 'utf-8-unix)
@@ -204,7 +205,6 @@
       (defvar bootstrap-file
         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-    ;; Clear out recipe overrides (in case of re-init).
     (with-no-warnings
       (setq straight-cache-autoloads t)
       (setq straight-recipe-overrides nil)
@@ -232,7 +232,6 @@
 
 ** Environment
 *** Exec Path From Shell
-
 #+name: early-init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
@@ -269,10 +268,20 @@
   (use-package f)
   (use-package s)
   (use-package hydra :demand t)
+  (use-package blackout :demand t :straight (:host github :repo "raxod502/blackout"))
+  (use-package straight-x :straight nil)
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
   (use-package org :straight (:repo "https://code.orgmode.org/bzg/org-mode.git"))
+  (use-package gnutls
+    :straight nil
+    :config
+    (setq gnutls-verify-error t)
+    (setq gnutls-min-prime-bits 3072))
+
+  (eval-when-compile
+    (require 'el-patch))
 #+end_src
 
 ** Footer
@@ -421,6 +430,10 @@
     (setq ns-pop-up-frames nil
           ns-use-native-fullscreen nil
           ns-use-thin-smoothing t))
+
+  (use-package winner
+    :config
+    (winner-mode +1))
 #+end_src
 
 *** Files, History, & System Settings
@@ -469,7 +482,19 @@
           recentf-max-menu-items 20
           recentf-auto-cleanup 'never)
     (setq recentf-exclude `(,djm--emacs-cache
-                            ,djm--straight-directory))
+                            ,djm--straight-directory
+                            "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+                            "\\.?cache"
+                            ".cask"
+                            "url"
+                            "COMMIT_EDITMSG\\'"
+                            "bookmarks"
+                            "^/tmp/"
+                            "^/ssh:"
+                            "\\.?ido\\.last$"
+                            "\\.revive$"
+                            "/TAGS$"
+                            "^/var/folders/.+$"))
     :config
     (recentf-mode 1))
 
@@ -535,21 +560,22 @@
 #+begin_src emacs-lisp
   (use-package dashboard
     :hook (dashboard-mode . hide-mode-line-mode)
-    :init/el-patch
-    (defun dashboard-get-banner-path (index)
-    "Return the full path to banner with index INDEX."
-    (concat djm--assests-directory (format "%d.txt" index)))
-
+    :init
     (dashboard-setup-startup-hook)
     :custom
     (dashboard-items '((recents . 3)
                        (projects . 3)
                        (bookmarks . 3)
                        (agenda . 5)))
-    :config
+
+    :config/el-patch
+    (defun dashboard-get-banner-path (index)
+      "Return the full path to banner with index INDEX."
+      (concat (el-patch-swap dashboard-banners-directory djm--assets-directory) (format "%d.txt" index)))
+
+    (setq dashboard-startup-banner 4)
     (setq dashboard-set-file-icons t)
     (setq dashboard-heading-icons t)
-    (setq dashboard-startup-banner 4)
     (setq dashboard-page-separator "\n\n")
     (setq dashboard-center-content t)
     (setq dashboard-footer "djm emacs configuration 2019")
@@ -628,6 +654,7 @@
 #+name: init-minions-block
 #+begin_src emacs-lisp
   (use-package minions
+    :disabled t
     :commands (minions-mode)
     :custom
     (minions-mode-line-lighter "...")
@@ -706,7 +733,6 @@
 
 *** UI Features
 **** Tab-Line
-
 #+name: init-tab-line-block
 #+begin_src emacs-lisp
   (use-package tab-line
@@ -846,6 +872,7 @@
 #+begin_src emacs-lisp
   (use-package company
     :defer 0.5
+    :blackout t
     :bind (:map company-active-map
                 ("RET" . nil)
                 ([return] . nil)
@@ -870,6 +897,7 @@
 
   (use-package company-prescient
     :demand t
+    :blackout t
     :after (company)
     :config (company-prescient-mode +1))
 
@@ -897,33 +925,36 @@
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :hook ((prog-mode org-mode text-mode) . (lambda () (require 'yasnippet)))
-    :commands
-    (yas-global-mode
-     yas-new-snippet
-     yas-insert-snippet
-     yas-next-field
-     yas-prev-field
-     yas-visit-snippet-file)
+    :blackout t
+    :hook ((prog-mode org-mode text-mode) . yas-minor-mode)
+    :bind ("C-;" . yas-expand)
+    :commands  (yas-global-mode
+                yas-new-snippet
+                yas-insert-snippet
+                yas-next-field
+                yas-prev-field
+                yas-visit-snippet-file)
     :custom
     (yas-verbosity 1)
     (yas-wrap-around-region t)
     (yas-prompt-functions '(yas-completing-prompt))
     (yas-snippet-dirs '(djm--yasnippet-dir))
     :config
+    (use-package yasnippet-snippets
+      :config
+      (yas-reload-all))
+
     (yas-global-mode +1))
 
   (use-package yas-funcs
     :straight nil
     :after yasnippet)
 
-  (use-package yasnippet-snippets
-    :after (yasnippet)
-    :config
-    (yas-reload-all))
-
   (use-package ivy-yasnippet
     :after (yasnippet))
+
+
+
 #+end_src
 
 **** Auto-Insert
@@ -937,9 +968,9 @@
 *** Ivy/Counsel/Swiper
 #+name: init-ivy-block
 #+begin_src emacs-lisp
-  (use-package counsel
-    :hook ((after-init . ivy-mode)
-           (ivy-mode . counsel-mode))
+  (use-package ivy
+    :blackout t
+    :hook (after-init . ivy-mode)
     :bind (([remap ido-switch-buffer] . ivy-switch-buffer)
            ("C-x B" . ivy-switch-buffer-other-window)
            ("C-c C-r" . ivy-resume)
@@ -951,9 +982,22 @@
            ("<tab>" . ivy-alt-done)
            ("C-w" . ivy-yank-word)
            (:map ivy-switch-buffer-map
-                 ([remap kill-buffer] . ivy-switch-buffer-kill))
+                 ([remap kill-buffer] . ivy-switch-buffer-kill)))
+    :custom
+    (enable-recursive-minibuffers t)
+    (ivy-dynamic-exhibit-delay-ms 250)
+    (ivy-use-selectable-prompt t)
+    (ivy-initial-inputs-alist nil)
+    (ivy-case-fold-search-default t)
+    (ivy-use-virtual-buffers t)
+    (ivy-virtual-abbreviate 'name)
+    (ivy-count-format "")
+    (ivy-flx-limit 2000))
 
-           (:map counsel-mode-map
+  (use-package counsel
+    :blackout t
+    :hook (ivy-mode . counsel-mode)
+    :bind ((:map counsel-mode-map
                  ([remap dired] . counsel-dired)
                  ([remap execute-extended-command] . counsel-M-x)
                  ([remap find-file] . counsel-find-file)
@@ -970,9 +1014,9 @@
                  ("C-c r" . counsel-rg)
                  ("C-c z" . counsel-fzf)
                  ("C-c c w" . counsel-colors-web)
-                 ([remap describe-face] . counsel-describe-face)
-                 ([remap describe-function] . counsel-describe-function)
-                 ([remap describe-variable] . counsel-describe-variable))
+                 ("C-h F" . counsel-describe-face)
+                 ("C-h f" . counsel-describe-function)
+                 ("C-h v" . counsel-describe-variable))
 
            ("C-s" . swiper)
            ("C-c c s" . swiper-isearch)
@@ -983,18 +1027,6 @@
            ("M-s" . swiper-isearch-toggle)
            :map isearch-mode-map
            ("M-s" . swiper-isearch-toggle))
-
-    :custom
-    (enable-recursive-minibuffers t)
-    (ivy-dynamic-exhibit-delay-ms 250)
-    (ivy-use-selectable-prompt t)
-    (ivy-initial-inputs-alist nil)
-    (ivy-case-fold-search-default t)
-    (ivy-use-virtual-buffers t)
-    (ivy-virtual-abbreviate 'name)
-    (ivy-count-format "")
-    (ivy-flx-limit 2000)
-
     :config
     (use-package ivy-hydra)
     (use-package ivy-prescient
@@ -1011,6 +1043,7 @@
                                   (swiper-isearch . ivy--regex-plus))))
 
   (use-package ivy-posframe
+    :blackout t
     :hook (ivy-mode . ivy-posframe-mode)
     :config
     (setq ivy-posframe-style 'frame-center)
@@ -1046,11 +1079,9 @@
   (use-package devdocs)
 
   (use-package eldoc
-    :defer 2.0
     :custom (eldoc-idle-delay 2))
 
   (use-package which-key
-    :defer 2.0
     :custom (which-key-idle-delay 0.5)
     :config (which-key-mode))
 #+end_src
@@ -1072,13 +1103,23 @@
 #+name: init-edit-utils-block
 #+begin_src emacs-lisp
   (use-package ws-butler
+    :blackout t
     :hook (after-init . (lambda () (ws-butler-global-mode +1)))
     :commands (ws-butler-global-mode))
+
+    (use-package align
+      :straight nil
+      :general ("C-x a a" #'align-regexp))
+
 
   (use-package multiple-cursors
     :disabled t
     :bind (("C->" . mc/mark-next-like-this)
            ("C-<" . mc/mark-previous-like-this)))
+
+    (use-package zop-to-char
+      :bind (("M-z" . zop-to-char)
+             ("M-z" . zop-up-to-char)))
 #+end_src
 
 *** Minor Modes
@@ -1102,15 +1143,8 @@
       :straight nil
       :init (delete-selection-mode 1))
 
-    (use-package align
-      :straight nil
-      :general ("C-x a a" #'align-regexp))
-
-    (use-package zop-to-char
-      :bind (("M-z" . zop-to-char)
-             ("M-z" . zop-up-to-char)))
-
     (use-package undo-tree
+      :blackout t
       :hook (after-init . (lambda () (global-undo-tree-mode +1))))
 
     (use-package aggressive-indent
@@ -1133,18 +1167,37 @@
 *** Avy
 #+name: init-nav-utils-block
 #+begin_src emacs-lisp
-    (use-package avy
-      :chords
-      ("jk" . avy-pop-mark)
-      ("jl" . avy-goto-line)
-      :config (avy-setup-default))
+  (use-package avy
+    :chords
+    ("jk" . avy-pop-mark)
+    ("jl" . avy-goto-line)
+    :config
+    (setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
+          avy-background t
+          avy-all-windows t
+          avy-style 'at-full
+          avy-case-fold-search nil)
+    (avy-setup-default))
 #+end_src
 
 *** Ace-Window
 #+name: init-ace-window-block
 #+begin_src emacs-lisp
-  (use-package ace-window
-    :bind (("C-x o" . ace-window)))
+    (use-package ace-window
+      :bind (("C-x o" . ace-window))
+      :config
+      (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
+            aw-dispatch-always nil
+            aw-dispatch-alist '((?x aw-delete-window     "Ace - Delete Window")
+                                (?c aw-swap-window       "Ace - Swap Window")
+                                (?n aw-flip-window)
+                                (?h aw-split-window-vert "Ace - Split Vert Window")
+                                (?v aw-split-window-horz "Ace - Split Horz Window")
+                                (?m delete-other-windows "Ace - Maximize Window")
+                                (?g delete-other-windows)
+                                (?b balance-windows)
+                                (?u winner-undo)
+                                (?r winner-redo))))
 #+end_src
 
 *** Windower
@@ -1155,9 +1208,14 @@
     :bind (("C-c w o" . windower-switch-to-last-buffer)
            ("C-c w t" . windower-toggle-split)))
 
+#+end_src
+
+*** Windmove
+#+name: init-windmove-block
+#+begin_src emacs-lisp
   (use-package windmove
     :bind (("C-c w j" . windmove-left)
-           ("C-c w k" . windmove-right)
+           ("C-c w l" . windmove-right)
            ("C-c w n" . windmove-down)
            ("C-c w u" . windmove-up)))
 #+end_src
@@ -1180,15 +1238,13 @@
     (dired-recursive-deletes 'always)
     (dired-recursive-copies 'always)
     :config
-    (setq dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm on deleting files :)
+    (setq dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
 
   (use-package dired-aux
-    :straight nil
-    :after (dired))
+    :straight nil)
 
   (use-package dired-x
     :straight nil
-    :after (dired)
     :config
     (setq dired-omit-verbose 1)
     (advice-add :override dired-guess-default "open"))
@@ -1223,12 +1279,17 @@
 
   (use-package dired-sidebar
     :bind ("M-\\" . dired-sidebar-toggle-sidebar)
-    :custom (dired-sidebar-theme 'vscode)
-    :config (use-package vscode-icon))
+    :commands (dired-sidebar-toggle-sidebar)
+    :config
+    (use-package vscode-icon)
+    (setq dired-sidebar-subtree-line-prefix "__")
+    (setq dired-sidebar-theme 'vscode)
+    (setq dired-sidebar-use-magit-integration t)
+    (setq dired-sidebar-use-term-integration t)
+    (setq dired-sidebar-use-term-integration t))
 #+end_src
 
 *** iBuffer
-
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
   (use-package ibuffer
@@ -1248,18 +1309,20 @@
   (use-package ibuf-ext
     :straight nil
     :hook (ibuffer-mode . ibuffer-auto-mode)
+    :functions (ibuffer-remove-alist
+                ibuffer-remove-duplicates
+                ibuffer-split-list)
     :custom (ibuffer-show-empty-filter-groups nil))
 
   (use-package ibuffer-projectile
-    :defer 5.0
     :commands (ibuffer-projectile-set-filter-groups)
     :functions (ibuffer-do-sort-by-alphabetic)
     :preface
     (defun config-ibuffer--setup-buffer ()
       (ibuffer-projectile-set-filter-groups)
-      (add-to-list 'ibuffer-filter-groups '("dired" (mode . dired-mode)))
-      (add-to-list 'ibuffer-filter-groups '("system" (predicate . (-contains? '("*messages*" "*scratch*") (buffer-name)))))
-      (add-to-list 'ibuffer-filter-groups '("shells" (mode . eshell-mode)))
+      (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*Messages*" "*scratch*" "*straight-process*" "*direnv*" "*dashboard*") (buffer-name)))))
+      (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
       (unless (eq ibuffer-sorting-mode 'alphabetic)
         (ibuffer-do-sort-by-alphabetic))
       (when (bound-and-true-p page-break-lines-mode)
@@ -1268,6 +1331,13 @@
     (add-hook 'ibuffer-hook #'config-ibuffer--setup-buffer)
     :custom
     (ibuffer-projectile-prefix ""))
+
+  (use-package ibuffer-sidebar
+    :straight (:repo "https://github.com/jojojames/ibuffer-sidebar")
+    :bind (("M-]" . ibuffer-sidebar-toggle-sidebar))
+    :config
+    (setq ibuffer-sidebar-use-custom-font t)
+    (setq ibuffer-sidebar-face `(:family "Iosevka Nerd Font" :height 180)))
 #+end_src
 
 ** Productivity
@@ -1311,8 +1381,6 @@
     (org-refile-allow-creating-parent-nodes 'confirm)
     (org-refile-use-outline-path)
     (org-startup-indented t)
-    (org-src-fontify-natively t)
-    (org-src-window-setup 'current-window)
     (org-confirm-babel-evaluate nil)
     (org-html-html5-fancy t)
     (org-html-postamble nil)
@@ -1337,15 +1405,6 @@
     :straight nil)
 #+end_src
 
-#+name: init-org-indent-block
-#+begin_src emacs-lisp
-  (use-package org-indent
-    :straight nil
-    :hook (org-mode . org-indent-mode)
-    :config
-    (setq org-indent-mode-turns-off-org-adapt-indentation nil))
-#+end_src
-
 #+name: init-org-babel-block
 #+begin_src emacs-lisp
   (use-package org-babel
@@ -1364,6 +1423,8 @@
     (defun config-org--org-src-delete-trailing-space (&rest _)
       (delete-trailing-whitespace))
     :config
+    (setq org-src-window-setup 'current-window)
+    (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
     (add-hook 'org-src-mode-hook #'config-org--supress-final-newline)
     (advice-add 'org-edit-src-exit :before #'config-org--org-src-delete-trailing-space))
@@ -1463,14 +1524,12 @@
 #+begin_src emacs-lisp
   (use-package vc-hooks
     :straight nil
-    :config
-    (setq vc-handled-backends nil))
+    :config (setq vc-handled-backends nil))
 
   (use-package smerge-mode)
 
   (use-package transient
-    :config
-    (transient-bind-q-to-quit))
+    :config (transient-bind-q-to-quit))
 
   (use-package magit
     :bind (("C-x g" . magit-status)))
@@ -1480,6 +1539,7 @@
     :custom (git-commit-summary-max-length 50))
 
   (use-package git-gutter
+    :blackout t
     :hook (after-init . (lambda () (global-git-gutter-mode +1)))
     :commands (global-git-gutter-mode))
 #+end_src
@@ -1512,9 +1572,14 @@
     :straight nil)
 #+end_src
 
+**** Eglot
+#+name: init-eglot-block
+#+begin_src emacs-lisp
+
+#+end_src
+
 *** Syntax & Linting
 **** Flycheck
-
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
   (use-package flycheck

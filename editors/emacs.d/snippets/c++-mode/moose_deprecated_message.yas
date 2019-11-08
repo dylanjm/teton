@@ -7,6 +7,6 @@ mooseDeprecated(
   ": `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))` is deprecated.\
 All solid_mechanics material models will be removed from BISON on June 30th, 2020.\
 Please update your input files to utilize the tensor-mechanics equivalents of those models.\
-A detailed migration guide can be found on the BISON documentation website at
+A detailed migration guide can be found on the BISON documentation website at\
 https://hpcsc.inl.gov/ssl/BISON/site//tutorials/mechanics_conversion/conversion_guidelines.html#mechanics-module-migration-guidelines\
 or in the development version of BISON at bison/doc/content/tutorials/mechanics_conversion/overview.md");

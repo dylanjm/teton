@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-07 18:18:16
+/last updated/: 2019-11-07 20:40:53
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -941,6 +941,7 @@
     (yas-snippet-dirs '(djm--yasnippet-dir))
     :config
     (use-package yasnippet-snippets
+      :blackout t
       :config
       (yas-reload-all))
 
@@ -952,9 +953,6 @@
 
   (use-package ivy-yasnippet
     :after (yasnippet))
-
-
-
 #+end_src
 
 **** Auto-Insert
@@ -1252,6 +1250,8 @@
   (use-package diredfl
     :after (dired)
     :hook (dired-mode . diredfl-global-mode))
+
+  (use-package ranger)
 
   (use-package dired-ranger
     :bind (:map dired-mode-map

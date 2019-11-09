@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-08 18:23:35
+/last updated/: 2019-11-09 15:03:04
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -98,7 +98,6 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 :header-args: :tangle "~/dotz/editors/emacs.d/early-init.el"
 :end:
 ** Header
-
 #+name: early-init-header-block
 #+begin_src emacs-lisp
 ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
@@ -158,9 +157,6 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-  (fset 'display-startup-echo-area-message 'ignore)
-  (fset 'view-hello-file 'ignore)
-
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
                 frame-inhibit-implied-resize t
@@ -200,7 +196,6 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 #+end_src
 
 *** Important Paths
-
 #+name: early-init-paths-block
 #+begin_src emacs-lisp
   (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
@@ -219,35 +214,35 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 *** Straight
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-    (eval-and-compile
-      (defvar straight-recipes-gnu-elpa-use-mirror t)
-      (defvar bootstrap-version 5)
-      (defvar bootstrap-file
-        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+  (eval-and-compile
+    (defvar straight-recipes-gnu-elpa-use-mirror t)
+    (defvar bootstrap-version 5)
+    (defvar bootstrap-file
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-    (with-no-warnings
-      (setq straight-cache-autoloads t)
-      (setq straight-recipe-overrides nil)
-      (setq straight-check-for-modifications '(find-when-checking check-on-save))
-      (setq straight-repository-branch "develop")
-      (setq straight-use-package-by-default t))
+  (with-no-warnings
+    (setq straight-cache-autoloads t)
+    (setq straight-recipe-overrides nil)
+    (setq straight-check-for-modifications '(find-when-checking check-on-save))
+    (setq straight-repository-branch "develop")
+    (setq straight-use-package-by-default t))
 
-    (with-no-warnings
-      (setq use-package-verbose nil)
-      (setq use-package-always-defer t)
-      (setq use-package-enable-imenu-support t)
-      (setq use-package-compute-statistics t))
+  (with-no-warnings
+    (setq use-package-verbose nil)
+    (setq use-package-always-defer t)
+    (setq use-package-enable-imenu-support t)
+    (setq use-package-compute-statistics t))
 
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
 
-    (load bootstrap-file nil 'nomessage)
-    (straight-use-package 'use-package)
+  (load bootstrap-file nil 'nomessage)
+  (straight-use-package 'use-package)
 #+end_src
 
 ** Environment
@@ -264,7 +259,6 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 #+end_src
 
 ** No-Littering
-
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
@@ -355,7 +349,7 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 #+end_src
 
 *** Defaults
-
+**** Sane-Defaults
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -408,9 +402,11 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 #+name: init-settings-block
 #+begin_src emacs-lisp
   (fset 'yes-or-no-p 'y-or-n-p)
+  (fset 'display-startup-echo-area-message 'ignore)
+  (fset 'view-hello-file 'ignore)
 
-  (if (bound-and-true-p blink-cursor-mode) (blink-cursor-mode -1))
-  (if (bound-and-true-p tooltip-mode) (tooltip-mode -1))
+  (blink-cursor-mode -1)
+  (tooltip-mode -1)
 
   (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
   (global-unset-key (kbd "C-z"))
@@ -977,9 +973,58 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 **** Auto-Insert
 #+name: init-autoinsert-block
 #+begin_src emacs-lisp
-  (use-package auto-insert
+  (defconst autoinsert-funcs-el-gnu-license "
+  \;; This program is free software; you can redistribute it and/or modify
+  \;; it under the terms of the GNU General Public License as published by
+  \;; the Free Software Foundation, either version 3 of the License, or
+  \;; (at your option) any later version.
+  \;; This program is distributed in the hope that it will be useful,
+  \;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+  \;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  \;; GNU General Public License for more details.
+  \;; You should have received a copy of the GNU General Public License
+  \;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ")
+
+  (defconst autoinsert-funcs-el-form
+    '((emacs-lisp-mode . "Emacs Lisp")
+      nil
+      "\;;; " (file-name-nondirectory (buffer-file-name)) " --- <enter description here>  "
+      "-*- lexical-binding: t; -*-" '(setq lexical-binding t) \n
+      \n
+      ";; Copyright (C) " (format-time-string "%Y") "  "
+      (getenv "ORGANIZATION") | user-full-name                \n
+      \n
+      ";; Author: " user-full-name " <" user-mail-address ">" \n
+      autoinsert-funcs-el-gnu-license                            \n
+      ";;; Commentary:"                                       \n \n
+      ";;; Code:"                                             \n \n
+      _                                                       \n \n
+      "\(provide '" (file-name-base) ")"                      \n \n
+      "\;;; " (file-name-nondirectory (buffer-file-name)) " ends here" \n))
+
+  ;;; Shell-scripts
+
+  (defun autoinsert-funcs--sh-template-string ()
+    (let ((program
+           (if (f-ext? (buffer-name) "zsh")
+               "zsh"
+             "bash")))
+      (yas-expand-snippet (format "#!/usr/bin/env %s
+  $0
+  " program))))
+
+  (defconst autoinsert-funcs-sh-form
+    '((sh-mode . "Shell Script") . autoinsert-funcs--sh-template-string))
+
+  (use-package autoinsert
     :straight nil
-    :bind (("C-c ci a" . auto-insert)))
+    :preface
+    (defvar auto-insert-alist nil)
+    :hook (find-file . auto-insert)
+    :config
+    (setq auto-insert-query (list autoinsert-funcs-sh-form
+                                  autoinsert-funcs-el-form)))
 #+end_src
 
 *** Ivy/Counsel/Swiper
@@ -1095,7 +1140,9 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
   (use-package devdocs)
 
   (use-package eldoc
-    :custom (eldoc-idle-delay 2))
+    :custom
+    (eldoc-idle-delay 2)
+    (eldoc-echo-area-use-multiline-p nil))
 
   (use-package which-key
     :custom (which-key-idle-delay 0.5)
@@ -1264,35 +1311,30 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
     :functions (dired wdired-change-to-wdired-mode)
     :bind (:map dired-mode-map
                 ("C-c C-e" . wdired-change-to-wdired-mode))
+    :general
+    (:states 'normal :keymaps 'dired-mode-map "$" #'end-of-line)
     :custom
     (dired-auto-revert-buffer t)
     (dired-dwim-target t)
     (dired-use-ls-dired t)
     (dired-ls-F-marks-symlinks t)
-    (dired-listing-switches "-alh --group-directories-first --time-style iso")
+    (dired-hide-details-hide-symlink-targets nil)
+    (dired-listing-switches "-alhv --group-directories-first --time-style iso")
     (dired-recursive-deletes 'always)
     (dired-recursive-copies 'always)
     :config
-    (setq dired-deletion-confirmer '(lambda (x) t)) ;; Don't confirm deleting files
-    :hydra (dired (:hint nil)
-                  "Toggle"
-                  (("?" dired-hide-details-mode "file flags")
-                   ("." dired-omit-mode "hidden files")
-                   ("e" wdired-change-to-wdired-mode "edit (wdired)")
-                   ("s" dired-sort-toggle-or-edit "sort by date"))))
+    (setq dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
 
   (use-package dired-aux
-    :straight nil
-    :commands (dired-do-chxxx
-               dired-do-chmod
-               dired-do-chown))
+    :straight nil)
 
   (use-package dired-x
     :straight nil
+    :functions (dired-guess-default)
+    :custom
+    (dired-omit-verbose 1)
+    (dired-cleanup-buffers-too t)
     :config
-    (setq dired-omit-verbose 1)
-    (setq dired-x-hands-off-my-keys t)
-    (setq dired-cleanup-buffers-too t)
     (advice-add :override dired-guess-default "open"))
 
   (use-package diredfl
@@ -1525,43 +1567,6 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 *** Email
 #+name: init-email-block
 #+begin_src emacs-lisp
-  (use-package mu4e
-    :disabled t
-    :config
-    (setq mu4e-get-mail-command "mbsync -c ~/.mbsyncrc -a"
-          mu4e-html2text-command "w3m -T text/html"
-          mu4e-view-prefer-html t
-          mu4e-update-interval 180
-          mu4e-headers-auto-update t
-          mu4e-view-show-images t
-          mu4e-view-use-gnus t
-          mu4e-change-filenames-when-moving t
-          mu4e-sent-messages-behavior 'delete
-          mu4e-completing-read-function 'completing-read
-          mu4e-compose-signature-auto-include nil
-          mu4e-compose-format-flowed t)
-
-    (setq-default mu4e-attachment-dir "~/Downloads")
-    (setq-default mu4e-maildir "~/.cache/mail")
-    (setq-default mu4e-hide-index-messages t)
-    (setq-default mu4e-index-update-in-background t)
-
-    (add-to-list 'mu4e-view-actions
-                 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-
-
-    (when (fboundp 'imagemagick-register-types)
-      (imagemagick-register-types))
-
-    (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq send-mail-function 'send-mail-send-it
-          mail-specify-envelope-from t
-          mail-envelope-from 'header
-          message-sendmail-envelope-from 'header))
-
-
   (use-package notmuch
     :commands (notmuch-tree
                notmuch-search
@@ -1655,25 +1660,72 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
                flycheck-error-list-next-error
                flycheck-error-list-previous-error
                flycheck-error-list-goto-error)
-    ;; :hook (after-init . (lambda () (global-flycheck-mode +1)))
+    :hook ((after-init . global-flycheck-mode)
+           (prog-mode . flycheck-mode-on-safe))
+    :preface
+    (autoload 'flycheck-buffer "flycheck")
+    (autoload 'flycheck-error-format-message-and-id "flycheck")
+    (autoload 'flycheck-get-error-list-window "flycheck")
+    (autoload 'flycheck-may-use-echo-area-p "flycheck")
+    (autoload 'projectile-project-p "projectile")
+    (autoload 'projectile-process-current-project-buffer "projectile")
+
+    (defun djm/flycheck-toogle-error-list ()
+      "Show or hide error list."
+      (interactive)
+      (if-let* ((window (--first (equal flycheck-error-list-buffer
+                                        (buffer-name (window-buffer it)))
+                                 (window-list))))
+          (delete-window window)
+        (flycheck-list-errors)))
+
+    (defun djm/flycheck-display-error-messages (errors)
+      (unless (flycheck-get-error-list-window 'current-frame)
+        (when (and errors (flycheck-may-use-echo-area-p))
+          (let ((messages (seq #'flycheck-error-format-message-and-id errors)))
+            (display-message-or-buffer (string-join messages "\n\n")
+                                       flycheck-error-message-buff
+                                       'display-buffer-pop-up-window)))))
+    :config
+    (setq flycheck-display-errors-function 'djm/flycheck-display-error-messages)
+    (setq flycheck-display-errors-delay 0.1)
+    (setq flycheck-buffer-switch-check-intermediate-buffers t)
+    (setq flycheck-emacs-lisp-load-path 'inherit)
+    (setq flycheck-global-mode '(not org-mode
+                                     org-agenda-mode
+                                     vterm-mode))
+    (add-to-list 'flycheck-check-syntax-automatically 'idle-buffer-switch)
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*Flycheck errors*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-in-side-window)
+                   (reusable-frames .visible)
+                   (side . bottom)
+                   (slot . 1)
+                   (window-height . 0.2))))
+
+  (use-package flycheck-package
+    :after (flycheck)
+    :config
+    (flycheck-package-setup)
+    (with-eval-after-load 'flycheck
+      (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name)))
+
+  (use-package checkdoc
+    :straight nil
     :init
-    (defun flycheck-disable-checkers (&rest checkers)
-      (unless (bounp 'flycheck-disabled-checkers)
-        (setq flycheck-disabled-checkers nil))
-      (dolist (checker checkers)
-        (cl-pushnew checker flycheck-disabled-checkers)))
-    :custom
-    (flycheck-emacs-lisp-load-path 'inherit)
-    (flycheck-indication-mode 'right-fringe)
-    (when (fboundp 'define-fringe-bitmap)
-      (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-        [16 48 112 240 112 48 16] nil nil 'center)))
+    (setq checkdoc-force-docstrings-flag nil)
+    (setq checkdoc-arguments-in-order-flag nil))
 
   (use-package flycheck-posframe
     :after (flycheck)
+    :commands (flycheck-posframe-mode)
     :hook (flycheck-mode . flycheck-posframe-mode)
-    :config (add-to-list 'flycheck-posframe-inhibit-functions
-                         #'(lambda () (bound-and-true-p company-backend))))
+    :config
+    (add-to-list 'flycheck-posframe-inhibit-functions
+                 #'(lambda () (bound-and-true-p company-backend)))
+    (set-face-attribute 'flycheck-posframe-background-face nil :inherit 'ivy-posframe :background nil)
+    (flycheck-posframe-configure-pretty-defaults))
 
   (use-package flycheck-pos-tip
     :after (flycheck)
@@ -1690,7 +1742,7 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 *** TODO Markdown
 #+name: init-markdown-block
 #+begin_src emacs-lisp
-
+  (use-package markdown-mode)
 #+end_src
 
 *** TODO YAML
@@ -1721,9 +1773,16 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 #+name: init-elisp-block
 #+begin_src emacs-lisp
   (use-package parinfer)
+
   (use-package paredit)
   (use-package suggest)
   (use-package highlight-defined)
+
+  (use-package elisp-slime-nav
+    :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)
+    :general
+    (:keymaps 'emacs-lisp-mode-map :states 'normal
+              "M-." #'emacs-slime-nav-find-elisp-thing-at-point))
 #+end_src
 
 *** TODO R

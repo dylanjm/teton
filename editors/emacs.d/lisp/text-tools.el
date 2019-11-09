@@ -15,40 +15,12 @@
 (defun djm/replace-underscore-as-space (string)
   (replace-regexp-in-string "_" " " string))
 
-(defun djm/insert-markdown-link (string &optional from to)
-  (interactive
-   (if (use-region-p)
-       (list nil (region-beginning) (region-end))
-     (let ((bds (bounds-of-thing-at-point 'paragraph)))
-       (list nil (car bds)(cdr bds)))))
-
-  (let (work-on-str-p input-str output-str)
-    (setq work-on-str-p (if string t nil))
-
-    (setq input-str (if work-on-str-p
-                        string
-                      (buffer-substring-no-properties from to)))
-
-    (setq output-str
-          (progn
-            (let* ((path input-str)
-                   (file (djm/remove-dir-and-ext-from-path path))
-                   (title (djm/replace-underscore-as-space file)))
-              (concat "[" title "]" "(" input-str ")"))))
-
-    (if work-on-str-p
-        output-str
-      (save-excursion
-        (delete-region from to)
-        (goto-char from)
-        (insert output-str)))))
-
 (defun djm/insert-markdown-link (&optional string)
   (interactive)
   (let (input-str output-str)
     (cond
      (string
-      (setq input-str string from to))
+      (setq input-str from to))
 
      ((use-region-p)
       (setq from (region-beginning))
@@ -73,13 +45,6 @@
         (delete-region from to)
         (goto-char from)
         (insert output-str)))))
-
-;; Key Mapping for above function
-(defun my-eval-after-load-markdown-mode ()
-  (define-key markdown-mode-map "\C-ci" 'djm/insert-markdown-link))
-
-(eval-after-load "markdown-mode" '(my-eval-after-load-markdown-mode))
-(define-key markdown-mode-map "\C-ci" 'djm/insert-markdown-link)
 
 (defun djm/insert-markdown-link-at-region ()
   (interactive)

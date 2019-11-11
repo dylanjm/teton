@@ -72,3 +72,49 @@
               (widen)))))
       (set-marker end-marker nil)
       (set-marker next-line-marker nil))))
+
+;; Custom Function to Handle converting Markdown Image links to MooseDown Image Links
+;; Comes from https://emacs.stackexchange.com/questions/47804/how-do-i-create-a-key-binding-to-replace-specific-markdown-text/47806#47806
+(defun markdown-to-dylanjm-image ()
+  "Convert a Markdown image element to dylanjm's house markup format."
+  (interactive "@*")
+  ;; Look for a Markdown image element before the cursor or immediately
+  ;; after the cursor. Don't look any further than the start of the current
+  ;; paragraph.
+  (let ((limit (save-excursion
+                 (backward-paragraph)
+                 (point)))
+        (regexp "\\s-*!\\[\\([^][]*\\)\\](\\([^()]*\\))\\({[^}{]*}\\)?"))
+    (if (and (eq ?! (char-after (1- (point))))
+             (eq ?\[ (char-after (point))))
+        (backward-char))
+    (while (not (looking-at regexp))
+      (search-backward "![" limit))
+    ;; If the search didn't error out, then we exited the loop with
+    ;; `looking-at' matching `regexp'. The match data therefore contains
+    ;; the parts of the image link.
+    (skip-syntax-forward "-")
+    (let ((caption (subst-char-in-string ?\n ?\  (match-string 1)))
+          (id (match-string 2))
+          (style (and (match-string 3)
+                      (substring (match-string 3) 1 -1))))
+      ;; Remove the Markdown syntax.
+      (delete-region (- (match-beginning 1) 2) (match-end 0))
+      ;; Add line breaks before and after if it looks like there aren't any.
+      (unless (eolp)
+        (open-line 1))
+      (unless (<= (point) (save-excursion
+                            (back-to-indentation)
+                            (point)))
+        (insert "\n"))
+      ;; Insert the new syntax.
+      (insert "!media figures/" id ".png\n"
+              "    id=" id "\n"
+              "    caption=" caption)
+      (when style
+        (insert "\n    style=width:50%")))))
+
+;; Key Mapping for above function
+(defun my-eval-after-load-markdown-mode ()
+  (define-key markdown-mode-map "\C-ci" 'markdown-to-dylanjm-image))
+(eval-after-load "markdown-mode" '(my-eval-after-load-markdown-mode))

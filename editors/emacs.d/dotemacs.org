@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-10 20:57:05
+/last updated/: 2019-11-10 21:36:38
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -87,6 +87,9 @@
 - [[#citations][Citations]]
 
 * About This Document
+#+ATTR_HTML: width="100px"
+#+ATTR_ORG: :width 100
+[[file:assets/config-preview.png]]
 ** Literate Programming in Org
 This document is my current emacs config which contains the code for my =early-init.el= file and =init.el= file. You may be wondering how one file can contain code for two different configuration files. Through the power of =org-babel-tangle=, I am able to configure and document my entire emacs experience in a single Org file. There are several reasons to organize one's configuration this way. I hope these reasons become obvious as you browse through, but personally I find it much easier to document my choices using a markup language. This way I can store links and reference back to forum threads and other places when updating. I can also include pictures throughout and organize code-blocks with specific names to make navigation quick and painless. If you're interested in creating a similar setup, take a look at the raw-version of this file. There is important information contained in the header and throughout the file to make this work. Once you have a proper the proper settings, start adding src-blocks and then run =M-x org-babel-tangle <RET>=. Your config files will then be generated and Emacs will use those files when starting up. I have also written a hook that tangles this file everytime I save.
 
@@ -1580,7 +1583,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-highlight-sparse-tree-matches nil)
     (org-html-html5-fancy t)
     (org-html-postamble nil)
-    (org-image-actual-width (/ (display-pixel-width) 2))
+    (org-image-actual-width nil)
     (org-imenu-depth 4)
     (org-indirect-buffer-display 'current-window)
     (org-insert-heading-respect-content t)

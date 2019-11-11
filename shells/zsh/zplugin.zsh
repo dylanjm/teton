@@ -19,7 +19,7 @@ if [[ -e $CACHE/zplugin ]]; then
 fi
 
 zmodload zdharma/zplugin &> /dev/null
-if (( $? == 1 )); then zpl module build &; fi
+if (( $? == 1 )); then zpl module build; fi
 
 # Set this variable to light or load for easy debugging.
 load=light
@@ -27,25 +27,16 @@ load=light
 zplugin ice wait'!' pick"async.zsh" src"pure.zsh" lucid nocd
 zplugin $load sindresorhus/pure
 
-zplugin ice wait'2' lucid
-zplugin $load raxod502/wdx
-
-zplugin ice wait'2' lucid
+zplugin ice wait'4' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-zplugin ice wait'1a' lucid
+zplugin ice wait'4' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
-zplugin ice wait'1b' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
+zplugin ice wait'4' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
         atpull'%atclone' pick"clrs.zsh" nocompile'!' \
         atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
-
-if test "$USER" = "mcdodj"; then
-    zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-            atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
-    zplugin $load direnv/direnv
-fi
 
 if [[ -e $ZPLGM[PLUGINS_DIR]/zsh-users---zshcompletions ]]; then
     zplugin ice wait'3' blockf atpull'zplugin creinstall -q' lucid
@@ -57,6 +48,5 @@ zplugin $load zsh-users/zsh-autosuggestions
 
 zplugin ice wait'3b' atinit"_zpcompinit_fast; zpcdreplay; " lucid
 zplugin $load zdharma/fast-syntax-highlighting
-
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

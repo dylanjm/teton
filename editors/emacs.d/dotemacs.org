@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-11 11:19:35
+/last updated/: 2019-11-11 16:01:18
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -40,7 +40,7 @@
     - [[#prescient][Prescient]]
     - [[#key-chords][Key Chords]]
     - [[#posframe][Posframe]]
-    - [[#tperminal][Tperminal]]
+    - [[#terminal][Terminal]]
     - [[#projectile][Projectile]]
     - [[#autocomplete][Autocomplete]]
     - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
@@ -205,7 +205,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
   (defvar djm--emacs-cache "~/.cache/emacs/")
-  (defvar djm--org-agenda-directory (expand-file-name "org/" djm--emacs-cache))
+  (defvar djm--org-agenda-directory "~/org/")
   (defvar djm--assets-directory (expand-file-name "assets/" user-emacs-directory))
   (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
   (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
@@ -594,6 +594,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-dashboard-block
 #+begin_src emacs-lisp
   (use-package dashboard
+    :disabled t
     :hook (dashboard-mode . hide-mode-line-mode)
     :init
     (dashboard-setup-startup-hook)
@@ -646,7 +647,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (inhibit-point-motion-hooks t)
     (line-move-visual nil)
     (line-number-mode t)
-    (next-line-add-newlines t)
+    (next-line-add-newlines nil)
     (set-mark-command-repeat-pop t)
     (show-trailing-whitespace nil)
     (track-eol t))
@@ -910,7 +911,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
         (or (plist-get info arg-name) value))))
 #+end_src
 
-*** Tperminal
+*** Terminal
 #+name: init-terminal-block
 #+begin_src emacs-lisp
   (use-package term
@@ -1227,6 +1228,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (set-face-attribute 'ivy-posframe nil
                         :background (color-darken-name
                                      (face-attribute 'default :background) 3)))
+
+  (use-package ivy-rich
+    :config
+    (setq ivy-rich-parse-remote-buffer nil
+          ivy-rich-path-style 'abbrev)
+    (ivy-rich-set-display-transformer))
 #+end_src
 
 ** Editing
@@ -1338,7 +1345,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package undo-tree
     :blackout t
-    :hook (after-init . global-undo-tree-mode))
+    :hook (after-init . global-undo-tree-mode)
+    :custom
+    (undo-tree-save-history t)
+    (undo-tree-visualizer-timestamps t)
+    (undo-tree-fisualizer-diff t))
 
   (use-package aggressive-indent
     :commands (aggressive-indent-mode))
@@ -1428,7 +1439,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:repo "https://gitlab.com/ambrevar/emacs-windower")
     :bind (("C-c w o" . windower-switch-to-last-buffer)
            ("C-c w t" . windower-toggle-split)))
-
 #+end_src
 
 *** Windmove
@@ -1598,14 +1608,18 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 #+name: init-org-block
 #+begin_src emacs-lisp
+  (use-package org-plus-contrib
+    :straight nil)
+
   (use-package org
     :straight nil
     :general
     ("C-c a" #'org-agenda
+     "C-c c c" #'org-capture
+     "C-c p" #'org-pomodoro
      "C-c s" #'org-search-view
      "C-c t" #'org-todo-list
      "C-c /" #'org-tags-view)
-
     :hook (org-mode . djm/config-org-mode)
     :hook (after-save . djm/tangle-init-org-file-on-save)
     :preface
@@ -1615,11 +1629,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
         (org-babel-tangle)))
 
     (defun djm/config-org-mode ()
-      (push '("TODO"  . ?▲) prettify-symbols-alist)
-      (push '("DONE"  . ?✓) prettify-symbols-alist)
-      (push '("CANCELLED"  . ?✘) prettify-symbols-alist)
-      (push '("QUESTION"  . ??) prettify-symbols-alist)
-      (setq-local line-spacing 0.2)
+      (push '("TODO"       . ?▲)  prettify-symbols-alist)
+      (push '("NEXT"       . ?→)  prettify-symbols-alist)
+      (push '("DONE"       . ?✓)  prettify-symbols-alist)
+      (push '("CANCELLED"  . ?✘)  prettify-symbols-alist)
+      (push '("QUESTION"   . ??)  prettify-symbols-alist)
+      (push '("SCHEDULED"  . ?🗓) prettify-symbols-alist)
+      (push '("DEADLINE"   . ?❗) prettify-symbols-alist)
+      (push '("CLOCK"      . ?⏰) prettify-symbols-alist)
+      (setq-local line-spacing 0.1)
       (variable-pitch-mode +1)
       (visual-line-mode +1)
       (setq-local left-margin-width 2)
@@ -1630,30 +1648,40 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-catch-invisible-edits 'smart)
     (org-confirm-babel-evaluate nil)
     (org-cycle-separator-lines 0)
-    (org-directory (expand-file-name "org/" djm--emacs-cache))
-    ;; (org-ellipsis " ⤵ ")
+    (org-default-notes-file "~/org/inbox.org")
+    (org-default-priority ?B)
+    (org-directory "~/org/")
     (org-enforce-todo-dependencies t)
+    (org-expiry-inactive-timestamps t)
     (org-export-coding-system 'utf-8)
+    (org-file-apps '((auto-mode . emacs)
+                     ("\\.x?html?\\'" . "firefox %s")
+                     ("\\.pdf\\'" . "open %s")))
     (org-fontify-done-headline t)
     (org-fontify-whole-heading-line t)
     (org-fontity-quote-and-verse-blocks t)
+    (org-goto-max-level 10)
     (org-hide-emphasis-markers t)
     (org-highlight-sparse-tree-matches nil)
     (org-html-html5-fancy t)
     (org-html-postamble nil)
-    (org-image-actual-width nil)
+    (org-image-actual-width 500)
     (org-imenu-depth 4)
     (org-indirect-buffer-display 'current-window)
     (org-insert-heading-respect-content t)
+    (org-lowest-priority ?C)
+    (org-modules '(org-habit org-info org-tempo org-archive))
     (org-outline-path-complete-in-steps nil)
     (org-pretty-entities t)
     (org-refile-allow-creating-parent-nodes 'confirm)
     (org-refile-use-outline-path 'file)
     (org-return-follows-link t)
+    (org-show-notification-handler 'message)
     (org-special-ctrl-a/e t)
     (org-special-ctrl-k t)
     (org-startup-folded 'content)
     (org-startup-indented t)
+    (org-startup-with-inline-images t)
     (org-structure-template-alist '(("a" . "export ascii")
                                     ("c" . "center")
                                     ("C" . "comment")
@@ -1663,7 +1691,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     ("l" . "export latex")
                                     ("q" . "quote")
                                     ("s" . "src")
-                                    ("v" . "verse")
                                     ("el" . "src emacs-lisp")
                                     ("d" . "definition")
                                     ("t" . "theorem")))
@@ -1672,19 +1699,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-yank-adjusted-subtrees t)
     :config
     (add-to-list 'org-global-properties
-                 '("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00"))
+                 '("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00")))
+#+end_src
 
-    (use-package org-tempo
-      :straight nil)
-
-    (use-package org-habit
-      :straight nil)
-
-    (use-package org-funcs
-      :straight nil)
-
-    (use-package org-archive
-      :straight nil))
+#+name: init-org-pomodoro-block
+#+begin_src emacs-lisp
+  (use-package org-pomodoro)
 #+end_src
 
 #+name: init-org-bullets-block
@@ -1698,7 +1718,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package org-agenda
     :straight nil
     :custom
-    (org-agenda-files (directory-files-recursively djm--org-agenda-directory "\.org$"))
+    (org-agenda-compact-blocks t)
+    (org-agenda-dim-blocked-tasks nil)
+    (org-agenda-files '("~/org/inbox.org"
+                        "~/org/projects.org"
+                        "~/org/someday.org"
+                        "~/org/next.org"))
     (org-agenda-inhibit-startup nil)
     (org-agenda-show-all-dates t)
     (org-agenda-show-future-repeats nil)
@@ -1706,21 +1731,49 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-agenda-skip-scheduled-if-done t)
     (org-agenda-skip-timestamp-if-done t)
     (org-agenda-start-on-weekday 1)
-    (org-agenda-todo-ignore-with-dat nil)
+    (org-agenda-todo-ignore-with-date nil)
     (org-agenda-window-setup 'current-window)
-    (org-todo-keywords '((sequence  "TODO(t)" "STARTED(s)" "WAITING(w)" "SOMEDAY(.)" "MAYBE(m)" "|" "DONE(x!)" "CANCELLED(c)")))
+    (org-log-done 'time)
+    (org-log-into-drawer t)
+    (org-log-state-notes-insert-after-drawers nil)
+    (org-refile-targets '((nil :maxlevel . 9)
+                          (org-agenda-files :maxlevel . 9)))
+    (org-tag-alist '(("@errand" . ?e)
+                     ("@office" . ?o)
+                     ("@home" . ?h)
+                     ("@school" . ?s)
+                     (:newline)
+                     ("WAITING" . ?w)
+                     ("HOLD" . ?H)
+                     ("CANCELLED" . ?c)
+                     ("REFILE" . ?r)))
+    (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                         (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")))
+    (org-todo-state-tags-triggers '(("CANCELLED" ("CANCELLED" . t))
+                                    ("WAITING" ("WAITING" . t))
+                                    ("HOLD" ("WAITING") ("HOLD" . t))
+                                    (done ("WAITING") ("HOLD"))
+                                    ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                                    ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                                    ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
     :config
     (unbind-key "C-c [")
-    (unbind-key "C-c ]"))
+    (unbind-key "C-c ]")
 
-  (use-package org-super-agenda
-    :init
-    (org-super-agenda-mode)
-    :config
-    (use-package origami
-      :bind (:map org-super-agenda-header-map
-                  ("TAB" . origami-toggle-node))
-      :hook ((org-agenda-mode . origami-mode))))
+    (setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
+                                   "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                                  ("r" "respond [inbox]" entry (file "~/org/inbox.org")
+                                   "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t)
+                                  ("n" "note [inbox]" entry (file "~/org/inbox.org")
+                                   "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                                  ("j" "journal" entry (file "~/org/diary.org")
+                                   "* %?\n%U\n" :clock-in t :clock-resume t)
+                                  ("m" "meeting [inbox]" entry (file "~/org/inbox.org")
+                                   "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                                  ("p" "phone call" entry (file "~/org/inbox.org")
+                                   "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                                  ("h" "habit" entry (file "~/org/inbox.org")
+                                   "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \" %<<%Y-%m-%d %a . +1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 #+end_src
 
 #+name: init-org-babel-block
@@ -1734,18 +1787,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-src-tab-acts-natively t)
     :config
     (org-babel-do-load-languages
-     'org-babel-load-languages '((C           . t)
-                                 (calc        . t)
-                                 (comint      . t)
-                                 (dot         . t)
-                                 (emacs-lisp  . t)
-                                 (latex       . t)
-                                 (lisp        . t)
-                                 (makefile    . t)
-                                 (python      . t)
-                                 (R           . t)
-                                 (sagemath    . t)
-                                 (shel        . t))))
+     'org-babel-load-languages '((emacs-lisp  . t))))
+
 #+end_src
 
 #+name: init-org-src-block
@@ -1766,8 +1809,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (setq org-src-window-setup 'current-window)
     (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-    (advice-add 'org-edit-src-exit
-                :before #'djm/org-src-delete-trailing-space))
+    (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
 
 #+name: init-toc-org-block
@@ -1969,7 +2011,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Markdown
 #+name: init-markdown-block
 #+begin_src emacs-lisp
-  (use-package markdown-mode)
+  (use-package markdown-mode
+    :mode ("\\.md\\'" . markdown-mode)
+    :commands (markdown-mode gfm-mode)
+    :custom
+    (markdown-fontify-code-blocks-natively t)
+    (markdown-enable-wiki-links t)
+    (mardown-indent-nenter 'indent-and-new-item)
+    (markdown-asymmetric-header t))
 #+end_src
 
 *** YAML

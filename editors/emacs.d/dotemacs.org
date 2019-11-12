@@ -3,12 +3,12 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-11 16:01:18
+/last updated/: 2019-11-11 17:14:40
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
   - [[#literate-programming-in-org][Literate Programming in Org]]
-  -  [[#system-requirements][System Requirements]]
+  - [[#system-requirements][System Requirements]]
 - [[#early-init][Early-Init]]
   - [[#header][Header]]
   - [[#performance-tweaks][Performance Tweaks]]
@@ -16,10 +16,8 @@
   - [[#preliminary-configuration][Preliminary Configuration]]
     - [[#pre-gui-optimization][Pre-Gui Optimization]]
     - [[#important-paths][Important Paths]]
-  - [[#package-manager][Package Manager]]
-    - [[#straight][Straight]]
+  - [[#straight-package-manager][Straight Package Manager]]
   - [[#environment][Environment]]
-    - [[#exec-path-from-shell][Exec Path From Shell]]
   - [[#no-littering][No-Littering]]
   - [[#required-packages][Required Packages]]
   - [[#footer][Footer]]
@@ -94,7 +92,7 @@
 ** Literate Programming in Org
 This document is my current emacs config which contains the code for my =early-init.el= file and =init.el= file. You may be wondering how one file can contain code for two different configuration files. Through the power of =org-babel-tangle=, I am able to configure and document my entire emacs experience in a single Org file. There are several reasons to organize one's configuration this way. I hope these reasons become obvious as you browse through, but personally I find it much easier to document my choices using a markup language. This way I can store links and reference back to forum threads and other places when updating. I can also include pictures throughout and organize code-blocks with specific names to make navigation quick and painless. If you're interested in creating a similar setup, take a look at the raw-version of this file. There is important information contained in the header and throughout the file to make this work. Once you have a proper the proper settings, start adding src-blocks and then run =M-x org-babel-tangle <RET>=. Your config files will then be generated and Emacs will use those files when starting up. I have also written a hook that tangles this file everytime I save.
 
-**  System Requirements
+** System Requirements
 Currently this setup requires Emacs 27.0.50. There are several configurations throughout that won't work on previous versions.
 -------------------------------------------------------------------
 
@@ -216,8 +214,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar djm--personal-lisp-dir (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 
-** Package Manager
-*** Straight
+** Straight Package Manager
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
   (eval-and-compile
@@ -252,14 +249,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 ** Environment
-*** Exec Path From Shell
 #+name: early-init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :demand t
+    :straight t
     :config
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE"))
     (setq exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -273,7 +270,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :init
     (setq no-littering-etc-directory djm--emacs-etc-cache)
     (setq no-littering-var-directory djm--emacs-var-cache))
-    #+end_src
+#+end_src
 
 ** Required Packages
 
@@ -284,28 +281,24 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package el-patch :demand t)
   (use-package bind-key :demand t)
   (use-package general :demand t)
-  (use-package dash)
-  (use-package f)
-  (use-package s)
   (use-package hydra :demand t)
   (use-package blackout :demand t :straight (:host github :repo "raxod502/blackout"))
   (use-package straight-x :straight nil)
+  (use-package dash)
+  (use-package f)
+  (use-package s)
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
   (use-package org :straight (:repo "https://code.orgmode.org/bzg/org-mode.git") :ensure org-plus-contrib)
   (use-package gnutls
     :straight nil
-    :config
+    :init
     (setq gnutls-verify-error t)
     (setq gnutls-min-prime-bits 3072))
-
-  (eval-when-compile
-    (require 'el-patch))
 #+end_src
 
 ** Footer
-
 #+name: early-init-footer-block
 #+begin_src emacs-lisp
   (provide 'early-init)
@@ -338,7 +331,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Personal Functions
 #+name: init-personal-funcs-block
 #+begin_src emacs-lisp
+  (defun djm/delete-custom-file ()
+    "Custom function to delete my custom.el file."
+    (interactive)
+    (if (file-exists-p custom-file)
+        (progn
+          (delete-file custom-file)
+          (message "Custom file deleted!"))
+      (message "Custom file does not exist!")))
 
+  (defun djm/delete-secret-file ()
+    "Custom Function to delete my secret file anytime."
+    (interactive)
+    (if (file-exists-p djm--secret-file)
+        (progn
+          (delete-file djm--secret-file)
+          (message "Secret file deleted!"))
+      (message "Secret file does not exist!")))
 #+end_src
 
 **** Personal Hooks
@@ -352,12 +361,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (bind-keys ("RET" . newline-and-indent)
              ("C-j" . newline-and-indent))
+
+  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
+  (global-unset-key (kbd "C-z"))
 #+end_src
 
 **** Personal Packages/Hacks
 #+name: init-personal-packages-block
 #+begin_src emacs-lisp
-
+  (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 
 *** Defaults
@@ -365,6 +377,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
+    :demand t
     :straight nil
     :custom
     (ad-redefinition-action 'accept)
@@ -419,9 +432,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (blink-cursor-mode -1)
   (tooltip-mode -1)
-
-  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
-  (global-unset-key (kbd "C-z"))
+  (global-prettify-symbols-mode +1)
 #+end_src
 
 **** Custom File
@@ -473,6 +484,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Files, History, & System Settings
 #+name: init-files-block
 #+begin_src emacs-lisp
+  (use-package restart-emacs
+    :commands (restart-emacs))
+
   (use-package saveplace
     :straight nil
     :config (save-place-mode +1))
@@ -594,7 +608,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-dashboard-block
 #+begin_src emacs-lisp
   (use-package dashboard
-    :disabled t
     :hook (dashboard-mode . hide-mode-line-mode)
     :init
     (dashboard-setup-startup-hook)
@@ -710,18 +723,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (load-theme 'gruvbox-dark-hard t))
 
-  (set-face-attribute 'variable-pitch nil
-                      :family "ETBembo"
-                      :height 240
-                      :weight 'light)
+  (set-face-attribute 'variable-pitch nil :inherit 'default
+                      :family "ETBembo" :weight 'light)
 
-  (set-face-attribute 'fixed-pitch nil
-                      :family "Iosevka Nerd Font Mono"
-                      :slant 'normal
-                      :weight 'ultra-light
-                      :height 220
-                      :width 'normal
-                      :inherit nil)
+  (set-face-attribute 'fixed-pitch nil :inherit 'default
+                      :family "Iosevka Nerd Font Mono" :weight 'ultra-light)
 #+end_src
 
 **** Doom-Themes
@@ -1360,16 +1366,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package prog-mode
     :straight nil
     :hook ((prog-mode . show-paren-mode)
-           (prog-mode . display-fill-column-indicator-mode))
-    :config
-    (global-prettify-symbols-mode +1))
+           (prog-mode . display-fill-column-indicator-mode)))
 
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
 
   (use-package volatile-highlights
     :hook ((prog-mode text-mode) . volatile-highlights-mode))
-
 
   (use-package highlight-thing
     :hook ((prog-mode) . highlight-thing-mode))
@@ -1635,6 +1638,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
       (push '("CANCELLED"  . ?✘)  prettify-symbols-alist)
       (push '("QUESTION"   . ??)  prettify-symbols-alist)
       (push '("SCHEDULED"  . ?🗓) prettify-symbols-alist)
+      (push '("CLOSED"     . ?🏁) prettify-symbols-alist)
       (push '("DEADLINE"   . ?❗) prettify-symbols-alist)
       (push '("CLOCK"      . ?⏰) prettify-symbols-alist)
       (setq-local line-spacing 0.1)
@@ -1757,9 +1761,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
                                     ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
     :config
-    (unbind-key "C-c [")
-    (unbind-key "C-c ]")
-
     (setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
                                    "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
                                   ("r" "respond [inbox]" entry (file "~/org/inbox.org")

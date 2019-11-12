@@ -19,7 +19,10 @@ if [[ -e $CACHE/zplugin ]]; then
 fi
 
 zmodload zdharma/zplugin &> /dev/null
-if (( $? == 1 )); then zpl module build; fi
+if (( $? == 1 )); then
+    print "ZPlugin module not built! Building now..."
+    zpl module build;
+fi
 
 # Set this variable to light or load for easy debugging.
 load=light
@@ -42,15 +45,13 @@ zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
         atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
 zplugin $load direnv/direnv
 
-if [[ -e $ZPLGM[PLUGINS_DIR]/zsh-users---zshcompletions ]]; then
-    zplugin ice wait'3' blockf atpull'zplugin creinstall -q' lucid
-    zplugin $load zsh-users/zsh-completions
-fi
+zplugin ice wait'3' blockf atpull'zplugin creinstall -q' lucid
+zplugin $load zsh-users/zsh-completions
 
 zplugin ice wait'3a' atload:'_zsh_autosuggest_start' lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
-zplugin ice wait'3b' atinit"_zpcompinit_fast; zpcdreplay; " lucid
+zplugin ice wait'3b' atload"zpcompinit; zpcdreplay; " lucid
 zplugin $load zdharma/fast-syntax-highlighting
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

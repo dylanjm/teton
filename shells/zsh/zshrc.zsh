@@ -2,13 +2,11 @@ typeset -ga mylogs
 zflai-msg() { mylogs+=( "$1" ); }
 zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
 
-. $ZSH/zplugin.zsh
+source $ZSH/zplugin.zsh
 
 for f in $ZSH/interactive/*(N); do
-    . $f
+    source $f
 done
-
-
 
 zflai-msg "[zshrc] Finishing, loaded custom modules: ${(j:, :@)${(k)modules[@]}:#zsh/*}"
 

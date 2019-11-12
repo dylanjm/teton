@@ -1,4 +1,4 @@
-#!/usr/local/zsh
+#!/usr/local/bin/zsh
 
 function nuke() {
     read -r "response?Are you sure? [y/N] "

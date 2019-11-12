@@ -1,8 +1,7 @@
-typeset -aU path cdpath fpath manpath module_path modulepath
+typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
 export LANG=en_US.UTF-8
-export TERM=xterm-256color
 
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
@@ -14,17 +13,17 @@ export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"
 export HISTFILE="$ZSH_CACHE/zsh_history"
 
-ZPLGM[HOME_DIR]="$ZSH_CACHE/zplugin"
-ZPLGM[BIN_DIR]="$ZPLGM[HOME_DIR]/bin"
-ZPLGM[ZCOMPDUMP_PATH]="$ZSH_CACHE/zcompdump"
+export GPG_TTY=$(tty)
 
-module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
-modulepath=(/usr/local/Cellar/modules/4.3.0/modulefiles)
+export ZPLGM[HOME_DIR]="$ZSH_CACHE/zplugin"
+export ZPLGM[BIN_DIR]="$ZPLGM[HOME_DIR]/bin"
+export ZPLGM[ZCOMPDUMP_PATH]="$ZSH_CACHE/zcompdump"
 
 fpath+=($ZSH/functions)
+module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
-path=(/usr/local/opt/make/libexec/gnubin
-      $PYENV_ROOT/bin
+
+path=($PYENV_ROOT/bin
       $PYENV_ROOT/shims
       $DOTFILES/bin
       /usr/local/bin
@@ -36,4 +35,5 @@ path=(/usr/local/opt/make/libexec/gnubin
       /usr/local/texlive/2019/bin/x86_64-darwin
       /usr/local/opt/texinfo/bin)
 
-autoload -Uz time-shell nuke convert-to-md colorlist _zpcompinit_fast
+autoload -Uz time-shell nuke convert-to-md \
+         colorlist open-apps iterm-config

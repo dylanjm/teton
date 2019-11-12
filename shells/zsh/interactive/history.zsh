@@ -1,7 +1,7 @@
 #
 # Variables
 #
-export HISTFILE="${HISTFILE:-~/.cache/zsh/zsh_history}"
+export HISTFILE="$CACHE/zsh/zsh_history"
 export HISTSIZE=10000000
 export SAVEHIST=10000000
 

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-11 22:57:08
+/last updated/: 2019-11-12 16:05:37
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -26,7 +26,7 @@
   - [[#general-user-settings--tools][General User Settings & Tools]]
     - [[#personal-tweaks][Personal Tweaks]]
     - [[#defaults][Defaults]]
-    - [[#frame--window][Frame & Window]]
+    - [[#buffer-frame--window][Buffer, Frame & Window]]
     - [[#files-history--system-settings][Files, History, & System Settings]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
     - [[#icons][Icons]]
@@ -61,6 +61,7 @@
     - [[#org][Org]]
     - [[#email][Email]]
     - [[#calendar][Calendar]]
+    - [[#spotify][Spotify]]
     - [[#web-browsing][Web Browsing]]
   - [[#programming-support][Programming Support]]
     - [[#version-control][Version Control]]
@@ -227,7 +228,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (setq straight-cache-autoloads t)
     (setq straight-recipe-overrides nil)
     (setq straight-check-for-modifications '(find-when-checking check-on-save))
-    (setq straight-repository-branch "develop")
+    (setq straight-repository-branch "master")
     (setq straight-use-package-by-default t))
 
   (with-no-warnings
@@ -256,7 +257,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight t
     :config
     (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE"))
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "GPG_TTY"))
     (setq exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -290,7 +291,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
-  (use-package org-mode :straight (:repo "https://code.orgmode.org/bzg/org-mode.git") :ensure org-plus-contrib)
+  (use-package org :straight t :ensure org-plus-contrib)
   (use-package gnutls
     :straight nil
     :init
@@ -390,6 +391,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (display-time-default-load-average nil)
     (echo-keystrokes 0.02)
     (fast-but-imprecise-scrolling t)
+    (ffap-machine-p-known 'reject)
     (fill-column 80)
     (frame-title-format '("%b - Zmacs"))
     (highlight-nonselected-windows nil)
@@ -400,6 +402,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (indent-tabs-mode nil)
     (indicate-buffer-boundaries nil)
     (indicate-empty-lines nil)
+    (max-specpdl-size 2040)
     (mode-line-in-non-selected-windows nil)
     (mouse-wheel-progressive-speed nil)
     (mouse-wheel-scroll-amount '(1))
@@ -414,7 +417,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (split-height-threshold nil)
     (tab-always-indent 'complete)
     (tab-width 4)
-    (uniquify-buffer-name-style 'post-forward)
     (use-dialog-box nil)
     (use-file-dialog nil)
     (vc-follow-symlinks t)
@@ -429,6 +431,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (fset 'yes-or-no-p 'y-or-n-p)
   (fset 'display-startup-echo-area-message 'ignore)
   (fset 'view-hello-file 'ignore)
+  (fset 'custom-safe-themes 't)
 
   (blink-cursor-mode -1)
   (tooltip-mode -1)
@@ -450,41 +453,49 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (load djm--secret-file :noerror))
 #+end_src
 
-*** Frame & Window
+*** Buffer, Frame & Window
 #+name: init-frame-block
 #+begin_src emacs-lisp
-  (use-package pixel-scroll
+  (use-package uniquify
     :straight nil
-    :init (pixel-scroll-mode 1))
+    :custom
+    (uniquify-ignore-buffers-re "^\\*")
+    (uniquify-buffer-name-style 'forward)
+    (uniquify-separator "/"))
+
+  (use-package pixel-scroll
+    :blackout t
+    :straight nil
+    :hook (after-init . pixel-scroll-mode))
 
   (use-package ns-win
     :straight nil
-    :init
-    (setq mac-command-modifier 'meta
-          mac-option-modifier 'meta
-          mac-right-command-modifier 'super
-          mac-right-option-modifier 'none
-          mac-function-modifier 'hyper)
-
-    (setq ns-pop-up-frames nil
-          ns-use-native-fullscreen nil
-          ns-use-thin-smoothing t))
+    :custom
+    (mac-command-modifier 'meta)
+    (mac-option-modifier 'meta)
+    (mac-right-command-modifier 'super)
+    (mac-right-option-modifier 'none)
+    (mac-function-modifier 'hyper)
+    (ns-pop-up-frames nil)
+    (ns-use-native-fullscreen nil)
+    (ns-use-thin-smoothing t))
 
   (use-package winner
-    :config
-    (winner-mode +1))
+    :blackout t
+    :straight t
+    :hook (after-init . winner-mode))
 
   (use-package shackle
     :blackout t
-    :if (not (bound-and-true-p disable-pkg-shackle))
-    :config
-    (shackle-mode +1))
+    :straight t
+    :hook (after-init . shackle-mode))
 #+end_src
 
 *** Files, History, & System Settings
 #+name: init-files-block
 #+begin_src emacs-lisp
   (use-package restart-emacs
+    :straight t
     :commands (restart-emacs))
 
   (use-package saveplace
@@ -526,12 +537,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package recentf
     :demand t
     :straight nil
+    :hook (after-init . recentf-mode)
     :init
     (setq recentf-max-saved-items 2000
           recentf-max-menu-items 20
           recentf-auto-cleanup 'never)
     (setq recentf-exclude `(,djm--emacs-cache
                             ,djm--straight-directory
+                            ,djm--org-agenda-directory
                             "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
                             "\\.?cache"
                             ".cask"
@@ -543,27 +556,39 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                             "\\.?ido\\.last$"
                             "\\.revive$"
                             "/TAGS$"
-                            "^/var/folders/.+$"))
+                            "^/var/folders/.+$")))
+
+  (use-package epa
+    :straight nil
     :config
-    (recentf-mode 1))
+    (setq epa-replace-original-text t))
+
+  (use-package epg
+    :straight nil
+    :config
+    (setq epg-pinentry-mode 'loopback))
 
   (use-package auth-source
+    :straight t
     :config
-    (setq auth-sources '(no-littering-expand-etc-file-name "authinfo.gpg")))
+    (setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
+                         ,(no-littering-expand-etc-file-name "authinfo"))))
 
   (use-package osx-trash
+    :straight t
     :hook (after-init . (lambda () (osx-trash-setup)))
-    :init
-    (setq delete-by-moving-to-trash t))
+    :custom
+    (delete-by-moving-to-trash t))
 
   (use-package async
-    :hook ((dired-mode . dired-async-mode))
+    :straight t
+    :hook ((dired-mode . dired-async-mode)
+           (after-init . async-bytecomp-package-mode))
     :preface
     (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
     (autoload 'dired-async-mode "dired-async.el" nil t)
-    :config
-    (setq async-bytecomp-allowed-packages '(all))
-    (async-bytecomp-package-mode +1))
+    :custom
+    (async-bytecomp-allowed-packages '(all)))
 
   (use-package compile
     :straight nil
@@ -585,16 +610,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           compilation-ask-about-save nil
           compilation-scroll-output 'first-error))
 
+  (use-package make-mode
+    :straight nil
+    :mode (("Makefile" . makefile-gmake-mode)))
 
   (use-package direnv
     :demand t
-    :after (exec-path-from-shell)
+    :straight t
+    :hook (after-init . direnv-mode)
     :config
     (add-to-list 'direnv-non-file-modes '(comint-mode
                                           term-mode
                                           vterm-mode
-                                          compilation-mode))
-    (direnv-mode +1))
+                                          compilation-mode)))
 #+end_src
 
 ** Theme & Aesthetics
@@ -661,6 +689,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (line-move-visual nil)
     (line-number-mode t)
     (next-line-add-newlines nil)
+    (save-interprogram-paste-before-kill t)
     (set-mark-command-repeat-pop t)
     (show-trailing-whitespace nil)
     (track-eol t))
@@ -670,15 +699,22 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (whitespace-style '(face empty indentation::space tab trailing)))
 
+  (use-package ansi-color
+    :straight nil)
+
   (use-package color
     :straight nil
     :functions (color-darken-name))
 
   (use-package beacon
     :blackout t
+    :straight t
     :hook (after-init . beacon-mode)
-    :custom
-    (beacon-push-mark 10))
+    :custom (beacon-push-mark 10))
+
+  (use-package highlight-indent-guides
+    :straight t
+    :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
 
   (defun lunaryorn-configure-fonts (frame)
     "Set up fonts for FRAME.
@@ -961,7 +997,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
   (use-package abbrev
-    :straight nil)
+    :blackout t
+    :straight nil
+    :hook ((message-mode org-mode markdown-mode rst-mode) . abbrev-mode)
+    :custom
+    (save-abbrevs 'silently)
+    (abbrev-file-name (no-littering-expand-etc-file-name "abbrev.el")))
 #+end_src
 
 **** Hippie Expand
@@ -1224,18 +1265,30 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :bind ("C-h M-k" . describe-keymap))
 
   (use-package discover-my-major
+    :straight t
     :bind ("C-h C-m" . discover-my-major))
 
   (use-package devdocs)
 
   (use-package eldoc
+    :blackout t
+    :straight t
+    :hook (prog-mode . eldoc-mode)
     :custom
     (eldoc-idle-delay 2)
     (eldoc-echo-area-use-multiline-p nil))
 
   (use-package which-key
-    :custom (which-key-idle-delay 0.5)
-    :config (which-key-mode))
+    :blackout t
+    :straight t
+    :hook (after-init . which-key-mode)
+    :custom (which-key-idle-delay 0.5))
+
+
+  (use-package which-func
+    :blackout t
+    :straight t
+    :hook (after-init . which-function-mode))
 #+end_src
 
 *** Spell Check
@@ -1288,10 +1341,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-anzu-block
 #+begin_src emacs-lisp
   (use-package anzu
+    :blackout t
+    :straight t
     :hook (after-init . global-anzu-mode)
     :bind ([remap query-replace] . anzu-query-replace-regexp)
-    :custom
-    (anzu-cons-mode-line-p nil))
+    :custom (anzu-cons-mode-line-p nil))
 #+end_src
 
 *** Minor Modes
@@ -1708,10 +1762,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-agenda-compact-blocks t)
     (org-agenda-dim-blocked-tasks nil)
     (org-agenda-files '("~/org/inbox.org"
-                        "~/org/projects.org"
-                        "~/org/someday.org"
-                        "~/org/next.org"))
-    (org-agenda-inhibit-startup t)
+                        "~/org/work.org"
+                        "~/org/personal.org"
+                        "~/org/school.org"))
+    (org-agenda-inhibit-startup nil)
     (org-agenda-show-all-dates t)
     (org-agenda-show-future-repeats nil)
     (org-agenda-skip-deadline-if-done t)
@@ -1742,7 +1796,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                          (sequence "WAITING(w@/!)" "HOLD(h@/!)"  "QUESTION(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")))
     :config
     (setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
-                                   "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                                   "* TODO %?\n%U\n" :clock-in t :clock-resume t)
                                   ("n" "note [inbox]" entry (file "~/org/inbox.org")
                                    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
                                   ("m" "meeting [inbox]" entry (file "~/org/inbox.org")
@@ -1815,6 +1869,24 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** TODO Calendar
+*** Spotify
+#+name: init-spotify-block
+#+begin_src emacs-lisp
+  (use-package spotify
+    :straight (:files ("*.py" "*.el") :host github :repo "danielfm/spotify.el")
+    :custom
+    (spotify-transport 'connect)
+    (spotify-player-status-truncate-length 20)
+    (spotify-api-search-limit 50)
+    :config
+    (when-let ((plist (car (auth-source-search :host "spotify.api" :max 1)))
+	       (id (plist-get plist :user))
+	       (secret (funcall (plist-get plist :secret))))
+      (setq spotify-oauth2-client-secret secret)
+      (setq spotify-oauth2-client-id id))
+    (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))
+#+end_src
+
 *** Web Browsing
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
@@ -1830,7 +1902,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 ** Programming Support
 *** Version Control
-
 #+name: init-vc-block
 #+begin_src emacs-lisp
   (use-package vc-hooks

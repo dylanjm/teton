@@ -40,7 +40,7 @@ zplugin $load trapd00r/LS_COLORS
 
 zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
         atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
-zplugin $load direnv/direnvit
+zplugin $load direnv/direnv
 
 if [[ -e $ZPLGM[PLUGINS_DIR]/zsh-users---zshcompletions ]]; then
     zplugin ice wait'3' blockf atpull'zplugin creinstall -q' lucid

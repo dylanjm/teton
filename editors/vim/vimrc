@@ -1,0 +1,7 @@
+stdpath('data') . '/plugged'
+call plug#begin('~/dotz/editors/vim/plugged')
+Plug 'morhetz/gruvbox'
+call plug#end()
+set background = "dark"
+set colorscheme = "one"
+let g:airline_theme = 'one'

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-14 13:53:40
+/last updated/: 2019-11-14 16:17:58
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -154,41 +154,39 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-    (setq-default auto-window-vscroll nil
-                  bidi-display-reordering 'left-to-right
-                  frame-inhibit-implied-resize t
-                  window-resize-pixelwise t
-                  frame-resize-pixelwise t
-                  load-prefer-newer t)
+  (setq-default auto-window-vscroll nil
+                bidi-display-reordering 'left-to-right
+                frame-inhibit-implied-resize t
+                window-resize-pixelwise t
+                frame-resize-pixelwise t
+                load-prefer-newer t)
 
-    (setq initial-frame-alist
-          '((window-divider-default-bottom-width . 1)
-            (window-divider-default-right-width . 1)
-            (window-divider-default-places . t)
-            (width . 188)
-            (height . 188)))
+  (setq initial-frame-alist
+        '((window-divider-default-bottom-width . 1)
+          (window-divider-default-right-width . 1)
+          (window-divider-default-places . t)
+          (width . 188)
+          (height . 188)))
 
-    (setq default-frame-alist
-          '((ns-transparent-titlebar . t)
-            (ns-appearance . dark)
-            (vertical-scroll-bars)
-            (tool-bar-lines . 0)
-            (menu-bar-lines . 1)
-            (right-fringe . 5)
-            (left-fringe . 5)
-            ;; (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-22-*-*-*-m-0-iso10646-1")
-            (inhibit-double-buffering . t)))
+  (setq default-frame-alist
+        '((ns-transparent-titlebar . t)
+          (vertical-scroll-bars)
+          (tool-bar-lines . 0)
+          (menu-bar-lines . 1)
+          (right-fringe . 5)
+          (left-fringe . 5)
+          (inhibit-double-buffering . t)))
 
-    (prefer-coding-system 'utf-8-unix)
-    (set-language-environment "UTF-8")
-    (set-keyboard-coding-system 'utf-8)
-    (set-clipboard-coding-system 'utf-8)
-    (set-terminal-coding-system 'utf-8)
-    (set-buffer-file-coding-system 'utf-8)
-    (set-default-coding-systems 'utf-8)
-    (set-selection-coding-system 'utf-8)
-    (modify-coding-system-alist 'process "*" 'utf-8)
-    (set-file-name-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8-unix)
+  (set-language-environment "UTF-8")
+  (set-keyboard-coding-system 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (modify-coding-system-alist 'process "*" 'utf-8)
+  (set-file-name-coding-system 'utf-8)
 #+end_src
 
 *** Important Paths
@@ -1373,34 +1371,34 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (dired-mode . diredfl-global-mode))
 
   (use-package dired-hacks-utils
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-filter
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-rainbow
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-narrow
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-collapse
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-tagsistant
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-open
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-list
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-images
-    :straight (:host github :repo "dired-hacks"))
+    :straight (:host github :repo "Fuco1/dired-hacks"))
 
   (use-package dired-ranger
-    :straight (:host github :repo "dired-hacks")
+    :straight (:host github :repo "Fuco1/dired-hacks")
     :bind (:map dired-mode-map
                 ("C-c C-c" . dired-ranger-copy)
                 ("C-c C-m" . dired-ranger-move)
@@ -1409,7 +1407,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 ("C-c b v" . dired-ranger-bookmark-visit)))
 
   (use-package dired-subtree
-    :straight (:host github :repo "dired-hacks")
+    :straight (:host github :repo "Fuco1/dired-hacks")
     :bind (:map dired-mode-map
                 ("TAB" . dired-subtree-insert)
                 (";" . dired-subtree-remove)))
@@ -2325,11 +2323,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (load-theme 'gruvbox-dark-hard t))
 
-  (set-face-attribute 'variable-pitch nil :inherit 'default
-                      :family "Source Sans Pro" :weight 'light)
+  (set-face-attribute 'variable-pitch nil :inherit 'default :family "Source Sans Pro" :weight 'light)
 
-  ;(set-face-attribute 'fixed-pitch nil :inherit 'default
-   ;                   :family "Iosevka Nerd Font" :weight 'ultralight :slant 'normal)
+  (set-face-attribute 'fixed-pitch nil :inherit 'default :font "Iosevka Nerd Font Mono")
 #+end_src
 
 **** Doom-Themes
@@ -2496,6 +2492,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package sublimity
     :straight (:host github :repo "zk-phi/sublimity"))
 #+end_src
+
 ** Footer
 #+name: init-footer-block
 #+begin_src emacs-lisp

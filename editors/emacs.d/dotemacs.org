@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-12 16:05:37
+/last updated/: 2019-11-12 16:35:01
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -493,7 +493,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 *** Files, History, & System Settings
 #+name: init-files-block
-#+begin_src emacs-lisp
+#+beginn_src emacs-lisp
   (use-package restart-emacs
     :straight t
     :commands (restart-emacs))
@@ -540,7 +540,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (after-init . recentf-mode)
     :init
     (setq recentf-max-saved-items 2000
-          recentf-max-menu-items 20
+          recentf-max-menu-items 100
           recentf-auto-cleanup 'never)
     (setq recentf-exclude `(,djm--emacs-cache
                             ,djm--straight-directory
@@ -556,7 +556,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                             "\\.?ido\\.last$"
                             "\\.revive$"
                             "/TAGS$"
-                            "^/var/folders/.+$")))
+                            "^/var/folders/.+$"))
+    (run-at-time nil (* 3 60) (lambda ()
+                            (let ((inhibit-message t))
+                              (recentf-save-list)))))
 
   (use-package epa
     :straight nil
@@ -1758,6 +1761,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package org-agenda
     :straight nil
+    :preface
+    (setq org-agenda-inhibit-startup t)
     :custom
     (org-agenda-compact-blocks t)
     (org-agenda-dim-blocked-tasks nil)
@@ -1765,7 +1770,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                         "~/org/work.org"
                         "~/org/personal.org"
                         "~/org/school.org"))
-    (org-agenda-inhibit-startup nil)
     (org-agenda-show-all-dates t)
     (org-agenda-show-future-repeats nil)
     (org-agenda-skip-deadline-if-done t)

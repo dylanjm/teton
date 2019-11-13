@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-12 16:35:01
+/last updated/: 2019-11-12 22:29:03
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -291,12 +291,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
-  (use-package org :straight t :ensure org-plus-contrib)
+  (use-package org :straight t)
+  (use-package org-plus-contrib :straight t)
   (use-package gnutls
     :straight nil
     :init
     (setq gnutls-verify-error t)
-    (setq gnutls-min-prime-bits 3072))
+    (setq gnutls-min-prime-bits 2048))
 #+end_src
 
 ** Footer
@@ -493,7 +494,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 *** Files, History, & System Settings
 #+name: init-files-block
-#+beginn_src emacs-lisp
+#+begin_src emacs-lisp
   (use-package restart-emacs
     :straight t
     :commands (restart-emacs))
@@ -765,7 +766,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                       :family "ETBembo" :weight 'light)
 
   (set-face-attribute 'fixed-pitch nil :inherit 'default
-                      :family "Iosevka Nerd Font Mono" :weight 'ultra-light)
+                      :family "Iosevka Nerd Font Mono" :weight 'ultralight)
 #+end_src
 
 **** Doom-Themes
@@ -1881,11 +1882,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (spotify-transport 'connect)
     (spotify-player-status-truncate-length 20)
-    (spotify-api-search-limit 50)
+    (spotfy-api-search-limit 50)
     :config
     (when-let ((plist (car (auth-source-search :host "spotify.api" :max 1)))
-	       (id (plist-get plist :user))
-	       (secret (funcall (plist-get plist :secret))))
+           (id (plist-get plist :user))
+           (secret (funcall (plist-get plist :secret))))
       (setq spotify-oauth2-client-secret secret)
       (setq spotify-oauth2-client-id id))
     (define-key spotify-mode-map (kbd "C-c .") 'spotify-command-map))

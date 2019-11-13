@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-12 22:29:03
+/last updated/: 2019-11-13 16:01:15
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -28,12 +28,6 @@
     - [[#defaults][Defaults]]
     - [[#buffer-frame--window][Buffer, Frame & Window]]
     - [[#files-history--system-settings][Files, History, & System Settings]]
-  - [[#theme--aesthetics][Theme & Aesthetics]]
-    - [[#icons][Icons]]
-    - [[#dashboard][Dashboard]]
-    - [[#themes][Themes]]
-    - [[#modelines][Modelines]]
-    - [[#ui-features][UI Features]]
   - [[#utilities][Utilities]]
     - [[#hydra][Hydra]]
     - [[#prescient][Prescient]]
@@ -79,6 +73,12 @@
     - [[#ess][ESS]]
     - [[#python][Python]]
     - [[#c][C++]]
+  - [[#theme--aesthetics][Theme & Aesthetics]]
+    - [[#icons][Icons]]
+    - [[#dashboard][Dashboard]]
+    - [[#themes][Themes]]
+    - [[#modelines][Modelines]]
+    - [[#ui-features][UI Features]]
   - [[#footer-1][Footer]]
 - [[#mini-init][Mini-Init]]
   - [[#header-2][Header]]
@@ -104,7 +104,7 @@ Currently this setup requires Emacs 27.0.50. There are several configurations th
 ** Header
 #+name: early-init-header-block
 #+begin_src emacs-lisp
-  ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
+  ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t; byte-compile: t-*-
   ;;;
   ;;; Commentary:
   ;;; Emacs `early-init.el' config by dylanjm
@@ -161,42 +161,43 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-  (setq-default auto-window-vscroll nil
-                bidi-display-reordering 'left-to-right
-                frame-inhibit-implied-resize t
-                window-resize-pixelwise t
-                frame-resize-pixelwise t)
+    (setq-default auto-window-vscroll nil
+                  bidi-display-reordering 'left-to-right
+                  frame-inhibit-implied-resize t
+                  window-resize-pixelwise t
+                  frame-resize-pixelwise t
+                  load-prefer-newer t)
 
-  (setq initial-frame-alist
-        '((window-divider-default-bottom-width . 1)
-          (window-divider-default-right-width . 1)
-          (window-divider-default-places . t)
-          (width . 188)
-          (height . 188)))
+    (setq initial-frame-alist
+          '((window-divider-default-bottom-width . 1)
+            (window-divider-default-right-width . 1)
+            (window-divider-default-places . t)
+            (width . 188)
+            (height . 188)))
 
-  (setq default-frame-alist
-        '((ns-transparent-titlebar . t)
-          (ns-appearance . dark)
-          (vertical-scroll-bars)
-          (tool-bar-lines . 0)
-          (menu-bar-lines . 1)
-          (right-fringe . 5)
-          (left-fringe . 5)
-          (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-22-*-*-*-m-0-iso10646-1")
-          (inhibit-double-buffering . t)))
+    (setq default-frame-alist
+          '((ns-transparent-titlebar . t)
+            (ns-appearance . dark)
+            (vertical-scroll-bars)
+            (tool-bar-lines . 0)
+            (menu-bar-lines . 1)
+            (right-fringe . 5)
+            (left-fringe . 5)
+            (font . "-*-Iosevka Nerd Font Mono-ultralight-normal-normal-*-22-*-*-*-m-0-iso10646-1")
+            (inhibit-double-buffering . t)))
 
-  (prefer-coding-system 'utf-8-unix)
-  (set-language-environment "UTF-8")
-  (set-keyboard-coding-system 'utf-8)
-  (set-clipboard-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-buffer-file-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (modify-coding-system-alist 'process "*" 'utf-8)
-  (set-file-name-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8-unix)
+    (set-language-environment "UTF-8")
+    (set-keyboard-coding-system 'utf-8)
+    (set-clipboard-coding-system 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-buffer-file-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (modify-coding-system-alist 'process "*" 'utf-8)
+    (set-file-name-coding-system 'utf-8)
 
-  (advice-add #'x-apply-session-resources :override #'ignore)
+    (advice-add #'x-apply-session-resources :override #'ignore)
 #+end_src
 
 *** Important Paths
@@ -292,7 +293,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
   (use-package org :straight t)
-  (use-package org-plus-contrib :straight t)
   (use-package gnutls
     :straight nil
     :init
@@ -312,7 +312,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 ** Header
 #+name: init-header-block
 #+begin_src emacs-lisp
-  ;;; mini-init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t-*-
+  ;;; mini-init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; byte-compile: t-*-
   ;;;
   ;;; Commentary:
   ;;; Emacs `init.el' config by dylanjm.
@@ -327,7 +327,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Personal Variables
 #+name: init-personal-vars-block
 #+begin_src emacs-lisp
-
+  (message "Beggining Init.el")
 #+end_src
 
 **** Personal Functions
@@ -352,20 +352,46 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
       (message "Secret file does not exist!")))
 #+end_src
 
-**** Personal Hooks
+[[https://web.archive.org/web/20191113215833/https://emacs.stackexchange.com/questions/32150/how-to-add-a-timestamp-to-each-entry-in-emacs-messages-buffer][StackOverflow - How to add a timestamp to each entry in Emacs' *Messages* buffer?]]
+
+#+name: init-personal-funcs-block
+#+begin_src emacs-lisp
+  (defun djm/current-time-microseconds ()
+    "Return the current time formatted to include microseconds."
+    (let* ((nowtime (current-time))
+       (now-ms (nth 2 nowtime)))
+      (concat (format-time-string "[%Y-%m-%dT%T" nowtime) (format ".%d]" now-ms))))
+
+  (defun djm/ad-timestamp-message (FORMAT-STRING &rest args)
+    "Advice to run before `message' that prepends a timestamp to each message.
+
+  Activate this advice with:
+  (advice-add 'message :before 'djm/ad-timestamp-message)"
+    (unless (string-equal FORMAT-STRING "%s%s")
+      (let ((deactivate-mark nil)
+        (inhibit-read-only t))
+    (with-current-buffer "*Messages*"
+      (goto-char (point-max))
+      (if (not (bolp))
+        (newline))
+      (insert (djm/current-time-microseconds) " ")))))
+#+end_src
+
+**** Personal Hooks & Advice
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (add-hook 'write-file-hooks 'time-stamp)
+  (advice-add 'message :before 'djm/ad-timestamp-message)
 #+end_src
 
 **** Personal Keybindings
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
-  (bind-keys ("RET" . newline-and-indent)
-             ("C-j" . newline-and-indent))
-
-  (global-set-key (kbd "C-g") 'minibuffer-keyboard-quit)
-  (global-unset-key (kbd "C-z"))
+  (general-define-key
+   "RET" #'newline-and-indent
+   "C-j" #'newline-and-indent
+   "C-g" #'minibuffer-keyboard-quit
+   "C-z" nil)
 #+end_src
 
 **** Personal Code & Packages
@@ -437,6 +463,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (blink-cursor-mode -1)
   (tooltip-mode -1)
   (global-prettify-symbols-mode +1)
+
+  (setq-default default-directory (getenv "HOME"))
 #+end_src
 
 **** Custom File
@@ -500,83 +528,86 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :commands (restart-emacs))
 
   (use-package saveplace
+    :blackout t
     :straight nil
-    :config (save-place-mode +1))
+    :hook (after-init . save-place-mode))
 
   (use-package savehist
     :straight nil
-    :init
-    (setq history-delete-duplicates t
-          savehist-additional-variables '(kill-ring regexp-search-ring))
+    :custom
+    (history-delete-duplicates t)
+    (savehist-additional-variables '(kill-ring regexp-search-ring))
     :config
     (savehist-mode +1))
 
   (use-package files
     :straight nil
+    :custom
+    (backup-by-copying t)
+    (confirm-kill-processes nil)
+    (create-lockfiles nil)
+    (delete-old-versions t)
+    (find-file-visit-truename t)
+    (large-file-warning-threshold 10000000000)
+    (require-final-newline t)
+    (view-read-only t)
+    (auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
+    (backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
     :config
-    (setq backup-by-copying t
-          confirm-kill-processes nil
-          create-lockfiles nil
-          delete-old-versions t
-          find-file-visit-truename t
-          large-file-warning-threshold 10000000000
-          require-final-newline t
-          view-read-only t)
-    (setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t)))
-    (setq backup-directory-alist `((".*" . ,djm--auto-save-file-cache)))
     (when-let* ((gls (executable-find "gls")))
       (setq insert-directory-program "gls")))
 
   (use-package autorevert
     :straight nil
-    :config
-    (setq auto-revert-verbose nil
-          global-auto-revert-non-file-buffers t
-          auto-revert-use-notify nil)
-    (global-auto-revert-mode +1))
+    :hook (after-init . global-auto-revert-mode)
+    :custom
+    (auto-revert-verbose nil)
+    (global-auto-revert-non-file-buffers t)
+    (auto-revert-use-notify nil))
 
   (use-package recentf
-    :demand t
     :straight nil
     :hook (after-init . recentf-mode)
-    :init
-    (setq recentf-max-saved-items 2000
-          recentf-max-menu-items 100
-          recentf-auto-cleanup 'never)
-    (setq recentf-exclude `(,djm--emacs-cache
-                            ,djm--straight-directory
-                            ,djm--org-agenda-directory
-                            "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                            "\\.?cache"
-                            ".cask"
-                            "url"
-                            "COMMIT_EDITMSG\\'"
-                            "bookmarks"
-                            "^/tmp/"
-                            "^/ssh:"
-                            "\\.?ido\\.last$"
-                            "\\.revive$"
-                            "/TAGS$"
-                            "^/var/folders/.+$"))
-    (run-at-time nil (* 3 60) (lambda ()
-                            (let ((inhibit-message t))
-                              (recentf-save-list)))))
+    :custom
+    (recentf-max-saved-items 2000)
+    (recentf-max-menu-items 100)
+    (recentf-auto-cleanup 'auto)
+    (recentf-exclude `(,djm--emacs-cache
+                       ,djm--straight-directory
+                       ,djm--org-agenda-directory
+                       "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+                       "\\.?cache"
+                       ".cask"
+                       "url"
+                       "COMMIT_EDITMSG\\'"
+                       "bookmarks"
+                       "^/tmp/"
+                       "^/ssh:"
+                       "\\.?ido\\.last$"
+                       "\\.revive$"
+                       "/TAGS$"
+                       "^/var/folders/.+$"))
+    :config
+    (run-at-time nil (* 5 60)
+                 (lambda ()
+                   (let ((save-silently t))
+                     (recentf-save-list)))))
 
   (use-package epa
     :straight nil
-    :config
-    (setq epa-replace-original-text t))
+    :custom
+    (epa-replace-original-text t))
 
   (use-package epg
     :straight nil
-    :config
-    (setq epg-pinentry-mode 'loopback))
+    :custom
+    (epg-pinentry-mode 'loopback))
 
   (use-package auth-source
     :straight t
-    :config
-    (setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
-                         ,(no-littering-expand-etc-file-name "authinfo"))))
+    :custom
+    (auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
+                    ,(no-littering-expand-etc-file-name "authinfo"))))
 
   (use-package osx-trash
     :straight t
@@ -619,7 +650,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :mode (("Makefile" . makefile-gmake-mode)))
 
   (use-package direnv
-    :demand t
+    :blackout t
     :straight t
     :hook (after-init . direnv-mode)
     :config
@@ -627,305 +658,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                           term-mode
                                           vterm-mode
                                           compilation-mode)))
-#+end_src
-
-** Theme & Aesthetics
-*** Icons
-#+name: init-icons-block
-#+begin_src emacs-lisp
-  (use-package all-the-icons)
-#+end_src
-
-*** Dashboard
-#+name: init-dashboard-block
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :hook (dashboard-mode . hide-mode-line-mode)
-    :init
-    (dashboard-setup-startup-hook)
-    :custom
-    (dashboard-items '((recents . 3)
-                       (projects . 3)
-                       (bookmarks . 3)
-                       (agenda . 5)))
-
-    :config/el-patch
-    (defun dashboard-get-banner-path (index)
-      "Return the full path to banner with index INDEX."
-      (concat (el-patch-swap dashboard-banners-directory djm--assets-directory) (format "%d.txt" index)))
-
-    (setq dashboard-startup-banner 4)
-    (setq dashboard-set-file-icons t)
-    (setq dashboard-heading-icons t)
-    (setq dashboard-page-separator "\n\n")
-    (setq dashboard-center-content t)
-    (setq dashboard-footer "djm emacs configuration 2019")
-    (setq dashboard-footer-icon (all-the-icons-wicon "moon-4"
-                                                     :height 1.05
-                                                     :v-adjust -0.05
-                                                     :face 'font-lock-keyword-face))
-    (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
-    (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
-#+end_src
-
-*** Themes
-**** Aesthetic Settings
-#+name: init-ui-settings-block
-#+begin_src emacs-lisp
-  (use-package hl-line
-    :straight nil
-    :commands (hl-line-mode global-hl-line-mode))
-
-  (use-package simple
-    :straight nil
-    :hook ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace)
-    :preface
-    (defun enable-trailing-whitespace ()
-      "Show trailing spaces and delete on save."
-      (setq show-trailing-whitespace t)
-      (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
-    :custom
-    (blink-matching-paren t)
-    (column-number-mode nil)
-    (eval-expression-print-length nil)
-    (eval-expression-print-level nil)
-    (inhibit-point-motion-hooks t)
-    (line-move-visual nil)
-    (line-number-mode t)
-    (next-line-add-newlines nil)
-    (save-interprogram-paste-before-kill t)
-    (set-mark-command-repeat-pop t)
-    (show-trailing-whitespace nil)
-    (track-eol t))
-
-  (use-package whitespace
-    :straight nil
-    :custom
-    (whitespace-style '(face empty indentation::space tab trailing)))
-
-  (use-package ansi-color
-    :straight nil)
-
-  (use-package color
-    :straight nil
-    :functions (color-darken-name))
-
-  (use-package beacon
-    :blackout t
-    :straight t
-    :hook (after-init . beacon-mode)
-    :custom (beacon-push-mark 10))
-
-  (use-package highlight-indent-guides
-    :straight t
-    :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
-
-  (defun lunaryorn-configure-fonts (frame)
-    "Set up fonts for FRAME.
-  Set the default font, and configure various overrides for
-  symbols, emojis, greek letters, as well as fall backs for."
-    ;; Additional fonts for special characters and fallbacks
-    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-    (dolist (script '(symbol mathematical))
-      (set-fontset-font t script (font-spec :family "XITS Math")
-                        frame 'prepend))
-
-    ;; Define a font set stack for symbols, greek and math characters
-    (dolist (script '(symbol greek mathematical))
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend)
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend)
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend))
-
-    (when (eq system-type 'darwin)
-      ;; Colored Emoji on OS X, prefer over everything else!
-      (set-fontset-font t nil (font-spec :family "Apple Color Emoji")
-                        frame 'prepend))
-
-    ;; Fallbacks for math and generic symbols
-    (set-fontset-font t nil (font-spec :family "Apple Symbols")
-                      frame 'append))
-
-  (when-let (frame (selected-frame))
-    (lunaryorn-configure-fonts frame))
-  (add-hook 'after-make-frame-functions #'lunaryorn-configure-fonts)
-#+end_src
-
-**** Gruvbox Theme
-#+name: init-gruvbox-theme-block
-#+begin_src emacs-lisp
-  (use-package gruvbox-theme
-    :demand t
-    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
-    :config
-    (load-theme 'gruvbox-dark-hard t))
-
-  (set-face-attribute 'variable-pitch nil :inherit 'default
-                      :family "ETBembo" :weight 'light)
-
-  (set-face-attribute 'fixed-pitch nil :inherit 'default
-                      :family "Iosevka Nerd Font Mono" :weight 'ultralight)
-#+end_src
-
-**** Doom-Themes
-#+name: init-doom-themes-block
-#+begin_src emacs-lisp
-  (use-package doom-themes
-    :disabled t
-    :demand t
-    :config
-    (load-theme 'doom-gruvbox t))
-#+end_src
-
-**** Emacs 27 Keyword Fix
-#+name: init-extend-fix-block
-#+begin_src emacs-lisp
-
-#+end_src
-
-*** Modelines
-**** Hide Modeline
-#+name: init-hide-modelines-block
-#+begin_src emacs-lisp
-  (use-package hide-mode-line
-    :commands (hide-mode-line-mode
-               hide-mode-line-reset
-               global-hide-mode-line-mode))
-#+end_src
-
-**** Minions
-#+name: init-minions-block
-#+begin_src emacs-lisp
-  (use-package minions
-    :disabled t
-    :commands (minions-mode)
-    :custom
-    (minions-mode-line-lighter "...")
-    (minions-mode-line-delimiters '("" . ""))
-    :config (minions-mode 1))
-#+end_src
-
-**** Doom-Modelines
-#+name: init-doom-modeline-block
-#+begin_src emacs-lisp
-  (use-package doom-modeline
-    :disabled t'
-    :hook (after-init . doom-modeline-mode))
-#+end_src
-
-**** Custom Modeline
-#+name: init-custom-modeline-block
-#+begin_src emacs-lisp
-  ;; (defun radian-mode-line-buffer-modified-status ()
-  ;;   "Return a mode line construct indicating buffer modification status.
-  ;; This is [*] if the buffer has been modified and whitespace
-  ;; otherwise. (Non-file-visiting buffers are never considered to be
-  ;; modified.) It is shown in the same color as the buffer name, i.e.
-  ;; `mode-line-buffer-id'."
-  ;;   (propertize
-  ;;    (if (and (buffer-modified-p)
-  ;;             (buffer-file-name))
-  ;;        "[*]"
-  ;;      "   ")
-  ;;    'face 'mode-line-buffer-id))
-
-  ;; ;; Normally the buffer name is right-padded with whitespace until it
-  ;; ;; is at least 12 characters. This is a waste of space, so we
-  ;; ;; eliminate the padding here. Check the docstrings for more
-  ;; ;; information.
-  ;; (setq-default mode-line-buffer-identification
-  ;;               (propertized-buffer-identification "%b"))
-
-  ;; ;; https://emacs.stackexchange.com/a/7542/12534
-  ;; (defun radian--mode-line-align (left right)
-  ;;   "Render a left/right aligned string for the mode line.
-  ;; LEFT and RIGHT are strings, and the return value is a string that
-  ;; displays them left- and right-aligned respectively, separated by
-  ;; spaces."
-  ;;   (let ((width (- (window-total-width) (length left))))
-  ;;     (format (format "%%s%%%ds" width) left right)))
-
-  ;; (defcustom radian-mode-line-left
-  ;;   '(;; Show [*] if the buffer is modified.
-  ;;     (:eval (radian-mode-line-buffer-modified-status))
-  ;;     " "
-  ;;     ;; Show the name of the current buffer.
-  ;;     mode-line-buffer-identification
-  ;;     "   "
-  ;;     ;; Show the row and column of point.
-  ;;     mode-line-position
-  ;;     ;; Show the active major and minor modes.
-  ;;     "  "
-  ;;     mode-line-modes)
-  ;;   "Composite mode line construct to be shown left-aligned."
-  ;;   :type 'sexp)
-
-  ;; (defcustom radian-mode-line-right nil
-  ;;   "Composite mode line construct to be shown right-aligned."
-  ;;   :type 'sexp)
-
-  ;; ;; Actually reset the mode line format to show all the things we just
-  ;; ;; defined.
-  ;; (setq-default mode-line-format
-  ;;               '(:eval (replace-regexp-in-string
-  ;;                        "%" "%%"
-  ;;                        (radian--mode-line-align
-  ;;                         (format-mode-line radian-mode-line-left)
-  ;;                         (format-mode-line radian-mode-line-right))
-  ;;                        'fixedcase 'literal)))
-#+end_src
-
-*** UI Features
-**** Tab-Line
-#+name: init-tab-line-block
-#+begin_src emacs-lisp
-  (use-package tab-line
-    :disabled t
-    :straight nil
-    :custom
-    (tab-line-new-tab-choice nil)
-    (tab-line-separator nil)
-    (tab-line-close-button-show nil)
-    :init
-    (global-tab-line-mode))
-#+end_src
-
-**** Page Break Lines
-
-#+name: init-page-break-lines-block
-#+begin_src emacs-lisp
-  (use-package page-break-lines
-    :blackout t
-    :hook (after-init . global-page-break-lines-mode)
-    :config
-    (setq page-break-lines-modes '(prog-mode
-                                   ibuffer-mode
-                                   text-mode
-                                   comint-mode
-                                   compilation-mode
-                                   help-mode
-                                   org-agenda-mode)))
-#+end_src
-
-**** Dimmer Mode
-#+name: init-dimmer-block
-#+begin_src emacs-lisp
-  (use-package dimmer
-    :disabled t
-    :commands (dimmer-mode)
-    :custom
-    (dimmer-fraction 0.33)
-    (dimmer-exclusion-regexp-list '(".*minibuf.*"
-                                    ".*which-key.*"
-                                    ".*messages.*"
-                                    ".*async.*"
-                                    ".*warnings.*"
-                                    ".*lv.*"
-                                    ".*ilist.*"
-                                    ".*posframe.*"
-                                    ".*transient.*")))
 #+end_src
 
 ** Utilities
@@ -939,15 +671,20 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-prescient-block
 #+begin_src emacs-lisp
   (use-package prescient
-    :config (prescient-persist-mode +1))
+    :blackout t
+    :straight t
+    :hook (after-init . prescient-persist-mode))
 #+end_src
 
 *** Key Chords
 #+name: init-key-chords-block
 #+begin_src emacs-lisp
   (use-package key-chord
-    :custom (key-chord-two-keys-delay 0.05)
-    :config (key-chord-mode 1))
+    :blackout t
+    :straight t
+    :hook (after-init . (lambda () key-chord-mode))
+    :custom
+    (key-chord-two-keys-delay 0.05))
 #+end_src
 
 *** Posframe
@@ -973,8 +710,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (vterm-mode . eterm-256color-mode))
 
   (use-package vterm
-    :config
-    (setq vterm-term-environment-variable "eterm-color"))
+    :straight t
+    :custom
+    (vterm-term-environment-variable "eterm-color"))
 
   (use-package vterm-toggle
     :straight (:host github :repo "jixiuf/vterm-toggle")
@@ -987,13 +725,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package projectile
     :blackout t
+    :straight t
+    :hook (after-init . projectile-global-mode)
     :custom
     (projectile-completion-system 'ivy)
     (projectile-enable-caching t)
     (projectile-switch-project-action 'projectile-dired)
-    (projectile-verbose nil)
-    :config
-    (projectile-mode 1))
+    (projectile-verbose nil))
 #+end_src
 
 *** Autocomplete
@@ -1355,16 +1093,37 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Minor Modes
 #+name: init-edit-block
 #+begin_src emacs-lisp
-  (use-package editorconfig
-    :straight t
-    :config
-    (editorconfig-mode 1))
+    (use-package editorconfig
+      :straight t
+      :config
+      (editorconfig-mode 1))
+#+end_src
 
+#+name:
+#+begin_src emacs-lisp
   (use-package ws-butler
     :blackout t
     :hook (after-init . ws-butler-global-mode)
     :commands (ws-butler-global-mode))
+#+end_src
 
+#+name:
+#+begin_src emacs-lisp
+
+#+end_src
+
+#+name:
+#+begin_src emacs-lisp
+
+#+end_src
+
+#+name:
+#+begin_src emacs-lisp
+
+#+end_src
+
+#+name:
+#+begin_src emacs-lisp
   (use-package default-text-scale
     :commands (default-text-scale-increase
                 default-text-scale-decrease
@@ -1400,6 +1159,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (prog-mode . rainbow-delimiters-mode))
 
   (use-package volatile-highlights
+    :blackout t
+    :straight t
     :hook ((prog-mode text-mode) . volatile-highlights-mode))
 
   (use-package highlight-thing
@@ -1451,12 +1212,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :chords
     ("jk" . avy-pop-mark)
     ("jl" . avy-goto-line)
+    :custom
+    (avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u))
+    (avy-background t)
+    (avy-all-windows nil)
+    (avy-style 'de-bruijn)
+    (avy-case-fold-search nil)
     :config
-    (setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-          avy-background t
-          avy-all-windows t
-          avy-style 'at-full
-          avy-case-fold-search nil)
     (avy-setup-default))
 #+end_src
 
@@ -1489,7 +1251,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-windower-block
 #+begin_src emacs-lisp
   (use-package windower
-    :straight (:repo "https://gitlab.com/ambrevar/emacs-windower")
+    :straight (:host gitlab :repo "ambrevar/emacs-windower")
     :bind (("C-c w o" . windower-switch-to-last-buffer)
            ("C-c w t" . windower-toggle-split)))
 #+end_src
@@ -1593,23 +1355,29 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :disabled t)
 #+end_src
 
-
 *** iBuffer
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
   (use-package ibuffer
-    :bind (([remap list-buffers] . ibuffer))
+    :blackout t
+    :straight t
+    :general
+    ([remap list-buffers] #'ibuffer)
     :custom
     (ibuffer-expert t)
-    (ibuffer-show-empty-filter-groups nil)
-    (ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+    (ibuffer-formats '((mark modified
+                             (mode 1 1)
+                             " " (name 25 25 :left)
+                             (filename-and-process 80 80 :right))))
     (ibuffer-never-show-predicates (list (rx (or "*magit-"
                                                  "*git-auto-push*"
                                                  "*backtrace*"
                                                  "*new*"
                                                  "*org*"
                                                  "*flycheck error messages*"
-                                                 "*help*")))))
+                                                 "*flycheck-posframe-buffer*"
+                                                 "*help*"
+                                                 "*helpful")))))
 
   (use-package ibuf-ext
     :straight nil
@@ -1620,6 +1388,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom (ibuffer-show-empty-filter-groups nil))
 
   (use-package ibuffer-projectile
+    :straight t
     :commands (ibuffer-projectile-set-filter-groups)
     :functions (ibuffer-do-sort-by-alphabetic)
     :preface
@@ -1639,26 +1408,18 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package ibuffer-sidebar
     :straight (:repo "https://github.com/jojojames/ibuffer-sidebar")
-    :bind (("M-]" . ibuffer-sidebar-toggle-sidebar))
+    :general
+    ("M-]" #'ibuffer-sidebar-toggle-sidebar)
+    :custom
+    (ibuffer-sidebar-use-custom-font t)
     :config
-    (setq ibuffer-sidebar-use-custom-font t)
-    (setq ibuffer-sidebar-face `(:family "Iosevka Nerd Font" :height 180)))
+    (setq ibuffer-sidebar-face '(:family "Iosevka Nerd Font" :height 180)))
 #+end_src
 
 ** Productivity
 *** Org
-#+name: init-org-hydra-block
-#+begin_src emacs-lisp
-  (use-package org-hydras
-    :straight nil
-    :commands (org-babel/body))
-#+end_src
-
 #+name: init-org-block
 #+begin_src emacs-lisp
-  (use-package org-plus-contrib
-    :straight nil)
-
   (use-package org
     :straight nil
     :general
@@ -1717,7 +1478,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-indirect-buffer-display 'current-window)
     (org-insert-heading-respect-content t)
     (org-lowest-priority ?C)
-    (org-modules '(org-habit org-info org-tempo org-archive))
+    (org-modules '(org-agenda org-src org-timer org-habit org-info org-tempo org-archive))
     (org-outline-path-complete-in-steps nil)
     (org-pretty-entities t)
     (org-return-follows-link t)
@@ -1749,7 +1510,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 #+name: init-org-pomodoro-block
 #+begin_src emacs-lisp
-  (use-package org-pomodoro)
+  (use-package org-pomodoro
+    :straight t)
 #+end_src
 
 #+name: init-org-bullets-block
@@ -1851,17 +1613,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
            (markdown-mode . toc-org-mode)))
 #+end_src
 
-#+name: init-org-mime-block
-#+begin_src emacs-lisp
-  (use-package org-mime
-    :straight nil)
-#+end_src
-
-#+name: init-org-htmlize-block
-#+begin_src emacs-lisp
-  (use-package htmlize)
-#+end_src
-
 *** Email
 #+name: init-email-block
 #+begin_src emacs-lisp
@@ -1893,6 +1644,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Web Browsing
+#+name: init-htmlize-block
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
   (use-package eww
@@ -2267,6 +2023,328 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (c-toggle-auto-hungry-state)
     (c-toggle-auto-newline)
     (c-toggle-auto-state))
+#+end_src
+
+** Theme & Aesthetics
+*** Icons
+#+name: init-icons-block
+#+begin_src emacs-lisp
+  (use-package all-the-icons
+    :commands (all-the-icons-wicon
+               all-the-icons-insert
+               all-the-icons-install-fonts
+               all-the-icons-insert-wicon
+               all-the-icons-insert-faicon
+               all-the-icons-insert-octicon
+               all-the-icons-insert-fileicon
+               all-the-icons-insert-material
+               all-the-icons-insert-alltheicon))
+#+end_src
+
+*** Dashboard
+#+name: init-dashboard-block
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :hook (dashboard-mode . hide-mode-line-mode)
+    :init
+    (dashboard-setup-startup-hook)
+    :custom
+    (dashboard-items '((recents . 3) (projects . 3) (bookmarks . 3) (agenda . 5)))
+    (dashboard-startup-banner 4)
+    (dashboard-set-file-icons t)
+    (dashboard-heading-icons t)
+    (dashboard-page-separator "\n\n")
+    (dashboard-center-content t)
+    (dashboard-footer "djm emacs configuration 2019")
+    (dashboard-footer-icon (all-the-icons-wicon "moon-4"
+                                                :height 1.05
+                                                :v-adjust -0.05
+                                                :face 'font-lock-keyword-face))
+    :config/el-patch
+    (defun dashboard-get-banner-path (index)
+      "Return the full path to banner with index INDEX."
+      (concat (el-patch-swap
+                dashboard-banners-directory
+                djm--assets-directory)
+              (format "%d.txt" index)))
+
+    (defun dashboard-insert-projects (list-size)
+      "Add the list of LIST-SIZE items of projects."
+      (require 'projectile)
+      (let ((inhibit-message t))
+        (projectile-cleanup-known-projects))
+      (projectile-load-known-projects)
+      (dashboard-insert-section
+       "Projects:"
+       (dashboard-subseq (projectile-relevant-known-projects)
+                         0 list-size)
+       list-size
+       "p"
+       `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+       (abbreviate-file-name el)))
+
+
+    (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
+    (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
+#+end_src
+
+*** Themes
+**** Aesthetic Settings
+#+name: init-ui-settings-block
+#+begin_src emacs-lisp
+  (use-package hl-line
+    :straight nil
+    :commands (hl-line-mode global-hl-line-mode))
+
+  (use-package simple
+    :straight nil
+    :hook ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace)
+    :preface
+    (defun enable-trailing-whitespace ()
+      "Show trailing spaces and delete on save."
+      (setq show-trailing-whitespace t)
+      (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+    :custom
+    (blink-matching-paren t)
+    (column-number-mode nil)
+    (eval-expression-print-length nil)
+    (eval-expression-print-level nil)
+    (inhibit-point-motion-hooks t)
+    (line-move-visual nil)
+    (line-number-mode t)
+    (next-line-add-newlines nil)
+    (save-interprogram-paste-before-kill t)
+    (set-mark-command-repeat-pop t)
+    (show-trailing-whitespace nil)
+    (track-eol t))
+
+  (use-package whitespace
+    :straight nil
+    :custom
+    (whitespace-style '(face empty indentation::space tab trailing)))
+
+  (use-package ansi-color
+    :straight nil)
+
+  (use-package color
+    :straight nil
+    :functions (color-darken-name))
+
+  (use-package beacon
+    :blackout t
+    :straight t
+    :hook (after-init . beacon-mode)
+    :custom (beacon-push-mark 10))
+
+  (use-package highlight-indent-guides
+    :straight t
+    :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
+
+  (defun lunaryorn-configure-fonts (frame)
+    "Set up fonts for FRAME.
+  Set the default font, and configure various overrides for
+  symbols, emojis, greek letters, as well as fall backs for."
+    ;; Additional fonts for special characters and fallbacks
+    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+    (dolist (script '(symbol mathematical))
+      (set-fontset-font t script (font-spec :family "XITS Math")
+                        frame 'prepend))
+
+    ;; Define a font set stack for symbols, greek and math characters
+    (dolist (script '(symbol greek mathematical))
+      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
+                        frame 'prepend)
+      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
+                        frame 'prepend)
+      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
+                        frame 'prepend))
+
+    (when (eq system-type 'darwin)
+      ;; Colored Emoji on OS X, prefer over everything else!
+      (set-fontset-font t nil (font-spec :family "Apple Color Emoji")
+                        frame 'prepend))
+
+    ;; Fallbacks for math and generic symbols
+    (set-fontset-font t nil (font-spec :family "Apple Symbols")
+                      frame 'append))
+
+  (when-let (frame (selected-frame))
+    (lunaryorn-configure-fonts frame))
+  (add-hook 'after-make-frame-functions #'lunaryorn-configure-fonts)
+#+end_src
+
+**** Gruvbox Theme
+#+name: init-gruvbox-theme-block
+#+begin_src emacs-lisp
+  (use-package gruvbox-theme
+    :demand t
+    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
+    :config
+    (load-theme 'gruvbox-dark-hard t))
+
+  (set-face-attribute 'variable-pitch nil :inherit 'default
+                      :family "Source Sans Pro" :weight 'light)
+
+  (set-face-attribute 'fixed-pitch nil :inherit 'default
+                      :family "Iosevka Nerd Font" :weight 'ultralight :slant 'normal)
+#+end_src
+
+**** Doom-Themes
+#+name: init-doom-themes-block
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :disabled t
+    :demand t
+    :config
+    (load-theme 'doom-gruvbox t))
+#+end_src
+
+**** Emacs 27 Keyword Fix
+#+name: init-extend-fix-block
+#+begin_src emacs-lisp
+
+#+end_src
+
+*** Modelines
+**** Hide Modeline
+#+name: init-hide-modelines-block
+#+begin_src emacs-lisp
+  (use-package hide-mode-line
+    :commands (hide-mode-line-mode
+               hide-mode-line-reset
+               global-hide-mode-line-mode))
+#+end_src
+
+**** Minions
+#+name: init-minions-block
+#+begin_src emacs-lisp
+  (use-package minions
+    :disabled t
+    :commands (minions-mode)
+    :custom
+    (minions-mode-line-lighter "...")
+    (minions-mode-line-delimiters '("" . ""))
+    :config (minions-mode 1))
+#+end_src
+
+**** Doom-Modelines
+#+name: init-doom-modeline-block
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :disabled t
+    :hook (after-init . doom-modeline-mode))
+#+end_src
+
+**** Custom Modeline
+#+name: init-custom-modeline-block
+#+begin_src emacs-lisp
+  ;; (defun radian-mode-line-buffer-modified-status ()
+  ;;   "Return a mode line construct indicating buffer modification status.
+  ;; This is [*] if the buffer has been modified and whitespace
+  ;; otherwise. (Non-file-visiting buffers are never considered to be
+  ;; modified.) It is shown in the same color as the buffer name, i.e.
+  ;; `mode-line-buffer-id'."
+  ;;   (propertize
+  ;;    (if (and (buffer-modified-p)
+  ;;             (buffer-file-name))
+  ;;        "[*]"
+  ;;      "   ")
+  ;;    'face 'mode-line-buffer-id))
+
+  ;; ;; Normally the buffer name is right-padded with whitespace until it
+  ;; ;; is at least 12 characters. This is a waste of space, so we
+  ;; ;; eliminate the padding here. Check the docstrings for more
+  ;; ;; information.
+  ;; (setq-default mode-line-buffer-identification
+  ;;               (propertized-buffer-identification "%b"))
+
+  ;; ;; https://emacs.stackexchange.com/a/7542/12534
+  ;; (defun radian--mode-line-align (left right)
+  ;;   "Render a left/right aligned string for the mode line.
+  ;; LEFT and RIGHT are strings, and the return value is a string that
+  ;; displays them left- and right-aligned respectively, separated by
+  ;; spaces."
+  ;;   (let ((width (- (window-total-width) (length left))))
+  ;;     (format (format "%%s%%%ds" width) left right)))
+
+  ;; (defcustom radian-mode-line-left
+  ;;   '(;; Show [*] if the buffer is modified.
+  ;;     (:eval (radian-mode-line-buffer-modified-status))
+  ;;     " "
+  ;;     ;; Show the name of the current buffer.
+  ;;     mode-line-buffer-identification
+  ;;     "   "
+  ;;     ;; Show the row and column of point.
+  ;;     mode-line-position
+  ;;     ;; Show the active major and minor modes.
+  ;;     "  "
+  ;;     mode-line-modes)
+  ;;   "Composite mode line construct to be shown left-aligned."
+  ;;   :type 'sexp)
+
+  ;; (defcustom radian-mode-line-right nil
+  ;;   "Composite mode line construct to be shown right-aligned."
+  ;;   :type 'sexp)
+
+  ;; ;; Actually reset the mode line format to show all the things we just
+  ;; ;; defined.
+  ;; (setq-default mode-line-format
+  ;;               '(:eval (replace-regexp-in-string
+  ;;                        "%" "%%"
+  ;;                        (radian--mode-line-align
+  ;;                         (format-mode-line radian-mode-line-left)
+  ;;                         (format-mode-line radian-mode-line-right))
+  ;;                        'fixedcase 'literal)))
+#+end_src
+
+*** UI Features
+**** Tab-Line
+#+name: init-tab-line-block
+#+begin_src emacs-lisp
+  (use-package tab-line
+    :disabled t
+    :straight nil
+    :custom
+    (tab-line-new-tab-choice nil)
+    (tab-line-separator nil)
+    (tab-line-close-button-show nil)
+    :init
+    (global-tab-line-mode))
+#+end_src
+
+**** Page Break Lines
+#+name: init-page-break-lines-block
+#+begin_src emacs-lisp
+  (use-package page-break-lines
+    :blackout t
+    :hook (after-init . global-page-break-lines-mode)
+    :custom
+    (page-break-lines-modes '(prog-mode
+                              ibuffer-mode
+                              text-mode
+                              comint-mode
+                              compilation-mode
+                              help-mode
+                              org-agenda-mode)))
+#+end_src
+
+**** Dimmer Mode
+#+name: init-dimmer-block
+#+begin_src emacs-lisp
+  (use-package dimmer
+    :disabled t
+    :commands (dimmer-mode)
+    :custom
+    (dimmer-fraction 0.33)
+    (dimmer-exclusion-regexp-list '(".*minibuf.*"
+                                    ".*which-key.*"
+                                    ".*messages.*"
+                                    ".*async.*"
+                                    ".*warnings.*"
+                                    ".*lv.*"
+                                    ".*ilist.*"
+                                    ".*posframe.*"
+                                    ".*transient.*")))
 #+end_src
 
 ** Footer

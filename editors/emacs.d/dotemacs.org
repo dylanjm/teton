@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-13 17:07:27
+/last updated/: 2019-11-13 20:13:55
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -360,11 +360,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     "Return the current time formatted to include microseconds."
     (let* ((nowtime (current-time))
        (now-ms (nth 2 nowtime)))
-      (concat (format-time-string "[%Y-%m-%dT%T" nowtime) (format ".%d]" now-ms))))
+      (concat (format-time-string "[%Y-%m-%d %T" nowtime) (format ".%d]" now-ms))))
 
   (defun djm/ad-timestamp-message (FORMAT-STRING &rest args)
     "Advice to run before `message' that prepends a timestamp to each message.
-
   Activate this advice with:
   (advice-add 'message :before 'djm/ad-timestamp-message)"
     (unless (string-equal FORMAT-STRING "%s%s")
@@ -682,7 +681,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package key-chord
     :blackout t
     :straight t
-    :hook (after-init . (lambda () key-chord-mode))
+    :hook (after-init . (lambda () (key-chord-mode +1)))
     :custom
     (key-chord-two-keys-delay 0.05))
 #+end_src
@@ -1366,9 +1365,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (ibuffer-expert t)
     (ibuffer-formats '((mark modified
-                             (mode 1 1)
-                             " " (name 25 25 :left)
-                             (filename-and-process 80 80 :right))))
+                             " " (name 25 50 :left)
+                             " " (mode 25 50)
+                             (filename-and-process 25 50 :right))))
     (ibuffer-never-show-predicates (list (rx (or "*magit-"
                                                  "*git-auto-push*"
                                                  "*backtrace*"
@@ -1565,7 +1564,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
                                    "* TODO %?\n%U\n" :clock-in t :clock-resume t)
                                   ("n" "note [inbox]" entry (file "~/org/inbox.org")
-                                   "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                                   "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
                                   ("m" "meeting [inbox]" entry (file "~/org/inbox.org")
                                    "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
                                   ("p" "phone call [inbox]" entry (file "~/org/inbox.org")
@@ -2051,7 +2050,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (dashboard-items '((recents . 3) (projects . 3) (bookmarks . 3) (agenda . 5)))
     (dashboard-startup-banner 4)
-    (dashboard-init-info nil)
+    (dashboard-init-info "")
     (dashboard-set-file-icons t)
     (dashboard-heading-icons t)
     (dashboard-page-separator "\n\n")
@@ -2094,8 +2093,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-ui-settings-block
 #+begin_src emacs-lisp
   (use-package hl-line
+    :blackout t
     :straight nil
-    :commands (hl-line-mode global-hl-line-mode))
+    :commands (hl-line-mode
+               global-hl-line-mode))
 
   (use-package simple
     :straight nil
@@ -2140,15 +2141,25 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package highlight-indent-guides
     :straight t
     :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
-
 #+end_src
 
 #+name: init-emoji-config-block
 #+begin_src emacs-lisp
-  ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-  (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji" nil 'prepend))
-  (set-fontset-font t 'greek (font-spec :family "DejaVuSansMono Nerd Font" nil 'prepend))
-  (set-fontset-font t 'mathematical (font-spec :family "XITS Math" nil 'prepend))
+   ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+  (dolist (script '(symbol mathematical))
+    (set-fontset-font t script (font-spec :family "XITS Math") nil 'prepend))
+
+  ;; Define a font set stack for symbols, greek and math characters
+  (dolist (script '(symbol greek mathematical))
+    (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'prepend)
+    (set-fontset-font t script (font-spec :family "Menlo") nil 'prepend)
+    (set-fontset-font t script (font-spec :family "DejaVu Sans Mono") nil 'prepend))
+
+  ;; Colored Emoji on OS X, prefer over everything else!
+  (set-fontset-font t nil (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+  ;; Fallbacks for math and generic symbols
+  (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append)
 #+end_src
 
 **** Gruvbox Theme

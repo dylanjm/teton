@@ -4,7 +4,7 @@
 [core]
 	editor = emacs
 	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-	excludesfile = ~/.gitignore
+	excludesfile = /Users/mcdodj/.gitignore
 [color]
 	ui = auto
 [color "branch"]
@@ -30,3 +30,9 @@
 	branch = false
     stash = false
     diff = false
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-13 16:01:15
+/last updated/: 2019-11-13 17:07:27
 
 * Table of Contents :TOC@3:noexport:
 - [[#about-this-document][About This Document]]
@@ -2051,6 +2051,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (dashboard-items '((recents . 3) (projects . 3) (bookmarks . 3) (agenda . 5)))
     (dashboard-startup-banner 4)
+    (dashboard-init-info nil)
     (dashboard-set-file-icons t)
     (dashboard-heading-icons t)
     (dashboard-page-separator "\n\n")
@@ -2140,37 +2141,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight t
     :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
 
-  (defun lunaryorn-configure-fonts (frame)
-    "Set up fonts for FRAME.
-  Set the default font, and configure various overrides for
-  symbols, emojis, greek letters, as well as fall backs for."
-    ;; Additional fonts for special characters and fallbacks
-    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-    (dolist (script '(symbol mathematical))
-      (set-fontset-font t script (font-spec :family "XITS Math")
-                        frame 'prepend))
+#+end_src
 
-    ;; Define a font set stack for symbols, greek and math characters
-    (dolist (script '(symbol greek mathematical))
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend)
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend)
-      (set-fontset-font t script (font-spec :family "DejaVuSansMono Nerd Font")
-                        frame 'prepend))
-
-    (when (eq system-type 'darwin)
-      ;; Colored Emoji on OS X, prefer over everything else!
-      (set-fontset-font t nil (font-spec :family "Apple Color Emoji")
-                        frame 'prepend))
-
-    ;; Fallbacks for math and generic symbols
-    (set-fontset-font t nil (font-spec :family "Apple Symbols")
-                      frame 'append))
-
-  (when-let (frame (selected-frame))
-    (lunaryorn-configure-fonts frame))
-  (add-hook 'after-make-frame-functions #'lunaryorn-configure-fonts)
+#+name: init-emoji-config-block
+#+begin_src emacs-lisp
+  ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+  (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji" nil 'prepend))
+  (set-fontset-font t 'greek (font-spec :family "DejaVuSansMono Nerd Font" nil 'prepend))
+  (set-fontset-font t 'mathematical (font-spec :family "XITS Math" nil 'prepend))
 #+end_src
 
 **** Gruvbox Theme

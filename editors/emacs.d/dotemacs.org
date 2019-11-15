@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-14 16:17:58
+/last updated/: 2019-11-14 22:52:00
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -1505,9 +1505,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :general
     ("M-]" #'ibuffer-sidebar-toggle-sidebar)
     :custom
-    (ibuffer-sidebar-use-custom-font t)
-    :config
-    (setq ibuffer-sidebar-face '(:family "Iosevka Nerd Font" :height 180)))
+    (ibuffer-sidebar-use-custom-font t))
+    ;:config
+    ;(setq ibuffer-sidebar-face '(:family "Iosevka Nerd Font" :height 180)))
 #+end_src
 
 *** iMenu
@@ -2297,18 +2297,21 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 #+name: init-emoji-config-block
 #+begin_src emacs-lisp
-   ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+  ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+  (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)
   (dolist (script '(symbol mathematical))
-    (set-fontset-font t script (font-spec :family "XITS Math") nil 'prepend))
+    (set-fontset-font t script (font-spec :family "XITS Math" :weight 'normal) nil nil))
 
   ;; Define a font set stack for symbols, greek and math characters
-  (dolist (script '(symbol greek mathematical))
-    (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'prepend)
-    (set-fontset-font t script (font-spec :family "Menlo") nil 'prepend)
+  (dolist (script '(symbol greek))
+    (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
+    (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'append)
     (set-fontset-font t script (font-spec :family "DejaVu Sans Mono") nil 'prepend))
 
   ;; Colored Emoji on OS X, prefer over everything else!
-  (set-fontset-font t nil (font-spec :family "Apple Color Emoji") nil 'prepend)
+  (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
+  (set-fontset-font t 'unicode (font-spec :family "DejaVu Sans Mono") nil 'prepend)
+  (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
 
   ;; Fallbacks for math and generic symbols
   (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append)
@@ -2323,9 +2326,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (load-theme 'gruvbox-dark-hard t))
 
-  (set-face-attribute 'variable-pitch nil :inherit 'default :family "Source Sans Pro" :weight 'light)
-
-  (set-face-attribute 'fixed-pitch nil :inherit 'default :font "Iosevka Nerd Font Mono")
+  (set-face-attribute 'variable-pitch nil :inherit 'default
+                      :family "Iosevka Etoile" :weight 'ultra-light)
+  (set-face-attribute 'font-lock-comment-face nil
+                      :family "Iosevka Etoile" :weight 'ultra-light :slant 'italic)
+  (set-face-attribute 'fixed-pitch nil :inherit 'default
+                      :family "Iosevka Term" :weight 'ultra-light)
 #+end_src
 
 **** Doom-Themes

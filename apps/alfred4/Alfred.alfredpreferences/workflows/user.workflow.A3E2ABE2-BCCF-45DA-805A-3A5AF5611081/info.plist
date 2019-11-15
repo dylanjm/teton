@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>net.deanishe.alfred-reddit</string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>B5CF205D-436D-41EC-A53A-555FF106ADDD</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>DCE19CD7-860E-45F4-B4CB-4A45085765B5</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Dean Jackson</string>
+	<key>description</key>
+	<string>Browse Hot Posts on Reddit</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Reddit</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>r/</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>1</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Querying Reddit.com…</string>
+				<key>script</key>
+				<string>/usr/bin/python reddit.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Enter subreddit name to get started</string>
+				<key>title</key>
+				<string>Browse Reddit</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>B5CF205D-436D-41EC-A53A-555FF106ADDD</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>/usr/bin/python reddit.py $argv</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>DCE19CD7-860E-45F4-B4CB-4A45085765B5</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Reddit for Alfred
+=================
+
+Find subreddits and browse hot posts on Reddit.
+
+Set NSFW to 1 to include subreddits marked NSFW.
+
+Set QUICKLOOK_POST to 1 for Quick Look preview (SHIFT or CMD+Y) to show the post instead of the Reddit comments page.</string>
+	<key>uidata</key>
+	<dict>
+		<key>B5CF205D-436D-41EC-A53A-555FF106ADDD</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>40</integer>
+		</dict>
+		<key>DCE19CD7-860E-45F4-B4CB-4A45085765B5</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>8</integer>
+			<key>xpos</key>
+			<integer>230</integer>
+			<key>ypos</key>
+			<integer>40</integer>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<dict>
+		<key>NSFW</key>
+		<string>0</string>
+		<key>QUICKLOOK_POST</key>
+		<string>0</string>
+	</dict>
+	<key>version</key>
+	<string>1.8.1</string>
+	<key>webaddress</key>
+	<string>https://github.com/deanishe/alfred-reddit</string>
+</dict>
+</plist>

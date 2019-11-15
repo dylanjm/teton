@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<workflow>
+  <name>Caffeinate Control</name>
+  <version>3.03</version>
+  <bundle>com.shawn.patrick.rice.caffeinate.control</bundle>
+  <updated>1440141553</updated>
+  <file>caffeinate_control.alfredworkflow</file>
+</workflow>

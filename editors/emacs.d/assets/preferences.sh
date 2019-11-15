@@ -12,8 +12,8 @@ defaults write com.apple.Dock autohide-delay -float 0
 defaults write -g NSAutomaticQuoteSubstitutionEnabled -bool false
 
 defaults write -g CGFontRenderingFontSmoothingDisabled -bool FALSE
-defaults -currentHost write -globalDomain AppleFontSmoothing -int 2
-defaults write -g InitialKeyRepeat -float 12.5
+defaults -currentHost write -globalDomain AppleFontSmoothing -int 1
+defaults write -g InitialKeyRepeat -float 10.5
 defaults write -g KeyRepeat -float 1.5
 defaults write -g ApplePressAndHoldEnabled -bool false
 
@@ -32,4 +32,4 @@ defaults write org.gnu.Emacs Emacs.toolBar -bool false
 defaults write org.gnu.Emacs FontBackend ns
 
 defaults write org.gnu.Emacs TransparentTitleBar DARK
-defaults write org.gnu.Emacs Font "Iosevka Nerd Font Mono-8:style=thin"
+defaults write org.gnu.Emacs Font "Iosevka Term-18:weight=ultra-light"

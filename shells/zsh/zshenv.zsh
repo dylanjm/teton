@@ -22,8 +22,9 @@ export ZPLGM[ZCOMPDUMP_PATH]="$ZSH_CACHE/zcompdump"
 fpath+=($ZSH/functions)
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
-
-path=($PYENV_ROOT/bin
+path=($ZPLGM[HOME_DIR]/plugins/direnv---direnv/direnv
+      $ZPLGM[HOME_DIR]/polaris/bin
+      $PYENV_ROOT/bin
       $PYENV_ROOT/shims
       $DOTFILES/bin
       /usr/local/bin
@@ -35,5 +36,7 @@ path=($PYENV_ROOT/bin
       /usr/local/texlive/2019/bin/x86_64-darwin
       /usr/local/opt/texinfo/bin)
 
+typeset -U PATH
+export PATH
 autoload -Uz time-shell nuke convert-to-md \
          colorlist open-apps iterm-config

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-14 22:52:00
+/last updated/: 2019-11-15 16:02:11
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -15,7 +15,6 @@
     - [[#garbage-collection][Garbage Collection]]
   - [[#preliminary-configuration][Preliminary Configuration]]
     - [[#pre-gui-optimization][Pre-Gui Optimization]]
-    - [[#important-paths][Important Paths]]
   - [[#straight-package-manager][Straight Package Manager]]
   - [[#environment][Environment]]
   - [[#no-littering][No-Littering]]
@@ -54,6 +53,7 @@
     - [[#dired][Dired]]
     - [[#ranger][Ranger]]
     - [[#ibuffer][iBuffer]]
+    - [[#bookmark][Bookmark]]
     - [[#imenu][iMenu]]
   - [[#productivity][Productivity]]
     - [[#org][Org]]
@@ -90,12 +90,13 @@
   - [[#footer-1][Footer]]
 - [[#mini-init][Mini-Init]]
   - [[#header-2][Header]]
+  - [[#settings][Settings]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
 
 * About
 #+ATTR_HTML: width="100px"
-#+ATTR_ORG: :width 1000
+#+ATTR_ORG: :width 1500
 [[file:assets/config-preview.png]]
 
 ** Literate Programming in Org
@@ -161,21 +162,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 frame-resize-pixelwise t
                 load-prefer-newer t)
 
-  (setq initial-frame-alist
-        '((window-divider-default-bottom-width . 1)
-          (window-divider-default-right-width . 1)
-          (window-divider-default-places . t)
-          (width . 188)
-          (height . 188)))
+  (setq initial-frame-alist '((window-divider-default-bottom-width . 1)
+                              (window-divider-default-right-width . 1)
+                              (window-divider-default-places . t)))
 
-  (setq default-frame-alist
-        '((ns-transparent-titlebar . t)
-          (vertical-scroll-bars)
-          (tool-bar-lines . 0)
-          (menu-bar-lines . 1)
-          (right-fringe . 5)
-          (left-fringe . 5)
-          (inhibit-double-buffering . t)))
+  (setq default-frame-alist '((ns-transparent-titlebar . t)
+                              (vertical-scroll-bars)
+                              (right-fringe . 5)
+                              (left-fringe . 5)))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -187,22 +181,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (set-selection-coding-system 'utf-8)
   (modify-coding-system-alist 'process "*" 'utf-8)
   (set-file-name-coding-system 'utf-8)
-#+end_src
-
-*** Important Paths
-#+name: early-init-paths-block
-#+begin_src emacs-lisp
-  (defvar djm--straight-directory (expand-file-name "straight/" user-emacs-directory))
-  (defvar djm--emacs-cache "~/.cache/emacs/")
-  (defvar djm--org-agenda-directory "~/org/")
-  (defvar djm--assets-directory (expand-file-name "assets/" user-emacs-directory))
-  (defvar djm--emacs-etc-cache (expand-file-name "etc/" djm--emacs-cache))
-  (defvar djm--emacs-var-cache (expand-file-name "var/" djm--emacs-cache))
-  (defvar djm--custom-file (expand-file-name "custom.el" djm--emacs-etc-cache))
-  (defvar djm--secret-file (expand-file-name "secret.el" djm--emacs-etc-cache))
-  (defvar djm--yasnippet-dir (expand-file-name "snippets" user-emacs-directory))
-  (defvar djm--auto-save-file-cache (expand-file-name "backups/" djm--emacs-var-cache))
-  (defvar djm--personal-lisp-dir (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 
 ** Straight Package Manager
@@ -244,11 +222,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :demand t
-    :straight t
+    :straight (:host github :repo "purcell/exec-path-from-shell")
+    :custom
+    (exec-path-from-shell-check-startup-files nil)
+    (exec-path-from-shell-variables '("ENV" "PATH" "MANPATH" "CACHE" "GPG_TTY"))
+    (exec-path-from-shell-arguments '("-l" "-i"))
     :config
-    (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "CACHE" "GPG_TTY"))
-    (setq exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -257,10 +236,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package no-littering
     :demand t
-    :straight t
-    :init
-    (setq no-littering-etc-directory djm--emacs-etc-cache)
-    (setq no-littering-var-directory djm--emacs-var-cache))
+    :straight (:host github :repo "emacscollective/no-littering")
+    :preface
+    (defvar djm--emacs-cache (concat (getenv "CACHE") "/emacs/"))
+    (defvar djm--emacs-etc-cache (concat djm--emacs-cache "etc/"))
+    (defvar djm--emacs-var-cache (concat djm--emacs-cache "var/"))
+    :custom
+    (no-littering-etc-directory djm--emacs-etc-cache)
+    (no-littering-var-directory djm--emacs-var-cache))
 #+end_src
 
 ** Required Packages
@@ -274,7 +257,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package general :demand t)
   (use-package hydra :demand t)
   (use-package blackout :demand t :straight (:host github :repo "raxod502/blackout"))
-  (use-package straight-x :straight nil)
+
   (use-package dash)
   (use-package f)
   (use-package s)
@@ -282,11 +265,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package map :demand t :straight nil)
   (use-package gv :demand t :straight nil)
   (use-package org :straight t)
-  (use-package gnutls
-    :straight nil
-    :init
-    (setq gnutls-verify-error t)
-    (setq gnutls-min-prime-bits 2048))
 #+end_src
 
 ** Footer
@@ -316,7 +294,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Personal Variables
 #+name: init-personal-vars-block
 #+begin_src emacs-lisp
-  (message "Beggining Init.el")
+  (defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
+  (defvar djm--lisp-directory      (concat user-emacs-directory "lisp/"))
+  (defvar djm--straight-directory  (concat user-emacs-directory "straight/"))
+  (defvar djm--yasnippet-directory (concat user-emacs-directory "snippets/"))
+
+  (defvar djm--org-agenda-directory "~/org/")
+
+  (defvar djm--custom-file (concat djm--emacs-etc-cache "custom.el"))
+  (defvar djm--secret-file (concat djm--emacs-etc-cache "secret.el"))
+
+  (defvar djm--auto-save-file-cache (concat djm--emacs-var-cache "backups/"))
 #+end_src
 
 **** Personal Functions
@@ -410,7 +398,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Personal Code & Packages
 #+name: init-personal-packages-block
 #+begin_src emacs-lisp
-  (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
+
 #+end_src
 
 *** Defaults
@@ -438,17 +426,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (icon-title-format frame-title-format)
     (initial-scratch-message "")
     (inhibit-startup-echo-area-message t)
-    (inhibit-startup-screen t)
+    (inhibit-startup-screepn t)
     (indent-tabs-mode nil)
     (indicate-buffer-boundaries nil)
     (indicate-empty-lines nil)
+    (mac-redisplay-dont-reset-vscroll t)
+    (mac-mouse-wheel-smooth-scroll nil)
     (max-specpdl-size 2040)
     (mode-line-in-non-selected-windows nil)
+    (mouse-wheel-scroll-amount '(5 ((shift) . 2)))
     (mouse-wheel-progressive-speed nil)
-    (mouse-wheel-scroll-amount '(1))
     (ring-bell-function #'ignore)
-    (scroll-conservatively most-positive-fixnum)
-    (scroll-margin 2)
+    (scroll-conservatively 10)
+    (scroll-margin 0)
     (scroll-preserve-screen-position t)
     (scroll-step 1)
     (select-enable-clipboard t)
@@ -476,9 +466,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (blink-cursor-mode -1)
   (tooltip-mode -1)
   (global-prettify-symbols-mode +1)
-
-  (when (eq default-directory "/")
-    (cd (getenv "HOME")))
 
   (setq-default default-directory (getenv "HOME"))
 #+end_src
@@ -539,6 +526,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Files, History, & System Settings
 #+name: init-files-block
 #+begin_src emacs-lisp
+  (use-package gnutls
+    :straight nil
+    :custom
+    (gnutls-verify-error t)
+    (gnutls-min-prime-bits 2048))
+
   (use-package restart-emacs
     :straight t
     :commands (restart-emacs))
@@ -641,8 +634,38 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom
     (async-bytecomp-allowed-packages '(all)))
 
+  (use-package make-mode
+    :straight nil
+    :mode (("Makefile" . makefile-gmake-mode)))
+
+  (use-package direnv
+    :blackout t
+    :straight (:host github :repo "wbolster/emacs-direnv")
+    :hook (after-init . direnv-mode)
+    :commands (direnv-update-environment
+               direnv-allow)
+    :config
+    (add-to-list 'direnv-non-file-modes '(comint-mode
+                                          term-mode
+                                          vterm-mode
+                                          eshell-mode
+                                          shell-mode
+                                          compilation-mode))
+
+    (defun djm/direnv-make-process-env-buffer-local-a (items)
+      (when items
+        (mapc 'kill-local-variable '(process-environment exec-path))
+        (mapc 'make-local-variable '(process-environment exec-path))
+        items))
+
+    (advice-add #'direnv--export :filter-return #'djm/direnv-make-process-env-buffer-local-a))
+
+  (use-package osx-lib
+    :straight (:host github :repo "raghavgautam/osx-lib"))
+
   (use-package compile
     :straight nil
+    :hook (compilation-mode . (lambda () (direnv-update-environment)))
     :preface
     (autoload 'ansi-color-apply-on-region "ansi-color")
     (defvar compilation-filter-start)
@@ -660,23 +683,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (setq compilation-always-kill t
           compilation-ask-about-save nil
           compilation-scroll-output 'first-error))
-
-  (use-package make-mode
-    :straight nil
-    :mode (("Makefile" . makefile-gmake-mode)))
-
-  (use-package direnv
-    :blackout t
-    :straight t
-    :hook (after-init . direnv-mode)
-    :config
-    (add-to-list 'direnv-non-file-modes '(comint-mode
-                                          term-mode
-                                          vterm-mode
-                                          compilation-mode)))
-
-  (use-package osx-lib
-    :straight (:host github :repo "raghavgautam/osx-lib"))
 #+end_src
 
 ** Utilities
@@ -815,38 +821,40 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
-    :defer 0.5
     :blackout t
+    :hook (after-init . global-company-mode)
     :bind (:map company-active-map
                 ("RET" . nil)
                 ([return] . nil)
                 ("TAB" . company-complete-selection)
                 ([tab] . company-complete-selection)
-                ("C-f" . company-complete-common)
+                ("<right>" . company-complete-common)
                 ("C-n" . company-select-next)
                 ("C-p" . company-select-previous))
-    :config
-    (setq company-frontends '(company-pseudo-tooltip-frontend))
-    (setq company-auto-complete-chars nil
-          company-async-timeout 10
-          company-dabbrev-downcase nil
-          company-dabbrev-ignore-case nil
-          company-dabbrev-other-buffers nil
-          company-idle-delay 0.15
-          company-minimum-prefix-length 2
-          company-require-match 'never
-          company-show-numbers t
-          company-tooltip-align-annotations t)
-    (global-company-mode +1))
+    :custom
+    (company-frontends '(company-pseudo-tooltip-frontend))
+    (company-auto-complete-chars nil)
+    (company-async-timeout 10)
+    (company-dabbrev-downcase nil)
+    (company-dabbrev-ignore-case nil)
+    (company-dabbrev-other-buffers nil)
+    (company-idle-delay 0.15)
+    (company-minimum-prefix-length 2)
+    (company-require-match 'never)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations t))
 
   (use-package company-prescient
-    :demand t
     :blackout t
-    :after (company)
-    :config (company-prescient-mode +1))
+    :straight t
+    :hook (global-company-mode . company-prescient-mode))
+
+  (use-package company-flx
+    :straight t
+    :hook (global-company-mode . company-flx-mode))
 
   (use-package company-math
-    :after (company)
+    :straight t
     :config
     (add-to-list 'company-backends 'company-math-symbols-unicode)
     (add-to-list 'company-backends 'company-math-symbols-latex))
@@ -871,6 +879,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package yasnippet
     :blackout yas-global-mode
     :blackout yas-minor-mode
+    :straight t
     :hook ((prog-mode org-mode text-mode) . yas-minor-mode)
     :hook (after-init . yas-global-mode)
     :bind ("C-;" . yas-expand)
@@ -878,10 +887,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (yas-verbosity 1)
     (yas-wrap-around-region t)
     (yas-prompt-functions '(yas-completing-prompt))
-    (yas-snippet-dirs `(,djm--yasnippet-dir)))
+    (yas-snippet-dirs `(,djm--yasnippet-directory)))
 
   (use-package yasnippet-snippets
     :blackout t
+    :straight t
     :config
     (yas-reload-all))
 
@@ -889,6 +899,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "abo-abo/auto-yasnippet"))
 
   (use-package ivy-yasnippet
+    :straight t
     :after (yasnippet))
 #+end_src
 
@@ -923,7 +934,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ivy-dynamic-exhibit-delay-ms 250)
     (ivy-use-selectable-prompt t)
     (ivy-initial-inputs-alist nil)
-    (ivy-case-fold-search-default t)
+    (ivy-case-fold-search-default 'auto)
     (ivy-use-virtual-buffers t)
     (ivy-virtual-abbreviate 'name)
     (ivy-count-format "")
@@ -1026,8 +1037,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package help
     :straight nil
-    :config
-    (setq help-window-select t)
+    :custom
+    (help-window-select t)
     (advice-add 'help-window-display-message :override #'ignore))
 
   (use-package helpful
@@ -1064,11 +1075,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (after-init . which-key-mode)
     :custom (which-key-idle-delay 0.5))
 
-
   (use-package which-func
     :blackout t
     :straight t
-    :hook (after-init . which-function-mode))
+    :hook (which-key-mode . which-function-mode))
 
   (use-package doxymacs
     :straight t)
@@ -1147,7 +1157,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (after-init . editorconfig-mode))
 #+end_src
 
-#+name:
+#+name: init-ws-butler-block
 #+begin_src emacs-lisp
   (use-package ws-butler
     :blackout t
@@ -1508,6 +1518,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ibuffer-sidebar-use-custom-font t))
     ;:config
     ;(setq ibuffer-sidebar-face '(:family "Iosevka Nerd Font" :height 180)))
+#+end_src
+
+*** Bookmark
+#+name: init-bookmark-block
+#+begin_src emacs-lisp
+  (use-package bookmark
+    :straight nil
+    :custom
+    (bookmark-save-flag 1))
 #+end_src
 
 *** iMenu
@@ -2492,13 +2511,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     ".*transient.*")))
 #+end_src
 
-**** Testing Stuff
-#+name: init-testing-block
-#+begin_src emacs-lisp
-  (use-package sublimity
-    :straight (:host github :repo "zk-phi/sublimity"))
-#+end_src
-
 ** Footer
 #+name: init-footer-block
 #+begin_src emacs-lisp
@@ -2523,6 +2535,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   ;;; Do not change this file.  Main config is located in emacs.d/dotemacs.org
   ;;;
   ;;; Code:
+#+end_src
+
+** Settings
+
+#+name: mini-init-settings-block
+#+begin_src emacs-lisp :noweb yes
+<<init-cus-start-block>>
 #+end_src
 
 * Conclusion

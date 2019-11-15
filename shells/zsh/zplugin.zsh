@@ -30,6 +30,10 @@ load=light
 zplugin ice wait'!' pick"async.zsh" src"pure.zsh" lucid nocd
 zplugin $load sindresorhus/pure
 
+zplugin ice as"program" wait'!' make'!' atclone'./direnv hook zsh > zhook.zsh' \
+        atpull'%atclone' pick"direnv" src"zhook.zsh" lucid blockf
+zplugin $load direnv/direnv
+
 zplugin ice wait'4' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
@@ -40,10 +44,6 @@ zplugin ice wait'4' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
         atpull'%atclone' pick"clrs.zsh" nocompile'!' \
         atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
-
-zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-        atpull'%atclone' pick"direnv" src"zhook.zsh" wait'2' lucid blockf
-zplugin $load direnv/direnv
 
 zplugin ice wait'3' blockf atpull'zplugin creinstall -q' lucid
 zplugin $load zsh-users/zsh-completions

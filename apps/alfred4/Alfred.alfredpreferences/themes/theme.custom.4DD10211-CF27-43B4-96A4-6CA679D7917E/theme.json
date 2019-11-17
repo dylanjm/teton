@@ -4,7 +4,7 @@
       "textSpacing" : 6,
       "subtext" : {
         "size" : 12,
-        "colorSelected" : "#9D0006C4",
+        "colorSelected" : "#8F3F71FF",
         "font" : "Iosevka Type Light Oblique",
         "color" : "#665C5465"
       },
@@ -17,8 +17,8 @@
       "backgroundSelected" : "#282828D8",
       "text" : {
         "size" : 18,
-        "colorSelected" : "#79740EFF",
-        "font" : "Iosevka Type Light",
+        "colorSelected" : "#FBF1C7FF",
+        "font" : "Iosevka Etoile Thin",
         "color" : "#A89983E5"
       },
       "iconPaddingHorizontal" : 4,
@@ -26,13 +26,13 @@
       "iconSize" : 40
     },
     "search" : {
-      "paddingVertical" : 5,
+      "paddingVertical" : 0,
       "background" : "#1D2020CA",
       "spacing" : 0,
       "text" : {
         "size" : 34,
         "colorSelected" : "#FFFFFFFF",
-        "font" : "Iosevka Type Thin",
+        "font" : "Iosevka Etoile Thin",
         "color" : "#FBF1C7FF"
       },
       "backgroundSelected" : "#689D69E4"
@@ -43,8 +43,8 @@
       "width" : 559,
       "borderPadding" : 0,
       "borderColor" : "#0000007F",
-      "blur" : 15,
-      "roundness" : -52,
+      "blur" : 36,
+      "roundness" : -64,
       "paddingVertical" : 0
     },
     "credit" : "djm",
@@ -54,7 +54,7 @@
     },
     "scrollbar" : {
       "color" : "#0766784F",
-      "thickness" : 6
+      "thickness" : 0
     },
     "name" : "Minimal Gruvbox"
   }

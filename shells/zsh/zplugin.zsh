@@ -3,7 +3,7 @@ typeset -F4 SECONDS=0
 ###
 ### Check for zplugin install
 ###
-if [[ ! -f $ZPLGM[HOME_DIR]/bin/zplugin.zsh ]]; then
+if test ! -f $ZPLGM[HOME_DIR]/bin/zplugin.zsh; then
     command mkdir -p $ZPLGM[HOME_DIR]
     command git clone https://github.com/psprint/zplugin $ZPLGM[HOME_DIR]/bin
 fi
@@ -14,21 +14,25 @@ autoload -Uz _zplugin
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
-if [[ -e $CACHE/zplugin ]]; then
-   rm -rf $CACHE/zplugin;
+if test -e $CACHE/zplugin; then
+   rm -rf $CACHE/zplugin
 fi
 
-zmodload zdharma/zplugin &> /dev/null
-if (( $? == 1 )); then
+### Check if zmodule is installed and built.
+if [ "$(zmodload zdharma/zplugin 2>/dev/null; echo $?)" = "1" ]; then
     print "ZPlugin module not built! Building now..."
-    zpl module build;
+    zpl module build
 fi
 
+###
+### Load Zsh Plugins
+###
 # Set this variable to light or load for easy debugging.
+# Change to load=load for debugging.
 load=light
 
-zplugin ice wait'!' pick"async.zsh" src"pure.zsh" lucid nocd
-zplugin $load sindresorhus/pure
+zplugin ice wait'!' lucid nocd
+zplugin load mengelbrecht/slimline
 
 zplugin ice as"program" wait'!' make'!' atclone'./direnv hook zsh > zhook.zsh' \
         atpull'%atclone' pick"direnv" src"zhook.zsh" lucid blockf

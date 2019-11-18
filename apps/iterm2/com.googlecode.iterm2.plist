@@ -73155,7 +73155,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>1610 1308 620 392 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1921 0 1918 2137 0 0 3840 2137 </string>
+	<string>1921 4 1918 2133 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>212 101 1050 517 0 0 1680 1027 </string>
 	<key>New Bookmarks</key>
@@ -77242,13 +77242,13 @@
 				<key>Alpha Component</key>
 				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.17255082726478577</real>
+				<real>0.69803921568627447</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>sRGB</string>
 				<key>Green Component</key>
-				<real>0.17254787683486938</real>
+				<real>0.85882352941176465</real>
 				<key>Red Component</key>
-				<real>0.17255303263664246</real>
+				<real>0.92549019607843142</real>
 			</dict>
 			<key>Cursor Guide Color</key>
 			<dict>
@@ -77772,7 +77772,7 @@
 			<key>Name</key>
 			<string>Workstation Laptop</string>
 			<key>Non Ascii Font</key>
-			<string>DejaVuSansMonoNerdFontCompleteM-Book 20</string>
+			<string>FuraCodeNerdFontComplete-Regular 15</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Non-ASCII Ligatures</key>
@@ -78121,10 +78121,7 @@
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
-		<string>DejaVu Sans Mono</string>
-		<string>DejaVuSansMono Nerd Font Mono</string>
-		<string>Apple Color Emoji</string>
-		<string>Iosevka Term</string>
+		<string>FuraCode Nerd Font</string>
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
@@ -78138,7 +78135,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>252</integer>
+	<integer>260</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>

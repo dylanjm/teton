@@ -8,6 +8,7 @@ export DOTFILES="$HOME/dotz"
 export PYENV_ROOT="$HOME/.pyenv"
 export EMACSD="$DOTFILES/editors/emacs.d"
 export EDITOR='emacsclient -a "" -c'
+export LESS="-iRFX"
 
 export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"
@@ -36,7 +37,10 @@ path=($ZPLGM[HOME_DIR]/plugins/direnv---direnv/direnv
       /usr/local/texlive/2019/bin/x86_64-darwin
       /usr/local/opt/texinfo/bin)
 
-typeset -U PATH
+typeset -U PATH FPATH MODULE_PATH
 export PATH
+export FPATH
+export MODULE_PATH
+
 autoload -Uz time-shell nuke convert-to-md \
-         colorlist open-apps iterm-config
+         colorlist open-apps iterm-config _zpcompinit_fast

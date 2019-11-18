@@ -21,14 +21,14 @@ alias dotbin='cd $DOTFILES/bin'
 alias cache='cd $CACHE'
 alias cachem='cd $CACHE/emacs'
 alias cachez='cd $CACHE/zsh'
-alias plugins='cd $CACHE_HOME/zsh/zplugin/plugins'
+alias plugins='cd $CACHE/zsh/zplugin/plugins'
 
 alias org='cd $HOME/org'
 
 ###
 ### Commands
 ###
-alias ls='gls --color=tty --group-directories-first'
+alias ls='gls -la --color=tty --group-directories-first'
 alias lx='exa -lah --icons --time=changed --time-style long-iso --group-directories-first'
 alias glx='exa -lah --icons --time=changed --time-style long-iso --git --sort=modified'
 alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified'
@@ -58,7 +58,6 @@ alias omscs="cd ~/Documents/College/OMSCS"
 alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
 alias rl="cd ~/Documents/College/OMSCS/cs_7642"
 alias code="cd ~/Documents/Code/Github"
-
 
 ###
 ### Work Aliases

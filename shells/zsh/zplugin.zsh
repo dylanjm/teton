@@ -49,6 +49,9 @@ zplugin $load laggardkernel/zsh-thefuck
 zplugin ice wait'2' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
+zplugin ice wait'2' lucid
+zplugin snippet OMZ::plugins/colorize/colorize.plugin.zsh
+
 zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
@@ -56,5 +59,6 @@ zplugin $load trapd00r/LS_COLORS
 
 zplugin ice wait'2' lucid
 zplugin $load $ZSH/interactive
+
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

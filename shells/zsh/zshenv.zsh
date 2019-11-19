@@ -8,7 +8,8 @@ export DOTFILES="$HOME/dotz"
 export PYENV_ROOT="$HOME/.pyenv"
 export EMACSD="$DOTFILES/editors/emacs.d"
 export EDITOR='emacsclient -a "" -c'
-export LESS="-iRFX"
+export LESS='-F -i -J -M -R -W -x4 -X -z-4'
+export LESSOPEN='|lessfilter %s'
 
 export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"

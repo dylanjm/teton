@@ -36,7 +36,7 @@ zplugin wait'!' lucid for \
 zplugin ice wait lucid
 zplugin $load mafredri/zsh-async
 
-zplugin ice wait'!' lucid nocd atinit'SLIMLINE_ENABLE_ASYNC_AUTOLOAD=0;SLIMLINE_SYMBOL_WORKING_FORMAT=%F{red}❯%f;SLIMLINE_SYMBOL_READY_FORMAT=%F{magenta}❯%f'
+zplugin ice wait'!' lucid nocd atinit'source $ZSH/misc/slimline.zsh'
 zplugin $load mengelbrecht/slimline
 
 zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \

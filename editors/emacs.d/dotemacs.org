@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-18 22:14:21
+/last updated/: 2019-11-19 10:56:08
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -196,7 +196,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (setq straight-cache-autoloads t)
     (setq straight-recipe-overrides nil)
     (setq straight-check-for-modifications '(find-when-checking check-on-save))
-    (setq straight-repository-branch "master")
+    (setq straight-repository-branch "develop")
     (setq straight-use-package-by-default t))
 
   (with-no-warnings
@@ -249,6 +249,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 ** Required Packages
 #+name: early-init-req-packages-block
 #+begin_src emacs-lisp
+  (use-package cl-lib :straight nil)
   (use-package use-package-chords :demand t)
   (use-package use-package-hydra :demand t)
   (use-package el-patch :demand t)
@@ -256,13 +257,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package general :demand t)
   (use-package hydra :demand t)
   (use-package blackout :demand t :straight (:host github :repo "raxod502/blackout"))
-
-  (use-package dash)
-  (use-package f)
-  (use-package s)
-
-  (use-package map :demand t :straight nil)
-  (use-package gv :demand t :straight nil)
+  (straight-use-package 'org-plus-contrib)
   (straight-use-package 'org)
 #+end_src
 
@@ -718,9 +713,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Icons
 #+name: init-icons-block
 #+begin_src emacs-lisp
-  (use-package vscode-icon)
+  (use-package vscode-icon
+    :demand t
+    :straight (:host github :repo "jojojames/vscode-icon-emacs")
+    :commands (vscode-icon-for-file))
 
   (use-package all-the-icons
+    :demand t
+    :straight (:files ("data" "fonts" "*.el") :host github :repo "domtronn/all-the-icons.el")
     :commands (all-the-icons-wicon
                all-the-icons-insert
                all-the-icons-install-fonts
@@ -840,7 +840,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom (beacon-push-mark 10))
 
   (use-package highlight-indent-guides
-    :straight t
+    :blackout t
+    :straight (:host github :repo "https://github.com/DarthFennec/highlight-indent-guides")
     :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
 #+end_src
 
@@ -1189,15 +1190,21 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 ("C-p" . company-select-previous))
     :custom
     (company-begin-commands '(self-insert-command))
-    (company-frontends '(company-pseudo-tooltip-frontend))
+    (company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+                         company-preview-frontend
+                         company-echo-metadata-frontend))
+    (copmany-backends '(company-capf
+                        company-files
+                        (company-dabbrev-code company-keywords)
+                        company-dabbrev))
     (company-auto-complete-chars nil)
     (company-async-timeout 10)
     (company-dabbrev-downcase nil)
     (company-dabbrev-ignore-case nil)
     (company-dabbrev-other-buffers nil)
     (company-idle-delay 0.1)
-    (company-minimum-prefix-length 2)
-    (company-require-match 'never)
+    (company-minimum-prefix-length 1)
+    (company-require-match #'company-explicit-action-p)
     (company-show-numbers t)
     (company-tooltip-limit 10)
     (company-tooltip-align-annotations t)
@@ -1213,11 +1220,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package company-prescient
     :blackout t
-    :straight t
+    :straight (:host github :repo "raxod502/prescient.el")
     :hook (global-company-mode . company-prescient-mode))
 
   (use-package company-flx
-    :straight t
+    :blackout t
+    :straight (:host github :repo "PythonNut/company-flx")
     :hook (global-company-mode . company-flx-mode))
 
   (use-package company-emoji
@@ -1227,7 +1235,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package company-math
     :straight t
-    :hook (company-mode . (lambda () (company-math-init)))
+    :hook (global-company-mode . (lambda () (company-math-init)))
     :preface
     (defun company-math-init ()
         (add-to-list 'company-backends 'company-math-symbols-unicode)
@@ -1243,10 +1251,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package company-box
     :blackout t
-    :straight t
-    :hook (company-mode . company-box-mode)
+    :straight (:host github :repo "sebastiencs/company-box")
+    :hook (global-company-mode . company-box-mode)
     :custom
-    (company-box-enable-icon t))
+    (company-box-enable-icon t)
+    (company-box-icons-all-the-icons t))
 #+end_src
 
 **** Yasnippet
@@ -1293,18 +1302,18 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :hook (after-init . ivy-mode)
     :bind (([remap ido-switch-buffer] . ivy-switch-buffer)
-	   ("C-x B" . ivy-switch-buffer-other-window)
-	   ("C-c C-r" . ivy-resume)
-	   ("C-c v p" . ivy-push-view)
-	   ("C-c v o" . ivy-pop-view)
-	   ("C-c v ." . ivy-switch-view)
-	   ([remap kill-ring-save] . ivy-kill-ring-save)
-	   :map ivy-minibuffer-map
-	   ("<tab>" . ivy-alt-done)
-	   ("C-w" . ivy-yank-word)
-	   ("C-o" . ivy-occur)
-	   (:map ivy-switch-buffer-map
-		 ([remap kill-buffer] . ivy-switch-buffer-kill)))
+           ("C-x B" . ivy-switch-buffer-other-window)
+           ("C-c C-r" . ivy-resume)
+           ("C-c v p" . ivy-push-view)
+           ("C-c v o" . ivy-pop-view)
+           ("C-c v ." . ivy-switch-view)
+           ([remap kill-ring-save] . ivy-kill-ring-save)
+           :map ivy-minibuffer-map
+           ("<tab>" . ivy-alt-done)
+           ("C-w" . ivy-yank-word)
+           ("C-o" . ivy-occur)
+           (:map ivy-switch-buffer-map
+                 ([remap kill-buffer] . ivy-switch-buffer-kill)))
     :custom
     (enable-recursive-minibuffers t)
     (ivy-dynamic-exhibit-delay-ms 250)
@@ -1323,57 +1332,57 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :hook (ivy-mode . counsel-mode)
     :bind ((:map counsel-mode-map
-		 ([remap dired] . counsel-dired)
-		 ([remap execute-extended-command] . counsel-M-x)
-		 ([remap find-file] . counsel-find-file)
-		 ("C-x C-d" . counsel-dired-jump)
-		 ("C-x C-i" . counsel-imenu)
-		 ("C-x C-l" . counsel-find-library)
-		 ("C-x C-r" . counsel-recentf)
-		 ("C-x C-v" . counsel-set-variable)
-		 ("C-x C-u" . counsel-unicode-char)
-		 ("C-x j" . counsel-mark-ring)
-		 ("C-c g" . counsel-grep)
-		 ("C-c h" . counsel-command-history)
-		 ("C-c j" . counsel-git)
-		 ("C-c j" . counsel-git-grep)
-		 ("C-c r" . counsel-rg)
-		 ("C-c z" . counsel-fzf)
-		 ("C-c c w" . counsel-colors-web)
-		 ("C-h F" . counsel-describe-face)
-		 ("C-h f" . counsel-describe-function)
-		 ("C-h v" . counsel-describe-variable)))
+                 ([remap dired] . counsel-dired)
+                 ([remap execute-extended-command] . counsel-M-x)
+                 ([remap find-file] . counsel-find-file)
+                 ("C-x C-d" . counsel-dired-jump)
+                 ("C-x C-i" . counsel-imenu)
+                 ("C-x C-l" . counsel-find-library)
+                 ("C-x C-r" . counsel-recentf)
+                 ("C-x C-v" . counsel-set-variable)
+                 ("C-x C-u" . counsel-unicode-char)
+                 ("C-x j" . counsel-mark-ring)
+                 ("C-c g" . counsel-grep)
+                 ("C-c h" . counsel-command-history)
+                 ("C-c j" . counsel-git)
+                 ("C-c j" . counsel-git-grep)
+                 ("C-c r" . counsel-rg)
+                 ("C-c z" . counsel-fzf)
+                 ("C-c c w" . counsel-colors-web)
+                 ("C-h F" . counsel-describe-face)
+                 ("C-h f" . counsel-describe-function)
+                 ("C-h v" . counsel-describe-variable)))
     :custom
     (counsel-find-file-at-point t)
     :config
     (use-package ivy-hydra)
     (use-package ivy-prescient
-		 :demand t
-		 :config
+      :demand t
+      :config
       (ivy-prescient-mode +1))
 
     (setq counsel-grep-base-command
-	  "rg -S --no-heading --line-number --color never '%s' %s"))
+          "rg -S --no-heading --line-number --color never '%s' %s")
+
+    (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                  (swiper-isearch . ivy--regex-plus)
+                                  (swiper-query-replace . ivy--regex-plus)
+                                  (swiper-all . ivy--regex-plus)
+                                  (t . ivy--regex-fuzzy)
+                                  (t . ivy-prescient-re-builder))))
 
   (use-package swiper
     :demand t
     :after (counsel)
     :bind  (("C-s" . swiper)
-	    ("C-c c s" . swiper-isearch)
-	    ("C-c c r" . swiper-isearch-backward)
-	    ("C-S-s" . swiper-all)
-	    :map swiper-map
-	    ("M-%" . swiper-query-replace)
-	    ("M-s" . swiper-isearch-toggle)
-	    :map isearch-mode-map
-	    ("M-s" . swiper-isearch-toggle))
-    :config
-    (setq ivy-re-builders-alist '((t . ivy-prescient-re-builder)
-				  (t . ivy--regex-fuzzy)
-				  (swiper . ivy--regex-plus)
-				  (swiper-isearch . ivy--regex-plus)
-				  (swiper-query-replace . ivy--regex-plus)
-				  (swiper-all . ivy--regex-plus))))
+            ("C-c c s" . swiper-isearch)
+            ("C-c c r" . swiper-isearch-backward)
+            ("C-S-s" . swiper-all)
+            :map swiper-map
+            ("M-%" . swiper-query-replace)
+            ("M-s" . swiper-isearch-toggle)
+            :map isearch-mode-map
+            ("M-s" . swiper-isearch-toggle)))
 
   (use-package counsel-fd
     :straight (:host github :repo "yqrashawn/counsel-fd"))
@@ -1393,16 +1402,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ivy-posframe-style 'frame-center)
     (ivy-posframe-hide-minibuffer t)
     (ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
-					    (swiper . nil)
-					    (swiper-isearch . nil)
-					    (swiper-isearch-backward . nil)
-					    (swiper-all . nil)
-					    (swiper-query-replace . nil)
-					    (swiper-isearch-toggle . nil)))
+                                            (swiper . nil)
+                                            (swiper-isearch . nil)
+                                            (swiper-isearch-backward . nil)
+                                            (swiper-all . nil)
+                                            (swiper-query-replace . nil)
+                                            (swiper-isearch-toggle . nil)))
     :config
     (set-face-attribute 'ivy-posframe nil
-			:background (color-darken-name
-				     (face-attribute 'default :background) 3)))
+                        :background (color-darken-name
+                                     (face-attribute 'default :background) 3)))
 
   (use-package ivy-rich
     :straight (:host github :repo "Yevgnen/ivy-rich")
@@ -1411,6 +1420,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ivy-rich-parse-remote-buffer nil)
     (ivy-rich-path-style 'abbrev)
     :config
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
     (ivy-rich-set-display-transformer))
 
   (use-package ivy-xref
@@ -1425,6 +1435,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-help-block
 #+begin_src emacs-lisp
   (use-package man)
+  (use-package woman)
 
   (use-package help
     :straight nil
@@ -1440,7 +1451,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     ([remap describe-function] . helpful-callable)
     ([remap describe-command] . helpful-command)
     ([remap describe-variable] . helpful-variable)
-    ([remap describe-key] . helpful-key))
+    ([remap describe-key] . helpful-key)
+    :config
+    (use-package elisp-demos
+      :straight (:host github :repo "xuchunyang/elisp-demos")
+      :config
+      (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)))
 
   (use-package help-fns+
     :straight (:host github :repo "emacsmirror/help-fns-plus")
@@ -1479,11 +1495,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package doxymacs
     :straight (:host github :repo "pniedzielski/doxymacs"))
-
-  (use-package elisp-demos
-    :straight (:host github :repo "xuchunyang/elisp-demos")
-    :config
-    (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 
   (use-package discover
     :blackout t
@@ -2395,7 +2406,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** YAML
 #+name: init-yaml-block
 #+begin_src emacs-lisp
-  (use-package yaml-mode)
+  (use-package yaml-mode
+    :mode ("\\.yaml'" "\\.yml'"))
 #+end_src
 
 *** Makefiles
@@ -2426,7 +2438,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-elisp-block
 #+begin_src emacs-lisp
   (use-package parinfer)
-
+  (use-package dash)
+  (use-package f)
+  (use-package s)
+  (use-package map :demand t :straight nil)
+  (use-package gv :demand t :straight nil)
   (use-package paredit)
   (use-package suggest)
   (use-package highlight-defined)

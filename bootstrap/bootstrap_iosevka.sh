@@ -17,8 +17,8 @@ for i in "${arr[@]}"; do
     curl -s "$i" -L -o $TMPFILE && unzip -q $TMPFILE -d "/tmp/font-temp"
     rm $TMPFILE
 
-    find /tmp/font-temp/* -type f -name "*.ttf" -not -path "./ttf-unhinted/*" |\
-        xargs -I{} cp {} ~/Library/Fonts
+    find /tmp/font-temp/* -type f -name "*.ttf" -not -path "./ttf-unhinted/*" |
+        xargs -I{} cp {} ~/Library/Fonts/
 
     rm -rf /tmp/font-temp
 done

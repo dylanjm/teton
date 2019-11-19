@@ -28,13 +28,15 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 # Change to load=load for debugging.
 load=light
 
-zplugin ice wait'2' lucid
-zplugin $load $ZSH/interactive
+zplugin wait'!' lucid for \
+        atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting \
+        atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
+        atpull"zplugin creinstall -q ." blockf zsh-users/zsh-completions \
 
 zplugin ice wait lucid
 zplugin $load mafredri/zsh-async
 
-zplugin ice wait'!' lucid nocd atinit'SLIMLINE_ENABLE_ASYNC_AUTOLOAD=0;SLIMLINE_SYMBOL_WORKING_FORMAT=%F{red}❯%f;SLIMLINE_SYMBOL_READY_FORMAT=%F{white}❯%f'
+zplugin ice wait'!' lucid nocd atinit'SLIMLINE_ENABLE_ASYNC_AUTOLOAD=0;SLIMLINE_SYMBOL_WORKING_FORMAT=%F{red}❯%f;SLIMLINE_SYMBOL_READY_FORMAT=%F{magenta}❯%f'
 zplugin $load mengelbrecht/slimline
 
 zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
@@ -52,9 +54,7 @@ zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
 zplugin $load trapd00r/LS_COLORS
 
-zplugin wait'1' lucid for \
-        atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-        atpull"zplugin creinstall -q ." blockf zsh-users/zsh-completions \
-        atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting
+zplugin ice wait'2' lucid
+zplugin $load $ZSH/interactive
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

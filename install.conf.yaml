@@ -6,7 +6,15 @@
     clean:
       force: true
 
-- clean: ['~']
+- clean: ["~"]
+
+- shell:
+    -
+      command: brew || ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+      stdin: false
+      stdout: false
+      description: installing homebrew
+      quiet: true
 
 - link:
     ~/.zshrc: shells/zsh/zshrc.zsh
@@ -16,4 +24,4 @@
     ~/.gitignore: git/gitignore
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
+    - [git submodule update --init --recursive, Installing submodules]

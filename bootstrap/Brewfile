@@ -103,7 +103,6 @@ brew "youtube-dl"
 brew "zsh"
 brew "caryll/tap/otfcc-mac64"
 brew "daviderestivo/emacs-head/emacs-head", args: ["HEAD", "with-cocoa", "with-dbus", "with-imagemagick", "with-jansson", "with-mailutils", "with-modern-icon-black-variant", "with-no-frame-refocus", "with-pdumper", "with-xwidgets"]
-brew "idaholab/moose/moose"
 brew "sethrfore/r-srf/r", args: ["with-cairo", "with-icu4c", "with-java", "with-libtiff", "with-openblas", "with-texinfo"]
 cask "alacritty"
 cask "bettertouchtool"

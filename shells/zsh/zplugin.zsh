@@ -56,7 +56,7 @@ zplugin ice wait'1' lucid
 zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid
-zplugin $load unixorn/git-extra
+zplugin $load unixorn/git-extra-commands
 
 zplugin ice wait'1' lucid
 zplugin $load $ZSH/interactive

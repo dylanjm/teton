@@ -6,9 +6,10 @@ export LANG=en_US.UTF-8
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export PYENV_ROOT="$HOME/.pyenv"
+export ZSH_PYENV_LAZY_VIRTUALENV=true
 export EMACSD="$DOTFILES/editors/emacs.d"
 export EDITOR='emacsclient -a "" -c'
-export LESS='-F -i -J -M -R -W -x4 -X -z-4'
+export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
 export LESSOPEN='|lessfilter %s'
 
 export ZSH="$DOTFILES/shells/zsh"
@@ -24,10 +25,9 @@ export ZPLGM[ZCOMPDUMP_PATH]="$ZSH_CACHE/zcompdump"
 fpath+=($ZSH/functions)
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
-path=($ZPLGM[HOME_DIR]/plugins/direnv---direnv/direnv
-      $ZPLGM[HOME_DIR]/polaris/bin
-      $PYENV_ROOT/bin
+path=($PYENV_ROOT/bin
       $PYENV_ROOT/shims
+      $ZPLGM[HOME_DIR]/polaris/bin
       $DOTFILES/bin
       /usr/local/bin
       /usr/bin

@@ -58,6 +58,9 @@ zplugin ice wait'2' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
 zplugin $load trapd00r/LS_COLORS
 
 zplugin ice wait'2' lucid
+zplugin $load davidparsson/zsh-pyenv-lazy
+
+zplugin ice wait'2' lucid
 zplugin $load $ZSH/interactive
 
 

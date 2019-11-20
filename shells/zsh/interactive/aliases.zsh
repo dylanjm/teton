@@ -62,6 +62,7 @@ alias code="cd ~/Documents/Code/Github"
 ###
 ### Work Aliases
 ###
+alias forkg='cd ~/Documents/forked_github'
 alias proj='cd ~/Documents/projects'
 alias bis='cd ~/Documents/projects/bison'
 alias bisd='cd ~/Documents/projects/bison_data'

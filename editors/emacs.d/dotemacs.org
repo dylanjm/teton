@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-19 15:58:15
+/last updated/: 2019-11-19 17:31:10
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -796,7 +796,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
       (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
     :init
     (setq-default blink-matching-paren t
-                  column-number-mode nil
+                  column-number-mode t
+                  display-time-mode t
                   eval-expression-print-length nil
                   eval-expression-print-level nil
                   inhibit-point-motion-hooks t
@@ -808,6 +809,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                   set-mark-command-repeat-pop t
                   show-trailing-whitespace nil
                   track-eol t))
+
+  (use-package time
+    :demand t
+    :straight nil
+    :init (display-time-mode +1))
 
   (use-package whitespace
     :demand t
@@ -894,6 +900,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :commands (hide-mode-line-mode
                hide-mode-line-reset
                global-hide-mode-line-mode))
+
+  (use-package smart-mode-line
+    :demand t
+    :after (gruvbox-theme)
+    :straight (:host github :repo "Malabarba/smart-mode-line")
+    :config
+    (setq sml/theme nil
+          sml/no-confirm-load-theme t)
+    (sml/setup))
 #+end_src
 
 **** Custom Modeline
@@ -1423,12 +1438,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package woman)
 
   (use-package help
+    :demand t
     :straight nil
-    :custom
-    (help-window-select t)
+    :init
+    (setq-default help-window-select t)
     (advice-add 'help-window-display-message :override #'ignore))
 
   (use-package helpful
+    :straight (:host github :repo "Wilfred/helpful")
     :custom
     (counsel-describe-function-function #'helpful-callable)
     (counsel-describe-variable-function #'helpful-variable)
@@ -1461,23 +1478,24 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "xuchunyang/DevDocs.el"))
 
   (use-package eldoc
+    :demand t
     :blackout t
-    :straight t
-    :hook (prog-mode . eldoc-mode)
-    :custom
-    (eldoc-idle-delay 2)
-    (eldoc-echo-area-use-multiline-p nil))
+    :straight nil
+    :init
+    (eldoc-mode +1)
+    (setq eldoc-idle-delay 2
+          eldoc-echo-area-use-multiline-p nil))
 
   (use-package which-key
     :blackout t
     :straight (:host github :repo "justbur/emacs-which-key")
     :hook (after-init . which-key-mode)
-    :custom (which-key-idle-delay 0.5))
+    :config (setq which-key-idle-delay 0.5))
 
   (use-package which-func
     :blackout t
-    :straight t
-    :hook (which-key-mode . which-func-mode))
+    :straight nil
+    :hook ((prog-mode) . which-func-mode))
 
   (use-package doxymacs
     :straight (:host github :repo "pniedzielski/doxymacs"))
@@ -1492,12 +1510,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-ispell-block
 #+begin_src emacs-lisp
   (use-package ispell
+    :demand t
     :straight nil
-    :custom
-    (ispell-dictionary "en_US")
-    (ispell-program-name (executable-find "hunspell"))
-    (ispell-really-hunspell t)
-    (ispell-silently-savep t))
+    :preface
+    (unless (file-exists-p "~/Library/Spelling/en_US.aff")
+      (shell-command "bash $DOTFILES/bootstrap/bootstrap_dicts.sh"))
+    :init
+    (setq-default ispell-dictionary "en_US"
+                  ispell-program-name (executable-find "hunspell")
+                  ispell-really-hunspell t
+                  ispell-silently-savep t))
 #+end_src
 
 *** Writeroom

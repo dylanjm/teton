@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-20 00:48:00
+/last updated/: 2019-11-20 13:11:14
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -156,22 +156,22 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default auto-window-vscroll nil
-		bidi-display-reordering 'left-to-right
-		frame-inhibit-implied-resize t
-		window-resize-pixelwise t
-		frame-resize-pixelwise t
-		load-prefer-newer t)
+                bidi-display-reordering 'left-to-right
+                frame-inhibit-implied-resize t
+                window-resize-pixelwise t
+                frame-resize-pixelwise t
+                load-prefer-newer t)
 
   (setq initial-frame-alist '((window-divider-default-bottom-width . 1)
-			      (window-divider-default-right-width . 1)
-			      (window-divider-default-places . t)))
+                              (window-divider-default-right-width . 1)
+                              (window-divider-default-places . t)))
 
-  (setq default-frame-alist '((ns-transparent-titlebar . t)
-			      (drag-internal-border . 10)
-			      (internal-border-width . 10)
-			      (right-fringe . 5)
-			      (left-fringe . 5)
-			      (vertical-scroll-bars)))
+  (setq default-frame-alist '((alpha 95 95)
+                              (ns-transparent-titlebar . t)
+                              (internal-border-width . 5)
+                              (right-fringe . 3)
+                              (left-fringe . 3)
+                              (vertical-scroll-bars)))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -916,60 +916,50 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-custom-modeline-block
 #+begin_src emacs-lisp
   (defun djm/mode-line-time-format ()
-    (propertize (format-time-string " %b %d %H:%M ")
-                                     'face 'font-lock-builtin-face))
+    (propertize (format-time-string " %b %d %H:%M ")
+                'face 'font-lock-builtin-face))
 
   (defun djm/mode-line-buffer-modified-status ()
     (propertize " %b "
                 'face
                 (let ((face (buffer-modified-p)))
-                  (if face '(:foreground (color-darken-name (face-attribute 'error :foreground) 3))
+                  (if face 'font-lock-warning-face
                     'font-lock-type-face))
                 'help-echo (buffer-file-name)))
 
-  ;; normally the buffer name is right-padded with whitespace until it
-  ;; is at least 12 characters. This is a waste of space, so we
-  ;; eliminate the padding here. Check the docstrings for more
-  ;; information.
-  (setq-default mode-line-buffer-identification
-                (propertized-buffer-identification "%b"))
+  (defun djm/mode-line-vc-branch ()
+    (propertize (substring vc-mode 5) 'face 'font-lock-doc-face))
 
-  ;; https://emacs.stackexchange.com/a/7542/12534
-  (defun radian--mode-line-align (left right)
-    "Render a left/right aligned string for the mode line.
-  LEFT and RIGHT are strings, and the return value is a string that
-  displays them left- and right-aligned respectively, separated by
-  spaces."
-    (let ((width (- (window-total-width) (length left))))
-      (format (format "%%s%%%ds" width) left right)))
+   ;; https://emacs.stackexchange.com/a/7542/12534
+   (defun radian--mode-line-align (left right)
+     "Render a left/right aligned string for the mode line.
+    LEFT and RIGHT are strings, and the return value is a string that
+    displays them left- and right-aligned respectively, separated by
+    spaces."
+     (let ((width (- (window-total-width) (length left))))
+       (format (format "%%s%%%ds" width) left right)))
 
-  (defcustom radian-mode-line-left
-    '(" "
-      (:eval (djm/mode-line-time-format))
-      ;; Show [*] if the buffer is modified.
-      (:eval (djm/mode-line-buffer-modified-status))
-      " "
-      ;; Show the row and column of point.
-      mode-line-position
-      ;; Show the active major and minor modes.
-      "  "
-      mode-line-modes)
-    "Composite mode line construct to be shown left-aligned."
-    :type 'sexp)
+   (defcustom radian-mode-line-left
+     '((:eval (djm/mode-line-time-format))
+       (:eval (djm/mode-line-buffer-modified-status))
+       mode-line-position
+       mode-line-modes)
+     "Composite mode line construct to be shown left-aligned."
+     :type 'sexp)
 
-  (defcustom radian-mode-line-right nil
-    "Composite mode line construct to be shown right-aligned."
-    :type 'sexp)
+   (defcustom radian-mode-line-right nil
+     "Composite mode line construct to be shown right-aligned."
+     :type 'sexp)
 
-  ;; Actually reset the mode line format to show all the things we just
-  ;; defined.
-  (setq-default mode-line-format
-                '(:eval (replace-regexp-in-string
-                         "%" "%%"
-                         (radian--mode-line-align
-                          (format-mode-line radian-mode-line-left)
-                          (format-mode-line radian-mode-line-right))
-                         'fixedcase 'literal)))
+   ;; Actually reset the mode line format to show all the things we just
+   ;; defined.
+   (setq-default mode-line-format
+                 '(:eval (replace-regexp-in-string
+                          "%" "%%"
+                          (radian--mode-line-align
+                           (format-mode-line radian-mode-line-left)
+                           (format-mode-line radian-mode-line-right))
+                          'fixedcase 'literal)))
 #+end_src
 
 *** UI Features

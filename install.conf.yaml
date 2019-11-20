@@ -70,9 +70,13 @@
 - link:
     ~/.zshrc: shells/zsh/zshrc.zsh
     ~/.zshenv: shells/zsh/zshenv.zsh
+    ~/.bashrc: shells/bash/bashrc.sh
+    ~/.bash_profile: shells/bash/bash_profile.sh
     ~/.emacs.d: editors/emacs.d
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore
+    ~/.config/starship.toml: shells/bash/themes/starship.toml
+
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

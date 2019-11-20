@@ -56,14 +56,14 @@ zplugin ice wait'1' lucid
 zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid
+zplugin $load unixorn/git-extra
+
+zplugin ice wait'1' lucid
 zplugin $load $ZSH/interactive
 
 zplugin wait'3' lucid for \
         atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
         atpull"zplugin creinstall -q ." blockf zsh-users/zsh-completions \
-        atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting
-
-
-
+        atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

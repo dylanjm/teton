@@ -8,7 +8,7 @@ export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$DOTFILES/bin:/usr/local/bin:/usr
 export MODULEPATH="$MODULEPATH:/opt/moose/Modules/4.3.1/modulefiles"
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
-source $DOTFILES/shells/bash/settings/clrs.sh
+source $DOTFILES/shells/bash/settings/clrs.bash
 source $DOTFILES/shells/bash/settings/history.bash
 #source $DOTFILES/shells/bash/trueline.bash
 source $DOTFILES/shells/bash/settings/defaults.bash

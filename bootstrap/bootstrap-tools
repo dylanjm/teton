@@ -1,0 +1,115 @@
+#!/bin/bash
+
+sudo -v
+set -e
+
+# Check for xcode-CLT
+echo ""
+echo "Checking for Command Line Tools..."
+if [ "$(
+	xcode-select -p 2>/dev/null
+	echo $?
+)" = "2" ]; then
+	echo "Command Line Tools not found. Installing now..."
+	touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+	PROD=$(softwareupdate -l |
+		grep "\*.*Command Line" |
+		head -n 1 | awk -F"*" '{print $2}' |
+		sed -e 's/^ *//' |
+		tr -d '\n')
+	softwareupdate -i "$PROD" --verbose
+	rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+else
+	echo "Command Line Tools already installed at: $(xcode-select --print-path)"
+	echo ""
+fi
+
+# Check for Homebrew
+echo "Checking for Homebrew installation..."
+if [[ ! -e "$(which brew)" ]]; then
+	echo "Homebrew not found. Installing Now..."
+	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+	echo "Homebrew Installed. Updating now..."
+	echo ""
+	brew upgrade
+fi
+
+echo "Please select a default shell:"
+PS3="> "
+options=("Zsh" "Bash" "Fish" "Skip Shell Configuration")
+
+select opt in "${options[@]}"; do
+	case "$REPLY" in
+
+	1)
+		echo ""
+		echo "Setting up $opt..."
+		break
+		;;
+	2)
+		echo ""
+		echo "Setting up $opt..."
+		break
+		;;
+	3)
+		echo ""
+		echo "Setting up $opt..."
+		break
+		;;
+	4)
+		echo ""
+		echo "Skipping Shell Config..."
+		break
+		;;
+	*)
+		echo "Invalid option. Try another one."
+		continue
+		;;
+	esac
+done
+
+if [ $opt = "Zsh" ]; then
+	if test ! -e /usr/local/bin/zsh; then
+		echo "Installing latest version of ZSH from homebrew"
+		echo ""
+		brew install zsh
+	fi
+
+	if ! grep -Fxq "/usr/local/bin/zsh" /etc/shells; then
+		echo "Adding /usr/local/bin/zsh to /etc/shells file"
+		echo ""
+		echo '/usr/local/bin/zsh' | sudo tee -a /etc/shells
+	else
+		echo "/usr/local/bin/zsh already in /etc/shells..."
+		echo ""
+	fi
+
+	if [ "$SHELL" != "/usr/local/bin/zsh" ]; then
+		chsh -s /usr/local/bin/zsh
+		echo "ZSH is now your default shell. Please restart your terminal once this script has finished"
+	fi
+fi
+
+echo "Would you like to upgrade/install dependencies from Brewfile? "
+PS3="> "
+select opt in "Yes" "No"; do
+	case "$REPLY" in
+	1)
+		echo "Installing Brewfile..."
+		break
+		;;
+	2)
+		echo "Skipping Brewfile install..."
+		break
+		;;
+	*)
+		echo "Invalid option. 1 for Yes, 2 for No"
+		continue
+		;;
+	esac
+done
+
+if [ $opt = "Yes" ]; then
+	brew bundle --file=$(pwd)/bootstrap/Brewfile
+fi

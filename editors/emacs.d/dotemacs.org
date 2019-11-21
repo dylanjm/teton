@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-20 13:11:14
+/last updated/: 2019-11-20 15:45:38
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]

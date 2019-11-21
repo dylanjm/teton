@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-20 15:45:38
+/last updated/: 2019-11-20 20:01:30
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -899,8 +899,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight (:host github :repo "hlissner/emacs-hide-mode-line")
     :commands (hide-mode-line-mode
-               hide-mode-line-reset
-               global-hide-mode-line-mode))
+	       hide-mode-line-reset
+	       global-hide-mode-line-mode))
 
   (use-package smart-mode-line
     :disabled t
@@ -908,7 +908,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "Malabarba/smart-mode-line")
     :config
     (setq sml/theme nil
-          sml/no-confirm-load-theme t)
+	  sml/no-confirm-load-theme t)
     (sml/setup))
 #+end_src
 
@@ -917,15 +917,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (defun djm/mode-line-time-format ()
     (propertize (format-time-string " %b %d %H:%M ")
-                'face 'font-lock-builtin-face))
+        'face 'font-lock-builtin-face))
 
   (defun djm/mode-line-buffer-modified-status ()
     (propertize " %b "
-                'face
-                (let ((face (buffer-modified-p)))
-                  (if face 'font-lock-warning-face
-                    'font-lock-type-face))
-                'help-echo (buffer-file-name)))
+        'face
+        (let ((face (buffer-modified-p)))
+          (if face 'font-lock-warning-face
+            'font-lock-type-face))
+        'help-echo (buffer-file-name)))
 
   (defun djm/mode-line-vc-branch ()
     (propertize (substring vc-mode 5) 'face 'font-lock-doc-face))
@@ -942,8 +942,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
    (defcustom radian-mode-line-left
      '((:eval (djm/mode-line-time-format))
        (:eval (djm/mode-line-buffer-modified-status))
-       mode-line-position
-       mode-line-modes)
+       "[%p/%I] [%m]"
+       (:eval (when-let (vc vc-mode)
+                           (list " "
+                                 (propertize (substring vc 5)
+                                             'face 'font-lock-comment-face)))))
+
      "Composite mode line construct to be shown left-aligned."
      :type 'sexp)
 
@@ -954,12 +958,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
    ;; Actually reset the mode line format to show all the things we just
    ;; defined.
    (setq-default mode-line-format
-                 '(:eval (replace-regexp-in-string
-                          "%" "%%"
-                          (radian--mode-line-align
-                           (format-mode-line radian-mode-line-left)
-                           (format-mode-line radian-mode-line-right))
-                          'fixedcase 'literal)))
+         '(:eval (replace-regexp-in-string
+              "%" "%%"
+              (radian--mode-line-align
+               (format-mode-line radian-mode-line-left)
+               (format-mode-line radian-mode-line-right))
+              'fixedcase 'literal)))
 #+end_src
 
 *** UI Features

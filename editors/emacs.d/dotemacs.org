@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 13:46:10
+/last updated/: 2019-11-25 13:48:25
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -103,11 +103,16 @@ This document is my current emacs config which contains the code for my =early-i
 
 ** System Requirements
 
+#+name: docs-emacs-install-block
+#+begin_src bash :tangle no
+  brew tap daviderestivo/emacs-head
+  brew install emacs-head --HEAD --with-cocoa --with-dbus --with-imagemagick --with-jansson --with-mailutils --with-no-frame-refocus --with-pdumper --with-xwidgets --with-modern-icon-nuvola
+#+end_src
+
 | Hardware             |      OS | Emacs Version |
 |----------------------+---------+---------------|
 | 15" 2019 MacBook Pro | 10.14.6 |       27.0.50 |
 | 15" 2019 MacBook Pro |         |       27.0.50 |
-|                      |         |               |
 
 -------------------------------------------------------------------
 

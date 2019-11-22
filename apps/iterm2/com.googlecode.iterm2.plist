@@ -3405,7 +3405,7 @@
 						<real>0.11372549086809158</real>
 					</dict>
 					<key>font</key>
-					<string>Iosevka-Etoile 16</string>
+					<string>Iosevka-Etoile 18</string>
 					<key>separator color 2</key>
 					<dict>
 						<key>Alpha Component</key>
@@ -3430,11 +3430,11 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.65000000000000002</real>
+								<real>0.5</real>
 								<key>base: priority</key>
-								<integer>5</integer>
+								<real>5</real>
 								<key>format</key>
-								<string>MMM d H:mm:ss</string>
+								<string>H:mm:ss</string>
 								<key>localize</key>
 								<integer>0</integer>
 								<key>shared text color</key>
@@ -3469,7 +3469,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3494,15 +3494,13 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>1</real>
+								<real>0.84999999999999998</real>
 								<key>base: priority</key>
 								<integer>5</integer>
 								<key>maxwidth</key>
 								<integer>80</integer>
 								<key>minwidth</key>
 								<real>0.0</real>
-								<key>path</key>
-								<string>path</string>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3535,7 +3533,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3560,7 +3558,7 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.75</real>
+								<real>0.5</real>
 								<key>base: priority</key>
 								<integer>5</integer>
 								<key>iTermStatusBarGitComponentPollingIntervalKey</key>
@@ -3601,7 +3599,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3626,7 +3624,7 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: priority</key>
-								<integer>5</integer>
+								<real>12</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3659,7 +3657,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3717,7 +3715,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3775,7 +3773,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3804,19 +3802,19 @@
 								<key>ShowTime</key>
 								<integer>1</integer>
 								<key>base: priority</key>
-								<real>7</real>
+								<real>5</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
 									<real>1</real>
 									<key>Blue Component</key>
-									<real>0.011764705882352941</real>
+									<real>0.011764706112444401</real>
 									<key>Color Space</key>
 									<string>sRGB</string>
 									<key>Green Component</key>
-									<real>0.36470588235294116</real>
+									<real>0.364705890417099</real>
 									<key>Red Component</key>
-									<real>0.83921568627450982</real>
+									<real>0.83921569585800171</real>
 								</dict>
 							</dict>
 							<key>layout advanced configuration dictionary value</key>
@@ -3837,7 +3835,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -3864,12 +3862,40 @@
 								<key>base: compression resistance</key>
 								<real>0.5</real>
 								<key>base: priority</key>
-								<real>5</real>
+								<real>4</real>
 							</dict>
 							<key>layout advanced configuration dictionary value</key>
 							<dict>
 								<key>algorithm</key>
 								<integer>0</integer>
+								<key>background color</key>
+								<dict>
+									<key>Alpha Component</key>
+									<real>1</real>
+									<key>Blue Component</key>
+									<real>0.12941177189350128</real>
+									<key>Color Space</key>
+									<string>sRGB</string>
+									<key>Green Component</key>
+									<real>0.12549020349979401</real>
+									<key>Red Component</key>
+									<real>0.11372549086809158</real>
+								</dict>
+								<key>font</key>
+								<string>Iosevka-Etoile 18</string>
+								<key>separator color 2</key>
+								<dict>
+									<key>Alpha Component</key>
+									<real>1</real>
+									<key>Blue Component</key>
+									<real>0.45490196347236633</real>
+									<key>Color Space</key>
+									<string>sRGB</string>
+									<key>Green Component</key>
+									<real>0.51372551918029785</real>
+									<key>Red Component</key>
+									<real>0.57254904508590698</real>
+								</dict>
 							</dict>
 						</dict>
 					</dict>
@@ -3885,12 +3911,40 @@
 								<key>base: compression resistance</key>
 								<real>0.5</real>
 								<key>base: priority</key>
-								<real>5</real>
+								<real>4</real>
 							</dict>
 							<key>layout advanced configuration dictionary value</key>
 							<dict>
 								<key>algorithm</key>
 								<integer>0</integer>
+								<key>background color</key>
+								<dict>
+									<key>Alpha Component</key>
+									<real>1</real>
+									<key>Blue Component</key>
+									<real>0.12941177189350128</real>
+									<key>Color Space</key>
+									<string>sRGB</string>
+									<key>Green Component</key>
+									<real>0.12549020349979401</real>
+									<key>Red Component</key>
+									<real>0.11372549086809158</real>
+								</dict>
+								<key>font</key>
+								<string>Iosevka-Etoile 18</string>
+								<key>separator color 2</key>
+								<dict>
+									<key>Alpha Component</key>
+									<real>1</real>
+									<key>Blue Component</key>
+									<real>0.45490196347236633</real>
+									<key>Color Space</key>
+									<string>sRGB</string>
+									<key>Green Component</key>
+									<real>0.51372551918029785</real>
+									<key>Red Component</key>
+									<real>0.57254904508590698</real>
+								</dict>
 							</dict>
 						</dict>
 					</dict>
@@ -3924,7 +3978,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Etoile 16</string>
+								<string>Iosevka-Etoile 18</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -5484,7 +5538,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>369</integer>
+	<integer>377</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -6270,7 +6324,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-11-20T16:14:58Z</date>
+	<date>2019-11-21T16:15:03Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>

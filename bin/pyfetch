@@ -1,36 +1,45 @@
 #!/usr/bin/env python
 import sys
-import argparse
 import os
 from shutil import copyfile
 
-home = os.path.expanduser('~')
-bison_data = os.path.join(home, 'Documents', 'projects', 'bison_data')
-v_path = os.path.join(home, 'Documents', 'projects',
-                      'bison', 'assessment', 'LWR', 'validation')
+home = os.path.expanduser("~")
+bison_data = os.path.join(home, "Documents", "projects", "bison_data")
+v_path = os.path.join(
+    home, "Documents", "projects", "bison", "assessment", "LWR", "validation"
+)
 
 foi = sys.argv[1]
 
-data_dict_from = {'HbepR1': [os.path.join(bison_data, 'FUMEX-II/Data/HbepR1/hbepr1_plot.csv')],
-                  'IFA_431': [os.path.join(bison_data, 'experiment_data/IFA_431/ifa431_plot.csv')],
-                  'IFA_432': [os.path.join(bison_data, 'experiment_data/IFA_432/ifa432_plot.csv')],
-                  'IFA_515_RodA1': [os.path.join(bison_data, 'experiment_data/IFA_515/ifa515_plot.csv'),
-                                    os.path.join(bison_data, 'experiment_data/IFA_515/predict_vs_measured.csv')],
-                  'IFA_519': [os.path.join(bison_data, 'experiment_data/IFA_519/ifa519_plot.csv')],
-                  'IFA_534': [os.path.join(bison_data, 'experiment_data/IFA_534/ifa534_plot.csv')]}
+data_dict_from = {
+    "HbepR1": [os.path.join(bison_data, "FUMEX-II/Data/HbepR1/hbepr1_plot.csv")],
+    "IFA_431": [os.path.join(bison_data, "experiment_data/IFA_431/ifa431_plot.csv")],
+    "IFA_432": [os.path.join(bison_data, "experiment_data/IFA_432/ifa432_plot.csv")],
+    "IFA_515_RodA1": [
+        os.path.join(bison_data, "experiment_data/IFA_515/ifa515_plot.csv"),
+        os.path.join(bison_data, "experiment_data/IFA_515/predict_vs_measured.csv"),
+    ],
+    "IFA_519": [os.path.join(bison_data, "experiment_data/IFA_519/ifa519_plot.csv")],
+    "IFA_534": [os.path.join(bison_data, "experiment_data/IFA_534/ifa534_plot.csv")],
+}
 
-data_dict_to = {'HbepR1': [os.path.join(v_path, 'HbepR1/analysis/hbepr1_plot.csv')],
-                'IFA_431': [os.path.join(v_path, 'IFA_431/analysis/ifa431_plot.csv')],
-                'IFA_432': [os.path.join(v_path, 'IFA_432/analysis/ifa432_plot.csv')],
-                'IFA_515_RodA1': [os.path.join(v_path, 'IFA_515_RodA1/analysis/ifa515_plot.csv'),
-                                  os.path.join(v_path, 'IFA_515_RodA1/analysis/predict_vs_measured.csv')],
-                'IFA_519': [os.path.join(v_path, 'IFA_519/analysis/ifa519_plot.csv')],
-                'IFA_534': [os.path.join(v_path, 'IFA_534/analysis/ifa534_plot.csv')]}
+data_dict_to = {
+    "HbepR1": [os.path.join(v_path, "HbepR1/analysis/hbepr1_plot.csv")],
+    "IFA_431": [os.path.join(v_path, "IFA_431/analysis/ifa431_plot.csv")],
+    "IFA_432": [os.path.join(v_path, "IFA_432/analysis/ifa432_plot.csv")],
+    "IFA_515_RodA1": [
+        os.path.join(v_path, "IFA_515_RodA1/analysis/ifa515_plot.csv"),
+        os.path.join(v_path, "IFA_515_RodA1/analysis/predict_vs_measured.csv"),
+    ],
+    "IFA_519": [os.path.join(v_path, "IFA_519/analysis/ifa519_plot.csv")],
+    "IFA_534": [os.path.join(v_path, "IFA_534/analysis/ifa534_plot.csv")],
+}
 
-print 'Copying Files:'
+print("Copying Files:")
 for path_from, path_to in zip(data_dict_from[str(foi)], data_dict_to[str(foi)]):
-    short_from = path_from.replace('/Users/mcdodj/Documents/projects', '...')
+    short_from = path_from.replace("/Users/mcdodj/Documents/projects", "...")
     short_to = path_to.replace(
-        '/Users/mcdodj/Documents/projects/bison/assessment/LWR/validation', '...')
-    print short_from + ' to ' + short_to
+        "/Users/mcdodj/Documents/projects/bison/assessment/LWR/validation", "..."
+    )
+    print(short_from + " to " + short_to)
     copyfile(path_from, path_to)

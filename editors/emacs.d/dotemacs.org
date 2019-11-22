@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-20 20:01:30
+/last updated/: 2019-11-21 13:23:28
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -339,6 +339,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           (delete-file djm--secret-file)
           (message "Secret file deleted!"))
       (message "Secret file does not exist!")))
+
+  (defun djm/kill-buffer-when-no-processes (&rest _)
+    "Kill buffer and its window when there's no processes left."
+    (when (null (get-buffer-process (current-buffer)))
+      (kill-buffer (current-buffer))))
+
+  (defun djm/fetch-hunspell-dictionary ()
+    (unless (file-exists-p "~/Library/Spelling/en_US.aff")
+      (shell-command "bash $DOTFILES/bootstrap/bootstrap_dicts.sh")))
 #+end_src
 
 [[https://web.archive.org/web/20191113215833/https://emacs.stackexchange.com/questions/32150/how-to-add-a-timestamp-to-each-entry-in-emacs-messages-buffer][StackOverflow - How to add a timestamp to each entry in Emacs' *Messages* buffer?]]
@@ -867,7 +876,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   ;; Colored Emoji on OS X, prefer over everything else!
   (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
-  (set-fontset-font t 'unicode (font-spec :family "DejaVu Sans Mono") nil 'prepend)
+  (set-fontset-font t 'unicode (font-spec :family "DejaVuSansMono Nerd Font") nil 'prepend)
   (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
 
   ;; Fallbacks for math and generic symbols
@@ -884,11 +893,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (load-theme 'gruvbox-dark-hard t))
 
   (set-face-attribute 'variable-pitch nil :inherit 'default
-                      :family "Iosevka Etoile" :weight 'ultra-light)
+                      :family "Iosevka Aile" :weight 'ultra-light)
   (set-face-attribute 'font-lock-comment-face nil
                       :family "Iosevka Etoile" :weight 'ultra-light :slant 'italic)
   (set-face-attribute 'fixed-pitch nil :inherit 'default
-                      :family "Iosevka Term" :weight 'ultra-light)
+                      :family "Iosevka SS09" :weight 'ultra-light)
 #+end_src
 
 *** Modelines
@@ -916,42 +925,29 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-custom-modeline-block
 #+begin_src emacs-lisp
   (defun djm/mode-line-time-format ()
-    (propertize (format-time-string " %b %d %H:%M ")
+    (propertize (format-time-string " %H:%M ")
         'face 'font-lock-builtin-face))
 
   (defun djm/mode-line-buffer-modified-status ()
-    (propertize " %b "
-        'face
+    (propertize "%b" 'face
         (let ((face (buffer-modified-p)))
           (if face 'font-lock-warning-face
             'font-lock-type-face))
         'help-echo (buffer-file-name)))
 
-  (defun djm/mode-line-vc-branch ()
-    (propertize (substring vc-mode 5) 'face 'font-lock-doc-face))
-
    ;; https://emacs.stackexchange.com/a/7542/12534
-   (defun radian--mode-line-align (left right)
-     "Render a left/right aligned string for the mode line.
-    LEFT and RIGHT are strings, and the return value is a string that
-    displays them left- and right-aligned respectively, separated by
-    spaces."
+   (defun djm/mode-line-align (left right)
      (let ((width (- (window-total-width) (length left))))
        (format (format "%%s%%%ds" width) left right)))
 
-   (defcustom radian-mode-line-left
+   (defcustom djm--mode-line-left
      '((:eval (djm/mode-line-time-format))
        (:eval (djm/mode-line-buffer-modified-status))
-       "[%p/%I] [%m]"
-       (:eval (when-let (vc vc-mode)
-                           (list " "
-                                 (propertize (substring vc 5)
-                                             'face 'font-lock-comment-face)))))
-
+       " (%l,%c) [%m]")
      "Composite mode line construct to be shown left-aligned."
      :type 'sexp)
 
-   (defcustom radian-mode-line-right nil
+   (defcustom djm--mode-line-right nil
      "Composite mode line construct to be shown right-aligned."
      :type 'sexp)
 
@@ -960,9 +956,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
    (setq-default mode-line-format
          '(:eval (replace-regexp-in-string
               "%" "%%"
-              (radian--mode-line-align
-               (format-mode-line radian-mode-line-left)
-               (format-mode-line radian-mode-line-right))
+              (djm/mode-line-align
+               (format-mode-line djm--mode-line-left)
+               (format-mode-line djm--mode-line-right))
               'fixedcase 'literal)))
 #+end_src
 
@@ -1143,9 +1139,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :demand t
     :blackout t
     :straight nil
-    :init
-    (abbrev-mode +1)
-    (setq-default save-abbrevs 'silently))
+    :custom
+    (save-abbrevs 'silently)
+    (abbrev-file-name (no-littering-expand-var-file-name "abbrev_defs"))
+    :config (abbrev-mode +1))
 #+end_src
 
 **** Hippie Expand
@@ -1155,16 +1152,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :demand t
     :straight nil
     :bind (([remap dabbrev-expand] . hippie-expand))
-    :config
-    (setq-default hippie-expand-try-functions-list '(try-expand-dabbrev
-                                                     try-expand-dabbrev-all-buffers
-                                                     try-expand-dabbrev-from-kill
-                                                     try-complete-file-name-partially
-                                                     try-complete-file-name
-                                                     try-expand-all-abbrevs
-                                                     try-expand-list
-                                                     try-complete-lisp-symbol-partially
-                                                     try-complete-lisp-symbol)))
+    :custom
+    (hippie-expand-try-functions-list '(try-expand-dabbrev
+                                        try-expand-dabbrev-all-buffers
+                                        try-expand-dabbrev-from-kill
+                                        try-complete-file-name-partially
+                                        try-complete-file-name
+                                        try-expand-all-abbrevs
+                                        try-expand-list
+                                        try-complete-lisp-symbol-partially
+                                        try-complete-lisp-symbol)))
 #+end_src
 
 **** Company
@@ -1183,6 +1180,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 ("C-p" . company-select-previous))
     :custom
     (company-begin-commands '(self-insert-command))
+    (company-backends '(company-files
+                        company-keywords
+                        company-capf
+                        company-yasnippet
+                        (company-abbrev company-dabbrev)))
     (company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
                          company-preview-frontend
                          company-echo-metadata-frontend))
@@ -1208,16 +1210,22 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "PythonNut/company-flx")
     :hook (global-company-mode . company-flx-mode))
 
+  (use-package company-box
+    :blackout t
+    :straight (:files ("images" "*.el") :host github :repo "sebastiencs/company-box")
+    :hook (company-mode . company-box-mode)
+    :custom (company-box-enable-icon t))
+
   (use-package company-emoji
     :straight t
-    :hook (global-company-mode . (lambda () (company-emoji-init)))
+    :hook (global-company-mode . company-emoji-init)
     :config/el-patch
     (defun company-emoji-init ()
       (setq company-backends (-snoc company-backends 'company-emoji))))
 
   (use-package company-math
     :straight t
-    :hook (global-company-mode . (lambda () (company-math-init)))
+    :hook (global-company-mode . company-math-init)
     :preface
     (defun company-math-init ()
       (setq company-backends (-snoc company-backends 'company-math-symbols-unicode 'company-math-symbols-latex))))
@@ -1228,29 +1236,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package company-anaconda
     :straight (:host github :repo "pythonic-emacs/company-anaconda")
-    :hook (global-company-mode . (lambda () (company-anaconda-init)))
+    :hook (global-company-mode . company-anaconda-init)
     :preface
     (defun company-anaconda-init ()
       (setq company-backends (-snoc company-backends 'company-anaconda))))
-
-  (use-package company-box
-    :blackout t
-    :straight (:type git :files (:defaults "images" "company-box-pkg.el") :host github :repo "sebastiencs/company-box")
-    :hook (global-company-mode . company-box-mode)
-    :preface
-    (defvar company-mode/enable-yas t
-      "Enable yasnippet for all backends.")
-
-    (defun company-mode/backend-with-yas (backend)
-      (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
-          backend
-        (append (if (consp backend) backend (list backend))
-                '(:with company-yasnippet))))
-
-    :custom
-    (company-box-enable-icon t)
-    :config
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
 #+end_src
 
 **** Yasnippet
@@ -1500,14 +1489,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package ispell
     :demand t
     :straight nil
-    :preface
-    (unless (file-exists-p "~/Library/Spelling/en_US.aff")
-      (shell-command "bash $DOTFILES/bootstrap/bootstrap_dicts.sh"))
-    :init
-    (setq-default ispell-dictionary "en_US"
-                  ispell-program-name (executable-find "hunspell")
-                  ispell-really-hunspell t
-                  ispell-silently-savep t))
+    :preface (djm/fetch-hunspell-dictionary)
+    :init (setq-default ispell-dictionary "en_US"
+                        ispell-program-name (executable-find "hunspell")
+                        ispell-really-hunspell t
+                        ispell-silently-savep t))
 #+end_src
 
 *** Writeroom
@@ -1595,99 +1581,97 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 #+name:
 #+begin_src emacs-lisp
-    (use-package default-text-scale
-      :straight (:host github :repo "purcell/default-text-scale")
-      :commands (default-text-scale-increase
-                  default-text-scale-decrease
-                  default-text-scale-reset)
-      :bind (("C-x t <up>" . default-text-scale-increase)
-             ("C-x t <down>" . default-text-scale-decrease)
-             ("C-x t ]". default-text-scale-reset))
-      :custom (default-text-scale-amount 20))
+  (use-package default-text-scale
+    :straight (:host github :repo "purcell/default-text-scale")
+    :bind (("<C-s-up>" . default-text-scale-increase)
+           ("<C-s-down>" . default-text-scale-decrease)
+           ("<C-M-s-down>". default-text-scale-reset))
+    :custom (default-text-scale-amount 20))
 
-    (use-package delsel
-      :blackout t
-      :straight nil
-      :hook (after-init . delete-selection-mode))
+  (use-package delsel
+    :blackout t
+    :straight nil
+    :hook (after-init . delete-selection-mode))
 
-    (use-package undo-tree
-      :blackout t
-      :straight t
-      :hook (after-init . global-undo-tree-mode)
-      :custom
-      (undo-tree-save-history t)
-      (undo-tree-visualizer-timestamps t)
-      (undo-tree-visualizer-diff t))
+  (use-package undo-tree
+    :blackout t
+    :straight t
+    :hook (after-init . global-undo-tree-mode)
+    :custom
+    (undo-tree-save-history t)
+    (undo-tree-visualizer-timestamps t)
+    (undo-tree-visualizer-diff t))
 
-    (use-package aggressive-indent
-      :blackout t
-      :straight t
-      :commands (aggressive-indent-mode))
+  (use-package aggressive-indent
+    :blackout t
+    :straight t
+    :commands (aggressive-indent-mode))
 
-    (use-package hungry-delete
-      :blackout t
-      :straight t
-      :commands (hungry-delete-mode))
+  (use-package hungry-delete
+    :blackout t
+    :straight t
+    :commands (hungry-delete-mode))
 
-    (use-package smart-hungry-delete
-      :blackout t
-      :straight (:host github :repo "hrehfeld/emacs-smart-hungry-delete")
-      :commands (smart-hungry-delete-mode))
+  (use-package smart-hungry-delete
+    :blackout t
+    :straight (:host github :repo "hrehfeld/emacs-smart-hungry-delete")
+    :commands (smart-hungry-delete-mode))
 
-    (use-package prog-mode
-      :straight nil
-      :hook ((prog-mode . display-fill-column-indicator-mode)))
+  (use-package prog-mode
+    :straight nil
+    :hook ((prog-mode . display-fill-column-indicator-mode)
+           (prog-mode . show-paren-mode)))
 
-    (use-package rainbow-delimiters
-      :blackout t
-      :straight t
-      :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :blackout t
+    :straight t
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-    (use-package volatile-highlights
-      :blackout t
-      :straight t
-      :hook ((prog-mode text-mode) . volatile-highlights-mode))
+  (use-package volatile-highlights
+    :blackout t
+    :straight t
+    :hook ((prog-mode text-mode) . volatile-highlights-mode))
 
-    (use-package highlight-thing
-      :blackout t
-      :straight t
-      :hook ((prog-mode) . highlight-thing-mode))
+  (use-package highlight-thing
+    :blackout t
+    :straight t
+    :hook ((prog-mode) . highlight-thing-mode))
 
-    (use-package deadgrep
-      :straight t
-      :init (defalias 'rg #'deadgrep))
+  (use-package deadgrep
+    :straight t
+    :init (defalias 'rg #'deadgrep))
 
-    (use-package expand-region
-      :straight t
-      :bind ("C-=" . er/expand-region))
+  (use-package expand-region
+    :straight t
+    :bind ("C-=" . er/expand-region))
 
-    (use-package format-all
-      :straight (:host github :repo "lassik/emacs-format-all-the-code")
-      :commands (format-all-buffer
-                 format-all-mode))
+  (use-package format-all
+    :straight (:host github :repo "lassik/emacs-format-all-the-code")
+    :commands (format-all-buffer
+               format-all-mode))
 
-    (use-package dumb-jump
-      :blackout t
-      :straight t
-      :custom
-      (dumb-jump-selector 'ivy))
+  (use-package dumb-jump
+    :blackout t
+    :straight t
+    :custom
+    (dumb-jump-selector 'ivy))
 
-    (use-package string-inflection
-      :straight (:host github :repo "akicho8/string-inflection"))
+  (use-package string-inflection
+    :straight (:host github :repo "akicho8/string-inflection"))
 
-    (use-package interactive-align
-      :straight (:host github :repo "mkcms/interactive-align"))
+  (use-package interactive-align
+    :straight (:host github :repo "mkcms/interactive-align"))
 
-    (use-package crux
-      :straight (:host github :repo "bbatsov/crux"))
+  (use-package crux
+    :straight (:host github :repo "bbatsov/crux"))
 
-    (use-package smartparens
-      :disabled t
-      :blackout t
-      :straight (:host github :repo "Fuco1/smartparens")
-      :hook ((prog-mode eshell-mode text-mode) . smartparens-strict-mode)
-      :config
-      (show-smartparens-global-mode +1))
+  (use-package smartparens
+    :disabled t
+    :blackout t
+    :straight (:host github :repo "Fuco1/smartparens")
+    :hook ((prog-mode eshell-mode text-mode) . smartparens-strict-mode)
+    :config
+    (show-smartparens-global-mode +1))
 #+end_src
 
 ** Navigation

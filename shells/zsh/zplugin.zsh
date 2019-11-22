@@ -28,6 +28,9 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 # Change to load=load for debugging.
 load=light
 
+zplugin ice wait pick'init.zsh' compile'*.zsh'
+zplugin $load laggardkernel/zsh-iterm2
+
 zplugin ice wait lucid
 zplugin $load mafredri/zsh-async
 
@@ -40,6 +43,7 @@ zplugin $load direnv/direnv
 
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
+zstyle ":prezto:runcom" zpreztorc "$HOME/.zshrc"
 
 zplugin ice wait'1' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
@@ -47,9 +51,7 @@ zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zplugin ice wait'1' lucid
 zplugin snippet OMZ::plugins/colorize/colorize.plugin.zsh
 
-zplugin ice wait'1' atclone"gdircolors -b LS_COLORS > clrs.zsh" \
-    atpull'%atclone' pick"clrs.zsh" nocompile'!' \
-    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”' lucid
+zplugin ice nocompile:! pick:c.zsh atpull:%atclone atclone:'gdircolors -b LS_COLORS > c.zsh'
 zplugin $load trapd00r/LS_COLORS
 
 zplugin ice wait'1' lucid
@@ -61,7 +63,13 @@ zplugin $load unixorn/git-extra-commands
 zplugin ice wait'1' lucid
 zplugin $load $ZSH/interactive
 
-zplugin wait'3' lucid for \
+zplugin ice wait'1' atpull"zplugin creinstall -q ." blockf lucid
+zplugin $load vasyharan/zsh-brew-services
+
+zplugin ice wait'1' lucid blockf
+zplugin $load rupa/z
+
+zplugin wait'2' lucid for \
         atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
         atpull"zplugin creinstall -q ." blockf zsh-users/zsh-completions \
         atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting

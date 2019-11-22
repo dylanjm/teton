@@ -25,14 +25,14 @@ setopt AUTO_PARAM_SLASH    # If completed parameter is a directory, add a traili
 setopt EXTENDED_GLOB       # Needed for file modification glob modifiers with compinit
 unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
-unsetop list_beep
+unsetopt list_beep
 #
 # Styles
 #
 
 # Use caching to make completion for commands such as dpkg and apt usable.
-zstyle :completion::complete:* use-cache on
-zstyle :completion::complete:* cache-path $CACHE/zsh/zcompcache
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path '$CACHE/zsh/zcompcache'
 
 # Case-insensitive (all), partial-word, and then substring completion.
 if zstyle -t ':prezto:module:completion:*' case-sensitive; then

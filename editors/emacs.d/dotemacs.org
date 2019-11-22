@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 13:06:54
+/last updated/: 2019-11-25 13:46:10
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -94,8 +94,8 @@
 - [[#citations][Citations]]
 
 * About
-#+ATTR_HTML: width="100px"
-#+ATTR_ORG: :width 1500
+#+ATTR_HTML: :width 1000px
+#+ATTR_ORG: :width 1000
 [[file:assets/config-preview.png]]
 
 ** Literate Programming in Org
@@ -2036,7 +2036,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-goto-max-level 10)
     (org-hide-emphasis-markers t)
     (org-highlight-sparse-tree-matches nil)
-    (org-image-actual-width 500)
+    (org-image-actual-width nil)
     (org-imenu-depth 4)
     (org-indirect-buffer-display 'current-window)
     (org-insert-heading-respect-content t)

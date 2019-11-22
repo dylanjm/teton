@@ -2,23 +2,24 @@
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
-export LANG=en_US.UTF-8
-export EDITOR='emacsclient -a "" -c'
-export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
-export LESSOPEN='|lessfilter %s'
-
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
+export ZSH="$DOTFILES/shells/zsh"
+export ZSH_CACHE="$CACHE/zsh"
+
+export LANG=en_US.UTF-8
+export EDITOR='emacsclient -a "" -c'
+export HISTFILE="$ZSH_CACHE/zsh_history"
+export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
+export LESSOPEN='|lessfilter %s'
+export LESSHISTFILE="$ZSH_CACHE/lesshst"
 
 export _Z_DATA="$CACHE/zsh/z"
 export GNUPGHOME="$HOME/.config/gnupg"
 export CCACHE_DIR="$CACHE/ccache"
+
 export PYENV_ROOT="$HOME/.config/pyenv"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
-
-export ZSH="$DOTFILES/shells/zsh"
-export ZSH_CACHE="$CACHE/zsh"
-export HISTFILE="$ZSH_CACHE/zsh_history"
 
 export GPG_TTY=$(tty)
 

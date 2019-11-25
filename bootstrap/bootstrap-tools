@@ -3,11 +3,15 @@
 sudo -v
 set -e
 
+marker="\033[94m==>\033[0m"
+status="…"
+status_good="\033[92m🗸\033[0m"
+status_bad="\033[91m✘\033[0m"
+
 # Check for xcode-CLT
-echo ""
-echo "Checking for Command Line Tools..."
+echo -ne "$marker Checking for Command Line Tools - $status"\\r
 if [ "$(xcode-select -p 2>/dev/null; echo $?)" = "2" ]; then
-	echo "Command Line Tools not found. Installing now..."
+	echo -e "$marker Checking for Command Line Tools - $status_bad"
 	touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 	PROD=$(softwareupdate -l |
 		       grep "\*.*Command Line" |
@@ -17,71 +21,62 @@ if [ "$(xcode-select -p 2>/dev/null; echo $?)" = "2" ]; then
 	softwareupdate -i "$PROD" --verbose
 	rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 else
-	echo "CLT already installed at: $(xcode-select --print-path)"
-	echo ""
+	echo -e "$marker Checking for Command Line Tools - $status_good"
 fi
 
 # Check for Homebrew
-echo "Checking for Homebrew installation..."
+echo -ne "$marker Checking for Homebrew installation - $status"\\r
 if [[ ! -e "$(which brew)" ]]; then
-	echo "Homebrew not found. Installing Now..."
+	echo -e "$marker Checking for Homebrew installation - $status_bad"
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
-	echo "Homebrew installed. Updating now..."
-	echo ""
+    echo -e "$marker Checking for Homebrew installation - $status_good"
 	brew upgrade
 fi
 
+echo ""
 echo "Please select a default shell:"
 PS3="> "
 options=("zsh" "bash" "fish" "skip shell config")
 
 select opt in "${options[@]}"; do
 	case "$REPLY" in
-	1) echo ""; echo "Setting up $opt..."; break;;
-	2) echo "";	echo "Setting up $opt..."; break;;
-	3) echo ""; echo "Setting up $opt..."; break;;
+	1) echo ""; echo "Setting up $opt:"; break;;
+	2) echo "";	echo "Setting up $opt:"; break;;
+	3) echo ""; echo "Setting up $opt:"; break;;
 	4) echo ""; echo "Skipping Shell Config..."; break;;
 	*) echo "Invalid option. Try another one."; continue;;
 	esac
 done
 
 if [ "$REPLY" != "4" ]; then
-    status="…"
-    echo -ne "==> Checking for $opt installation - $status"\\r
+
+    echo -ne "$marker Checking for $opt installation - $status"\\r
     if test ! -e "/usr/local/bin/$opt"; then
-        status="✘"
-        echo "==> Checking for $opt installation - $status"
+        echo -e "$marker Checking for $opt installation - $status_bad"
 	    echo "Installing latest version of $opt from homebrew"
 	    echo ""
 	    brew install $opt
     else
-        status="🗸"
-        echo "==> Checking for $opt installation - $status"
+        echo -e "$marker Checking for $opt installation - $status_good"
     fi
 
-    status="…"
-    echo -ne "==> Checking /etc/shells - $status"\\r
+    echo -ne "$marker Checking /etc/shells - $status"\\r
     if ! grep -Fxq "/usr/local/bin/$opt" /etc/shells; then
-        status="✘"
-        echo "==> Checking /etc/shells - $status"
+        echo -e "$marker Checking /etc/shells - $status_bad"
 	    echo "Adding /usr/local/bin/$opt to /etc/shells file"
 	    echo '/usr/local/bin/$opt' | tee -a /etc/shells
     else
-        status="🗸"
-        echo "==> Checking /etc/shells - $status"
+        echo -e "$marker Checking /etc/shells - $status_good"
     fi
 
-    status="…"
-    echo -ne "==> Checking \$SHELL - $status"\\r
+    echo -ne "$marker Checking \$SHELL - $status"\\r
     if [ "$SHELL" != "/usr/local/bin/$opt" ]; then
-        status="✘"
-        echo "==> Checking \$SHELL - $status"
+        echo -e "$marker Checking \$SHELL - $status_bad"
 	    chsh -s "/usr/local/bin/$opt"
 	    echo "$opt is now your default shell. Please restart your terminal once this script has finished"
     else
-        status="🗸"
-        echo "==> Checking \$SHELL - $status"
+        echo -e "$marker Checking \$SHELL - $status_good"
     fi
 fi
 

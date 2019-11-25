@@ -1,3 +1,5 @@
+#!/usr/local/bin/zsh
+
 function convert_to_md() {
     pandoc --ascii -f latex -t markdown-multiline_tables-simple_tables --atx-headers -o "$1" "$2";
 }

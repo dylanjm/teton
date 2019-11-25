@@ -1,3 +1,4 @@
+#!/usr/local/bin/zsh
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
@@ -5,12 +6,14 @@ export LANG=en_US.UTF-8
 
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
-export PYENV_ROOT="$HOME/.pyenv"
+export PYENV_ROOT="$HOME/.config/pyenv"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
 export EMACSD="$DOTFILES/editors/emacs.d"
 export EDITOR='emacsclient -a "" -c'
 export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
 export LESSOPEN='|lessfilter %s'
+
+export _Z_DATA="$CACHE/zsh/z"
 
 export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"
@@ -44,4 +47,4 @@ export FPATH
 export MODULE_PATH
 
 autoload -Uz time-shell nuke convert-to-md \
-         colorlist open-apps iterm-config _zpcompinit_fast
+         colorlist open-apps iterm-config _zpcompinit_fast =

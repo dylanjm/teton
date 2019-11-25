@@ -1,3 +1,4 @@
+#!/usr/local/bin/zsh
 typeset -F4 SECONDS=0
 
 ###
@@ -51,8 +52,10 @@ zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 zplugin ice wait'1' lucid
 zplugin snippet OMZ::plugins/colorize/colorize.plugin.zsh
 
-zplugin ice nocompile:! pick:c.zsh atpull:%atclone atclone:'gdircolors -b LS_COLORS > c.zsh'
-zplugin $load trapd00r/LS_COLORS
+zplugin ice atclone"dircolors -b LS_COLORS > clrs.zsh" \
+    atpull'%atclone' pick"clrs.zsh" nocompile'!' \
+    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
+zplugin light trapd00r/LS_COLORS
 
 zplugin ice wait'1' lucid
 zplugin $load davidparsson/zsh-pyenv-lazy
@@ -68,6 +71,9 @@ zplugin $load vasyharan/zsh-brew-services
 
 zplugin ice wait'1' lucid blockf
 zplugin $load rupa/z
+
+zplugin ice wait'1' lucid
+zplugin $load zdharma/zsh-lint
 
 zplugin wait'2' lucid for \
         atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \

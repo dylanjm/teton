@@ -1,3 +1,4 @@
+#!/usr/local/bin/zsh
 typeset -ga mylogs
 zflai-msg() { mylogs+=( "$1" ); }
 zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-21 13:23:28
+/last updated/: 2019-11-24 15:50:39
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -897,7 +897,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (set-face-attribute 'font-lock-comment-face nil
                       :family "Iosevka Etoile" :weight 'ultra-light :slant 'italic)
   (set-face-attribute 'fixed-pitch nil :inherit 'default
-                      :family "Iosevka SS09" :weight 'ultra-light)
+                      :family "Iosevka Term" :weight 'ultra-light)
 #+end_src
 
 *** Modelines
@@ -1908,7 +1908,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ibuffer-projectile-prefix ""))
 
   (use-package ibuffer-sidebar
-    :straight (:repo "https://github.com/jojojames/ibuffer-sidebar")
+    :straight (:host github :repo "jojojames/ibuffer-sidebar")
     :general
     ("M-]" #'ibuffer-sidebar-toggle-sidebar)
     :custom
@@ -1982,7 +1982,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-expiry-inactive-timestamps t)
     (org-export-coding-system 'utf-8)
     (org-file-apps '((auto-mode . emacs)
-                     ("\\.x?html?\\'" . "firefox %s")
+                     ("\\.x?html?\\'" . "open %s")
                      ("\\.pdf\\'" . "open %s")))
     (org-fontify-done-headline t)
     (org-fontify-whole-heading-line t)

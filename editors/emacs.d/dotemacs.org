@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 15:43:48
+/last updated/: 2019-11-25 16:39:54
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -31,7 +31,6 @@
     - [[#user-files][User Files]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
     - [[#icons][Icons]]
-    - [[#dashboard][Dashboard]]
     - [[#themes][Themes]]
     - [[#modelines][Modelines]]
     - [[#ui-features][UI Features]]
@@ -40,29 +39,16 @@
     - [[#hydra][Hydra]]
     - [[#prescient][Prescient]]
     - [[#flx][FLX]]
-    - [[#vimish-fold][Vimish Fold]]
-    - [[#origami][Origami]]
     - [[#key-chords][Key Chords]]
     - [[#terminal][Terminal]]
     - [[#project-management][Project Management]]
     - [[#autocomplete][Autocomplete]]
     - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
-  - [[#editing][Editing]]
     - [[#documentation][Documentation]]
     - [[#spell-check][Spell Check]]
     - [[#editing-tools][Editing Tools]]
     - [[#minor-modes][Minor Modes]]
-  - [[#navigation][Navigation]]
-    - [[#avy][Avy]]
-    - [[#ace-window][Ace-Window]]
-    - [[#windower][Windower]]
-    - [[#windmove][Windmove]]
-    - [[#dumb-jump][Dumb-Jump]]
-    - [[#dired][Dired]]
-    - [[#ranger][Ranger]]
-    - [[#ibuffer][iBuffer]]
-    - [[#bookmark][Bookmark]]
-    - [[#imenu][iMenu]]
+    - [[#navigation][Navigation]]
   - [[#productivity][Productivity]]
     - [[#org][Org]]
     - [[#ledger][Ledger]]
@@ -847,59 +833,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                all-the-icons-insert-alltheicon))
 #+end_src
 
-*** Dashboard
-#+name: init-dashboard-block
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :disabled t
-    :blackout t
-    :straight (:host github :repo "emacs-dashboard/emacs-dashboard")
-    :hook (dashboard-mode . hide-mode-line-mode)
-    :init
-    (dashboard-setup-startup-hook)
-    :custom
-    (dashboard-items '((recents . 3) (projects . 3) (bookmarks . 3) (agenda . 5)))
-    (dashboard-startup-banner 4)
-    (dashboard-init-info "")
-    (dashboard-set-file-icons t)
-    (dashboard-heading-icons t)
-    (dashboard-page-separator "\n\n")
-    (dashboard-center-content t)
-    (dashboard-footer "djm emacs configuration 2019")
-    (dashboard-footer-icon (all-the-icons-wicon "moon-4"
-                                                :height 1.05
-                                                :v-adjust -0.05
-                                                :face 'font-lock-keyword-face))
-    :config/el-patch
-    (defun dashboard-get-banner-path (index)
-      "Return the full path to banner with index INDEX."
-      (concat (el-patch-swap
-                dashboard-banners-directory
-                djm--assets-directory)
-              (format "%d.txt" index)))
-
-    (defun dashboard-insert-projects (list-size)
-      "Add the list of LIST-SIZE items of projects."
-      (require 'projectile)
-      (el-patch-swap
-        (projectile-cleanup-known-projects)
-        (let ((inhibit-message t))
-          (projectile-cleanup-known-projects)))
-      (projectile-load-known-projects)
-      (dashboard-insert-section
-       "Projects:"
-       (dashboard-subseq (projectile-relevant-known-projects)
-                         0 list-size)
-       list-size
-       "p"
-       `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
-       (abbreviate-file-name el)))
-
-
-    (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
-    (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
-#+end_src
-
 *** Themes
 **** Gruvbox Theme
 #+name: init-gruvbox-theme-block
@@ -1021,6 +954,58 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package posframe
     :disabled t
     :straight (:host github :repo "tumashu/posframe"))
+#+end_src
+**** Dashboard
+#+name: init-dashboard-block
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :disabled t
+    :blackout t
+    :straight (:host github :repo "emacs-dashboard/emacs-dashboard")
+    :hook (dashboard-mode . hide-mode-line-mode)
+    :init
+    (dashboard-setup-startup-hook)
+    :custom
+    (dashboard-items '((recents . 3) (projects . 3) (bookmarks . 3) (agenda . 5)))
+    (dashboard-startup-banner 4)
+    (dashboard-init-info "")
+    (dashboard-set-file-icons t)
+    (dashboard-heading-icons t)
+    (dashboard-page-separator "\n\n")
+    (dashboard-center-content t)
+    (dashboard-footer "djm emacs configuration 2019")
+    (dashboard-footer-icon (all-the-icons-wicon "moon-4"
+                                                :height 1.05
+                                                :v-adjust -0.05
+                                                :face 'font-lock-keyword-face))
+    :config/el-patch
+    (defun dashboard-get-banner-path (index)
+      "Return the full path to banner with index INDEX."
+      (concat (el-patch-swap
+                dashboard-banners-directory
+                djm--assets-directory)
+              (format "%d.txt" index)))
+
+    (defun dashboard-insert-projects (list-size)
+      "Add the list of LIST-SIZE items of projects."
+      (require 'projectile)
+      (el-patch-swap
+        (projectile-cleanup-known-projects)
+        (let ((inhibit-message t))
+          (projectile-cleanup-known-projects)))
+      (projectile-load-known-projects)
+      (dashboard-insert-section
+       "Projects:"
+       (dashboard-subseq (projectile-relevant-known-projects)
+                         0 list-size)
+       list-size
+       "p"
+       `(lambda (&rest ignore) (projectile-switch-project-by-name ,el))
+       (abbreviate-file-name el)))
+
+
+    (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
+    (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
 #+end_src
 **** Tab-Line
 #+name: init-tab-line-block
@@ -1162,8 +1147,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "Malabarba/beacon")
     :hook (after-init . beacon-mode)
     :config
-    (setq beacon-push-mark 10
-          beacon-color .85))
+    (setq beacon-push-mark 15
+          beacon-color .50))
 #+end_src
 
 **** Highlight-Indent-Guides
@@ -1219,6 +1204,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "larstvei/Focus"))
 #+end_src
 
+**** Origami
+#+name: init-origami-block
+#+begin_src emacs-lisp
+  (use-package origami
+    :straight t)
+#+end_src
 ** Utilities
 *** PDF Tools
 #+name: init-pdf-tools-block
@@ -1250,26 +1241,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "lewang/flx"))
 #+end_src
 
-*** Vimish Fold
-#+name: init-vim-fold-block
-#+begin_src emacs-lisp
-  (use-package vimish-fold
-    :straight t)
-#+end_src
-
-*** Origami
-#+name: init-origami-block
-#+begin_src emacs-lisp
-  (use-package origami
-    :straight t)
-#+end_src
-
 *** Key Chords
 #+name: init-key-chords-block
 #+begin_src emacs-lisp
   (use-package key-chord
     :blackout t
-    :straight (:type git :flavor melpa :host github :repo "emacsorphanage/key-chord")
+    :straight (:host github :repo "emacsorphanage/key-chord")
     :hook (after-init . key-chord-mode)
     :config/el-patch
     (defun key-chord-mode (&optional arg)
@@ -1290,23 +1267,37 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Terminal
-#+name: init-terminal-block
+**** Term [Built-In]
+#+name: init-term-block
 #+begin_src emacs-lisp
   (use-package term :straight nil)
+#+end_src
 
+**** Eterm-256-Color
+#+name: init-eterm-256-color-block
+#+begin_src emacs-lisp
   (use-package eterm-256color
     :straight (:files (:defaults "eterm-256color.ti" "eterm-256color-pkg.el") :host github :repo "dieggsy/eterm-256color")
     :hook (vterm-mode . eterm-256color-mode))
+#+end_src
 
+**** VTerm
+#+name: init-vterm-block
+#+begin_src emacs-lisp
   (use-package vterm
     :straight t
     :config
     (setq vterm-term-environment-variable "eterm-256color"))
+#+end_src
 
+**** VTerm-Toggle
+#+name: init-vterm-toggle-block
+#+begin_src emacs-lisp
   (use-package vterm-toggle
     :straight (:host github :repo "jixiuf/vterm-toggle")
-    :bind (("C-c C-t" . vterm-toggle)
-           ("C-c C-y" . term-toggle-cd)))
+    :general
+    ("C-c C-t" #'vterm-toggle
+     "C-c C-y" #'term-toggle-cd))
 #+end_src
 
 *** Project Management
@@ -1322,7 +1313,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                   projectile-enable-caching t
                   projectile-switch-project-action 'projectile-dired
                   projectile-verbose nil))
+#+end_src
 
+**** Projectile-Speedbar
+#+name: init-projectile-speedbar-block
+#+begin_src emacs-lisp
   (use-package projectile-speedbar
     :straight (:host github :repo "anshulverma/projectile-speedbar"))
 #+end_src
@@ -1623,7 +1618,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (xref-show-definitions-function #'ivy-xref-show-defs))
 #+end_src
 
-** Editing
 *** Documentation
 **** Devdocs
 #+name: init-devdocs-block
@@ -1754,6 +1748,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Editing Tools
+**** Vimish Fold
+#+name: init-vim-fold-block
+#+begin_src emacs-lisp
+  (use-package vimish-fold
+    :straight t)
+#+end_src
 **** Multiple Cursors
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -1853,7 +1853,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :commands (writeroom-mode))
 #+end_src
 
-**** Whitespace-Bulter
+**** Whitespace-Butler
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp
   (use-package ws-butler
@@ -1933,8 +1933,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
            (prog-mode . show-paren-mode)))
 #+end_src
 
-** Navigation
-*** Avy
+*** Navigation
+**** Avy
 #+name: init-nav-utils-block
 #+begin_src emacs-lisp
   (use-package avy
@@ -1953,7 +1953,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (avy-setup-default))
 #+end_src
 
-*** Ace-Window
+**** Ace-Window
 #+name: init-ace-window-block
 #+begin_src emacs-lisp
   (use-package ace-window
@@ -1982,7 +1982,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
       (ace-link-setup-default))
 #+end_src
 
-*** Windower
+**** Windower
 #+name: init-windower-block
 #+begin_src emacs-lisp
   (use-package windower
@@ -1992,7 +1992,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
      "C-c w t" #'windower-toggle-split))
 #+end_src
 
-*** Windmove
+**** Windmove
 #+name: init-windmove-block
 #+begin_src emacs-lisp
   (use-package windmove
@@ -2003,7 +2003,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
      "C-c w u" #'windmove-up))
 #+end_src
 
-*** Dumb-Jump
+**** Dumb-Jump
 #+name: init-dumb-jump-block
 #+begin_src emacs-lisp
   (use-package dumb-jump
@@ -2014,7 +2014,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (dumb-jump-selector 'ivy))
 #+end_src
 
-*** Dired
+**** Dired
 #+name: init-dired-block
 #+begin_src emacs-lisp
   (use-package dired
@@ -2127,7 +2127,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "m2ym/direx-el"))
 #+end_src
 
-*** Ranger
+**** Ranger
 #+name: init-ranger-block
 #+begin_src emacs-lisp
   (use-package ranger
@@ -2135,7 +2135,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "ralesi/ranger.el"))
 #+end_src
 
-*** iBuffer
+**** iBuffer
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
   (use-package ibuffer
@@ -2194,7 +2194,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ibuffer-sidebar-use-custom-font t))
 #+end_src
 
-*** Bookmark
+**** Bookmark
 #+name: init-bookmark-block
 #+begin_src emacs-lisp
   (use-package bookmark
@@ -2203,7 +2203,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (bookmark-save-flag +1))
 #+end_src
 
-*** iMenu
+**** iMenu
 #+name: init-imenu-block
 #+begin_src emacs-lisp
   (use-package imenu-anywhere
@@ -2637,7 +2637,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                    (side . bottom)
                    (slot . 1)
                    (window-height . 0.2))))
+#+end_src
 
+**** Flycheck-Package
+#+name: init-flycheck-package-block
+#+begin_src emacs-lisp
   (use-package flycheck-package
     :disabled t
     :after (flycheck)
@@ -2645,13 +2649,21 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (flycheck-package-setup)
     (with-eval-after-load 'flycheck
       (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name)))
+#+end_src
 
+**** Checkdoc
+#+name: init-checkdoc-block
+#+begin_src emacs-lisp
   (use-package checkdoc
     :straight nil
     :init
     (setq checkdoc-force-docstrings-flag nil)
     (setq checkdoc-arguments-in-order-flag nil))
+#+end_src
 
+**** Flycheck-Posframe
+#+name: init-flycheck-posframe-block
+#+begin_src emacs-lisp
   (use-package flycheck-posframe
     :after (flycheck)
     :commands (flycheck-posframe-mode)
@@ -2661,21 +2673,29 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                  #'(lambda () (bound-and-true-p company-backend)))
     (set-face-attribute 'flycheck-posframe-background-face nil :inherit 'ivy-posframe :background nil)
     (flycheck-posframe-configure-pretty-defaults))
+#+end_src
 
+**** Flycheck-Pos-Tip
+#+name: init-flycheck-pos-tip-block
+#+begin_src emacs-lisp
   (use-package flycheck-pos-tip
     :after (flycheck)
     :defines flycheck-pos-tip-timeout
     :hook (global-flycheck-mode . flycheck-pos-tip-mode)
     :config (setq flycheck-pos-tip-timeout 30))
+#+end_src
 
+**** Flycheck-Popup-Tip
+#+name: init-flycheck-popup-tip-block
+#+begin_src emacs-lisp
   (use-package flycheck-popup-tip
     :after (flycheck)
     :hook (flycheck-mode . flycheck-popup-tip-mode))
-
 #+end_src
 
 ** Languages
 *** Markdown
+**** Mardown-Mode
 #+name: init-markdown-block
 #+begin_src emacs-lisp
   (use-package markdown-mode
@@ -2687,11 +2707,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (mardown-indent-nenter 'indent-and-new-item)
     (markdown-asymmetric-header t))
 
+#+end_src
+
+**** Markdown-Mode-Plus
+#+name: init-markdown-mode-plus-block
+#+begin_src emacs-lisp
   (use-package markdown-mode+
     :straight (:host github :repo "milkypostman/markdown-mode-plus"))
 #+end_src
 
 *** YAML
+**** YAML-Mode
 #+name: init-yaml-block
 #+begin_src emacs-lisp
   (use-package yaml-mode
@@ -2699,6 +2725,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Makefiles
+**** Make-Mode [Built-In]
 #+name: init-makefile-block
 #+begin_src emacs-lisp
   (use-package make-mode
@@ -2711,29 +2738,70 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** LaTeX
-#+name: init-latex-block
+**** AuCTeX
+#+name: init-auctex-block
 #+begin_src emacs-lisp
 
 #+end_src
 
 *** Shell
-#+name: init-
+#+name: init-shell-block
 #+begin_src emacs-lisp
   (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
 
 *** Elisp
-#+name: init-elisp-block
+**** Parinfer
+#+name: init-parinfer-block
 #+begin_src emacs-lisp
   (use-package parinfer)
-  (use-package f)
-  (use-package s)
-  (use-package map :demand t :straight nil)
-  (use-package gv :demand t :straight nil)
-  (use-package paredit)
-  (use-package suggest)
-  (use-package highlight-defined)
+#+end_src
 
+**** F - File Manipulation
+#+name: init-f-block
+#+begin_src emacs-lisp
+  (use-package f)
+#+end_src
+
+**** S - String Manipulation
+#+name: init-s-block
+#+begin_src emacs-lisp
+  (use-package s)
+#+end_src
+
+**** Map
+#+name: init-elisp-map-block
+#+begin_src emacs-lisp
+  (use-package map :demand t :straight nil)
+#+end_src
+
+**** GV
+#+name: init-elisp-gv-block
+#+begin_src emacs-lisp
+  (use-package gv :demand t :straight nil)
+#+end_src
+
+**** Paredit
+#+name: init-elisp-paredit-block
+#+begin_src emacs-lisp
+  (use-package paredit)
+#+end_src
+
+**** Highlight-Defined
+#+name: init-highlight-defined-block
+#+begin_src emacs-lisp
+  (use-package highlight-defined)
+#+end_src
+
+**** Suggest
+#+name: init-suggest-block
+#+begin_src emacs-lisp
+  (use-package suggest)
+#+end_src
+
+**** Elisp-Slime-Nav
+#+name: init-elisp-slime-nav-block
+#+begin_src emacs-lisp
   (use-package elisp-slime-nav
     :blackout t
     :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode)

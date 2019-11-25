@@ -13,3 +13,6 @@ setopt extendedglob        # use extended globbing syntax.
 setopt chaselinks          # fully resolve file-path.
 unsetopt clobber           # do not overwrite existing files with > and >>.
                            # use >! and >>! to bypass.
+
+alias d='dirs -v'
+for index ({1..9}) alias "$index"="cd +${index}"; unset index

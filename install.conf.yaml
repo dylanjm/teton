@@ -25,7 +25,8 @@
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore
     ~/.config/starship.toml: shells/bash/themes/starship.toml
-
+    ~/.config/latexmkrc: misc/latexmkrc
+    ~/.config/editorconfig: misc/editorconfig
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 20:30:17
+/last updated/: 2019-11-25 21:23:09
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -225,7 +225,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package no-littering
     :demand t
-    :straight (:host github :repo "emacscollective/no-littering")
+    :straight t
     :preface
     (defvar djm--emacs-cache (concat (getenv "CACHE") "/emacs/"))
     (defvar djm--emacs-etc-cache (concat djm--emacs-cache "etc/"))
@@ -777,16 +777,21 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 ** Theme & Aesthetics
 *** Icons
-#+name: init-icons-block
+**** VSCode-Icon
+#+name: init-vscode-icon-block
 #+begin_src emacs-lisp
   (use-package vscode-icon
     :demand t
-    :straight (:host github :repo "jojojames/vscode-icon-emacs")
+    :straight t
     :commands (vscode-icon-for-file))
+#+end_src
 
+**** All-The-Icons
+#+name: init-all-the-icons-block
+#+begin_src emacs-lisp
   (use-package all-the-icons
     :demand t
-    :straight (:files (:defaults "data" "all-the-icons-pkg.el") :host github :repo "domtronn/all-the-icons.el")
+    :straight t
     :commands (all-the-icons-wicon
                all-the-icons-insert
                all-the-icons-install-fonts
@@ -1184,21 +1189,20 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-eterm-256-color-block
 #+begin_src emacs-lisp
   (use-package eterm-256color
-    :straight (:files (:defaults "eterm-256color.ti" "eterm-256color-pkg.el") :host github :repo "dieggsy/eterm-256color")
+    :blackout t
+    :straight t
     :hook (vterm-mode . eterm-256color-mode))
 #+end_src
+
 ** Utilities
 *** System
 **** Async
 #+name: init-async-block
 #+begin_src emacs-lisp
   (use-package async
-    :straight (:host github :repo "jwiegley/emacs-async")
+    :straight t
     :hook ((dired-mode . dired-async-mode)
            (after-init . async-bytecomp-package-mode))
-    :preface
-    (autoload 'aysnc-bytecomp-package-mode "async-bytecomp")
-    (autoload 'dired-async-mode "dired-async.el" nil t)
     :config
     (setq async-bytecomp-allowed-packages '(all)))
 #+end_src
@@ -1444,23 +1448,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package key-chord
     :blackout t
     :straight t
-    :hook (after-init . key-chord-mode)
-    :config/el-patch
-    (defun key-chord-mode (&optional arg)
-      (cond (arg
-             (setq key-chord-mode (if arg
-                                      (> (prefix-numeric-value arg) 0)
-                                    (not key-chord-mode))))
-            (t
-             (setq key-chord-mode (not key-chord-mode))))
-      (if key-chord-mode
-          (progn
-            (setq input-method-function 'key-chord-input-method)
-            (message "Key Chord mode on"))
-        (progn
-          (setq input-method-function nil)
-          (message "Key Chord mode off"))))
-    (setq-default key-chord-two-keys-delay 0.05))
+    :config (key-chord-mode +1))
 #+end_src
 
 **** FLX
@@ -1481,11 +1469,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config (prescient-persist-mode +1))
 #+end_src
 
-**** Ivy/Counsel/Swiper
+**** Ivy
 #+name: init-ivy-block
 #+begin_src emacs-lisp
   (use-package ivy
     :blackout t
+    :straight t
     :hook (after-init . ivy-mode)
     :bind (([remap ido-switch-buffer] . ivy-switch-buffer)
            ("C-x B" . ivy-switch-buffer-other-window)
@@ -1511,9 +1500,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (ivy-set-actions t '(("I" insert "insert")))
     (ivy-set-occur 'ivy-switch-buffer 'ivy-switch-buffer-occur))
+#+end_src
 
+**** Counsel
+#+name: init-counsel-block
+#+begin_src emacs-lisp
   (use-package counsel
     :blackout t
+    :straight t
     :hook (ivy-mode . counsel-mode)
     :bind ((:map counsel-mode-map
                  ([remap dired] . counsel-dired)
@@ -1553,10 +1547,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                   (swiper-query-replace . ivy--regex-plus)
                                   (swiper-all . ivy--regex-plus)
                                   (t . ivy--regex-fuzzy)
-                                  (t . ivy-prescient-re-builder))))
+                                  (t . ivy-prescient-re-builder)
+                                  (t . ivy--regex-plus))))
+#+end_src
 
+**** Counsel-FD
+#+name: init-counsel-fd-block
+#+begin_src emacs-lisp
+  (use-package counsel-fd
+    :straight (:host github :repo "yqrashawn/counsel-fd"))
+#+end_src
+
+**** Swiper
+#+name: init-swiper-block
+#+begin_src emacs-lisp
   (use-package swiper
     :demand t
+    :straight t
     :after (counsel)
     :bind  (("C-s" . swiper)
             ("C-c c s" . swiper-isearch)
@@ -1567,17 +1574,22 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
             ("M-s" . swiper-isearch-toggle)
             :map isearch-mode-map
             ("M-s" . swiper-isearch-toggle)))
+#+end_src
 
-  (use-package counsel-fd
-    :straight (:host github :repo "yqrashawn/counsel-fd"))
-
+**** Amx
+#+name: init-amx-block
+#+begin_src emacs-lisp
   (use-package amx
     :blackout t
     :straight (:host github :repo "DarwinAwardWinner/amx")
     :hook (ivy-mode . amx-mode)
     :custom
     (amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
+#+end_src
 
+**** Ivy-Posframe
+#+name: init-ivy-posframe-block
+#+begin_src emacs-lisp
   (use-package ivy-posframe
     :disabled t
     :blackout t
@@ -1597,7 +1609,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (set-face-attribute 'ivy-posframe nil
                         :background (color-darken-name
                                      (face-attribute 'default :background) 3)))
+#+end_src
 
+**** Ivy-Rich
+#+name: init-ivy-rich-block
+#+begin_src emacs-lisp
   (use-package ivy-rich
     :straight (:host github :repo "Yevgnen/ivy-rich")
     :hook (ivy-mode . ivy-rich-mode)
@@ -1606,7 +1622,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (ivy-rich-path-style 'abbrev)
     :config
     (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+#+end_src
 
+**** Ivy-Xref
+#+name: init-ivy-xref-block
+#+begin_src emacs-lisp
   (use-package ivy-xref
     :blackout t
     :straight (:host github :repo "alexmurray/ivy-xref")

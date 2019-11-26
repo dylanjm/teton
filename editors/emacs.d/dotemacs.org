@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 21:23:09
+/last updated/: 2019-11-26 08:00:11
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -361,11 +361,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
               (insert (djm/current-time-microseconds))))))))
 #+end_src
 
+#+name: init-personal-func-whitespace-block
+#+begin_src emacs-lisp
+  (defun djm/enable-trailing-whitespace ()
+    "Show trailing spaces and delete on save."
+    (setq show-trailing-whitespace t)
+    (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+#+end_src
+
 **** Personal Hooks & Advice
 #+name: init-gc-hooks-block
 #+begin_src emacs-lisp
   (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
+  (add-hook 'prog-mode-hook #'djm/enable-trailing-whitespace)
+  (add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
+  (add-hook 'text-mode #'djm/enable-trailing-whitespace)
+  (add-hook 'conf-mode #'djm/enable-trailing-whitespace)
 
   (if (boundp 'after-focus-change-function)
       (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
@@ -385,15 +397,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
      "C-j" #'newline-and-indent
      "C-g" #'minibuffer-keyboard-quit
      "C-z" nil)
-
-    (general-define-key
-     :keymaps '(minibuffer-local-map
-                minibuffer-local-ns-map
-                minibuffer-local-completion-map
-                minibuffer-local-must-match-map
-                minibuffer-local-isearch-map)
-     "<escape>" 'keyboard-escape-quit
-     "ESC" 'keyboard-escape-quit)
 #+end_src
 
 #+name: init-aliases-block
@@ -403,8 +406,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (fset 'view-hello-file 'ignore)
   (fset 'custom-safe-themes 't)
   (fset 'bb 'bury-buffer)
-
-  (global-prettify-symbols-mode +1)
 #+end_src
 
 **** Personal Code & Packages
@@ -918,13 +919,33 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** UI Features
-**** Posframe
-#+name: init-posframe-block
+**** Ansi-Color [Built-In]
+#+name: init-ansi-color-block
 #+begin_src emacs-lisp
-  (use-package posframe
-    :disabled t
-    :straight (:host github :repo "tumashu/posframe"))
+  (use-package ansi-color :demand t :straight nil)
 #+end_src
+
+**** Beacon
+#+name: init-beacon-block
+#+begin_src emacs-lisp
+  (use-package beacon
+    :blackout t
+    :straight (:host github :repo "Malabarba/beacon")
+    :hook (after-init . beacon-mode)
+    :config
+    (setq beacon-push-mark 15
+          beacon-color .50))
+#+end_src
+
+**** Color [Built-In]
+#+name: init-color-block
+#+begin_src emacs-lisp
+  (use-package color
+    :demand t
+    :straight nil
+    :functions (color-darken-name))
+#+end_src
+
 **** Dashboard
 #+name: init-dashboard-block
 #+begin_src emacs-lisp
@@ -977,34 +998,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (set-face-attribute 'dashboard-text-banner nil :foreground "#4e4e4e")
     (set-face-attribute 'dashboard-footer nil :foreground "#4e4e4e"))
 #+end_src
-**** Tab-Line [Built-In]
-#+name: init-tab-line-block
-#+begin_src emacs-lisp
-  (use-package tab-line
-    :disabled t
-    :straight nil
-    :init
-    (global-tab-line-mode +1)
-    (setq-default tab-line-new-tab-choice nil
-                  tab-line-separator nil
-                  tab-line-close-button-show nil))
-#+end_src
 
-**** Page Break Lines
-#+name: init-page-break-lines-block
+**** Default-Text-Scale
+#+name: init-default-text-scale-block
 #+begin_src emacs-lisp
-  (use-package page-break-lines
-    :blackout t
-    :straight (:host github :repo "purcell/page-break-lines")
-    :hook (after-init . global-page-break-lines-mode)
-    :config
-    (setq page-break-lines-modes '(prog-mode
-                                   ibuffer-mode
-                                   text-mode
-                                   comint-mode
-                                   compilation-mode
-                                   help-mode
-                                   org-agenda-mode)))
+  (use-package default-text-scale
+    :straight (:host github :repo "purcell/default-text-scale")
+    :general
+    ("<C-s-up>" #'default-text-scale-increase
+     "<C-s-down>" #'default-text-scale-decrease
+     "<C-M-s-down>" #'default-text-scale-reset)
+    :custom (default-text-scale-amount 20))
 #+end_src
 
 **** Dimmer Mode
@@ -1026,13 +1030,33 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     ".*transient.*")))
 #+end_src
 
-**** Shackle
-#+name: init-shackle-block
+**** Eterm-256-Color
+#+name: init-eterm-256-color-block
 #+begin_src emacs-lisp
-  (use-package shackle
+  (use-package eterm-256color
     :blackout t
-    :straight (:host github :repo "wasamasa/shackle")
-    :hook (after-init . shackle-mode))
+    :straight t
+    :hook (vterm-mode . eterm-256color-mode))
+#+end_src
+**** Focus
+#+name: init-focus-block
+#+begin_src emacs-lisp
+  (use-package focus
+    :straight (:host github :repo "larstvei/Focus"))
+#+end_src
+
+**** Highlight-Defined
+#+name: init-highlight-defined-block
+#+begin_src emacs-lisp
+  (use-package highlight-defined)
+#+end_src
+**** Highlight-Indent-Guides
+#+name: init-highlight-indent-guides-block
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :blackout t
+    :straight (:host github :repo "DarthFennec/highlight-indent-guides")
+    :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
 #+end_src
 
 **** Highlight-Line [Built-In]
@@ -1046,35 +1070,95 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                global-hl-line-mode))
 #+end_src
 
+**** Highlight-Thing
+#+name: init-highlight-thing-block
+#+begin_src emacs-lisp
+  (use-package highlight-thing
+    :blackout t
+    :straight t
+    :hook ((prog-mode) . highlight-thing-mode))
+#+end_src
+
+**** Origami
+#+name: init-origami-block
+#+begin_src emacs-lisp
+  (use-package origami
+    :straight t)
+#+end_src
+**** Page Break Lines
+#+name: init-page-break-lines-block
+#+begin_src emacs-lisp
+  (use-package page-break-lines
+    :blackout t
+    :straight t
+    :hook (after-init . global-page-break-lines-mode)
+    :custom
+    (page-break-lines-modes
+     '(ibuffer-mode text-mode comint-mode compilation-mode help-mode org-agenda-mode)))
+#+end_src
+
+**** Posframe
+#+name: init-posframe-block
+#+begin_src emacs-lisp
+  (use-package posframe
+    :disabled t
+    :straight (:host github :repo "tumashu/posframe"))
+#+end_src
+
+**** Rainbow-Delimiters
+#+name: init-rainbow-delimiters-block
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :blackout t
+    :straight t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+**** Shackle
+#+name: init-shackle-block
+#+begin_src emacs-lisp
+  (use-package shackle
+    :blackout t
+    :straight (:host github :repo "wasamasa/shackle")
+    :hook (after-init . shackle-mode))
+#+end_src
+
 **** Simple [Built-In]
 #+name: init-simple-block
 #+begin_src emacs-lisp
   (use-package simple
     :demand t
     :straight nil
-    :hook ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace)
-    :preface
-    (defun enable-trailing-whitespace ()
-      "Show trailing spaces and delete on save."
-      (setq show-trailing-whitespace t)
-      (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
     :init
-    (setq-default blink-matching-paren t
-                  column-number-mode t
-                  display-time-mode t
-                  eval-expression-print-length nil
-                  eval-expression-print-level nil
-                  inhibit-point-motion-hooks t
-                  kill-do-not-save-duplicates t
-                  line-move-visual nil
-                  line-number-mode t
-                  next-line-add-newlines nil
-                  save-interprogram-paste-before-kill t
-                  set-mark-command-repeat-pop t
-                  show-trailing-whitespace nil
-                  track-eol t))
+    (setq blink-matching-paren t
+          column-number-mode t
+          display-time-mode t
+          eval-expression-print-length nil
+          eval-expression-print-level nil
+          inhibit-point-motion-hooks t
+          kill-do-not-save-duplicates t
+          line-move-visual nil
+          line-number-mode t
+          next-line-add-newlines nil
+          save-interprogram-paste-before-kill t
+          set-mark-command-repeat-pop t
+          show-trailing-whitespace nil
+          track-eol t))
 #+end_src
 
+**** Tab-Line [Built-In]
+#+name: init-tab-line-block
+#+begin_src emacs-lisp
+  (use-package tab-line :disabled t :straight nil)
+#+end_src
+
+**** Volatile-Highlights
+#+name: init-volatile-highlights-block
+#+begin_src emacs-lisp
+  (use-package volatile-highlights
+    :blackout t
+    :straight t
+    :hook ((prog-mode text-mode) . volatile-highlights-mode))
+#+end_src
 **** Whitespace [Built-In]
 #+name: init-whitespace-block
 #+begin_src emacs-lisp
@@ -1092,107 +1176,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "purcell/whitespace-cleanup-mode"))
 #+end_src
 
-**** Ansi-Color [Built-In]
-#+name: init-ansi-color-block
-#+begin_src emacs-lisp
-  (use-package ansi-color
-    :demand t
-    :straight nil)
-#+end_src
-
-**** Color [Built-In]
-#+name: init-color-block
-#+begin_src emacs-lisp
-  (use-package color
-    :demand t
-    :straight nil
-    :functions (color-darken-name))
-#+end_src
-
-**** Beacon
-#+name: init-beacon-block
-#+begin_src emacs-lisp
-  (use-package beacon
-    :blackout t
-    :straight (:host github :repo "Malabarba/beacon")
-    :hook (after-init . beacon-mode)
-    :config
-    (setq beacon-push-mark 15
-          beacon-color .50))
-#+end_src
-
-**** Highlight-Indent-Guides
-#+name: init-highlight-indent-guides-block
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :blackout t
-    :straight (:host github :repo "DarthFennec/highlight-indent-guides")
-    :hook ((python-mode yaml-mode) . highlight-indent-guides-mode))
-#+end_src
-
-**** Highlight-Defined
-#+name: init-highlight-defined-block
-#+begin_src emacs-lisp
-  (use-package highlight-defined)
-#+end_src
-**** Default-Text-Scale
-#+name: init-default-text-scale-block
-#+begin_src emacs-lisp
-  (use-package default-text-scale
-    :straight (:host github :repo "purcell/default-text-scale")
-    :general
-    ("<C-s-up>" #'default-text-scale-increase
-     "<C-s-down>" #'default-text-scale-decrease
-     "<C-M-s-down>" #'default-text-scale-reset)
-    :custom (default-text-scale-amount 20))
-#+end_src
-
-**** Rainbow-Delimiters
-#+name: init-rainbow-delimiters-block
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :blackout t
-    :straight t
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-**** Volatile-Highlights
-#+name: init-volatile-highlights-block
-#+begin_src emacs-lisp
-  (use-package volatile-highlights
-    :blackout t
-    :straight t
-    :hook ((prog-mode text-mode) . volatile-highlights-mode))
-#+end_src
-**** Highlight-Thing
-#+name: init-highlight-thing-block
-#+begin_src emacs-lisp
-  (use-package highlight-thing
-    :blackout t
-    :straight t
-    :hook ((prog-mode) . highlight-thing-mode))
-#+end_src
-
-**** Focus
-#+name: init-focus-block
-#+begin_src emacs-lisp
-  (use-package focus
-    :straight (:host github :repo "larstvei/Focus"))
-#+end_src
-
-**** Origami
-#+name: init-origami-block
-#+begin_src emacs-lisp
-  (use-package origami
-    :straight t)
-#+end_src
-**** Eterm-256-Color
-#+name: init-eterm-256-color-block
-#+begin_src emacs-lisp
-  (use-package eterm-256color
-    :blackout t
-    :straight t
-    :hook (vterm-mode . eterm-256color-mode))
-#+end_src
 
 ** Utilities
 *** System
@@ -1438,6 +1421,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-autoinsert-block
 #+begin_src emacs-lisp
   (use-package autoinsert
+    :demand t
     :straight nil)
 #+end_src
 
@@ -1963,7 +1947,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :demand t
     :straight nil
     :hook ((prog-mode . display-fill-column-indicator-mode)
-           (prog-mode . show-paren-mode)))
+           (prog-mode . show-paren-mode)
+           (prog-mode . global-prettify-symbols-mode)))
 #+end_src
 
 *** Navigation

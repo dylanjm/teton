@@ -10,7 +10,7 @@ export ZSH_CACHE="$CACHE/zsh"
 export LANG=en_US.UTF-8
 export EDITOR='emacsclient -a "" -c'
 export HISTFILE="$ZSH_CACHE/zsh_history"
-export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
+export LESS="-R -F -i -J -M -R -W -x4 -z-4"
 export LESSOPEN='|lessfilter %s'
 export LESSHISTFILE="$ZSH_CACHE/lesshst"
 

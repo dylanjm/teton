@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-26 08:43:42
+/last updated/: 2019-11-26 12:36:52
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -33,7 +33,7 @@
     - [[#ui-features][UI Features]]
   - [[#utilities][Utilities]]
     - [[#system][System]]
-    - [[#terminal][Terminal]]
+    - [[#terminal--shell][Terminal & Shell]]
     - [[#project-management][Project Management]]
     - [[#autocomplete][Autocomplete]]
     - [[#frameworks][Frameworks]]
@@ -262,7 +262,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 ** Header
 #+name: init-header-block
 #+begin_src emacs-lisp
-  ;;; mini-init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; byte-compile: t-*-
+  ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t; byte-compile: t-*-
   ;;;
   ;;; Commentary:
   ;;; Emacs `init.el' config by dylanjm.
@@ -590,7 +590,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package frame
     :demand t
     :straight nil
-    :init (blink-cursor-mode -1))
+    :init
+    (blink-cursor-mode -1)
+    (unless (display-graphic-p)
+      (menu-bar-mode -1)))
 #+end_src
 
 **** Gnutls [Built-In]
@@ -860,7 +863,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package hide-mode-line
     :blackout t
-    :straight (:host github :repo "hlissner/emacs-hide-mode-line")
+    :straight t
     :commands (hide-mode-line-mode
                hide-mode-line-reset
                global-hide-mode-line-mode))
@@ -870,7 +873,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
   (use-package smart-mode-line
-    :after (gruvbox-theme)
     :straight t
     :hook (after-init . sml/setup)
     :config
@@ -1225,7 +1227,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :commands (restart-emacs))
 #+end_src
 
-*** Terminal
+**** Server
+#+name: init-server-block
+#+begin_src emacs-lisp
+
+#+end_src
+
+**** PDF-Tools
+#+name: init-pdf-tools-block
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :straight (:host github :repo "politza/pdf-tools"))
+#+end_src
+*** Terminal & Shell
 **** Term [Built-In]
 #+name: init-term-block
 #+begin_src emacs-lisp
@@ -1437,6 +1451,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Frameworks
+**** Hydra
+#+name: init-hydra-block
+#+begin_src emacs-lisp
+  (use-package hydra
+    :straight t)
+#+end_src
+
 **** Key Chords
 #+name: init-key-chords-block
 #+begin_src emacs-lisp
@@ -1444,6 +1465,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight t
     :config (key-chord-mode +1))
+#+end_src
+
+**** Amx
+#+name: init-amx-block
+#+begin_src emacs-lisp
+  (use-package amx
+    :blackout t
+    :straight t
+    :hook (ivy-mode . amx-mode)
+    :custom
+    (amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
 #+end_src
 
 **** FLX
@@ -1504,46 +1536,47 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight t
     :hook (ivy-mode . counsel-mode)
-    :bind ((:map counsel-mode-map
-                 ([remap dired] . counsel-dired)
-                 ([remap execute-extended-command] . counsel-M-x)
-                 ([remap find-file] . counsel-find-file)
-                 ("C-x C-d" . counsel-dired-jump)
-                 ("C-x C-i" . counsel-imenu)
-                 ("C-x C-l" . counsel-find-library)
-                 ("C-x C-r" . counsel-recentf)
-                 ("C-x C-v" . counsel-set-variable)
-                 ("C-x C-u" . counsel-unicode-char)
-                 ("C-x j" . counsel-mark-ring)
-                 ("C-c g" . counsel-grep)
-                 ("C-c h" . counsel-command-history)
-                 ("C-c j" . counsel-git)
-                 ("C-c j" . counsel-git-grep)
-                 ("C-c r" . counsel-rg)
-                 ("C-c z" . counsel-fzf)
-                 ("C-c c w" . counsel-colors-web)
-                 ("C-h F" . counsel-describe-face)
-                 ("C-h f" . counsel-describe-function)
-                 ("C-h v" . counsel-describe-variable)))
-    :custom
-    (counsel-find-file-at-point t)
-    :config
-    (use-package ivy-hydra)
-    (use-package ivy-prescient
-      :demand t
-      :config
-      (ivy-prescient-mode +1))
+    :general
+    (:keymaps
+     'counsel-mode-map
+     [remap dired] #'counsel-dired
+     [remap execute-extended-command] #'counsel-M-x
+     [remap find-file] #'counsel-find-file
+     "C-x C-d"  #'counsel-dired-jump
+     "C-x C-i"  #'counsel-imenu
+     "C-x C-l"  #'counsel-find-library
+     "C-x C-r"  #'counsel-recentf
+     "C-x C-v"  #'counsel-set-variable
+     "C-x C-u"  #'counsel-unicode-char
+     "C-x j"    #'counsel-mark-ring
+     "C-c g"    #'counsel-grep
+     "C-c h"    #'counsel-command-history
+     "C-c j"    #'counsel-git
+     "C-c j"    #'counsel-git-grep
+     "C-c r"    #'counsel-rg
+     "C-c z"    #'counsel-fzf
+     "C-c c w"  #'counsel-colors-web
+     "C-h F"    #'counsel-describe-face
+     "C-h f"    #'counsel-describe-function
+     "C-h v"    #'counsel-describe-variable)
+     :custom
+     (counsel-find-file-at-point t)
+     :config
+     (use-package ivy-prescient
+       :demand t
+       :config
+       (ivy-prescient-mode +1))
 
-    (setq counsel-grep-base-command
-          "rg -S --no-heading --line-number --color never '%s' %s")
+     (setq counsel-grep-base-command
+           "rg -S --no-heading --line-number --color never '%s' %s")
 
-    (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                                  (swiper-isearch . ivy--regex-plus)
-                                  (swiper-query-replace . ivy--regex-plus)
-                                  (swiper-all . ivy--regex-plus)
-                                  (t . ivy--regex-fuzzy)
-                                  (t . ivy-prescient-re-builder)
-                                  (t . ivy--regex-plus))))
+     (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                   (swiper-isearch . ivy--regex-plus)
+                                   (swiper-query-replace . ivy--regex-plus)
+                                   (swiper-all . ivy--regex-plus)
+                                   (t . ivy--regex-fuzzy)
+                                   (t . ivy-prescient-re-builder)
+                                   (t . ivy--regex-plus))))
 #+end_src
 
 **** Counsel-FD
@@ -1557,29 +1590,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-swiper-block
 #+begin_src emacs-lisp
   (use-package swiper
-    :demand t
     :straight t
-    :after (counsel)
-    :bind  (("C-s" . swiper)
-            ("C-c c s" . swiper-isearch)
-            ("C-c c r" . swiper-isearch-backward)
-            ("C-S-s" . swiper-all)
-            :map swiper-map
-            ("M-%" . swiper-query-replace)
-            ("M-s" . swiper-isearch-toggle)
-            :map isearch-mode-map
-            ("M-s" . swiper-isearch-toggle)))
-#+end_src
-
-**** Amx
-#+name: init-amx-block
-#+begin_src emacs-lisp
-  (use-package amx
-    :blackout t
-    :straight (:host github :repo "DarwinAwardWinner/amx")
-    :hook (ivy-mode . amx-mode)
-    :custom
-    (amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
+    :general ("C-s" #'swiper))
 #+end_src
 
 **** Ivy-Posframe
@@ -1588,7 +1600,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package ivy-posframe
     :disabled t
     :blackout t
-    :straight (:host github :repo "tumashu/ivy-posframe")
+    :straight t
     :hook (ivy-mode . ivy-posframe-mode)
     :custom
     (ivy-posframe-style 'frame-center)
@@ -1599,22 +1611,18 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                             (swiper-isearch-backward . nil)
                                             (swiper-all . nil)
                                             (swiper-query-replace . nil)
-                                            (swiper-isearch-toggle . nil)))
-    :config
-    (set-face-attribute 'ivy-posframe nil
-                        :background (color-darken-name
-                                     (face-attribute 'default :background) 3)))
+                                            (swiper-isearch-toggle . nil))))
 #+end_src
 
 **** Ivy-Rich
 #+name: init-ivy-rich-block
 #+begin_src emacs-lisp
   (use-package ivy-rich
-    :straight (:host github :repo "Yevgnen/ivy-rich")
+    :straight t
     :hook (ivy-mode . ivy-rich-mode)
     :custom
     (ivy-rich-parse-remote-buffer nil)
-    (ivy-rich-path-style 'abbrev)
+    (ivy-rich-path-style 'relative)
     :config
     (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 #+end_src
@@ -1629,17 +1637,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (xref-show-definitions-function #'ivy-xref-show-defs))
 #+end_src
 
-**** Hydra
-#+name: init-hydra-block
-#+begin_src emacs-lisp
-  (use-package hydra)
-#+end_src
 *** Documentation
 **** Devdocs
 #+name: init-devdocs-block
 #+begin_src emacs-lisp
   (use-package devdocs
-    :straight (:host github :repo "xuchunyang/DevDocs.el"))
+    :straight t)
 #+end_src
 
 **** Discover
@@ -1647,7 +1650,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package discover
     :blackout t
-    :straight (:host github :repo "mickeynp/discover.el")
+    :straight t
     :hook (after-init . global-discover-mode))
 #+end_src
 
@@ -1656,7 +1659,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package discover-my-major
     :straight t
-    :bind ("C-h C-m" . discover-my-major))
+    :general
+    ("C-h C-m" #'discover-my-major
+     "C-h C-M" #'discover-my-mode))
 #+end_src
 
 **** Doxymacs
@@ -1734,12 +1739,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package man)
 #+end_src
 
-**** PDF-Tools
-#+name: init-pdf-tools-block
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :straight (:host github :repo "politza/pdf-tools"))
-#+end_src
 **** Suggest
 #+name: init-suggest-block
 #+begin_src emacs-lisp
@@ -1957,6 +1956,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package prog-mode
     :demand t
     :straight nil
+    :if (display-graphic-p)
     :hook ((prog-mode . display-fill-column-indicator-mode)
            (prog-mode . show-paren-mode)
            (prog-mode . global-prettify-symbols-mode)))
@@ -2461,7 +2461,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-src-window-setup 'current-window)
     :config/el-patch
     (defun org-src--construct-edit-buffer-name (org-buffer-name lang)
-      (concat "[src][" org-buffer-name "][" lang "]"))
+      (concat "[ " org-buffer-name"]"))
     (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
     (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
@@ -2705,6 +2705,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package flycheck-posframe
     :after (flycheck)
+    :if (display-graphic-p)
     :commands (flycheck-posframe-mode)
     :hook (flycheck-mode . flycheck-posframe-mode)
     :config
@@ -2719,6 +2720,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package flycheck-pos-tip
     :after (flycheck)
+    :if (display-graphic-p)
     :defines flycheck-pos-tip-timeout
     :hook (global-flycheck-mode . flycheck-pos-tip-mode)
     :config (setq flycheck-pos-tip-timeout 30))
@@ -2728,7 +2730,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-flycheck-popup-tip-block
 #+begin_src emacs-lisp
   (use-package flycheck-popup-tip
-    :after (flycheck)
+    :blackout t
+    :straight t
+    :if (display-graphic-p)
     :hook (flycheck-mode . flycheck-popup-tip-mode))
 #+end_src
 

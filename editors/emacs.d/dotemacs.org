@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-26 08:00:11
+/last updated/: 2019-11-26 08:43:42
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -549,6 +549,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :init (setq epg-pinentry-mode 'loopback))
 #+end_src
 
+**** Face-Remap [Built-In]
+#+name: init-face-remap-block
+#+begin_src emacs-lisp
+    (use-package face-remap
+      :straight nil
+      :config
+      (blackout 'buffer-face-mode)
+      (blackout 'variable-pitch-mode))
+#+end_src
+
 **** Files [Built-In]
 #+name: init-files-block
 #+begin_src emacs-lisp
@@ -860,13 +870,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
   (use-package smart-mode-line
-    :disabled t
     :after (gruvbox-theme)
-    :straight (:host github :repo "Malabarba/smart-mode-line")
+    :straight t
+    :hook (after-init . sml/setup)
     :config
     (setq sml/theme nil
-          sml/no-confirm-load-theme t)
-    (sml/setup))
+          sml/no-confirm-load-theme t))
 #+end_src
 
 **** Minions
@@ -874,7 +883,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package minions
     :disabled t
-    :straight t)
+    :straight t
+    :hook (after-init . minions-mode))
 #+end_src
 
 **** Custom Modeline
@@ -909,13 +919,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
    ;; Actually reset the mode line format to show all the things we just
    ;; defined.
-   (setq-default mode-line-format
-         '(:eval (replace-regexp-in-string
-              "%" "%%"
-              (djm/mode-line-align
-               (format-mode-line djm--mode-line-left)
-               (format-mode-line djm--mode-line-right))
-              'fixedcase 'literal)))
+   ;; (setq-default mode-line-format
+   ;;       '(:eval (replace-regexp-in-string
+   ;;            "%" "%%"
+   ;;            (djm/mode-line-align
+   ;;             (format-mode-line djm--mode-line-left)
+   ;;             (format-mode-line djm--mode-line-right))
+   ;;            'fixedcase 'literal)))
 #+end_src
 
 *** UI Features
@@ -1129,6 +1139,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :demand t
     :straight nil
     :init
+    (blackout 'visual-line-mode)
     (setq blink-matching-paren t
           column-number-mode t
           display-time-mode t
@@ -1460,19 +1471,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight t
     :hook (after-init . ivy-mode)
-    :bind (([remap ido-switch-buffer] . ivy-switch-buffer)
-           ("C-x B" . ivy-switch-buffer-other-window)
-           ("C-c C-r" . ivy-resume)
-           ("C-c v p" . ivy-push-view)
-           ("C-c v o" . ivy-pop-view)
-           ("C-c v ." . ivy-switch-view)
-           ([remap kill-ring-save] . ivy-kill-ring-save)
-           :map ivy-minibuffer-map
-           ("<tab>" . ivy-alt-done)
-           ("C-w" . ivy-yank-word)
-           ("C-o" . ivy-occur)
-           (:map ivy-switch-buffer-map
-                 ([remap kill-buffer] . ivy-switch-buffer-kill)))
+    :general
+    ([remap ido-switch-buffer] #'ivy-switch-buffer
+     "C-x B"                   #'ivy-switch-buffer-other-window
+     "C-c C-r"                 #'ivy-resume
+     [remap kill-ring-save]    #'ivy-kill-ring-save)
+    (:keymaps
+     'ivy-minibuffer-map
+     "<tab>" #'ivy-alt-done
+     "C-w"   #'ivy-yank-word
+     "C-o"   #'ivy-occur)
+    (:keymaps
+     'ivy-switch-buffer-map
+     [remap kill-buffer] #'ivy-switch-buffer-kill)
     :custom
     (ivy-dynamic-exhibit-delay-ms 250)
     (ivy-use-selectable-prompt t)
@@ -2234,6 +2245,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-org-block
 #+begin_src emacs-lisp
   (use-package org
+    :blackout "𝕆"
     :straight nil
     :general
     ("C-c a" #'org-agenda
@@ -2299,7 +2311,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (org-special-ctrl-a/e t)
     (org-special-ctrl-k t)
     (org-startup-folded 'content)
-    (org-startup-indented t)
     (org-startup-with-inline-images t)
     (org-structure-template-alist '(("a" . "export ascii")
                                     ("c" . "center")
@@ -2319,6 +2330,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (add-to-list 'org-global-properties
                  '("Effort_ALL" . "0:05 0:15 0:30 1:00 2:00 3:00 4:00")))
+#+end_src
+
+**** Org-Indent
+#+name: init-org-indent-block
+#+begin_src emacs-lisp
+  (use-package org-indent
+    :blackout t
+    :straight nil
+    :custom
+    (org-startup-indented t))
 #+end_src
 
 **** Org-Pomodoro

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-25 17:19:37
+/last updated/: 2019-11-25 20:30:17
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -25,7 +25,6 @@
   - [[#general-user-settings--tools][General User Settings & Tools]]
     - [[#personal-tweaks][Personal Tweaks]]
     - [[#defaults][Defaults]]
-    - [[#aliases][Aliases]]
     - [[#user-files][User Files]]
   - [[#theme--aesthetics][Theme & Aesthetics]]
     - [[#icons][Icons]]
@@ -176,39 +175,35 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 ** Straight Package Manager
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-  (eval-and-compile
-    (defvar straight-recipes-gnu-elpa-use-mirror t)
-    (defvar bootstrap-version 5)
-    (defvar bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+    (eval-and-compile
+      (defvar straight-recipes-gnu-elpa-use-mirror t)
+      (defvar bootstrap-version 5)
+      (defvar bootstrap-file
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-  (with-no-warnings
-    (setq straight-cache-autoloads t
-          straight-recipe-overrides nil
-          straight-repository-branch "develop"
-          straight-use-package-by-default t))
+    (with-no-warnings
+      (setq straight-cache-autoloads t
+            straight-recipe-overrides nil
+            straight-repository-branch "develop"
+            straight-use-package-by-default t
+            straight-check-for-modifications '(find-at-startup find-when-checking)))
 
-  (if (and (executable-find "watchexec")
-           (executable-find "python"))
-      (setq straight-check-for-modifications '(watch-files find-when-checking))
-    (setq straight-check-for-modifications '(find-at-startup find-when-checking)))
+    (with-no-warnings
+      (setq use-package-verbose t
+            use-package-always-defer t
+            use-package-enable-imenu-support t
+            use-package-compute-statistics t))
 
-  (with-no-warnings
-    (setq use-package-verbose t
-          use-package-always-defer t
-          use-package-enable-imenu-support t
-          use-package-compute-statistics t))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
 
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-
-  (load bootstrap-file nil 'nomessage)
-  (straight-use-package 'use-package)
+    (load bootstrap-file nil 'nomessage)
+    (straight-use-package 'use-package)
 #+end_src
 
 ** Environment
@@ -351,7 +346,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     "Return the current time formatted to include microseconds."
     (let* ((nowtime (current-time))
        (now-ms (nth 2 nowtime)))
-      (concat (format-time-string "[%Y-%m-%d %T" nowtime) (format ".%d]" now-ms))))
+      (concat (format-time-string "[%Y-%m-%d %T" nowtime) (format ".%d] " now-ms))))
 
   (defun djm/message-with-timestamp (format-string &rest args)
     "Add timestamps to `*Messages*' buffer."
@@ -363,7 +358,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
             (let ((inhibit-read-only t))
               (goto-char (point-max))
               (when (not (bolp)) (newline))
-              (insert (djm/current-time-microseconds) " " )))))))
+              (insert (djm/current-time-microseconds))))))))
 #+end_src
 
 **** Personal Hooks & Advice
@@ -399,6 +394,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 minibuffer-local-isearch-map)
      "<escape>" 'keyboard-escape-quit
      "ESC" 'keyboard-escape-quit)
+#+end_src
+
+#+name: init-aliases-block
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (fset 'display-startup-echo-area-message 'ignore)
+  (fset 'view-hello-file 'ignore)
+  (fset 'custom-safe-themes 't)
+  (fset 'bb 'bury-buffer)
+
+  (global-prettify-symbols-mode +1)
 #+end_src
 
 **** Personal Code & Packages
@@ -461,7 +467,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :init
     (setq compilation-message-face 'compilation-base-face
           compilation-always-kill t
-          compilation-environment '("TERM=screen-256color")
           compilation-ask-about-save nil
           compilation-scroll-output 'first-error))
 #+end_src
@@ -469,58 +474,62 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Cus-Start [Built-In]
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
-    (use-package cus-start
-      :demand t
-      :straight nil
-      :config
-      (setq-default auto-save-list-file-prefix nil
-                    auto-save-list-file-name nil
-                    command-line-x-option-alist nil
-                    cursor-in-non-selected-windows nil
-                    cursor-type 'bar
-                    disabled-command-function nil
-                    default-directory (getenv "HOME")
-                    echo-keystrokes 0.02
-                    fast-but-imprecise-scrolling t
-                    ffap-machine-p-known 'reject
-                    fill-column 80
-                    frame-title-format '("%b - Emacs")
-                    highlight-nonselected-windows nil
-                    icon-title-format frame-title-format
-                    initial-scratch-message ""
-                    inhibit-startup-echo-area-message t
-                    inhibit-startup-screen t
-                    indent-tabs-mode nil
-                    indicate-buffer-boundaries nil
-                    indicate-empty-lines nil
-                    max-specpdl-size 2040
-                    mode-line-in-non-selected-windows t
-                    ring-bell-function #'ignore
-                    scroll-conservatively 101
-                    scroll-margin 0
-                    scroll-preserve-screen-position t
-                    scroll-step 1
-                    sentence-end-double-space nil
-                    split-width-threshold 160
-                    split-height-threshold nil
-                    tab-always-indent 'complete
-                    tab-width 4
-                    use-dialog-box nil
-                    use-file-dialog nil
-                    visible-cursor nil
-                    window-combination-resize t
-                    x-stretch-cursor nil
-                    x-underline-at-descent-line t))
+  (use-package cus-start
+    :demand t
+    :straight nil
+    :config
+    (setq-default auto-save-list-file-prefix nil
+                  auto-save-list-file-name nil
+                  command-line-x-option-alist nil
+                  cursor-in-non-selected-windows nil
+                  cursor-type 'bar
+                  delete-by-moving-to-trash t
+                  disabled-command-function nil
+                  default-directory (getenv "HOME")
+                  echo-keystrokes 0.02
+                  enable-recursive-minibuffers t
+                  fast-but-imprecise-scrolling t
+                  ffap-machine-p-known 'reject
+                  fill-column 80
+                  frame-title-format '("%b - Emacs")
+                  highlight-nonselected-windows nil
+                  icon-title-format frame-title-format
+                  initial-scratch-message ""
+                  inhibit-startup-echo-area-message t
+                  inhibit-startup-screen t
+                  indent-tabs-mode nil
+                  indicate-buffer-boundaries nil
+                  indicate-empty-lines nil
+                  max-specpdl-size 2040
+                  mode-line-in-non-selected-windows t
+                  ring-bell-function #'ignore
+                  scroll-conservatively 101
+                  scroll-margin 0
+                  scroll-preserve-screen-position t
+                  scroll-step 1
+                  sentence-end-double-space nil
+                  split-width-threshold 160
+                  split-height-threshold nil
+                  tab-always-indent 'complete
+                  tab-width 4
+                  use-dialog-box nil
+                  use-file-dialog nil
+                  visible-cursor nil
+                  window-combination-resize t
+                  x-stretch-cursor nil
+                  x-underline-at-descent-line t))
 #+end_src
 
 **** Delsel [Built-In]
 #+name: init-delsel-block
 #+begin_src emacs-lisp
   (use-package delsel
+    :demand t
     :blackout t
     :straight nil
-    :hook (after-init . delete-selection-mode))
+    :init (delete-selection-mode +1))
 #+end_src
+
 **** Epa [Built-In]
 #+name: init-epa-block
 #+begin_src emacs-lisp
@@ -562,6 +571,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           large-file-warning-threshold 10000000000
           require-final-newline t
           view-read-only t))
+#+end_src
+
+**** Frame [Built-In]
+#+name: init-frame-block
+#+begin_src emacs-lisp
+  (use-package frame
+    :demand t
+    :straight nil
+    :init (blink-cursor-mode -1))
 #+end_src
 
 **** Gnutls [Built-In]
@@ -672,8 +690,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package select
     :demand t
     :straight nil
-    :config
-    (setq select-enable-clipboard t))
+    :init (setq select-enable-clipboard t))
 #+end_src
 
 **** Time [Built-In]
@@ -688,6 +705,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           display-time-day-and-date t
           display-time-default-load-average nil))
 #+end_src
+
+**** Tooltip [Built-In]
+#+name: init-tooltip-block
+#+begin_src emacs-lisp
+  (use-package tooltip
+    :demand t
+    :straight nil
+    :init (tooltip-mode -1))
+#+end_src
+
 **** Uniquify [Built-In]
 #+name: init-uniquify-block
 #+begin_src emacs-lisp
@@ -706,10 +733,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package vc-hooks
     :demand t
     :straight nil
-    :config
+    :init
     (setq vc-handled-backends nil
           vc-follow-symlinks t))
 #+end_src
+
 **** Winner [Built-In]
 #+name: init-winner-block
 #+begin_src emacs-lisp
@@ -718,6 +746,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight nil
     :init
+    (winner-mode +1)
     (setq winner-boring-buffers '("*Completions*"
                                   "*Compile-Log*"
                                   "*inferior-lisp*"
@@ -727,21 +756,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                   "*cvs*"
                                   "*Buffer List*"
                                   "*Ibuffer*"
-                                  "*esh command on file*"))
-    (winner-mode +1))
-#+end_src
-*** Aliases
-#+name: init-aliases-block
-#+begin_src emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (fset 'display-startup-echo-area-message 'ignore)
-  (fset 'view-hello-file 'ignore)
-  (fset 'custom-safe-themes 't)
-  (fset 'bb 'bury-buffer)
-
-  (blink-cursor-mode -1)
-  (tooltip-mode -1)
-  (global-prettify-symbols-mode +1)
+                                  "*esh command on file*")))
 #+end_src
 
 *** User Files
@@ -1187,21 +1202,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config
     (setq async-bytecomp-allowed-packages '(all)))
 #+end_src
+
 **** OSX-Trash
 #+name: init-osx-trash-block
 #+begin_src emacs-lisp
   (use-package osx-trash
     :demand t
-    :straight (:files ("*.AppleScript" "osx-trash.el") :host github :repo "emacsorphanage/osx-trash")
-    :init (setq-default delete-by-moving-to-trash t)
+    :straight t
     :config (osx-trash-setup))
 #+end_src
+
 **** OSX-Lib
 #+name: init-osx-lib-block
 #+begin_src emacs-lisp
   (use-package osx-lib
     :straight (:host github :repo "raghavgautam/osx-lib"))
 #+end_src
+
 **** Restart-Emacs
 #+name: init-restart-emacs-block
 #+begin_src emacs-lisp
@@ -1209,6 +1226,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "iqbalansari/restart-emacs")
     :commands (restart-emacs))
 #+end_src
+
 *** Terminal
 **** Term [Built-In]
 #+name: init-term-block
@@ -1275,7 +1293,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                           compilation-mode)))
 #+end_src
 *** Autocomplete
-**** Hippie Expand
+**** Hippie Expand [Built-In]
 #+name: init-hippie-block
 #+begin_src emacs-lisp
   (use-package hippie-exp
@@ -1293,7 +1311,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                         try-complete-lisp-symbol-partially
                                         try-complete-lisp-symbol)))
 #+end_src
-**** Abbrev
+
+**** Abbrev [Built-In]
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
     (use-package abbrev
@@ -1411,7 +1430,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package ivy-yasnippet :straight t)
 #+end_src
 
-**** Auto-Insert
+**** Auto-Insert [Built-In]
 #+name: init-autoinsert-block
 #+begin_src emacs-lisp
   (use-package autoinsert
@@ -1482,14 +1501,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
            (:map ivy-switch-buffer-map
                  ([remap kill-buffer] . ivy-switch-buffer-kill)))
     :custom
-    (enable-recursive-minibuffers t)
     (ivy-dynamic-exhibit-delay-ms 250)
     (ivy-use-selectable-prompt t)
-    (ivy-initial-inputs-alist nil)
     (ivy-case-fold-search-default 'auto)
     (ivy-use-virtual-buffers t)
     (ivy-virtual-abbreviate 'name)
-    (ivy-count-format "")
+    (ivy-count-format "(%d/%d) ")
     (ivy-flx-limit 2000)
     :config
     (ivy-set-actions t '(("I" insert "insert")))

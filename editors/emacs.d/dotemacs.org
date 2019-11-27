@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-27 15:50:46
+/last updated/: 2019-11-27 16:09:13
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -1833,7 +1833,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-interactive-align-block
 #+begin_src emacs-lisp
   (use-package interactive-align
-    :straight (:host github :repo "mkcms/interactive-align"))
+    :straight t)
 #+end_src
 
 **** Visual-Regexp
@@ -1856,8 +1856,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-anzu-block
 #+begin_src emacs-lisp
   (use-package anzu
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :general ([remap query-replace] #'anzu-query-replace-regexp))
 #+end_src
 

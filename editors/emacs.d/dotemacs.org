@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-27 16:09:13
+/last updated/: 2019-11-27 16:42:22
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -1879,15 +1879,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** String-Inflection
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
-  (use-package string-inflection
-    :straight t)
+  (use-package string-inflection :straight t)
 #+end_src
 
 **** Crux
 #+name: init-crux-block
 #+begin_src emacs-lisp
-  (use-package crux
-    :straight t)
+  (use-package crux :straight t)
 #+end_src
 
 *** Minor Modes
@@ -1895,17 +1893,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :blackout t
-    :straight (:host github :repo "editorconfig/editorconfig-emacs")
-    :hook (after-init . editorconfig-mode))
+    :blackout t :straight t
+    :ghook 'after-init-hook)
 #+end_src
 
 **** Writeroom
 #+name: init-writeroom-block
 #+begin_src emacs-lisp
   (use-package writeroom-mode
-    :blackout t
-    :straight (:host github :repo "joostkremers/writeroom-mode")
+    :blackout t :straight t
     :commands (writeroom-mode))
 #+end_src
 
@@ -1913,8 +1909,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp
   (use-package ws-butler
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :hook (after-init . ws-butler-global-mode))
 #+end_src
 
@@ -1922,8 +1917,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-undo-tree-block
 #+begin_src emacs-lisp
   (use-package undo-tree
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :hook (after-init . global-undo-tree-mode)
     :custom
     (undo-tree-save-history t)
@@ -1935,8 +1929,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-aggressive-indent-block
 #+begin_src emacs-lisp
   (use-package aggressive-indent
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :commands (aggressive-indent-mode))
 #+end_src
 
@@ -1944,8 +1937,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-hungry-delete-block
 #+begin_src emacs-lisp
   (use-package hungry-delete
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :commands (hungry-delete-mode))
 #+end_src
 
@@ -1953,8 +1945,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-smart-hungry-delete-block
 #+begin_src emacs-lisp
   (use-package smart-hungry-delete
-    :blackout t
-    :straight (:host github :repo "hrehfeld/emacs-smart-hungry-delete")
+    :blackout t :straight t
     :commands (smart-hungry-delete-mode))
 #+end_src
 
@@ -1962,9 +1953,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-format-all-block
 #+begin_src emacs-lisp
   (use-package format-all
-    :straight (:host github :repo "lassik/emacs-format-all-the-code")
-    :commands (format-all-buffer
-               format-all-mode))
+    :blackout t :straight t
+    :commands (format-all-buffer format-all-mode))
 #+end_src
 
 **** SmartParens
@@ -1972,23 +1962,20 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package smartparens
     :disabled t
-    :blackout t
-    :straight (:host github :repo "Fuco1/smartparens")
+    :blackout t :straight t
     :hook ((prog-mode eshell-mode text-mode) . smartparens-strict-mode)
-    :config
-    (show-smartparens-global-mode +1))
+    :config (show-smartparens-global-mode +1))
 #+end_src
 
 **** Prog-Mode [Built-In]
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
   (use-package prog-mode
-    :demand t
-    :straight nil
-    :if (display-graphic-p)
-    :hook ((prog-mode . display-fill-column-indicator-mode)
-           (prog-mode . show-paren-mode)
-           (prog-mode . global-prettify-symbols-mode)))
+    :demand t :straight nil
+    :gfhook
+    #'display-fill-column-indicator-mode
+    #'show-paren-mode
+    #'global-prettify-symbols-mode)
 #+end_src
 
 *** Navigation

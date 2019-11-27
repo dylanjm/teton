@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-26 12:36:52
+/last updated/: 2019-11-26 23:32:37
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -293,6 +293,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Personal Functions
 #+name: init-personal-funcs-block
 #+begin_src emacs-lisp
+  (defun djm/create-non-existent-directory ()
+    (let ((parent-directory (file-name-directory buffer-file-name)))
+      (when (and (not (file-exists-p parent-directory))
+                 (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory )))
+        (make-directory parent-directory t))))
+
   (defun djm/gc-on-lose-focus ()
     "A convienient time to run garbage collect is when Emacs loses focus."
     (unless (frame-focus-state)
@@ -378,6 +384,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
   (add-hook 'text-mode #'djm/enable-trailing-whitespace)
   (add-hook 'conf-mode #'djm/enable-trailing-whitespace)
+  (add-hook 'org-babel-pre-tangle-hook #'djm/minibuffer-setup-hook)
+  (add-hook 'org-babel-post-tangle-hook #'djm/minibuffer-exit-hook)
 
   (if (boundp 'after-focus-change-function)
       (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
@@ -581,7 +589,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           select-enable-clipboard t
           large-file-warning-threshold 10000000000
           require-final-newline t
-          view-read-only t))
+          view-read-only t)
+    (unless (file-exists-p djm--auto-save-file-cache)
+      (make-directoy djm--auto-save-file-cache)))
 #+end_src
 
 **** Frame [Built-In]
@@ -649,10 +659,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-recentf-block
 #+begin_src emacs-lisp
   (use-package recentf
-    :demand t
+    :defer 3
     :straight nil
     :init
-    (recentf-mode +1)
     (setq-default recentf-max-saved-items 2000
                   recentf-max-menu-items 100
                   recentf-auto-cleanup 'never
@@ -660,6 +669,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     ,djm--straight-directory
                                     ,djm--org-agenda-directory
                                     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+                                    "\\.?emacs-head"
+                                    "\\.?straight"
                                     "\\.?cache"
                                     ".cask"
                                     "url"
@@ -672,7 +683,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                     "/TAGS$"
                                     "^/var/folders/.+$"))
     (run-at-time nil (* 5 60) (lambda () (let ((inhibit-message t)) (recentf-cleanup))))
-    (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
+    (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list))))
+    (recentf-mode +1))
 #+end_src
 
 **** Savehist [Built-In]
@@ -714,10 +726,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :demand t
     :straight nil
     :init
-    (display-time-mode +1)
     (setq display-time-24hr-format t
           display-time-day-and-date t
-          display-time-default-load-average nil))
+          display-time-default-load-average nil)
+    (display-time-mode +1))
 #+end_src
 
 **** Tooltip [Built-In]
@@ -858,7 +870,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Modelines
-**** Hide Modeline
+**** Hide-Modeline
 #+name: init-hide-modelines-block
 #+begin_src emacs-lisp
   (use-package hide-mode-line
@@ -869,7 +881,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                global-hide-mode-line-mode))
 #+end_src
 
-**** Smart Mode Line
+**** Smart-Mode-Line
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
   (use-package smart-mode-line
@@ -1023,7 +1035,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :custom (default-text-scale-amount 20))
 #+end_src
 
-**** Dimmer Mode
+**** Dimmer-Mode
 #+name: init-dimmer-block
 #+begin_src emacs-lisp
   (use-package dimmer
@@ -1097,7 +1109,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package origami
     :straight t)
 #+end_src
-**** Page Break Lines
+**** Page-Break-Lines
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
   (use-package page-break-lines
@@ -1304,6 +1316,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                           shell-mode
                                           compilation-mode)))
 #+end_src
+**** Find-File-in-Project
+#+name: init-find-file-in-project-block
+#+begin_src emacs-lisp
+  (use-package find-file-in-project
+    :straight t
+    :commands (find-file-in-project
+               find-file-in-project-by-selected)
+    :config
+    (setq ffip-use-rust-fd t))
+#+end_src
+
 *** Autocomplete
 **** Hippie Expand [Built-In]
 #+name: init-hippie-block
@@ -1471,10 +1494,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-amx-block
 #+begin_src emacs-lisp
   (use-package amx
+    :disabled t
     :blackout t
     :straight t
     :hook (ivy-mode . amx-mode)
     :custom
+    (amx-ignored-command-matchers nil)
+    (amx-show-key-bindings nil)
     (amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
 #+end_src
 
@@ -1548,7 +1574,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
      "C-x C-r"  #'counsel-recentf
      "C-x C-v"  #'counsel-set-variable
      "C-x C-u"  #'counsel-unicode-char
-     "C-x j"    #'counsel-mark-ring
      "C-c g"    #'counsel-grep
      "C-c h"    #'counsel-command-history
      "C-c j"    #'counsel-git
@@ -1570,12 +1595,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
      (setq counsel-grep-base-command
            "rg -S --no-heading --line-number --color never '%s' %s")
 
+     (setq counsel-fzf-cmd "fd --type f | fzf -f \"%s\"")
+
      (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
                                    (swiper-isearch . ivy--regex-plus)
                                    (swiper-query-replace . ivy--regex-plus)
                                    (swiper-all . ivy--regex-plus)
-                                   (t . ivy--regex-fuzzy)
                                    (t . ivy-prescient-re-builder)
+                                   (t . ivy--regex-ignore-order)
+                                   (t . ivy--regex-fuzzy)
                                    (t . ivy--regex-plus))))
 #+end_src
 
@@ -1583,6 +1611,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-counsel-fd-block
 #+begin_src emacs-lisp
   (use-package counsel-fd
+    :disabled t
     :straight (:host github :repo "yqrashawn/counsel-fd"))
 #+end_src
 
@@ -1660,8 +1689,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package discover-my-major
     :straight t
     :general
-    ("C-h C-m" #'discover-my-major
-     "C-h C-M" #'discover-my-mode))
+    ("C-h M-m" #'discover-my-major
+     "C-h RET" #'discover-my-mode))
 #+end_src
 
 **** Doxymacs
@@ -1679,16 +1708,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :blackout t
     :straight nil
     :init
-    (eldoc-mode +1)
-    (setq eldoc-idle-delay 2
-          eldoc-echo-area-use-multiline-p nil))
+    (setq eldoc-idle-delay 1.5
+          eldoc-echo-area-use-multiline-p nil)
+    (eldoc-mode +1))
 #+end_src
 
 **** Help [Built-In]
 #+name: init-help-block
 #+begin_src emacs-lisp
   (use-package help
-    :demand t
     :straight nil
     :init
     (setq-default help-window-select t)
@@ -1698,28 +1726,28 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Help-Functions-Plus
 #+name: init-help-fns-plus-block
 #+begin_src emacs-lisp
-  (use-package help-fns+
-    :straight (:host github :repo "emacsmirror/help-fns-plus")
-    :bind ("C-h M-k" . describe-keymap))
+  (use-package help-fns-plus
+    :straight t
+    :general ("C-h M-k" #'describe-keymap))
 #+end_src
 
 **** Helpful
 #+name: init-helpful-block
 #+begin_src emacs-lisp
   (use-package helpful
-    :straight (:host github :repo "Wilfred/helpful")
+    :straight t
     :custom
     (counsel-describe-function-function #'helpful-callable)
     (counsel-describe-variable-function #'helpful-variable)
-    :bind
-    ([remap describe-function] . helpful-callable)
-    ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . helpful-variable)
-    ([remap describe-key] . helpful-key)
+    :general
+    ([remap describe-function] #'helpful-callable
+     [remap describe-command]  #'helpful-command
+     [remap describe-variable] #'helpful-variable
+     [remap describe-key]      #'helpful-key)
     :config
     (use-package elisp-demos
       :demand t
-      :straight (:files ("*.el" "*.org") :host github :repo "xuchunyang/elisp-demos")
+      :straight t
       :config
       (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)))
 #+end_src
@@ -1727,8 +1755,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Info-Plus
 #+name: init-info-plus-block
 #+begin_src emacs-lisp
-  (use-package info+
-    :straight (:host github :repo "emacsmirror/info-plus")
+  (use-package info-plus
+    :straight t
     :custom
     (Info-fontify-angle-bracketed-flag nil))
 #+end_src
@@ -1745,6 +1773,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package suggest
     :straight t)
 #+end_src
+
 **** Which-Key
 #+name: init-which-key-block
 #+begin_src emacs-lisp
@@ -1765,13 +1794,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-ispell-block
 #+begin_src emacs-lisp
   (use-package ispell
-    :demand t
     :straight nil
     :preface (djm/fetch-hunspell-dictionary)
-    :init (setq-default ispell-dictionary "en_US"
-                        ispell-program-name (executable-find "hunspell")
-                        ispell-really-hunspell t
-                        ispell-silently-savep t))
+    :init (setq ispell-dictionary "en_US"
+                ispell-program-name (executable-find "hunspell")
+                ispell-really-hunspell t
+                ispell-silently-savep t))
 #+end_src
 
 *** Editing Tools
@@ -1785,16 +1813,20 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
   (use-package multiple-cursors
-    :bind (("C->" . mc/mark-next-like-this)
-           ("C-<" . mc/mark-previous-like-this)))
+    :straight t
+    :general
+    ("C->" #'mc/mark-next-like-this
+     "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
 **** Zop-To-Char
 #+name: init-zop-to-char-block
 #+begin_src emacs-lisp
   (use-package zop-to-char
-    :bind (("M-z" . zop-to-char)
-           ("M-Z" . zop-up-to-char)))
+    :straight t
+    :general
+    ("M-z" #'zop-to-char
+     "M-Z" #'zop-up-to-char))
 #+end_src
 
 **** Align [Built-In]
@@ -1812,23 +1844,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package interactive-align
     :straight (:host github :repo "mkcms/interactive-align"))
 #+end_src
-
 **** Anzu
 #+name: init-anzu-block
 #+begin_src emacs-lisp
   (use-package anzu
     :blackout t
     :straight t
-    :hook (after-init . global-anzu-mode)
     :general ([remap query-replace] #'anzu-query-replace-regexp))
-#+end_src
-
-**** Typo
-#+name: init-typoel-block
-#+begin_src emacs-lisp
-  (use-package typo
-    :straight (:host github :repo "jorgenschaefer/typoel")
-    :hook (after-init . typo-global-mode))
 #+end_src
 
 **** Deadgrep
@@ -1843,7 +1865,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-expand-region-block
 #+begin_src emacs-lisp
   (use-package expand-region
-    :straight (:host github :repo "magnars/expand-region.el")
+    :straight t
     :general ("C-=" #'er/expand-region))
 #+end_src
 
@@ -1962,6 +1984,15 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
            (prog-mode . global-prettify-symbols-mode)))
 #+end_src
 
+**** Typo
+#+name: init-typoel-block
+#+begin_src emacs-lisp
+  (use-package typo
+    :blackout t
+    :straight t
+    :ghook
+    'text-mode-hook)
+#+end_src
 *** Navigation
 **** Avy
 #+name: init-nav-utils-block
@@ -2036,22 +2067,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-dumb-jump-block
 #+begin_src emacs-lisp
   (use-package dumb-jump
-    :blackout t
-    :straight t
-    :hook (prog-mode . dumb-jump-mode)
-    :custom
-    (dumb-jump-selector 'ivy))
+    :blackout t :straight t :ghook 'prog-mode-hook
+    :custom (dumb-jump-selector 'ivy))
 #+end_src
 
 **** Dired
 #+name: init-dired-block
 #+begin_src emacs-lisp
   (use-package dired
-    :blackout t
     :straight nil
     :functions (dired wdired-change-to-wdired-mode)
     :general
-    (:keymaps 'dired-mode-map
+    (:keymaps
+     'dired-mode-map
      "$" #'end-of-line
      "C-c C-e" #'wdired-change-to-wdired-mode)
     :custom
@@ -2064,24 +2092,44 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (dired-recursive-deletes 'always)
     (dired-recursive-copies 'always)
     (dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
+#+end_src
 
+**** WDired
+#+name: init-wdired-block
+#+begin_src emacs-lisp
   (use-package wdired
     :straight nil)
+#+end_src
 
+**** Dired-Aux
+#+name: init-dired-aux-block
+#+begin_src emacs-lisp
   (use-package dired-aux
     :straight nil)
+#+end_src
 
+**** Dired-X
+#+name: init-dired-x-block
+#+begin_src emacs-lisp
   (use-package dired-x
     :straight nil
     :functions (dired-guess-default)
     :custom
     (dired-omit-verbose 1)
     (dired-cleanup-buffers-too t))
+#+end_src
 
+**** Diredfl
+#+name: init-diredfl-block
+#+begin_src emacs-lisp
   (use-package diredfl
     :straight (:host github :repo "purcell/diredfl")
     :hook (dired-mode . diredfl-global-mode))
+#+end_src
 
+**** Dired-Hacks
+#+name: init-dired-hacks-block
+#+begin_src emacs-lisp
   (use-package dired-hacks-utils
     :straight (:host github :repo "Fuco1/dired-hacks"))
 
@@ -2112,35 +2160,56 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package dired-ranger
     :straight (:host github :repo "Fuco1/dired-hacks")
     :general
-    (:keymaps 'dired-mode-map
-              "C-c C-c" #'dired-ranger-copy
-              "C-c C-m" #'dired-ranger-move
-              "C-c C-p" #'dired-ranger-paste
-              "C-c C-b" #'dired-ranger-bookmark
-              "C-c b v" #'dired-ranger-bookmark-visit))
+    (:keymaps
+     'dired-mode-map
+     "C-c C-c" #'dired-ranger-copy
+     "C-c C-m" #'dired-ranger-move
+     "C-c C-p" #'dired-ranger-paste
+     "C-c C-b" #'dired-ranger-bookmark
+     "C-c b v" #'dired-ranger-bookmark-visit))
 
   (use-package dired-subtree
     :straight (:host github :repo "Fuco1/dired-hacks")
     :general
-    (:keymaps 'dired-mode-map
-              "TAB" #'dired-subtree-insert
-              ";" #'dired-subtree-remove))
+    (:keymaps
+     'dired-mode-map
+     "TAB" #'dired-subtree-insert
+     ";" #'dired-subtree-remove))
+#+end_src
 
+**** Dired-Git-Info
+#+name: init-dired-git-info-block
+#+begin_src emacs-lisp
   (use-package dired-git-info
     :blackout t
     :straight (:host github :repo "clemera/dired-git-info")
     :general
-    (:keymaps 'dired-mode-map
-              ":" #'dired-git-info-mode))
+    (:keymaps
+     'dired-mode-map
+     ":" #'dired-git-info-mode))
+#+end_src
 
+**** Dired-rsync
+#+name: init-dired-rsync-block
+#+begin_src emacs-lisp
   (use-package dired-rsync
-    :straight (:host github :repo "stsquad/dired-rsync")
-    :general (:keymaps 'dired-mode-map
-                       "C-c C-r" #'dired-rsync))
+    :straight t
+    :general
+    (:keymaps
+     'dired-mode-map
+     "C-c C-r" #'dired-rsync))
+#+end_src
 
+**** fd-Dired
+#+name: init-fd-dired-block
+#+begin_src emacs-lisp
   (use-package fd-dired
     :straight (:host github :repo "yqrashawn/fd-dired"))
+#+end_src
 
+**** Dired-Sidebar
+#+name: init-dired-sidebar-block
+#+begin_src emacs-lisp
   (use-package dired-sidebar
     :straight (:host github :repo "jojojames/dired-sidebar")
     :general ("M-\\" #'dired-sidebar-toggle-sidebar)
@@ -2151,7 +2220,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (dired-sidebar-use-magit-integration t)
     (dired-sidebar-use-term-integration t)
     (dired-sidebar-use-wdired-integration t))
+#+end_src
 
+**** Direx
+#+name: init-direx-block
+#+begin_src emacs-lisp
   (use-package direx
     :straight (:host github :repo "m2ym/direx-el"))
 #+end_src

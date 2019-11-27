@@ -11,3 +11,5 @@ zflai-msg "[zshrc] Finishing, loaded custom modules: ${(j:, :@)${(k)modules[@]}:
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:
 true
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

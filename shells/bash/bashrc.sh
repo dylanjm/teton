@@ -39,3 +39,5 @@ alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
 alias moose='cd ~/Documents/projects/moose'
 
 eval "$(starship init bash)"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

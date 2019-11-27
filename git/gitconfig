@@ -2,7 +2,7 @@
 	name = Dylan McDowell
 	email = dylanjm@users.noreply.github.com
 [core]
-    pager = less -S
+    pager = less -S -R -F -i -J -M -R -W -x4 -z-4
     warnAmbiguousRefs = true
 	editor = emacsclient -a "emacs" -c
 	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
@@ -28,11 +28,6 @@
        added = green bold
        changed = yellow bold
        untracked = red bold
-[alias]
-	a = add .
-	cm = commit -m
-	p = push
 [pager]
 	branch = false
     stash = false
-    diff = false

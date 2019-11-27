@@ -46,6 +46,12 @@ zstyle ":prezto:runcom" zpreztorc "$HOME/.zshrc"
 zplugin ice wait'1' lucid
 zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
 
+zplugin ice wait'1' lucid
+zplugin snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh
+
+zplugin ice wait'1' lucid
+zplugin snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh
+
 zplugin ice atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'

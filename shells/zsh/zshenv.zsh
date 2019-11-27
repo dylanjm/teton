@@ -21,6 +21,8 @@ export CCACHE_DIR="$CACHE/ccache"
 export PYENV_ROOT="$HOME/.config/pyenv"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
 
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+
 export GPG_TTY=$(tty)
 
 export ZPLGM[HOME_DIR]="$ZSH_CACHE/zplugin"
@@ -34,6 +36,7 @@ path=($PYENV_ROOT/bin
       $PYENV_ROOT/shims
       $ZPLGM[HOME_DIR]/polaris/bin
       $DOTFILES/bin
+      /usr/local/opt/fzf/bin
       /usr/local/bin
       /usr/bin
       /bin

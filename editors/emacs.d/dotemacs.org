@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-27 11:36:52
+/last updated/: 2019-11-27 15:50:46
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -1220,23 +1220,21 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-osx-trash-block
 #+begin_src emacs-lisp
   (use-package osx-trash
-    :demand t
-    :straight t
+    :demand t  :straight t
     :config (osx-trash-setup))
 #+end_src
 
 **** OSX-Lib
 #+name: init-osx-lib-block
 #+begin_src emacs-lisp
-  (use-package osx-lib
-    :straight (:host github :repo "raghavgautam/osx-lib"))
+  (use-package osx-lib :straight t)
 #+end_src
 
 **** Restart-Emacs
 #+name: init-restart-emacs-block
 #+begin_src emacs-lisp
   (use-package restart-emacs
-    :straight (:host github :repo "iqbalansari/restart-emacs")
+    :straight t
     :commands (restart-emacs))
 #+end_src
 
@@ -1250,7 +1248,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-pdf-tools-block
 #+begin_src emacs-lisp
   (use-package pdf-tools
-    :straight (:host github :repo "politza/pdf-tools"))
+    :straight t)
 #+end_src
 *** Terminal & Shell
 **** Term [Built-In]
@@ -1272,7 +1270,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-vterm-toggle-block
 #+begin_src emacs-lisp
   (use-package vterm-toggle
-    :straight (:host github :repo "jixiuf/vterm-toggle")
+    :straight t
     :general
     ("C-c C-t" #'vterm-toggle
      "C-c C-y" #'term-toggle-cd))
@@ -1283,30 +1281,28 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-projectile-block
 #+begin_src emacs-lisp
   (use-package projectile
-    :blackout t
-    :straight t
+    :blackout t :straight t
     :hook (after-init . projectile-global-mode)
     :config
-    (setq-default projectile-completion-system 'ivy
-                  projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired
-                  projectile-verbose nil))
+    (setq projectile-completion-system 'ivy
+          projectile-enable-caching t
+          projectile-switch-project-action 'projectile-dired
+          projectile-verbose nil))
 #+end_src
 
 **** Projectile-Speedbar
 #+name: init-projectile-speedbar-block
 #+begin_src emacs-lisp
   (use-package projectile-speedbar
-    :straight (:host github :repo "anshulverma/projectile-speedbar"))
+    :straight t)
 #+end_src
 
 **** Direnv
 #+name: init-direnv-block
 #+begin_src emacs-lisp
   (use-package direnv
-    :blackout t
-    :straight (:host github :repo "wbolster/emacs-direnv")
-    :hook (after-init . direnv-mode)
+    :blackout t :straight t
+    :ghook 'after-init-hook
     :commands (direnv-update-environment
                direnv-allow)
     :config
@@ -1333,9 +1329,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-hippie-block
 #+begin_src emacs-lisp
   (use-package hippie-exp
-    :demand t
-    :straight nil
-    :bind (([remap dabbrev-expand] . hippie-expand))
+    :demand t :straight nil
+    :general ([remap dabbrev-expand] #'hippie-expand)
     :custom
     (hippie-expand-try-functions-list '(try-expand-dabbrev
                                         try-expand-dabbrev-all-buffers
@@ -1351,15 +1346,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Abbrev [Built-In]
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
-    (use-package abbrev
-      :demand t
-      :blackout t
-      :straight nil
-      :custom
-      (save-abbrevs 'silently)
-      (abbrev-file-name (no-littering-expand-var-file-name "abbrev_defs"))
-      :config
-      (abbrev-mode +1))
+  (use-package abbrev
+    :demand t :blackout t :straight nil
+    :custom
+    (save-abbrevs 'silently)
+    (abbrev-file-name (no-littering-expand-var-file-name "abbrev_defs"))
+    :config
+    (abbrev-mode +1))
 #+end_src
 
 
@@ -1367,7 +1360,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
-    :blackout t
+    :blackout t :straight t
     :hook (after-init . global-company-mode)
     :bind (:map company-active-map
                 ("RET" . nil)
@@ -1400,19 +1393,16 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (company-tooltip-align-annotations t))
 
   (use-package company-prescient
-    :blackout t
-    :straight (:host github :repo "raxod502/prescient.el")
-    :hook (global-company-mode . company-prescient-mode))
+    :blackout t :straight t
+    :ghook 'global-company-mode-hook)
 
   (use-package company-flx
-    :blackout t
-    :straight (:host github :repo "PythonNut/company-flx")
-    :hook (global-company-mode . company-flx-mode))
+    :blackout t :straight t
+    :ghook 'global-company-mode)
 
   (use-package company-box
-    :blackout t
-    :straight (:files ("images" "*.el") :host github :repo "sebastiencs/company-box")
-    :hook (company-mode . company-box-mode)
+    :blackout t :straight t
+    :ghook 'company-mode-hook
     :custom (company-box-enable-icon t))
 
   (use-package company-emoji
@@ -1427,11 +1417,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
       (setq company-backends (-snoc company-backends 'company-math-symbols-unicode 'company-math-symbols-latex))))
 
   (use-package company-lsp
-    :after (lsp-mode)
+    :after (company lsp-mode)
     :custom (company-lsp-cache-canidates 'auto))
 
   (use-package company-anaconda
-    :straight (:host github :repo "pythonic-emacs/company-anaconda")
+    :straight t
     :hook (global-company-mode . company-anaconda-init)
     :preface
     (defun company-anaconda-init ()
@@ -1442,12 +1432,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
   (use-package yasnippet
-    :blackout yas-global-mode
-    :blackout yas-minor-mode
+    :blackout (yas-global-mode yas-minor-mode)
     :straight t
     :hook ((prog-mode org-mode text-mode) . yas-minor-mode)
     :hook (after-init . yas-global-mode)
-    :bind ("C-;" . yas-expand)
+    :general ("C-;" #'yas-expand)
     :custom
     (yas-verbosity 1)
     (yas-wrap-around-region t)
@@ -1727,7 +1716,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Help-Functions-Plus
 #+name: init-help-fns-plus-block
 #+begin_src emacs-lisp
-  (use-package help-fns+
+  (use-package help-fns-plus
     :straight t
     :general ("C-h M-k" #'describe-keymap))
 #+end_src
@@ -1756,7 +1745,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Info-Plus
 #+name: init-info-plus-block
 #+begin_src emacs-lisp
-  (use-package info+
+  (use-package info-plus
     :straight t
     :custom
     (Info-fontify-angle-bracketed-flag nil))

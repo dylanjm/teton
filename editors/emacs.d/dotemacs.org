@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-26 23:32:37
+/last updated/: 2019-11-27 11:36:52
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -486,7 +486,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package cus-start
     :demand t
     :straight nil
-    :config
+    :init
     (setq-default auto-save-list-file-prefix nil
                   auto-save-list-file-name nil
                   command-line-x-option-alist nil
@@ -954,8 +954,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package beacon
     :blackout t
-    :straight (:host github :repo "Malabarba/beacon")
-    :hook (after-init . beacon-mode)
+    :straight t
+    :ghook 'prog-mode-hook 'org-mode-hook
     :config
     (setq beacon-push-mark 15
           beacon-color .50))
@@ -1109,6 +1109,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package origami
     :straight t)
 #+end_src
+
 **** Page-Break-Lines
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
@@ -1648,7 +1649,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package ivy-rich
     :straight t
-    :hook (ivy-mode . ivy-rich-mode)
+    :ghook 'ivy-mode-hook
     :custom
     (ivy-rich-parse-remote-buffer nil)
     (ivy-rich-path-style 'relative)
@@ -1719,14 +1720,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package help
     :straight nil
     :init
-    (setq-default help-window-select t)
+    (setq help-window-select t)
     (advice-add 'help-window-display-message :override #'ignore))
 #+end_src
 
 **** Help-Functions-Plus
 #+name: init-help-fns-plus-block
 #+begin_src emacs-lisp
-  (use-package help-fns-plus
+  (use-package help-fns+
     :straight t
     :general ("C-h M-k" #'describe-keymap))
 #+end_src
@@ -1755,7 +1756,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 **** Info-Plus
 #+name: init-info-plus-block
 #+begin_src emacs-lisp
-  (use-package info-plus
+  (use-package info+
     :straight t
     :custom
     (Info-fontify-angle-bracketed-flag nil))
@@ -1779,8 +1780,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package which-key
     :blackout t
-    :straight (:host github :repo "justbur/emacs-which-key")
-    :hook (after-init . which-key-mode)
+    :straight t
+    :ghook 'after-init-hook
     :config (setq which-key-idle-delay 0.5))
 #+end_src
 
@@ -1809,6 +1810,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package vimish-fold
     :straight t)
 #+end_src
+
 **** Multiple Cursors
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -1844,6 +1846,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package interactive-align
     :straight (:host github :repo "mkcms/interactive-align"))
 #+end_src
+
+**** Visual-Regexp
+#+name: init-visual-regexp-block
+#+begin_src emacs-lisp
+  (use-package visual-regexp
+    :straight t)
+#+end_src
+
+**** Visual-Regexp-Steroids
+#+name: init-visual-regexp-steroids-block
+#+begin_src emacs-lisp
+    (use-package visual-regexp-steroids
+      :straight t
+      :config
+      (setq vr/engine 'emacs))
+#+end_src
+
 **** Anzu
 #+name: init-anzu-block
 #+begin_src emacs-lisp
@@ -1857,7 +1876,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-deadgrep-block
 #+begin_src emacs-lisp
   (use-package deadgrep
-    :straight (:host github :repo "Wilfred/deadgrep")
+    :straight t
     :init (defalias 'rg #'deadgrep))
 #+end_src
 
@@ -1873,14 +1892,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
   (use-package string-inflection
-    :straight (:host github :repo "akicho8/string-inflection"))
+    :straight t)
 #+end_src
 
 **** Crux
 #+name: init-crux-block
 #+begin_src emacs-lisp
   (use-package crux
-    :straight (:host github :repo "bbatsov/crux"))
+    :straight t)
 #+end_src
 
 *** Minor Modes
@@ -1984,15 +2003,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
            (prog-mode . global-prettify-symbols-mode)))
 #+end_src
 
-**** Typo
-#+name: init-typoel-block
-#+begin_src emacs-lisp
-  (use-package typo
-    :blackout t
-    :straight t
-    :ghook
-    'text-mode-hook)
-#+end_src
 *** Navigation
 **** Avy
 #+name: init-nav-utils-block
@@ -2277,7 +2287,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (defun config-ibuffer--setup-buffer ()
       (ibuffer-projectile-set-filter-groups)
       (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
-      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*straight-process*" "*direnv*") (buffer-name)))))
+      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*straight-process*" "*direnv*" "*pyls*" "*pyls::stderr*" "*lsp-log*" ) (buffer-name)))))
       (add-to-list 'ibuffer-filter-groups '("Shells" (mode . eshell-mode)))
       (unless (eq ibuffer-sorting-mode 'alphabetic)
         (ibuffer-do-sort-by-alphabetic))
@@ -2552,7 +2562,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-ledger-block
 #+begin_src emacs-lisp
   (use-package ledger-mode
-    :straight (:host github :repo "ledger/ledger-mode"))
+    :straight t)
 #+end_src
 
 *** Email
@@ -2669,9 +2679,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package lsp-mode
     :hook ((python-mode cc-mode) . lsp-deferred)
     :custom
-    (lsp-eldoc-enable-hover nil)
+    (lsp-eldoc-enable-hover t)
     (lsp-edoc-render-all nil)
-    (lsp-prefer-fly-make nil)
+    (lsp-prefer-flymake nil)
     (lsp-restart nil)
     (lsp-enable-on-type-formatting nil)
     :config
@@ -2958,52 +2968,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :hook (projectile-switch-project . pyenv-mode))
 
   (use-package python
+    :straight nil
     :hook (python-mode . config-python--init-python-mode)
     :preface
-    (progn
-      (autoload 'python-indent-dedent-line "python")
-      (autoload 'python-shell-get-process "python")
+    (autoload 'python-indent-dedent-line "python")
+    (autoload 'python-shell-get-process "python")
 
-      (defun config-python--init-python-mode ()
-        (setq-local comment-inline-offset 2)
-        (setq-local tab-width 4)
-        (prettify-symbols-mode -1)
-        (when (executable-find "ipython")
-          (setq-local python-shell-interpreter "ipython")
-          (setq-local python-shell-interpreter-args "--simple-promt -i")))
-
-      (defun config-python-backspace ()
-        (interactive)
-        (if (equal (char-before) ?\s)
-            (unless (python-indent-dedent-line)
-              (backward-delete-char-untabify 1))
-          (sp-backward-delete-char)))
-
-      (defvar config-python-prev-source-buffer)
-
-      (defun config-python-repl-switch-to-source ()
-        (interactive)
-        (-when-let (buf config-python-prev-source-buffer)
-          (when (buffer-live-p buf)
-            (pop-to-buffer buf))))
-
-      (defun config-python-repl ()
-        (interactive)
-        (when (derived-mode-p 'python-mode)
-          (setq config-python-prev-source-buffer (current-buffer)))
-        (let ((shell-process
-               (or (python-shell-get-process)
-                   (with-demoted-errors "Error: %S"
-                     (call-interactively #'run-python)
-                     (python-shell-get-process)))))
-          (unless shell-process
-            (error "Failed to start python shell properly"))
-          (pop-to-buffer (process-buffer shell-process))))
-      :config
-      (progn
-        (setq python-indent-guess-indent-offset nil)
-        (setq python-indent-offset 4)
-        (setq python-fill-docstring-style 'django))))
+    (defun config-python--init-python-mode ()
+      (setq-local comment-inline-offset 2)
+      (setq-local tab-width 4)
+      (when (executable-find "ipython")
+        (setq-local python-shell-interpreter "ipython")
+        (setq-local python-shell-interpreter-args "--simple-prompt -i")))
+    :config
+    (setq python-indent-guess-indent-offset nil)
+    (setq python-indent-offset 4)
+    (setq python-indent-guess-indent-offset-verbose nil)
+    (setq python-fill-docstring-style 'django))
 
   (use-package anaconda-mode
     :hook ((python-mode . anaconda-mode)
@@ -3012,18 +2993,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package py-yapf
     :hook (python-mode . python-auto-format-mode)
     :preface
-    (progn
-      (defvar python-auto-format-buffer t)
+    (defvar python-auto-format-buffer t)
 
-      (defun python-auto-format-maybe ()
-        (when python-auto-format-buffer
-          (py-yapf-buffer)))
+    (defun python-auto-format-maybe ()
+      (when python-auto-format-buffer
+        (py-yapf-buffer)))
 
-      (define-minor-mode python-auto-format-mode
-        nil nil nil nil
-        (if python-auto-format-mode
-            (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
-          (remove-hook 'before-save-hook 'python-auto-format-maybe t)))))
+    (define-minor-mode python-auto-format-mode
+      nil nil nil nil
+      (if python-auto-format-mode
+          (add-hook 'before-save-hook 'python-auto-format-maybe nil t)
+        (remove-hook 'before-save-hook 'python-auto-format-maybe t))))
 #+end_src
 
 *** C++

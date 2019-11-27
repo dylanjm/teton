@@ -18,9 +18,9 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
-# [[ -d $CACHE/zplugin ]] && {
-#    rm -rf $CACHE/zplugin
-# }
+[[ -d $CACHE/zplugin ]] && {
+   rm -rf $CACHE/zplugin
+}
 
 ###
 ### Load Zsh Plugins
@@ -29,14 +29,11 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 # Change to load=load for debugging.
 load=light
 
-# zplugin ice wait pick'init.zsh' compile'*.zsh'
-# zplugin $load laggardkernel/zsh-iterm2
+zplugin ice wait lucid
+zplugin $load mafredri/zsh-async
 
-# zplugin ice wait lucid
-# zplugin $load mafredri/zsh-async
-
-# zplugin ice wait'!' lucid nocd atinit'source $ZSH/misc/slimline.zsh'
-# zplugin $load mengelbrecht/slimline
+zplugin ice wait'!' lucid nocd atinit'source $ZSH/misc/slimline.zsh'
+zplugin $load mengelbrecht/slimline
 
 zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
     atpull'%atclone' pick"direnv" src"zhook.zsh" blockf
@@ -54,8 +51,8 @@ zplugin ice atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
 zplugin light trapd00r/LS_COLORS
 
-# zplugin ice wait'1' lucid
-# zplugin $load davidparsson/zsh-pyenv-lazy
+zplugin ice wait'1' lucid
+zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid blockf
 zplugin $load unixorn/git-extra-commands
@@ -63,14 +60,14 @@ zplugin $load unixorn/git-extra-commands
 zplugin ice wait'1' lucid blockf
 zplugin $load $ZSH/interactive
 
-# zplugin ice as"completion"
-# zplugin $load vasyharan/zsh-brew-services
-
 zplugin ice wait'1' lucid blockf
 zplugin $load rupa/z
 
-# zplugin ice wait'1' lucid blockf
-# zplugin $load zdharma/zsh-lint
+zplugin ice wait'1' lucid
+zplugin light changyuheng/fz
+
+zplugin ice wait'1' lucid blockf
+zplugin $load zdharma/zsh-lint
 
 zplugin wait'1b' lucid blockf for \
         atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \

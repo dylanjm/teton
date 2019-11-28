@@ -57,8 +57,8 @@ zplugin ice atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
 zplugin light trapd00r/LS_COLORS
 
-zplugin ice wait'1' lucid
-zplugin $load davidparsson/zsh-pyenv-lazy
+#zplugin ice wait'1' lucid
+#zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid blockf
 zplugin $load unixorn/git-extra-commands

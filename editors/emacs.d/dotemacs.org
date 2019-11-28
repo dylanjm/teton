@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-27 20:10:01
+/last updated/: 2019-11-27 20:48:33
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -1409,7 +1409,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (yas-verbosity 1)
     (yas-wrap-around-region t)
     (yas-prompt-functions '(yas-completing-prompt))
-    (yas-snippet-dirs `(,djm--yasnippet-directory)))
+    (yas-snippet-dirs `(,djm--yasnippet-directory))
+    :config
+    (blackout 'yas-minor-mode))
 
   (use-package yasnippet-snippets
     :blackout t :straight t :after (yasnippet)

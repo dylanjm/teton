@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-11-27 20:03:53
+/last updated/: 2019-11-27 20:10:01
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -2365,7 +2365,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-org-protocol-capture-html-block
 #+begin_src emacs-lisp
   (use-package org-protocol-capture-html
-    :straight (:host github :repo "alphapapa/org-protocol-capture-html")
+    :straight (:host github :repo "alphapapa/org-protocol-capture-html"))
 #+end_src
 
 **** Org-Brain

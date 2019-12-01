@@ -27,6 +27,7 @@
     ~/.config/starship.toml: shells/bash/themes/starship.toml
     ~/.config/latexmkrc: misc/latexmkrc
     ~/.config/editorconfig: misc/editorconfig
+    ~/.config/alacritty: apps/alacritty
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

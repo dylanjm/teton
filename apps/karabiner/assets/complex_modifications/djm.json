@@ -27,9 +27,10 @@
                 "^com\\.microsoft\\.rdc\\.mac$",
                 "^com\\.microsoft\\.rdc\\.macos$",
                 "^com\\.microsoft\\.rdc\\.osx\\.beta$",
-                "^com\\.apple\\.Terminal$",
-                "^com\\.googlecode\\.iterm2$",
-                "^com\\.qvacua\\.VimR$"
+                  "^com\\.apple\\.Terminal$",
+                  "^io\\.alacritty$",
+                  "^com\\.googlecode\\.iterm2$",
+                  "^com\\.qvacua\\.VimR$"
               ]
             }
           ]

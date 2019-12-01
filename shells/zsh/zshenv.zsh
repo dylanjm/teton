@@ -52,4 +52,5 @@ export FPATH
 export MODULE_PATH
 
 autoload -Uz time-shell nuke convert-to-md \
-         colorlist open-apps iterm-config _zpcompinit_fast
+         colorlist open-apps iterm-config _zpcompinit_fast \
+         bundle-name

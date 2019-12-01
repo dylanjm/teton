@@ -1,7 +1,7 @@
 ###
 ### Emacs
 ###
-
+alias et='emacs -Q --load $HOME/.emacs.d/mini-init.el -nw'
 # TODO
 
 ###
@@ -38,6 +38,7 @@ alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified
 ###
 alias refresh='source $HOME/.zshrc; echo "Reloaded .zshrc."'
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
+alias bubu='brew update && brew upgrade'
 #alias brew='env PATH=${PATH//$(pyenv root)\/shims:/} brew'
 
 ###

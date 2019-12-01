@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-02 10:55:35
+/last updated/: 2019-12-02 11:38:49
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -123,16 +123,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar default-gc-cons-threshold 20000000)
 
   (setq-default file-name-handler-alist nil
-        gc-cons-percentage 0.8
         gc-cons-threshold extended-gc-cons-threshold
         inhibit-compacting-font-caches t
         load-prefer-newer t
         package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
-    (setq-default file-name-handler-alisrt default-file-name-handler-alist
+    (setq-default file-name-handler-alist default-file-name-handler-alist
                   gc-cons-threshold default-gc-cons-threshold
-                  gc-cons-percentage 0.1
                   load-prefer-newer nil
                   debug-on-error nil))
 
@@ -1636,6 +1634,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       :demand t :straight t
       :config (ivy-prescient-mode +1))
 
+    (general-setq counsel-describe-function-function #'helpful-callable)
+    (general-setq counsel-describe-variable-function #'helpful-variable)
+
     (general-setq counsel-find-file-at-point t)
 
     (general-setq counsel-grep-base-command
@@ -1774,9 +1775,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package helpful
     :straight t
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
     :general
     ([remap describe-function] #'helpful-callable
      [remap describe-command]  #'helpful-command
@@ -1787,15 +1785,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       :demand t :straight t
       :config
       (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)))
-#+end_src
-
-**** Info-Plus
-#+name: init-info-plus-block
-#+begin_src emacs-lisp
-  (use-package info-plus
-    :straight t
-    :custom
-    (Info-fontify-angle-bracketed-flag nil))
 #+end_src
 
 **** Man [Built-In]

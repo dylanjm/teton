@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-02 15:03:19
+/last updated/: 2019-12-02 17:29:28
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -35,8 +35,8 @@
     - [[#system][System]]
     - [[#terminal--shell][Terminal & Shell]]
     - [[#project-management][Project Management]]
-    - [[#autocomplete][Autocomplete]]
     - [[#frameworks][Frameworks]]
+    - [[#autocomplete][Autocomplete]]
     - [[#documentation][Documentation]]
     - [[#spell-check][Spell Check]]
     - [[#editing-tools][Editing Tools]]
@@ -123,10 +123,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar default-gc-cons-threshold 20000000)
 
   (setq-default file-name-handler-alist nil
-        gc-cons-threshold extended-gc-cons-threshold
-        inhibit-compacting-font-caches t
-        load-prefer-newer t
-        package-enable-at-startup nil)
+                gc-cons-threshold extended-gc-cons-threshold
+                inhibit-compacting-font-caches t
+                load-prefer-newer t
+                package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
     (setq-default file-name-handler-alist default-file-name-handler-alist
@@ -522,6 +522,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :init
     (general-setq-default auto-revert-verbose nil
                           global-auto-revert-non-file-buffers t
+                          autor-revert-interval 1
                           auto-revert-use-notify nil))
 #+end_src
 
@@ -1110,8 +1111,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-eterm-256-color-block
 #+begin_src emacs-lisp
   (use-package eterm-256color
-    :blackout t :straight t
-    :ghook 'vterm-mode-hook)
+    :blackout t :straight t)
 #+end_src
 
 **** Focus
@@ -1374,7 +1374,12 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package projectile
     :blackout t :straight t
-    :ghook ('after-init-hook #'projectile-global-mode)
+    :ghook 'after-init-hook
+    :general
+    (:prefix "M-p"
+             "s" #'projectile-switch-project
+             "c" #'projectile-compile-project
+             "f" #'projectile-find-file)
     :config
     (general-setq projectile-completion-system 'ivy
                   projectile-enable-caching t
@@ -1418,6 +1423,214 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq ffip-use-rust-fd t))
 #+end_src
 
+*** Frameworks
+**** Hydra
+#+name: init-hydra-block
+#+begin_src emacs-lisp
+  (use-package hydra
+    :straight t)
+#+end_src
+
+**** Hercules
+#+name: init-hercules-block
+#+begin_src emacs-lisp
+  (use-package hercules
+    :straight t)
+#+end_src
+
+**** Key Chords
+#+name: init-key-chords-block
+#+begin_src emacs-lisp
+  (use-package key-chord
+    :blackout t :straight t
+    :config (key-chord-mode +1))
+#+end_src
+
+**** Amx
+#+name: init-amx-block
+#+begin_src emacs-lisp
+  (use-package amx
+    :blackout t :straight t
+    :ghook 'ivy-mode-hook
+    :config
+    (general-setq amx-ignored-command-matchers nil
+                  amx-show-key-bindings nil
+                  amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
+#+end_src
+
+**** FLX
+#+name: init-flx-block
+#+begin_src emacs-lisp
+  (use-package flx
+    :demand t :straight t)
+#+end_src
+
+**** Prescient
+#+name: init-prescient-block
+#+begin_src emacs-lisp
+    (use-package prescient
+      :blackout t :straight t
+      :ghook ('after-init-hook #'prescient-persist-mode)
+      :config
+      (run-at-time nil (* 5 60) (lambda () (let ((inhibit-message t)) (prescient--save)))))
+#+end_src
+
+**** Ivy
+#+name: init-ivy-block
+#+begin_src emacs-lisp
+  (use-package ivy
+    :blackout t :straight t
+    :ghook 'after-init-hook
+    :general
+    ([remap ido-switch-buffer] #'ivy-switch-buffer
+     "C-x B"                   #'ivy-switch-buffer-other-window
+     "C-c C-r"                 #'ivy-resume
+     [remap kill-ring-save]    #'ivy-kill-ring-save)
+    (:keymaps
+     'ivy-minibuffer-map
+     "<tab>" #'ivy-alt-done
+     "C-w"   #'ivy-yank-word
+     "C-o"   #'ivy-occur)
+    (:keymaps
+     'ivy-switch-buffer-map
+     [remap kill-buffer] #'ivy-switch-buffer-kill)
+    :config
+    (general-setq ivy-dynamic-exhibit-delay-ms 250
+                  ivy-use-selectable-prompt t
+                  ivy-case-fold-search-default 'auto
+                  ivy-use-virtual-buffers t
+                  ivy-virtual-abbreviate 'name
+                  ivy-count-format "(%d/%d) "
+                  ivy-flx-limit 2000
+                  ivy-sort-max-size 50000)
+
+    (ivy-set-actions t '(("I" insert "insert")))
+    (ivy-set-occur 'ivy-switch-buffer 'ivy-switch-buffer-occur))
+#+end_src
+
+**** Counsel
+#+name: init-counsel-block
+#+begin_src emacs-lisp
+    (use-package counsel
+      :blackout t :straight t
+      :ghook 'ivy-mode-hook
+      :general
+      (:keymaps
+       'counsel-mode-map
+       [remap dired]                    #'counsel-dired
+       [remap execute-extended-command] #'counsel-M-x
+       [remap find-file]                #'counsel-find-file
+       "C-x C-d"                        #'counsel-dired-jump
+       "C-x C-i"                        #'counsel-imenu
+       "C-x C-l"                        #'counsel-find-library
+       "C-x C-r"                        #'counsel-recentf
+       "C-x C-v"                        #'counsel-set-variable
+       "C-x C-u"                        #'counsel-unicode-char
+       "C-c g"                          #'counsel-grep
+       "C-c h"                          #'counsel-command-history
+       "C-c j"                          #'counsel-git
+       "C-c j"                          #'counsel-git-grep
+       "C-c k"                          #'counsel-rg
+       "C-c z"                          #'counsel-fzf
+       "C-c c w"                        #'counsel-colors-web
+       "C-h F"                          #'counsel-describe-face
+       "C-h f"                          #'counsel-describe-function
+       "C-h v"                          #'counsel-describe-variable)
+
+      :config
+      (general-setq counsel-describe-function-function #'helpful-callable)
+      (general-setq counsel-describe-variable-function #'helpful-variable)
+
+      (general-setq counsel-find-file-at-point t)
+
+      (general-setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never %s -z --sort path")
+
+      (general-setq counsel-grep-base-command
+		    "rg -S --no-heading --line-number --color never '%s' %s")
+
+      (general-setq counsel-fzf-cmd "fd --type f | fzf -f \"%s\"")
+
+      (general-setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+					    (swiper-isearch . ivy--regex-plus)
+					    (swiper-query-replace . ivy--regex-plus)
+					    (swiper-all . ivy--regex-plus)
+					    (t . ivy-prescient-re-builder)
+					    (t . ivy--regex-ignore-order)
+					    (t . ivy--regex-fuzzy)
+					    (t . ivy--regex-plus))))
+
+  (use-package ivy
+    :straight nil
+    :config
+    (require 'counsel))
+
+  (use-package ivy-prescient
+    :demand t :straight t :after (counsel)
+    :config (ivy-prescient-mode +1))
+#+end_src
+
+**** Counsel-Projectile
+#+name: init-counsel-projectile-block
+#+begin_src emacs-lisp
+  (use-package counsel-projectile
+    :disabled t :blackout t :straight t :after (projectile counsel)
+    :config
+    (general-setq counsel-projectile-sort-files t))
+#+end_src
+
+**** Counsel-FD
+#+name: init-counsel-fd-block
+#+begin_src emacs-lisp
+  (use-package counsel-fd
+    :disabled t :straight (:host github :repo "yqrashawn/counsel-fd"))
+#+end_src
+
+**** Swiper
+#+name: init-swiper-block
+#+begin_src emacs-lisp
+  (use-package swiper
+    :straight t
+    :general ("C-s" #'swiper))
+#+end_src
+
+**** Ivy-Posframe
+#+name: init-ivy-posframe-block
+#+begin_src emacs-lisp
+  (use-package ivy-posframe
+    :disabled t :blackout t :straight t
+    :ghook 'ivy-mode-hook
+    :custom
+    (ivy-posframe-style 'frame-center)
+    (ivy-posframe-hide-minibuffer t)
+    (ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
+                                            (swiper . nil)
+                                            (swiper-isearch . nil)
+                                            (swiper-isearch-backward . nil)
+                                            (swiper-all . nil)
+                                            (swiper-query-replace . nil)
+                                            (swiper-isearch-toggle . nil))))
+#+end_src
+
+**** Ivy-Rich
+#+name: init-ivy-rich-block
+#+begin_src emacs-lisp
+  (use-package ivy-rich
+    :straight t
+    :ghook 'ivy-mode-hook
+    :config
+    (general-setq ivy-rich-parse-remote-buffer nil
+                  ivy-rich-path-style 'relative)
+    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+#+end_src
+
+**** Ivy-Xref
+#+name: init-ivy-xref-block
+#+begin_src emacs-lisp
+  (use-package ivy-xref
+    :blackout t :straight t
+    :config
+    (general-setq xref-show-definitions-function #'ivy-xref-show-defs))
+#+end_src
 *** Autocomplete
 **** Hippie Expand [Built-In]
 #+name: init-hippie-block
@@ -1466,37 +1679,36 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
      "C-p"     #'company-select-previous)
     :config
     (general-setq company-begin-commands '(self-insert-command)
-                  company-backends '(company-files
+                  company-backends '(company-capf
+                                     company-files
                                      company-keywords
-                                     company-capf
                                      company-yasnippet
-                                     (company-abbrev company-dabbrev))
-                  company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
-                                      company-preview-frontend
-                                      company-echo-metadata-frontend)
+                                     (company-abbrev company-dabbrev)
+                                     company-dabbrev)
+                  company-frontends '(company-pseudo-tooltip-frontend)
                   company-auto-complete-chars nil
                   company-async-timeout 10
                   company-dabbrev-downcase nil
                   company-dabbrev-ignore-case nil
                   company-dabbrev-other-buffers nil
-                  company-idle-delay 0.1
-                  company-minimum-prefix-length 2
+                  company-idle-delay 0.15
+                  company-minimum-prefix-length 1
                   company-require-match #'company-explicit-action-p
                   company-show-numbers t
                   company-tooltip-limit 10
                   company-tooltip-align-annotations t))
 
+  (use-package company-box
+    :demand t :blackout t :straight t :after (company)
+    :config (company-box-mode +1))
+
   (use-package company-prescient
-    :blackout t :straight t
-    :ghook 'global-company-mode-hook)
+    :demand t :blackout t :straight t :after (company)
+    :config (company-prescient-mode +1))
 
   (use-package company-flx
-    :blackout t :straight t
-    :ghook 'global-company-mode-hook)
-
-  (use-package company-box
-    :blackout t :straight t
-    :ghook 'global-company-mode-hook)
+    :demand t :blackout t :straight t :after (company)
+    :config (company-flx-mode +1))
 
   (use-package company-emoji
     :straight t
@@ -1556,196 +1768,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package autoinsert
     :straight nil
     :ghook ('after-init-hook #'auto-insert-mode))
-#+end_src
-
-*** Frameworks
-**** Hydra
-#+name: init-hydra-block
-#+begin_src emacs-lisp
-  (use-package hydra
-    :straight t)
-#+end_src
-
-**** Hercules
-#+name: init-hercules-block
-#+begin_src emacs-lisp
-  (use-package hercules
-    :straight t)
-#+end_src
-
-**** Key Chords
-#+name: init-key-chords-block
-#+begin_src emacs-lisp
-  (use-package key-chord
-    :blackout t :straight t
-    :config (key-chord-mode +1))
-#+end_src
-
-**** Amx
-#+name: init-amx-block
-#+begin_src emacs-lisp
-  (use-package amx
-    :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :config
-    (general-setq amx-ignored-command-matchers nil
-                  amx-show-key-bindings nil
-                  amx-save-file (no-littering-expand-var-file-name "amx-save.el")))
-#+end_src
-
-**** FLX
-#+name: init-flx-block
-#+begin_src emacs-lisp
-  (use-package flx
-    :demand t :straight t)
-#+end_src
-
-**** Prescient
-#+name: init-prescient-block
-#+begin_src emacs-lisp
-  (use-package prescient
-    :blackout t :straight t
-    :ghook ('after-init-hook #'prescient-persist-mode))
-#+end_src
-
-**** Ivy
-#+name: init-ivy-block
-#+begin_src emacs-lisp
-  (use-package ivy
-    :blackout t :straight t
-    :ghook 'after-init-hook
-    :general
-    ([remap ido-switch-buffer] #'ivy-switch-buffer
-     "C-x B"                   #'ivy-switch-buffer-other-window
-     "C-c C-r"                 #'ivy-resume
-     [remap kill-ring-save]    #'ivy-kill-ring-save)
-    (:keymaps
-     'ivy-minibuffer-map
-     "<tab>" #'ivy-alt-done
-     "C-w"   #'ivy-yank-word
-     "C-o"   #'ivy-occur)
-    (:keymaps
-     'ivy-switch-buffer-map
-     [remap kill-buffer] #'ivy-switch-buffer-kill)
-    :config
-    (general-setq ivy-dynamic-exhibit-delay-ms 250
-                  ivy-use-selectable-prompt t
-                  ivy-case-fold-search-default 'auto
-                  ivy-use-virtual-buffers t
-                  ivy-virtual-abbreviate 'name
-                  ivy-count-format "(%d/%d) "
-                  ivy-flx-limit 2000)
-
-    (ivy-set-actions t '(("I" insert "insert")))
-    (ivy-set-occur 'ivy-switch-buffer 'ivy-switch-buffer-occur))
-#+end_src
-
-**** Counsel
-#+name: init-counsel-block
-#+begin_src emacs-lisp
-  (use-package counsel
-    :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :general
-    (:keymaps
-     'counsel-mode-map
-     [remap dired]                    #'counsel-dired
-     [remap execute-extended-command] #'counsel-M-x
-     [remap find-file]                #'counsel-find-file
-     "C-x C-d"                        #'counsel-dired-jump
-     "C-x C-i"                        #'counsel-imenu
-     "C-x C-l"                        #'counsel-find-library
-     "C-x C-r"                        #'counsel-recentf
-     "C-x C-v"                        #'counsel-set-variable
-     "C-x C-u"                        #'counsel-unicode-char
-     "C-c g"                          #'counsel-grep
-     "C-c h"                          #'counsel-command-history
-     "C-c j"                          #'counsel-git
-     "C-c j"                          #'counsel-git-grep
-     "C-c r"                          #'counsel-rg
-     "C-c z"                          #'counsel-fzf
-     "C-c c w"                        #'counsel-colors-web
-     "C-h F"                          #'counsel-describe-face
-     "C-h f"                          #'counsel-describe-function
-     "C-h v"                          #'counsel-describe-variable)
-
-    :config
-    (use-package ivy-prescient
-      :demand t :straight t
-      :config (ivy-prescient-mode +1))
-
-    (general-setq counsel-describe-function-function #'helpful-callable)
-    (general-setq counsel-describe-variable-function #'helpful-variable)
-
-    (general-setq counsel-find-file-at-point t)
-
-    (general-setq counsel-grep-base-command
-                  "rg -S --no-heading --line-number --color never '%s' %s")
-
-    (general-setq counsel-fzf-cmd "fd --type f | fzf -f \"%s\"")
-
-    (general-setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                                          (swiper-isearch . ivy--regex-plus)
-                                          (swiper-query-replace . ivy--regex-plus)
-                                          (swiper-all . ivy--regex-plus)
-                                          (t . ivy-prescient-re-builder)
-                                          (t . ivy--regex-ignore-order)
-                                          (t . ivy--regex-fuzzy)
-                                          (t . ivy--regex-plus))))
-#+end_src
-
-**** Counsel-FD
-#+name: init-counsel-fd-block
-#+begin_src emacs-lisp
-  (use-package counsel-fd
-    :disabled t :straight (:host github :repo "yqrashawn/counsel-fd"))
-#+end_src
-
-**** Swiper
-#+name: init-swiper-block
-#+begin_src emacs-lisp
-  (use-package swiper
-    :straight t
-    :general ("C-s" #'swiper))
-#+end_src
-
-**** Ivy-Posframe
-#+name: init-ivy-posframe-block
-#+begin_src emacs-lisp
-  (use-package ivy-posframe
-    :disabled t :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :custom
-    (ivy-posframe-style 'frame-center)
-    (ivy-posframe-hide-minibuffer t)
-    (ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
-                                            (swiper . nil)
-                                            (swiper-isearch . nil)
-                                            (swiper-isearch-backward . nil)
-                                            (swiper-all . nil)
-                                            (swiper-query-replace . nil)
-                                            (swiper-isearch-toggle . nil))))
-#+end_src
-
-**** Ivy-Rich
-#+name: init-ivy-rich-block
-#+begin_src emacs-lisp
-  (use-package ivy-rich
-    :straight t
-    :ghook 'ivy-mode-hook
-    :config
-    (general-setq ivy-rich-parse-remote-buffer nil
-                  ivy-rich-path-style 'relative)
-    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
-#+end_src
-
-**** Ivy-Xref
-#+name: init-ivy-xref-block
-#+begin_src emacs-lisp
-  (use-package ivy-xref
-    :blackout t :straight t
-    :config
-    (general-setq xref-show-definitions-function #'ivy-xref-show-defs))
 #+end_src
 
 *** Documentation
@@ -2762,29 +2784,22 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :straight t
-    :hook (('python-mode-hook #'lsp-deferred)
-           ('c-mode-hook #'lsp-deferred))
+    :ghook ('python-mode-hook #'lsp-deferred)
+    :ghook ('c-mode-hook      #'lsp-deferred)
+    :ghook ('sh-mode-hook     #'lsp-deferred)
     :config
-    (general-setq lsp-eldoc-enable-hover t
-                    lsp-edoc-render-all nil
-                    lsp-prefer-flymake nil
-                    lsp-restart nil
-                    lsp-enable-on-type-formatting nil)
+    (general-setq lsp-prefer-flymake nil
+                  lsp-restart nil)
 
     (use-package lsp-clients
+      :demand t :straight nil)
+
+    (use-package lsp-ui
+      :demand t :straight t
+      :ghook 'lsp-mode-hook)
+
+    (use-package lsp-ui-doc
       :demand t :straight nil))
-
-  (use-package lsp-ui
-    :ghook 'lsp-mode-hook
-    :general
-    (:keymaps
-     'lsp-mode-map
-     "C-c f" #'lsp-ui-sideline-apply-code-actions)
-    :config
-    (general-setq lsp-ui-sideline-show-hover nil))
-
-  (use-package lsp-ui-doc
-    :straight nil)
 #+end_src
 
 **** Eglot

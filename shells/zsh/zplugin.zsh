@@ -35,9 +35,9 @@ zplugin $load mafredri/zsh-async
 zplugin ice wait'!' lucid nocd atinit'source $ZSH/misc/slimline.zsh'
 zplugin $load mengelbrecht/slimline
 
-zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-    atpull'%atclone' pick"direnv" src"zhook.zsh" blockf
-zplugin $load direnv/direnv
+# zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+#     atpull'%atclone' pick"direnv" src"zhook.zsh" blockf
+# zplugin $load direnv/direnv
 
 zplugin ice wait'1' lucid blockf
 zplugin $load laggardkernel/zsh-thefuck

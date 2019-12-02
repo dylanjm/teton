@@ -2,6 +2,10 @@
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"

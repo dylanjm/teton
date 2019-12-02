@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-02 11:38:49
+/last updated/: 2019-12-02 15:03:19
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -210,6 +210,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :demand t :straight t
+    :if (eq system-type 'darwin)
     :custom
     (exec-path-from-shell-check-startup-files nil)
     (exec-path-from-shell-variables '("ENV" "PATH" "MANPATH" "CACHE" "GPG_TTY"))
@@ -585,12 +586,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           mode-line-in-non-selected-windows t
                           ring-bell-function #'ignore
                           scroll-conservatively 101
-                          scroll-margin 0
+                          scroll-margin 2
                           scroll-preserve-screen-position t
                           scroll-step 1
                           sentence-end-double-space nil
-                          split-width-threshold 160
-                          split-height-threshold nil
                           tab-always-indent 'complete
                           tab-width 4
                           use-dialog-box nil
@@ -821,6 +820,15 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           vc-follow-symlinks t))
 #+end_src
 
+**** Window [Built-In]
+#+name: init-window-block
+#+begin_src emacs-lisp
+  (use-package window
+    :straight nil
+    :init
+    (general-setq-default split-width-threshold 160
+                          split-height-threshold nil))
+#+end_src
 **** Winner [Built-In]
 #+name: init-winner-block
 #+begin_src emacs-lisp
@@ -1145,6 +1153,17 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
+**** Linum-Relative
+#+name: init-linum-relative-block
+#+begin_src emacs-lisp
+  (use-package linum-relative
+    :blackout t :straight t
+    :general ("<f12>" #'linum-relative-toggle)
+    :ghook 'prog-mode-hook
+    :config
+    (general-setq linum-relative-backend 'display-line-numbers-mode))
+#+end_src
+
 **** Origami
 #+name: init-origami-block
 #+begin_src emacs-lisp
@@ -1302,6 +1321,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook 'after-init-hook)
 #+end_src
 
+**** ESUP
+#+name: init-esup-block
+#+begin_src emacs-lisp
+  (use-package esup
+    :straight t
+    :commands (esup))
+#+end_src
+
 *** Terminal & Shell
 **** Term [Built-In]
 #+name: init-term-block
@@ -1315,8 +1342,20 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package vterm
     :straight t
-    :config
-    (general-setq vterm-term-environment-variable "eterm-256color"))
+    :preface
+    (progn
+      (defun config-terminal--build-vterm (package &rest _)
+        (when (member package '("vterm"))
+          (let* ((base-dir (straight--build-dir "vterm"))
+                 (build-dir (f-join base-dir "build")))
+            (mkdir build-dir t)
+            (let ((default-directory build-dir))
+              (with-current-buffer (get-buffer-create "*vterm build*")
+                (erase-buffer)
+                (let ((default-directory base-dir))
+                  (call-process "cmake" nil t nil base-dir)
+                  (call-process "make" nil t)))))))
+      (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm)))
 #+end_src
 
 **** VTerm-Toggle
@@ -1353,18 +1392,19 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Direnv
 #+name: init-direnv-block
 #+begin_src emacs-lisp
-  (use-package direnv
-    :blackout t :straight t
-    :ghook 'after-init-hook
-    :commands (direnv-update-environment
-               direnv-allow)
-    :config
-    (add-to-list 'direnv-non-file-modes '(comint-mode
-                                          term-mode
-                                          vterm-mode
-                                          eshell-mode
-                                          shell-mode
-                                          compilation-mode)))
+    (use-package direnv
+      :blackout t :straight t
+      :ghook 'after-init-hook
+      :commands (direnv-update-environment
+                 direnv-allow)
+      :config
+      (add-to-list 'direnv-non-file-modes '(comint-mode
+                                            term-mode
+                                            vterm-mode
+                                            eshell-mode
+                                            shell-mode
+                                            compilation-mode))
+      (add-hook 'compilation-mode-hook #'direnv-update-environment))
 #+end_src
 
 **** Find-File-in-Project
@@ -2885,7 +2925,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :blackout t :straight t
     :general
     (:keymaps
-     'emacs-lisp-mode-mapn
+     'emacs-lisp-mode-map
      "C-." #'parinfer-toggle-mode)
     :config
     (general-setq parinfer-extensions '(defaults pretty-parens smart-yank smart-tab lispy)))

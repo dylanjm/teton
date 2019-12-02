@@ -16,6 +16,8 @@ _fzf_compgen_dir() {
   fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
+eval "$(direnv hook zsh)"
+
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:

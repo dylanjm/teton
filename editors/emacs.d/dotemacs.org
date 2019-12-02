@@ -2706,6 +2706,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
        (Kib "1024 * b" "Kilo Bit")
        (b "B / 8" "Bit"))))
 #+end_src
+
 ** Programming Support
 *** Version Control
 **** Magit
@@ -2888,6 +2889,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight nil
     :mode "\\.json'")
 #+end_src
+
 *** Makefiles
 **** Make-Mode [Built-In]
 #+name: init-makefile-block
@@ -3075,6 +3077,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package speed-type
     :straight t)
 #+end_src
+
 ** Footer
 #+name: init-footer-block
 #+begin_src emacs-lisp

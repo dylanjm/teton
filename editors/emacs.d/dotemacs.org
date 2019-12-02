@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-01 23:22:33
+/last updated/: 2019-12-02 10:55:35
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -290,30 +290,19 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 **** Personal Functions
-#+name: init-personal-funcs-block
+***** Create Nonexistant Directories
+#+name: init-create-dir-func-block
 #+begin_src emacs-lisp
   (defun djm/create-non-existent-directory ()
     (let ((parent-directory (file-name-directory buffer-file-name)))
       (when (and (not (file-exists-p parent-directory))
                  (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory )))
         (make-directory parent-directory t))))
+#+end_src
 
-  (defun djm/gc-on-lose-focus ()
-    "A convienient time to run garbage collect is when Emacs loses focus."
-    (unless (frame-focus-state)
-      (garbage-collect)))
-
-  (defun djm/minibuffer-setup-hook ()
-    "With modern packages like Ivy/Counsel, let's extend the gc-threshold while
-  using the minibuffer to maximize performance"
-    (setq gc-cons-percentage .8)
-    (setq gc-cons-threshold extended-gc-cons-threshold))
-
-  (defun djm/minibuffer-exit-hook ()
-    "Upon exiting the minibuffer, we'll set everything back to normal"
-    (setq gc-cons-percentage .1)
-    (setq gc-cons-threshold default-gc-cons-threshold))
-
+***** Delete Specific Files
+#+name: init-delete-files-func-block
+#+begin_src emacs-lisp
   (defun djm/delete-custom-file ()
     "Custom function to delete my custom.el file."
     (interactive)
@@ -331,17 +320,55 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
           (delete-file djm--secret-file)
           (message "Secret file deleted!"))
       (message "Secret file does not exist!")))
+#+end_src
 
+***** No-Process Kill Buffer
+Sourced from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][andreyorst]]
+#+name: init-kill-buffer-proc-func-block
+#+begin_src emacs-lisp
   (defun djm/kill-buffer-when-no-processes (&rest _)
     "Kill buffer and its window when there's no processes left."
     (when (null (get-buffer-process (current-buffer)))
       (kill-buffer (current-buffer))))
+#+end_src
 
+***** Fetch Hunspell
+#+name: init-fetch-hunspell-dict-func-block
+#+begin_src emacs-lisp
   (defun djm/fetch-hunspell-dictionary ()
     (unless (file-exists-p "~/Library/Spelling/en_US.aff")
       (shell-command "bash $DOTFILES/bootstrap/bootstrap_dicts.sh")))
 #+end_src
 
+***** Garbage Collecting
+Sourced from [[https://github.com/seagle0128/.emacs.d/blob/master/init.el][Centaur Emacs]]
+#+name: init-gc-funcs-block
+#+begin_src emacs-lisp
+  (defun djm/gc-on-lose-focus ()
+    "A convienient time to run garbage collect is when Emacs loses focus."
+    (unless (frame-focus-state)
+      (garbage-collect)))
+
+  (defun djm/minibuffer-setup-hook ()
+    "With modern packages like Ivy/Counsel, let's extend the gc-threshold while
+  using the minibuffer to maximize performance"
+    (setq gc-cons-threshold extended-gc-cons-threshold))
+
+  (defun djm/minibuffer-exit-hook ()
+    "Upon exiting the minibuffer, we'll set everything back to normal"
+    (setq gc-cons-threshold default-gc-cons-threshold))
+
+  (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
+
+  (add-hook 'org-babel-pre-tangle-hook #'djm/minibuffer-setup-hook)
+  (add-hook 'org-babel-post-tangle-hook #'djm/minibuffer-exit-hook)
+
+  (if (boundp 'after-focus-change-function)
+      (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
+#+end_src
+
+***** Timestamp Messages
 [[https://web.archive.org/web/20191113215833/https://emacs.stackexchange.com/questions/32150/how-to-add-a-timestamp-to-each-entry-in-emacs-messages-buffer][StackOverflow - How to add a timestamp to each entry in Emacs' *Messages* buffer?]]
 [[https://web.archive.org/web/20191114151905/http://nullman.net/emacs/files/init-emacs.el.html][nullman.net - init-emacs.el]]
 
@@ -356,7 +383,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defun djm/message-with-timestamp (format-string &rest args)
     "Add timestamps to `*Messages*' buffer."
     (when (and (> (length format-string) 0)
-               (not (string= format-string " ")))
+               (not (string= format-string "")))
       (let ((deactivate-mark nil))
         (save-excursion
           (with-current-buffer "*Messages*"
@@ -364,36 +391,90 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
               (goto-char (point-max))
               (when (not (bolp)) (newline))
               (insert (djm/current-time-microseconds))))))))
+
+  (advice-add 'message :before #'djm/message-with-timestamp)
 #+end_src
 
+***** Enable Whitespace
 #+name: init-personal-func-whitespace-block
 #+begin_src emacs-lisp
   (defun djm/enable-trailing-whitespace ()
     "Show trailing spaces and delete on save."
     (setq show-trailing-whitespace t)
     (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+
+  (add-hook 'prog-mode-hook #'djm/enable-trailing-whitespace)
+  (add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
+  (add-hook 'text-mode-hook #'djm/enable-trailing-whitespace)
+  (add-hook 'conf-mode #'djm/enable-trailing-whitespace)
+#+end_src
+
+***** Protect Buffers
+#+name: init-protected-buffers-func-block
+#+begin_src emacs-lisp
+  (defvar *protected-buffers* '("*scratch*" "*Messages*" "*straight-process*" "*direnv*"))
+
+  (defun djm/protected-buffers ()
+    "Protects some buffers from being killed."
+    (dolist (buffer *protected-buffers*)
+      (if (get-buffer buffer)
+          (with-current-buffer buffer
+            (emacs-lock-mode 'kill))
+        (get-buffer-create buffer)
+        (with-current-buffer buffer
+          (emacs-lock-mode 'kill)))))
+
+  (add-hook 'after-init-hook #'djm/protected-buffers)
+#+end_src
+
+***** Async Tangle
+Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou]]
+#+name: init-async-tangle-func-block
+#+begin_src emacs-lisp
+  (defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
+    "The Configuration File.")
+
+  (defvar *config-last-change* (nth 5 (file-attributes *config-file*))
+    "Last modification time of the configuration file.")
+
+  (defvar *show-async-tangle-results* nil
+    "Keeps *emacs* async buffers arround for later inspection.")
+
+  (defun djm/config-updated ()
+    "Checks if the configuration file has been updated since the last time."
+    (time-less-p *config-last-change*
+                 (nth 5 (file-attributes *config-file*))))
+
+  (defun djm/config-tangle ()
+    "Tangle the org file asynchronously."
+    (when (djm/config-updated)
+      (setq *config-last-change*
+            (nth 5 (file-attributes *config-file*)))
+      (djm/async-babel-tangle *config-file*)))
+
+  (defun djm/async-babel-tangle (org-file)
+    "Tangles org-file async"
+    (let ((init-tangle-start-time (current-time))
+          (file (buffer-file-name))
+          (async-quiet-switch "-q"))
+      (async-start
+       `(lambda ()
+          (require 'org)
+          (org-babel-tangle-file ,org-file))
+       (unless *show-async-tangle-results*
+         `(lambda (result)
+            (if result
+                (message "SUCCESS: %s successfully tangled (%.2fs)."
+                         ,org-file
+                         (float-time (time-subtract (current-time)
+                                                    ',init-tangle-start-time)))
+              (message "ERROR: %s as tangle failed." ,org-file)))))))
 #+end_src
 
 **** Personal Hooks & Advice
-#+name: init-gc-hooks-block
-#+begin_src emacs-lisp
-  (add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
-  (add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
-  (add-hook 'prog-mode-hook #'djm/enable-trailing-whitespace)
-  (add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
-  (add-hook 'text-mode #'djm/enable-trailing-whitespace)
-  (add-hook 'conf-mode #'djm/enable-trailing-whitespace)
-  (add-hook 'org-babel-pre-tangle-hook #'djm/minibuffer-setup-hook)
-  (add-hook 'org-babel-post-tangle-hook #'djm/minibuffer-exit-hook)
-
-  (if (boundp 'after-focus-change-function)
-      (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-#+end_src
-
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (add-hook 'write-file-hooks 'time-stamp)
-  (advice-add 'message :before #'djm/message-with-timestamp)
 #+end_src
 
 **** Personal Keybindings
@@ -413,12 +494,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (fset 'view-hello-file 'ignore)
   (fset 'custom-safe-themes 't)
   (fset 'bb 'bury-buffer)
-#+end_src
-
-**** Personal Code & Packages
-#+name: init-personal-packages-block
-#+begin_src emacs-lisp
-
 #+end_src
 
 *** Defaults
@@ -451,7 +526,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                           auto-revert-use-notify nil))
 #+end_src
 
-**** Bytecomp
+**** Bytecomp [Built-in]
 #+name: init-bytecompt-block
 #+begin_src emacs-lisp
   (use-package bytecomp
@@ -534,6 +609,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package delsel
     :blackout t :straight nil
     :ghook ('after-init-hook #'delete-selection-mode))
+#+end_src
+
+**** Emacs-Lock [Built-in]
+#+name: init-emacs-lock-block
+#+begin_src emacs-lisp
+  (use-package emacs-lock
+    :blackout " 🔐 " :straight nil)
 #+end_src
 
 **** Epa [Built-In]
@@ -793,7 +875,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons
-    :straight t
+    :demand t :straight t
     :commands (all-the-icons-wicon
                all-the-icons-insert
                all-the-icons-install-fonts
@@ -1376,8 +1458,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (use-package company-box
     :blackout t :straight t
-    :ghook 'global-company-mode-hook
-    :custom (company-box-enable-icon t))
+    :ghook 'global-company-mode-hook)
 
   (use-package company-emoji
     :straight t
@@ -2084,7 +2165,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight dired-hacks)
 
   (use-package dired-narrow
-    :straight dired-hacks)
+    :straight dired-hacks
+    :general
+    (:keymaps
+     'dired-mode-map
+     "C-c C-n" #'dired-narrow
+     "C-c C-f" #'dired-narrow-fuzzy
+     "C-c C-r" #'dired-narrow-regexp))
 
   (use-package dired-collapse
     :straight dired-hacks)
@@ -2117,8 +2204,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :general
     (:keymaps
      'dired-mode-map
-     "TAB" #'dired-subtree-insert
-     ";" #'dired-subtree-remove))
+     "<tab>"     #'dired-subtree-toggle
+     "<backtab>" #'dired-subtree-cycle))
 #+end_src
 
 **** Dired-Git-Info
@@ -2207,7 +2294,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (use-package ibuf-ext
     :straight nil
-    :ghook ('ibuffer-hook #'ibuffer-auto-mode)
+    :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
     :functions (ibuffer-remove-alist
                 ibuffer-remove-duplicates
                 ibuffer-split-list)
@@ -2221,7 +2308,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight t
     :commands (ibuffer-projectile-set-filter-groups)
     :functions (ibuffer-do-sort-by-alphabetic)
-    :ghook ('ibuffer-hook #'config-ibuffer--setup-buffer)
+    :ghook ('ibuffer-mode-hook #'config-ibuffer--setup-buffer)
     :preface
     (defvar system-buffers '("*straight-process*"
                              "*direnv*"
@@ -2592,6 +2679,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 ** Programming Support
 *** Version Control
+**** Magit
+#+name: init-magit-block
+#+begin_src emacs-lisp
+  (use-package magit
+    :straight t
+    :general ("C-x g" #'magit-status))
+#+end_src
+
 **** Smerge-Mode [Built-In]
 #+name: init-smerge-mode-block
 #+begin_src emacs-lisp
@@ -2607,19 +2702,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :config (transient-bind-q-to-quit))
 #+end_src
 
-**** Magit
-#+name: init-magit-block
-#+begin_src emacs-lisp
-  (use-package magit
-    :general ("C-x g" #'magit-status))
-#+end_src
-
 **** Git-Commit
 #+name: init-git-commit-block
 #+begin_src emacs-lisp
   (use-package git-commit
-    :straight nil
-    :ghook 'magit-mode-hook
+    :blackout t :straight nil
     :config
     (general-setq git-commit-summary-max-length 50))
 #+end_src
@@ -2979,5 +3066,5 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 # time-stamp-active: t
 # time-stamp-start: "\/last updated\/:[ ]*"
 # time-stamp-end: "$"
-# firestarter: (org-babel-tangle)
+# firestarter: (djm/config-tangle)
 # End:

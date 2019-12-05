@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-04 17:38:03
+/last updated/: 2019-12-05 12:03:02
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -114,34 +114,31 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar default-gc-cons-threshold 20000000)
 
   (setq-default file-name-handler-alist nil
+                bidi-display-reordering 'left-to-right
                 gc-cons-threshold extended-gc-cons-threshold
                 load-prefer-newer nil
                 inhibit-default-init t
                 package-enable-at-startup nil)
-
-  (add-hook 'after-init-hook #'djm/return-vars-to-normal)
 
   (defun djm/return-vars-to-normal ()
     (setq-default file-name-handler-alist default-file-name-handler-alist
                   load-prefer-newer nil
                   debug-on-error nil))
 
+  (add-hook 'after-init-hook #'djm/return-vars-to-normal)
 
-  (run-with-idle-timer 5 nil (lambda ()
-                                (setq gc-cons-threshold default-gc-cons-threshold)))
+  (run-with-idle-timer 5 nil (lambda () (setq-default gc-cons-threshold default-gc-cons-threshold)))
 #+end_src
 
 ** Preliminary Configuration
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-  (setq-default bidi-display-reordering 'left-to-right)
-
   (setq-default initial-frame-alist '((window-divider-default-bottom-width . 2)
                                       (window-divider-default-right-width . 2)
                                       (window-divider-default-places . t)))
 
-  (setq-default default-frame-alist '((alpha 98 98)
+  (setq-default default-frame-alist '((alpha 100 100)
                                       (ns-transparent-titlebar . t)
                                       (internal-border-width . 5)
                                       (right-fringe . 3)
@@ -343,6 +340,14 @@ Sourced from [[https://github.com/seagle0128/.emacs.d/blob/master/init.el][Centa
 
   (if (boundp 'after-focus-change-function)
       (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
+
+  (defun djm/transparent-on-lose-focus ()
+    (if (equal (frame-parameter (selected-frame) 'alpha) '(70 70))
+      (set-frame-parameter (selected-frame) 'alpha '(100 100))
+    (set-frame-parameter (selected-frame) 'alpha '(70 70))))
+
+  (if (boundp 'after-focus-change-function)
+      (add-function :after after-focus-change-function #'djm/transparent-on-lose-focus))
 #+end_src
 
 ***** Timestamp Messages
@@ -451,7 +456,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Personal Hooks & Advice
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
-  (general-add-hook 'write-file-hooks 'time-stamp)
+  (general-add-hook 'write-file-functions 'time-stamp)
 #+end_src
 
 **** Personal Keybindings
@@ -713,7 +718,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package mwheel
     :straight nil
-    :ghook ('after-init-hook #'mouse-wheel-mode))
+    :init (general-setq mouse-wheel-mode nil))
 #+end_src
 
 **** NS-Win [Built-In]
@@ -1832,7 +1837,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package dumb-jump
     :blackout t :straight t
     :commands (dumb-jump-mode)
-    :config (setq dumb-jump-selector 'ivy))
+    :config (general-setq dumb-jump-selector 'ivy))
 #+end_src
 
 **** Dired
@@ -2422,7 +2427,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package magit
     :straight t
-    :general ("C-x g" #'magit-status))
+    :general ("C-x g" #'magit-status
+              "C-x M-g" #'magit-dispatch)
+    :config
+    (general-setq magit-view-git-manual-method 'man))
 #+end_src
 
 **** Smerge-Mode [Built-In]
@@ -2907,8 +2915,27 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-shackle-block
 #+begin_src emacs-lisp
   (use-package shackle
-    :blackout "" :straight t
-    :ghook 'after-init-hook)
+    :blackout t :straight t
+    :ghook 'after-init-hook
+    :config
+    (general-setq shackle-rules
+        '((magit-popup-mode         :select t   :align right :size 0.4)
+          (flycheck-error-list-mode :select nil :align below :size 0.25)
+          (compilation-mode         :select nil :align below :size 0.25)
+          (messages-buffer-mode     :select t   :align below :size 0.25)
+          (inferior-emacs-lisp-mode :select t   :align below :size 0.25)
+          (ert-results-mode         :select t   :align below :size 0.5)
+          (calendar-mode            :select t   :align below :size 0.25)
+          (racer-help-mode          :select t   :align right :size 0.5)
+          (help-mode                :select t   :align right :size 0.5)
+          (helpful-mode             :select t   :align right :size 0.5)
+          (" *Deletions*"           :select t   :align below :size 0.25)
+          (" *Marked Files*"        :select t   :align below :size 0.25)
+          ("*Org Select*"           :select t   :align below :size 0.33)
+          ("*Org Note*"             :select t   :align below :size 0.33)
+          ("*Org Links*"            :select t   :align below :size 0.2)
+          (" *Org todo*"            :select t   :align below :size 0.2)
+          ("*Man.*"                 :select t   :align below :size 0.5  :regexp t))))
 #+end_src
 
 ***** Tab-Line [Built-In]

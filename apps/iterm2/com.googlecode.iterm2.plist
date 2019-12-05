@@ -13,7 +13,7 @@
 	<key>Default Bookmark Guid</key>
 	<string>23D36E2A-965B-426C-9CDA-717FCF9A2AEF</string>
 	<key>DimBackgroundWindows</key>
-	<true/>
+	<false/>
 	<key>DimOnlyText</key>
 	<true/>
 	<key>EnableDivisionView</key>
@@ -86,7 +86,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>1610 1308 620 392 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>2564 0 1272 2137 0 0 3840 2137 </string>
+	<string>404 0 1272 1027 0 0 1680 1027 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>3841 0 1918 2137 3840 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -2829,7 +2829,7 @@
 			<key>Blur</key>
 			<true/>
 			<key>Blur Radius</key>
-			<real>19.936324159263961</real>
+			<real>16.992687182741118</real>
 			<key>Bold Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -3401,6 +3401,8 @@
 			<true/>
 			<key>Normal Font</key>
 			<string>Iosevka-SS09-Extralight 20</string>
+			<key>Only The Default BG Color Uses Transparency</key>
+			<false/>
 			<key>Option Key Sends</key>
 			<integer>2</integer>
 			<key>Prompt Before Closing 2</key>
@@ -4072,7 +4074,7 @@
 			<key>Title Components</key>
 			<integer>128</integer>
 			<key>Transparency</key>
-			<real>0.12500991434010153</real>
+			<real>0.48017726840101527</real>
 			<key>Unicode Normalization</key>
 			<integer>0</integer>
 			<key>Unicode Version</key>
@@ -5602,7 +5604,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>437</integer>
+	<integer>439</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -6392,7 +6394,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-12-03T22:14:55Z</date>
+	<date>2019-12-04T22:14:56Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -6402,7 +6404,7 @@
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
-	<real>0.39391899379432638</real>
+	<real>0.27555407801418452</real>
 	<key>StatusBarPosition</key>
 	<integer>1</integer>
 	<key>StretchTabsToFillBar</key>

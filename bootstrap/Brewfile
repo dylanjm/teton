@@ -59,7 +59,7 @@ brew "jags"
 brew "jansson"
 brew "node"
 brew "pandoc"
-brew "jupyterlab", link: false
+brew "jupyterlab"
 brew "khard"
 brew "ledger"
 brew "less"
@@ -81,7 +81,7 @@ brew "openssh"
 brew "pinentry-mac"
 brew "pkg-config"
 brew "poppler"
-brew "prettier", link: false
+brew "prettier"
 brew "pyenv"
 brew "pyenv-virtualenv", args: ["HEAD"]
 brew "ripgrep"

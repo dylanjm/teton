@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-04 14:56:28
+/last updated/: 2019-12-04 17:38:03
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -115,7 +115,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (setq-default file-name-handler-alist nil
                 gc-cons-threshold extended-gc-cons-threshold
-                load-prefer-newer t
+                load-prefer-newer nil
                 inhibit-default-init t
                 package-enable-at-startup nil)
 
@@ -178,17 +178,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (defvar straight-recipes-gnu-elpa-use-mirror t)
     (defvar bootstrap-version 5)
     (defvar bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-    (setq-default straight-cache-autoloads t
-                  straight-recipe-overrides nil
-                  straight-repository-branch "develop"
-                  straight-use-package-by-default t
-                  straight-check-for-modifications '(check-on-save find-when-checking))
-    (setq-default use-package-verbose t
-                  use-package-always-defer t
-                  use-package-enable-imenu-support t
-                  use-package-compute-statistics t))
+  (setq-default straight-cache-autoloads t
+                straight-recipe-overrides nil
+                straight-repository-branch "develop"
+                straight-use-package-by-default t
+                straight-check-for-modifications '(check-on-save find-when-checking))
+  (setq-default use-package-verbose nil
+                use-package-always-defer t
+                use-package-enable-imenu-support nil
+                use-package-compute-statistics nil)
 
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
@@ -203,23 +203,23 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 ** Environment
-#+name: early-init-environment-block
+#+name: init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :straight t
     :if (eq system-type 'darwin)
-    :hook ('after-init . exec-path-from-shell-initialize)
+    :hook (after-init . exec-path-from-shell-initialize)
     :init
-    (setq exec-path-from-shell-check-startup-files nil
-          exec-path-from-shell-variables '("ENV" "PATH" "MANPATH" "CACHE" "GPG_TTY")
-          exec-path-from-shell-arguments '("-l")))
+    (setq exec-path-from-shell-check-startup-files t
+          exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY")
+          exec-path-from-shell-arguments '("-i")))
 #+end_src
 
 ** No-Littering
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
-    :demand t :straight t
+    :straight t
     :preface
     (autoload 'no-littering-expand-etc-file-name "no-littering.el")
     (autoload 'no-littering-expand-var-file-name "no-littering.el")
@@ -237,13 +237,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: early-init-req-packages-block
 #+begin_src emacs-lisp
   (use-package el-patch :straight t)
-  (use-package general  :straight t)
-  (use-package blackout :straight (:host github :repo "raxod502/blackout"))
+  (use-package general  :demand t :straight t)
+  (use-package blackout :demand t :straight (:host github :repo "raxod502/blackout"))
 
   (eval-when-compile
-    (require 'el-patch)
-    (require 'general)
-    (require 'blackout))
+    (require 'el-patch))
 
   (straight-use-package 'org-plus-contrib)
 #+end_src
@@ -267,19 +265,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 **** Personal Functions
-***** After-Load-Theme-Hook
-#+name: init-after-load-theme-hook-block
-#+begin_src emacs-lisp
-  (defvar after-load-theme-hook nil
-    "Hook run after a color theme is loaded using `load-theme'.")
-
-  (defun djm/run-load-theme-hooks (&rest _)
-    "Run `after-load-theme-hook'."
-    (run-hooks 'after-load-theme-hook))
-
-  (advice-add 'load-theme :after #'djm/run-load-theme-hooks)
-#+end_src
-
 ***** Create Nonexistant Directories
 #+name: init-create-dir-func-block
 #+begin_src emacs-lisp
@@ -416,7 +401,7 @@ Sourced from [[https://github.com/seagle0128/.emacs.d/blob/master/init.el][Centa
         (with-current-buffer buffer
           (emacs-lock-mode 'kill)))))
 
-  (add-hook 'after-init-hook #'djm/protected-buffers)
+  (general-add-hook 'after-init-hook #'djm/protected-buffers)
 #+end_src
 
 ***** Async Tangle
@@ -466,7 +451,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Personal Hooks & Advice
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
-  (add-hook 'write-file-hooks 'time-stamp)
+  (general-add-hook 'write-file-hooks 'time-stamp)
 #+end_src
 
 **** Personal Keybindings
@@ -494,7 +479,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package advice
     :straight nil
-    :init
+    :config
     (general-setq-default ad-redefinition-action 'accept))
 #+end_src
 
@@ -510,7 +495,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package auth-source
     :straight nil
-    :init
+    :config
     (general-setq-default auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
                                          ,(no-littering-expand-etc-file-name "authinfo"))))
 #+end_src
@@ -521,11 +506,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package autorevert
     :blackout t :straight nil
     :ghook ('after-init-hook #'global-auto-revert-mode)
-    :init
-    (general-setq-default auto-revert-verbose nil
-                          global-auto-revert-non-file-buffers t
-                          autor-revert-interval 1
-                          auto-revert-use-notify nil))
+    :config
+    (general-setq auto-revert-verbose nil
+                  global-auto-revert-non-file-buffers t
+                  auto-revert-interval 1
+                  auto-revert-use-notify nil))
 #+end_src
 
 **** Bytecomp [Built-in]
@@ -533,8 +518,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package bytecomp
     :straight nil
-    :init
-    (general-setq-default byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)))
+    :config
+    (general-setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)))
 #+end_src
 
 **** Color [Built-In]
@@ -550,7 +535,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package comint
     :straight nil
-    :init (general-setq-default comint-prompt-read-only t))
+    :config (general-setq comint-prompt-read-only t))
 #+end_src
 
 **** Compile [Built-In]
@@ -558,11 +543,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package compile
     :straight nil
-    :init
-    (general-setq-default compilation-message-face 'compilation-base-face
-                          compilation-always-kill t
-                          compilation-ask-about-save nil
-                          compilation-scroll-output 'first-error))
+    :config
+    (general-setq compilation-message-face 'compilation-base-face
+                  compilation-always-kill t
+                  compilation-ask-about-save nil
+                  compilation-scroll-output 'first-error))
 #+end_src
 
 **** Cus-Start [Built-In]
@@ -579,7 +564,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           cursor-type 'bar
                           delete-by-moving-to-trash t
                           disabled-command-function nil
-                          default-directory (getenv "HOME")
+                          default-directory "~"
                           echo-keystrokes 0.02
                           enable-recursive-minibuffers t
                           fast-but-imprecise-scrolling t
@@ -638,7 +623,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package epa
     :straight nil
-    :init (general-setq-default epa-replace-original-text t))
+    :config (general-setq-default epa-replace-original-text t))
 #+end_src
 
 **** Epg [Built-In]
@@ -646,7 +631,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package epg
     :straight nil
-    :init (general-setq-default epg-pinentry-mode 'loopback))
+    :config (general-setq-default epg-pinentry-mode 'loopback))
 #+end_src
 
 **** Face-Remap [Built-In]
@@ -664,24 +649,23 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package files
     :straight nil
-    :init
-    (general-setq-default auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
-                          backup-by-copying t
-                          backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
-                          confirm-kill-processes nil
-                          confirm-nonexistent-file-or-buffer nil
-                          create-lockfiles nil
-                          delete-old-versions t
-                          find-file-visit-truename t
-                          insert-directory-program "gls"
-                          kept-new-versions 6
-                          large-file-warning-threshold 10000000000
-                          require-final-newline t
-                          select-enable-clipboard t
-                          version-control t
-                          view-read-only t)
-    (unless (file-exists-p djm--auto-save-file-cache)
-      (make-directoy djm--auto-save-file-cache)))
+    :config
+    (general-setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
+                  backup-by-copying t
+                  backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
+                  confirm-kill-processes nil
+                  confirm-nonexistent-file-or-buffer nil
+                  create-lockfiles nil
+                  delete-old-versions t
+                  enable-local-variables :all
+                  find-file-visit-truename t
+                  insert-directory-program "gls"
+                  kept-new-versions 6
+                  large-file-warning-threshold 10000000000
+                  require-final-newline t
+                  select-enable-clipboard t
+                  version-control t
+                  view-read-only t))
 #+end_src
 
 **** Frame [Built-In]
@@ -703,7 +687,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package gnutls
     :straight nil
-    :init
+    :config
     (general-setq gnutls-verify-error t
                   gnutls-min-prime-bits 2048))
 #+end_src
@@ -714,7 +698,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package mb-depth
     :straight nil
     :ghook ('after-init-hook #'minibuffer-depth-indicate-mode)
-    :init
+    :config
     (defun djm/kill-minibuffer ()
       "Exit the minibuffer if it is not active"
       (when (and (>= (recursion-depth) 1)
@@ -729,10 +713,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package mwheel
     :straight nil
-    :init
-    (general-setq-default mouse-wheel-scroll-amount '(5 ((shift) . 2))
-                          mouse-wheel-progressive-speed nil)
-    (mouse-wheel-mode -1))
+    :ghook ('after-init-hook #'mouse-wheel-mode))
 #+end_src
 
 **** NS-Win [Built-In]
@@ -740,15 +721,15 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package ns-win
     :straight nil
-    :init
-    (general-setq-default mac-command-modifier 'meta
-                          mac-option-modifier 'meta
-                          mac-right-command-modifier 'super
-                          mac-right-option-modifier 'none
-                          mac-function-modifier 'hyper)
-    (general-setq-default ns-pop-up-frames nil
-                          ns-use-native-fullscreen nil
-                          ns-use-thin-smoothing t))
+    :config
+    (general-setq mac-command-modifier 'meta
+                  mac-option-modifier 'meta
+                  mac-right-command-modifier 'super
+                  mac-right-option-modifier 'none
+                  mac-function-modifier 'hyper)
+    (general-setq  ns-pop-up-frames nil
+                   ns-use-native-fullscreen nil
+                   ns-use-thin-smoothing t))
 #+end_src
 
 **** Pixel-Scroll [Built-In]
@@ -756,7 +737,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package pixel-scroll
     :blackout t :straight nil
-    :ghook ('after-init-hook #'pixel-scroll-mode))
+    :ghook 'after-init-hook)
 #+end_src
 
 **** Recentf [Built-In]
@@ -796,9 +777,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package savehist
     :blackout t :straight nil
     :ghook 'after-init-hook
-    :init
-    (general-setq
-                  savehist-additional-variables '(mark-ring
+    :config
+    (general-setq savehist-additional-variables '(mark-ring
                                                   global-mark-ring
                                                   search-ring
                                                   kill-ring
@@ -820,7 +800,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package select
     :straight nil
-    :init (general-setq-default select-enable-clipboard t))
+    :config (general-setq select-enable-clipboard t))
 #+end_src
 
 **** Simple [Built-In]
@@ -828,23 +808,23 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package simple
     :straight nil
-    :init
+    :config
     (blackout 'visual-line-mode)
-    (general-setq-default blink-matching-paren t
-                          column-number-mode t
-                          display-time-mode t
-                          eval-expression-print-length nil
-                          eval-expression-print-level nil
-                          inhibit-point-motion-hooks t
-                          kill-do-not-save-duplicates t
-                          kill-ring-max 300
-                          line-move-visual nil
-                          line-number-mode t
-                          next-line-add-newlines nil
-                          save-interprogram-paste-before-kill t
-                          set-mark-command-repeat-pop t
-                          show-trailing-whitespace nil
-                          track-eol t))
+    (general-setq blink-matching-paren t
+                 column-number-mode t
+                 display-time-mode t
+                 eval-expression-print-length nil
+                 eval-expression-print-level nil
+                 inhibit-point-motion-hooks t
+                 kill-do-not-save-duplicates t
+                 kill-ring-max 300
+                 line-move-visual nil
+                 line-number-mode t
+                 next-line-add-newlines nil
+                 save-interprogram-paste-before-kill t
+                 set-mark-command-repeat-pop t
+                 show-trailing-whitespace nil
+                 track-eol t))
 #+end_src
 
 **** Time [Built-In]
@@ -853,7 +833,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package time
     :straight nil
     :ghook ('after-init-hook #'display-time-mode)
-    :init
+    :config
     (format-time-string "%a %B %d %T")
     (general-setq-default display-time-24hr-format t
                           display-time-day-and-date t
@@ -873,10 +853,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package uniquify
     :straight nil
-    :init
-    (general-setq-default uniquify-ignore-buffers-re "^\\*"
-                          uniquify-buffer-name-style 'forward
-                          uniquify-separator "/"))
+    :config
+    (general-setq uniquify-ignore-buffers-re "^\\*"
+                  uniquify-buffer-name-style 'forward
+                  uniquify-separator "/"))
 #+end_src
 
 **** VC-Hooks [Built-In]
@@ -884,27 +864,19 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package vc-hooks
     :straight nil
-    :init
-    (general-setq-default vc-handled-backends nil
-                          vc-follow-symlinks t))
+    :config
+    (general-setq vc-handled-backends nil
+                  vc-follow-symlinks t))
 #+end_src
 
-**** Whitespace [Built-In]
-#+name: init-whitespace-block
-#+begin_src emacs-lisp
-  (use-package whitespace
-    :straight nil
-    :init
-    (general-setq-default whitespace-style '(face empty indentation::space tab trailing)))
-#+end_src
 **** Window [Built-In]
 #+name: init-window-block
 #+begin_src emacs-lisp
   (use-package window
     :straight nil
     :init
-    (general-setq-default split-width-threshold 160
-                          split-height-threshold nil))
+    (general-setq split-width-threshold 100
+                  split-height-threshold nil))
 #+end_src
 
 **** Winner [Built-In]
@@ -914,16 +886,16 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :blackout t :straight nil
     :ghook 'after-init-hook
     :init
-    (general-setq-default winner-boring-buffers '("*Completions*"
-                                                  "*Compile-Log*"
-                                                  "*inferior-lisp*"
-                                                  "*Fuzzy Completions*"
-                                                  "*Apropos*"
-                                                  "*Help*"
-                                                  "*cvs*"
-                                                  "*Buffer List*"
-                                                  "*Ibuffer*"
-                                                  "*esh command on file*")))
+    (general-setq winner-boring-buffers '("*Completions*"
+                                          "*Compile-Log*"
+                                          "*inferior-lisp*"
+                                          "*Fuzzy Completions*"
+                                          "*Apropos*"
+                                          "*Help*"
+                                          "*cvs*"
+                                          "*Buffer List*"
+                                          "*Ibuffer*"
+                                          "*esh command on file*")))
 #+end_src
 
 *** User Files
@@ -933,9 +905,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package cus-edit
     :straight nil
     :init
-    (general-setq-default custom-file djm--custom-file)
-    (when (file-exists-p custom-file)
-      (load custom-file :noerror)))
+    (general-setq-default custom-file djm--custom-file))
 #+end_src
 
 **** Secret File
@@ -1042,27 +1012,29 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-eterm-256-color-block
 #+begin_src emacs-lisp
   (use-package eterm-256color
-    :blackout "" :straight t)
+    :blackout t :straight t)
 #+end_src
+
 **** VTerm
 #+name: init-vterm-block
 #+begin_src emacs-lisp
-  (use-package vterm
-    :straight t
-    :preface
-    (progn
-      (defun config-terminal--build-vterm (package &rest _)
-        (when (member package '("vterm"))
-          (let* ((base-dir (straight--build-dir "vterm"))
-                 (build-dir (f-join base-dir "build")))
-            (mkdir build-dir t)
-            (let ((default-directory build-dir))
-              (with-current-buffer (get-buffer-create "*vterm build*")
-                (erase-buffer)
-                (let ((default-directory base-dir))
-                  (call-process "cmake" nil t nil base-dir)
-                  (call-process "make" nil t)))))))
-      (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm)))
+    (use-package vterm
+      :straight t
+      :preface
+      (progn
+        (defun config-terminal--build-vterm (package &rest _)
+          (when (member package '("vterm"))
+            (let* ((base-dir (straight--build-dir "vterm"))
+                   (build-dir (f-join base-dir "build")))
+              (mkdir build-dir t)
+              (let ((default-directory build-dir))
+                (with-current-buffer (get-buffer-create "*vterm build*")
+                  (erase-buffer)
+                  (let ((default-directory base-dir))
+                    (call-process "/usr/local/bin/cmake" nil t nil base-dir)
+                    (call-process "/usr/bin/make" nil t))
+                  (message-mode))))))
+        (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm)))
 #+end_src
 
 **** VTerm-Toggle
@@ -1159,12 +1131,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package ivy
     :blackout t :straight t
-    :ghook 'after-init-hook
     :general
-    ([remap ido-switch-buffer] #'ivy-switch-buffer
-     "C-x B"                   #'ivy-switch-buffer-other-window
-     "C-c C-r"                 #'ivy-resume
-     [remap kill-ring-save]    #'ivy-kill-ring-save)
+    ("C-x b"   #'ivy-switch-buffer
+     "C-x B"   #'ivy-switch-buffer-other-window
+     "C-c C-r" #'ivy-resume
+     "M-w"     #'ivy-kill-ring-save)
     (:keymaps
      'ivy-minibuffer-map
      "<tab>" #'ivy-alt-done
@@ -1172,9 +1143,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
      "C-o"   #'ivy-occur)
     (:keymaps
      'ivy-switch-buffer-map
-     [remap kill-buffer] #'ivy-switch-buffer-kill)
+     "C-x k" #'ivy-switch-buffer-kill)
     :config
-    (general-setq ivy-dynamic-exhibit-delay-ms 50
+    (general-setq ivy-dynamic-exhibit-delay-ms 100
                   ivy-use-selectable-prompt t
                   ivy-case-fold-search-default 'auto
                   ivy-initial-inputs-alist nil
@@ -1190,7 +1161,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-ivy-rich-block
 #+begin_src emacs-lisp
   (use-package ivy-rich
-    :straight t
+    :straight t :after(ivy)
     :ghook 'counsel-mode-hook
     :config
     (general-setq ivy-rich-path-style 'abbrev)
@@ -1222,35 +1193,35 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
              ((counsel-describe-variable-transformer (:width 40))
               (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face)))))))
 #+end_src
+
 **** Counsel
 #+name: init-counsel-block
 #+begin_src emacs-lisp
   (use-package counsel
     :blackout t :straight t
-    :ghook 'ivy-mode-hook
+    :gfhook #'ivy-mode
     :general
-    (:keymaps
-     'counsel-mode-map
-     [remap dired]                    #'counsel-dired
+    ([remap dired]                    #'counsel-dired
      [remap execute-extended-command] #'counsel-M-x
      [remap find-file]                #'counsel-find-file
-     "C-x C-d"                        #'counsel-dired-jump
-     "C-x C-i"                        #'counsel-imenu
-     "C-x C-l"                        #'counsel-find-library
-     "C-x C-r"                        #'counsel-recentf
-     "C-x C-v"                        #'counsel-set-variable
-     "C-x C-u"                        #'counsel-unicode-char
-     "C-c g"                          #'counsel-grep
-     "C-c h"                          #'counsel-command-history
-     "C-c j"                          #'counsel-git
-     "C-c j"                          #'counsel-git-grep
-     "C-c k"                          #'counsel-rg
-     "C-c z"                          #'counsel-fzf
-     "C-c c w"                        #'counsel-colors-web
-     "C-h F"                          #'counsel-describe-face
-     "C-h f"                          #'counsel-describe-function
-     "C-h v"                          #'counsel-describe-variable)
-
+     "C-x C-r"                        #'counsel-recentf)
+    (:keymaps
+     'counsel-mode-map
+     "C-x C-d" #'counsel-dired-jump
+     "C-x C-i" #'counsel-imenu
+     "C-x C-l" #'counsel-find-library
+     "C-x C-v" #'counsel-set-variable
+     "C-x C-u" #'counsel-unicode-char
+     "C-c g"   #'counsel-grep
+     "C-c h"   #'counsel-command-history
+     "C-c j"   #'counsel-git
+     "C-c j"   #'counsel-git-grep
+     "C-c k"   #'counsel-rg
+     "C-c z"   #'counsel-fzf
+     "C-c c w" #'counsel-colors-web
+     "C-h F"   #'counsel-describe-face
+     "C-h f"   #'counsel-describe-function
+     "C-h v"   #'counsel-describe-variable)
     :config
     (use-package ivy-prescient
       :demand t :straight t
@@ -1272,7 +1243,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                                           (counsel-describe-face . ivy--regex-fuzzy)
                                           (counsel-M-x . ivy-prescient-re-builder)
                                           (counsel-find-file . ivy--regex-fuzzy)
-                                          (t . ivy-prescient-re-builder))))
+                                          (t . ivy-prescient-re-builder)))
+    (counsel-mode))
 #+end_src
 
 **** Counsel-Projectile
@@ -1934,7 +1906,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight dired-hacks)
 
   (use-package dired-rainbow
-    :straight dired-hacks)
+    :straight t)
 
   (use-package dired-narrow
     :straight dired-hacks
@@ -2656,7 +2628,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package sh-mode
     :straight nil
     :mode ("\\.sh'" "\\.zsh'" "\\.bash'")
-    :hook (after-save . executable-make-buffer-file-executable-if-script-p))
+    :config
+    (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
 *** Elisp
@@ -2693,8 +2666,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** R
 #+name: init-R-block
 #+begin_src emacs-lisp
-  (use-package stan-mode
-    :disabled t :straight t)
+
 #+end_src
 
 *** Julia
@@ -2761,38 +2733,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** C++
 #+name: init-c++-block
 #+begin_src emacs-lisp
-  (defconst moose-c-style
-    '("Moose C++ Programming Style."
-      (c-tab-always-indent . t)
-      (c-basic-offset . 2)
-      (c-hanging-braces-alist . ((substatement-open before after)))
-      (c-offsets-alist . ((innamespace . 0)
-                          (member-init-intro . 4)
-                          (statement-block-into . +)
-                          (substatement-open . 0)
-                          (substatement-label . 0)
-                          (label . 0)
-                          (statement-cont . +)
-                          (case-label . +)))))
-
-
-  (c-add-style "MOOSE" moose-c-style)
-  ;;(setf (map-elt c-default-style 'other) "MOOSE")
-
-  (setq auto-mode-alist
-        (append '(("\\.h$" . c++-mode)
-                  ("\\.C$" . c++-mode)
-                  ("\\.i$" . conf-mode)
-                  ("tests" . conf-mode)
-                  ("\\.cu". c++-mode))
-                auto-mode-alist))
-
-  (use-package c-mode
-    :straight nil
-    :config
-    (c-toggle-auto-hungry-state)
-    (c-toggle-auto-newline)
-    (c-toggle-auto-state))
 #+end_src
 
 ** Fun
@@ -2862,7 +2802,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-beacon-block
 #+begin_src emacs-lisp
   (use-package beacon
-    :defer 30 :blackout "" :straight t
+    :defer 30 :blackout t :straight t
     :config
     (general-setq beacon-push-mark 10
                   beacon-color .60)
@@ -2923,14 +2863,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :commands (hl-line-mode global-hl-line-mode))
 #+end_src
 
-***** Highlight-Thing
-#+name: init-highlight-thing-block
-#+begin_src emacs-lisp
-  (use-package highlight-thing
-    :blackout t :straight t
-    :ghook 'emacs-lisp-mode-hook)
-#+end_src
-
 ***** Linum-Relative
 #+name: init-linum-relative-block
 #+begin_src emacs-lisp
@@ -2970,6 +2902,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package rainbow-mode
     :blackout t :straight t)
 #+end_src
+
 ***** Shackle
 #+name: init-shackle-block
 #+begin_src emacs-lisp
@@ -2984,15 +2917,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package tab-line
     :straight nil)
 #+end_src
-
-***** Volatile-Highlights
-#+name: init-volatile-highlights-block
-#+begin_src emacs-lisp
-  (use-package volatile-highlights
-    :blackout t :straight t
-    :ghook 'prog-mode-hook 'text-mode-hook)
-#+end_src
-
 
 ***** Whitespace-Cleanup
 #+name: init-whitespace-cleanup-block
@@ -3011,12 +2935,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :preface
     (defun djm/load-gruvbox-theme ()
       (load-theme 'gruvbox-dark-hard t)
-      (set-face-attribute 'variable-pitch nil :inherit 'default
-                          :family "Iosevka Aile" :weight 'ultra-light)
-      (set-face-attribute 'font-lock-comment-face nil
-                          :family "Iosevka SS09" :weight 'ultra-light :slant 'italic)
-      (set-face-attribute 'fixed-pitch nil :inherit 'default
-                          :family "Iosevka SS09" :weight 'ultra-light)
+      (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'ultra-light)
+      (set-face-attribute 'font-lock-comment-face nil :family "Iosevka SS09" :weight 'ultra-light :slant 'italic)
+      (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka SS09" :weight 'ultra-light)
 
       ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
       (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)

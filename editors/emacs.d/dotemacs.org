@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-05 15:00:30
+/last updated/: 2019-12-06 15:43:08
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -19,7 +19,6 @@
 - [[#init][Init]]
   - [[#header-1][Header]]
   - [[#straight-package-manager][Straight Package Manager]]
-  - [[#environment][Environment]]
   - [[#no-littering][No-Littering]]
   - [[#required-packages][Required Packages]]
   - [[#general-user-settings--tools][General User Settings & Tools]]
@@ -181,6 +180,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 straight-recipe-overrides nil
                 straight-repository-branch "develop"
                 straight-use-package-by-default t
+                straight-enable-use-package-integration t
                 straight-check-for-modifications '(check-on-save find-when-checking))
   (setq-default use-package-verbose nil
                 use-package-always-defer t
@@ -197,19 +197,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (load bootstrap-file nil 'nomessage)
   (straight-use-package 'use-package)
-#+end_src
-
-** Environment
-#+name: init-environment-block
-#+begin_src emacs-lisp
-  (use-package exec-path-from-shell
-    :straight t
-    :if (eq system-type 'darwin)
-    :hook (after-init . exec-path-from-shell-initialize)
-    :init
-    (setq exec-path-from-shell-check-startup-files t
-          exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY")
-          exec-path-from-shell-arguments '("-i")))
 #+end_src
 
 ** No-Littering
@@ -382,13 +369,13 @@ Sourced from [[https://github.com/seagle0128/.emacs.d/blob/master/init.el][Centa
 #+begin_src emacs-lisp
   (defun djm/enable-trailing-whitespace ()
     "Show trailing spaces and delete on save."
-    (setq show-trailing-whitespace t)
+    (general-setq show-trailing-whitespace t)
     (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
 
-  (add-hook 'prog-mode-hook #'djm/enable-trailing-whitespace)
-  (add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
-  (add-hook 'text-mode-hook #'djm/enable-trailing-whitespace)
-  (add-hook 'conf-mode #'djm/enable-trailing-whitespace)
+  (general-add-hook 'prog-mode-hook #'djm/enable-trailing-whitespace)
+  (general-add-hook 'org-mode-hook #'djm/enable-trailing-whitespace)
+  (general-add-hook 'text-mode-hook #'djm/enable-trailing-whitespace)
+  (general-add-hook 'conf-mode #'djm/enable-trailing-whitespace)
 #+end_src
 
 ***** Protect Buffers
@@ -549,6 +536,12 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package compile
     :straight nil
     :config
+    ;; http://stackoverflow.com/a/20788581/2744245
+    (defun my-colorize-compilation-buffer ()
+      (require 'ansi-color)
+      (when (eq major-mode 'compilation-mode)
+        (ansi-color-apply-on-region compilation-filter-start (point-max))))
+
     (general-setq compilation-message-face 'compilation-base-face
                   compilation-always-kill t
                   compilation-ask-about-save nil
@@ -755,23 +748,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config
     (general-setq recentf-max-saved-items 2000
                   recentf-max-menu-items 100
-                  recentf-auto-cleanup 'never
-                  recentf-exclude `(,djm--emacs-cache
-                                    ,djm--org-agenda-directory
-                                    "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-                                    "\\.?emacs-head"
-                                    "\\.?straight"
-                                    "\\.?cache"
-                                    ".cask"
-                                    "url"
-                                    "COMMIT_EDITMSG\\'"
-                                    "bookmarks"
-                                    "^/tmp/"
-                                    "^/ssh:"
-                                    "\\.?ido\\.last$"
-                                    "\\.revive$"
-                                    "/TAGS$"
-                                    "^/var/folders/.+$"))
+                  recentf-auto-cleanup 'never)
     (recentf-mode)
     (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 #+end_src
@@ -816,20 +793,20 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config
     (blackout 'visual-line-mode)
     (general-setq blink-matching-paren t
-                 column-number-mode t
-                 display-time-mode t
-                 eval-expression-print-length nil
-                 eval-expression-print-level nil
-                 inhibit-point-motion-hooks t
-                 kill-do-not-save-duplicates t
-                 kill-ring-max 300
-                 line-move-visual nil
-                 line-number-mode t
-                 next-line-add-newlines nil
-                 save-interprogram-paste-before-kill t
-                 set-mark-command-repeat-pop t
-                 show-trailing-whitespace nil
-                 track-eol t))
+                  column-number-mode t
+                  display-time-mode t
+                  eval-expression-print-length nil
+                  eval-expression-print-level nil
+                  inhibit-point-motion-hooks t
+                  kill-do-not-save-duplicates t
+                  kill-ring-max 300
+                  line-move-visual nil
+                  line-number-mode t
+                  next-line-add-newlines nil
+                  save-interprogram-paste-before-kill t
+                  set-mark-command-repeat-pop t
+                  show-trailing-whitespace nil
+                  track-eol t))
 #+end_src
 
 **** Time [Built-In]
@@ -839,8 +816,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight nil
     :ghook ('after-init-hook #'display-time-mode)
     :config
-    (format-time-string "%a %B %d %T")
-    (general-setq-default display-time-24hr-format t
+    (general-setq-default display-time-24hr-format nil
                           display-time-day-and-date t
                           display-time-default-load-average nil))
 #+end_src
@@ -850,7 +826,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package tooltip
     :straight nil
-    :init (tooltip-mode -1))
+    :config (tooltip-mode -1))
 #+end_src
 
 **** Uniquify [Built-In]
@@ -923,6 +899,18 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 ** Utilities
 *** System
+**** Environment
+#+name: init-environment-block
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell
+    :straight t
+    :if (eq system-type 'darwin)
+    :ghook ('after-init #'exec-path-from-shell-initialize)
+    :init
+    (general-setq exec-path-from-shell-check-startup-files t
+                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY")
+                  exec-path-from-shell-arguments '("-i")))
+#+end_src
 **** Async
 #+name: init-async-block
 #+begin_src emacs-lisp
@@ -1023,23 +1011,25 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** VTerm
 #+name: init-vterm-block
 #+begin_src emacs-lisp
-    (use-package vterm
-      :straight t
-      :preface
-      (progn
-        (defun config-terminal--build-vterm (package &rest _)
-          (when (member package '("vterm"))
-            (let* ((base-dir (straight--build-dir "vterm"))
-                   (build-dir (f-join base-dir "build")))
-              (mkdir build-dir t)
-              (let ((default-directory build-dir))
-                (with-current-buffer (get-buffer-create "*vterm build*")
-                  (erase-buffer)
-                  (let ((default-directory base-dir))
-                    (call-process "/usr/local/bin/cmake" nil t nil base-dir)
-                    (call-process "/usr/bin/make" nil t))
-                  (message-mode))))))
-        (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm)))
+  (use-package vterm
+    :straight t
+    :preface
+    (defun config-terminal--build-vterm (package &rest _)
+        (when (member package '("vterm"))
+          (let* ((base-dir (straight--build-dir "vterm"))
+                 (build-dir (f-join base-dir "build")))
+            (mkdir build-dir t)
+            (let ((default-directory build-dir))
+              (with-current-buffer (get-buffer-create "*vterm build*")
+                (erase-buffer)
+                (let ((default-directory base-dir))
+                  (call-process "/usr/local/bin/cmake" nil t nil base-dir)
+                  (call-process "/usr/bin/make" nil t))
+                (message-mode))))))
+      (add-hook 'straight-use-package-pre-build-functions #'config-terminal--build-vterm)
+    :config
+    (general-setq vterm-shell "zsh"
+                  vterm-max-scrollback 10000))
 #+end_src
 
 **** VTerm-Toggle
@@ -1049,7 +1039,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t
     :general
     ("C-c C-t" #'vterm-toggle
-     "C-c C-y" #'term-toggle-cd))
+     "C-c C-y" #'term-toggle-cd)
+    :config
+    (general-setq vterm-toggle-fullscreen-p nil))
 #+end_src
 
 *** Project Management
@@ -1169,34 +1161,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t :after(ivy)
     :ghook 'counsel-mode-hook
     :config
-    (general-setq ivy-rich-path-style 'abbrev)
-    (general-setq ivy-rich-display-transformers-list
-          '(counsel-recentf
-            (:columns
-             ((ivy-rich-candidate (:width 80))
-              (ivy-rich-file-last-modified-time (:face font-lock-doc-face))))
-            ivy-switch-buffer
-            (:columns
-             ((ivy-rich-candidate (:width 30))
-              (ivy-rich-switch-buffer-size (:width 7))
-              (ivy-rich-switch-buffer-indicators (:width 4 :face error :align right))
-              (ivy-rich-switch-buffer-major-mode (:width 12 :face warning))
-              (ivy-rich-switch-buffer-project (:width 15 :face success))
-              (ivy-rich-switch-buffer-path (:width (lambda (x) (ivy-rich-switch-buffer-shorten-path x (ivy-rich-minibuffer-width 0.3))))))
-             :predicate
-             (lambda (cand) (get-buffer cand)))
-            counsel-M-x
-            (:columns
-             ((counsel-M-x-transformer (:width 40))
-              (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))
-            counsel-describe-function
-            (:columns
-             ((counsel-describe-function-transformer (:width 40))
-              (ivy-rich-counsel-function-docstring (:face font-lock-doc-face))))
-            counsel-describe-variable
-            (:columns
-             ((counsel-describe-variable-transformer (:width 40))
-              (ivy-rich-counsel-variable-docstring (:face font-lock-doc-face)))))))
+    (general-setq ivy-rich-path-style 'abbrev))
 #+end_src
 
 **** Counsel
@@ -1380,11 +1345,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   (list backends))
                 '(:with company-yasnippet))))
 
+    (general-pushnew #'org-self-insert-command company-begin-commands)
+
     (general-setq company-backends
                   (mapcar #'djm/configure-company-backends-with-yas company-backends)))
-
-  (general-with-package 'company
-    (general-pushnew #'org-self-insert-command company-begin-commands))
 #+end_src
 
 **** Company-Box
@@ -1451,6 +1415,15 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t :after (company python)
     :init
     (general-pushnew '(company-anaconda :with company-yasnippet) company-backends))
+#+end_src
+
+**** Company-Shell
+#+name: init-company-shell-block
+#+begin_src emacs-lisp
+  (use-package company-shell
+    :blackout t :straight t :after (company)
+    :init
+    (general-pushnew '(company-shell company-shell-env) company-backends))
 #+end_src
 
 **** Yasnippet
@@ -1710,7 +1683,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-writeroom-block
 #+begin_src emacs-lisp
   (use-package writeroom-mode
-    :blackout t :straight t)
+    :straight t)
 #+end_src
 
 **** Whitespace-Butler
@@ -1785,7 +1758,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :gfhook
     #'display-fill-column-indicator-mode
     #'show-paren-mode
-    #'global-prettify-symbols-mode)
+    #'global-prettify-symbols-mode
+    :config
+    (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
 *** Navigation
@@ -1843,7 +1818,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package dumb-jump
     :blackout t :straight t
     :commands (dumb-jump-mode)
-    :config (general-setq dumb-jump-selector 'ivy))
+    :config (general-setq dumb-jump-selector 'ivy
+                          dumb-jump-prefer-searcher 'rg))
 #+end_src
 
 **** Dired
@@ -1873,7 +1849,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package wdired
     :after (dired)
-    :straight nil)
+    :straight nil
+    :config
+    (general-setq wdired-create-parent-directories t
+                  wdired-allow-to-change-permissions t))
 #+end_src
 
 **** Dired-Aux
@@ -1903,6 +1882,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-diredfl-block
 #+begin_src emacs-lisp
   (use-package diredfl
+    :blackout t :straight t
+    :ghook 'dired-mode-hook)
+#+end_src
+
+**** Dired-All-The-Icons
+#+name: init-dired-all-the-icons-block
+#+begin_src emacs-lisp
+  (use-package all-the-icons-dired
     :blackout t :straight t
     :ghook 'dired-mode-hook)
 #+end_src
@@ -2450,7 +2437,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-transient-block
 #+begin_src emacs-lisp
   (use-package transient
-    :straight t
+    :straight nil
     :config (transient-bind-q-to-quit))
 #+end_src
 
@@ -2461,6 +2448,13 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :blackout "" :straight nil
     :config
     (general-setq git-commit-summary-max-length 50))
+#+end_src
+
+**** Forge
+#+name: init-forge-block
+#+begin_src emacs-lisp
+  (use-package forge
+    :straight t :after (magit))
 #+end_src
 
 **** Git-Gutter
@@ -2476,6 +2470,20 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
   (use-package git-timemachine
+    :straight t)
+#+end_src
+
+**** With-Edititor
+#+name: init-with-editor-block
+#+begin_src emacs-lisp
+  (use-package with-editor
+    :straight t)
+#+end_src
+
+**** VDiff
+#+name: init-vdiff-block
+#+begin_src emacs-lisp
+  (use-package vdiff
     :straight t)
 #+end_src
 
@@ -2552,7 +2560,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-flycheck-popup-tip-block
 #+begin_src emacs-lisp
   (use-package flycheck-popup-tip
-    :blackout "" :straight t :after (flycheck)
+    :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook)
 #+end_src
@@ -2639,14 +2647,21 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** Shell
 #+name: init-shell-block
 #+begin_src emacs-lisp
-  (use-package sh-mode
-    :straight nil
-    :mode ("\\.sh'" "\\.zsh'" "\\.bash'")
-    :config
-    (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
+  (use-package sh-script
+    :straight t
+    :mode ("\\.sh'" "\\.zsh'" "\\.bash'"))
 #+end_src
 
 *** Elisp
+**** Elisp-Mode
+#+name: init-elisp-mode-block
+#+begin_src emacs-lisp
+  (use-package elisp-mode
+    :blackout "Elisp" :straight nil
+    :config
+    (general-setq emacs-lisp-docstring-fill-column 80))
+#+end_src
+
 **** Parinfer
 #+name: init-parinfer-block
 #+begin_src emacs-lisp
@@ -2804,7 +2819,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t
     :ghook ('after-init-hook #'sml/setup)
     :init
-    (general-setq display-time-format "%a %B %d %H:%M"
+    (general-setq display-time-format " %a %B %d %I:%M %p"
                   sml/vc-mode-show-backend t
                   sml/theme nil
                   sml/no-confirm-load-theme t))

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-06 15:43:08
+/last updated/: 2019-12-06 19:44:17
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -51,7 +51,6 @@
   - [[#languages][Languages]]
     - [[#markdown][Markdown]]
     - [[#yaml][YAML]]
-    - [[#json][JSON]]
     - [[#makefiles][Makefiles]]
     - [[#latex][LaTeX]]
     - [[#shell][Shell]]
@@ -116,7 +115,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 bidi-display-reordering 'left-to-right
                 gc-cons-threshold extended-gc-cons-threshold
                 load-prefer-newer nil
+                command-line-x-option-alist nil
                 inhibit-default-init t
+                frame-inhibit-implied-resize t
                 package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
@@ -472,7 +473,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package advice
     :straight nil
     :config
-    (general-setq-default ad-redefinition-action 'accept))
+    (general-setq ad-redefinition-action 'accept))
 #+end_src
 
 **** Ansi-Color [Built-In]
@@ -488,8 +489,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package auth-source
     :straight nil
     :config
-    (general-setq-default auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
-                                         ,(no-littering-expand-etc-file-name "authinfo"))))
+    (general-setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
+                                 ,(no-littering-expand-etc-file-name "authinfo"))))
 #+end_src
 
 **** Autorevert [Built-In]
@@ -505,15 +506,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   auto-revert-use-notify nil))
 #+end_src
 
-**** Bytecomp [Built-in]
-#+name: init-bytecompt-block
-#+begin_src emacs-lisp
-  (use-package bytecomp
-    :straight nil
-    :config
-    (general-setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)))
-#+end_src
-
 **** Color [Built-In]
 #+name: init-color-block
 #+begin_src emacs-lisp
@@ -525,9 +517,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Comint [Built-In]
 #+name: init-comint-block
 #+begin_src emacs-lisp
-  (use-package comint
-    :straight nil
-    :config (general-setq comint-prompt-read-only t))
+  (general-with-package 'comint
+    (general-setq comint-prompt-read-only t))
 #+end_src
 
 **** Compile [Built-In]
@@ -557,7 +548,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq-default auto-save-list-file-prefix nil
                           auto-save-list-file-name nil
                           auto-window-vscroll nil
-                          command-line-x-option-alist nil
                           cursor-in-non-selected-windows nil
                           cursor-type 'bar
                           delete-by-moving-to-trash t
@@ -569,7 +559,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           ffap-machine-p-known 'reject
                           fill-column 80
                           frame-title-format '("%b - Emacs")
-                          highlight-nonselected-windows nil
                           history-delete-duplicates t
                           history-length 3000
                           icon-title-format frame-title-format
@@ -578,10 +567,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           inhibit-startup-echo-area-message t
                           inhibit-startup-screen t
                           indent-tabs-mode nil
-                          indicate-buffer-boundaries nil
-                          indicate-empty-lines nil
-                          max-specpdl-size 2040
-                          mode-line-in-non-selected-windows t
                           ring-bell-function #'ignore
                           scroll-conservatively 101
                           scroll-margin 5
@@ -592,13 +577,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           tab-width 4
                           use-dialog-box nil
                           use-file-dialog nil
-                          visible-cursor nil
                           window-combination-resize t
-                          frame-inhibit-implied-resize t
                           window-resize-pixelwise t
                           frame-resize-pixelwise t
-                          x-stretch-cursor nil
-                          x-underline-at-descent-line t))
+                          x-stretch-cursor nil))
 #+end_src
 
 **** Delsel [Built-In]
@@ -607,6 +589,15 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package delsel
     :blackout t :straight nil
     :ghook ('after-init-hook #'delete-selection-mode))
+#+end_src
+
+**** Electric-Indent [Built-In]
+#+name: init-electric-indent-block
+#+begin_src emacs-lisp
+  (use-package electric
+    :blackout t :straight nil
+    :config
+    (electric-indent-mode -1))
 #+end_src
 
 **** Emacs-Lock [Built-in]
@@ -621,7 +612,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package epa
     :straight nil
-    :config (general-setq-default epa-replace-original-text t))
+    :config (general-setq epa-replace-original-text t))
 #+end_src
 
 **** Epg [Built-In]
@@ -629,7 +620,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package epg
     :straight nil
-    :config (general-setq-default epg-pinentry-mode 'loopback))
+    :config (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
 **** Face-Remap [Built-In]
@@ -639,6 +630,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight nil
     :config
     (blackout 'buffer-face-mode)
+    (blackout 'visual-line-mode)
     (blackout 'variable-pitch-mode))
 #+end_src
 
@@ -647,7 +639,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package files
     :straight nil
-    :config
+    :init
     (general-setq auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
                   backup-by-copying t
                   backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
@@ -676,6 +668,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (defun djm/turn-off-mouse-modes ()
       (blink-cursor-mode -1)
       (tool-bar-mode -1)
+      (tooltip-mode -1)
+      (mouse-wheel-mode -1)
       (unless (display-graphic-p)
         (menu-bar-mode -1))))
 #+end_src
@@ -695,23 +689,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package mb-depth
     :straight nil
-    :ghook ('after-init-hook #'minibuffer-depth-indicate-mode)
-    :config
-    (defun djm/kill-minibuffer ()
-      "Exit the minibuffer if it is not active"
-      (when (and (>= (recursion-depth) 1)
-                 (active-minibuffer-window))
-        (abort-recursive-edit)))
-
-    (general-add-hook 'mouse-leave-buffer-hook #'djm/kill-minibuffer))
-#+end_src
-
-**** MWheel [Built-In]
-#+name: init-mwheel-block
-#+begin_src emacs-lisp
-  (use-package mwheel
-    :straight nil
-    :init (general-setq mouse-wheel-mode nil))
+    :ghook ('minibuffer-setup-hook #'minibuffer-depth-indicate-mode))
 #+end_src
 
 **** NS-Win [Built-In]
@@ -720,14 +698,15 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package ns-win
     :straight nil
     :config
-    (general-setq mac-command-modifier 'meta
-                  mac-option-modifier 'meta
-                  mac-right-command-modifier 'super
-                  mac-right-option-modifier 'none
-                  mac-function-modifier 'hyper)
-    (general-setq  ns-pop-up-frames nil
-                   ns-use-native-fullscreen nil
-                   ns-use-thin-smoothing t))
+      (general-setq mac-command-modifier 'meta
+                    mac-option-modifier 'meta
+                    mac-right-command-modifier 'super
+                    mac-right-option-modifier 'none
+                    mac-function-modifier 'hyper)
+
+      (general-setq  ns-pop-up-frames nil
+                     ns-use-native-fullscreen nil
+                     ns-use-thin-smoothing t))
 #+end_src
 
 **** Pixel-Scroll [Built-In]
@@ -758,7 +737,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package savehist
     :blackout t :straight nil
-    :ghook 'after-init-hook
+    :ghook 'minibuffer-setup-hook
     :config
     (general-setq savehist-additional-variables '(mark-ring
                                                   global-mark-ring
@@ -791,9 +770,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package simple
     :straight nil
     :config
-    (blackout 'visual-line-mode)
     (general-setq blink-matching-paren t
-                  column-number-mode t
+                  column-number-mode nil
                   display-time-mode t
                   eval-expression-print-length nil
                   eval-expression-print-level nil
@@ -819,14 +797,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq-default display-time-24hr-format nil
                           display-time-day-and-date t
                           display-time-default-load-average nil))
-#+end_src
-
-**** Tooltip [Built-In]
-#+name: init-tooltip-block
-#+begin_src emacs-lisp
-  (use-package tooltip
-    :straight nil
-    :config (tooltip-mode -1))
 #+end_src
 
 **** Uniquify [Built-In]
@@ -855,8 +825,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package window
     :straight nil
-    :init
-    (general-setq split-width-threshold 100
+    :config
+    (general-setq split-width-threshold 160
                   split-height-threshold nil))
 #+end_src
 
@@ -866,7 +836,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package winner
     :blackout t :straight nil
     :ghook 'after-init-hook
-    :init
+    :config
     (general-setq winner-boring-buffers '("*Completions*"
                                           "*Compile-Log*"
                                           "*inferior-lisp*"
@@ -886,7 +856,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package cus-edit
     :straight nil
     :init
-    (general-setq-default custom-file djm--custom-file))
+    (general-setq custom-file djm--custom-file))
 #+end_src
 
 **** Secret File
@@ -896,7 +866,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (load djm--secret-file :noerror))
 #+end_src
 
-
 ** Utilities
 *** System
 **** Environment
@@ -905,8 +874,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package exec-path-from-shell
     :straight t
     :if (eq system-type 'darwin)
-    :ghook ('after-init #'exec-path-from-shell-initialize)
-    :init
+    :ghook ('after-init-hook #'exec-path-from-shell-initialize)
+    :config
     (general-setq exec-path-from-shell-check-startup-files t
                   exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY")
                   exec-path-from-shell-arguments '("-i")))
@@ -931,7 +900,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (defun djm/setup-osx-trash-on-deletion (&rest _)
       (osx-trash-setup))
     :init
-    (general-add-advice 'dired-delete-file :before #'djm/setup-osx-trash-on-deletion))
+    (general-add-advice 'dired-delete-file :before #'djm/setup-osx-trash-on-deletion)
+    (general-add-advice 'delete-file :before #'djm/setup-osx-trash-on-deletion))
 #+end_src
 
 **** OSX-Lib
@@ -946,14 +916,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package restart-emacs
     :straight t
-    :commands (restart-emacs)
     :init (defalias 're #'restart-emacs))
-#+end_src
-
-**** Server
-#+name: init-server-block
-#+begin_src emacs-lisp
-
 #+end_src
 
 **** PDF-Tools
@@ -982,15 +945,16 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Persistent-Scratch
 #+name: init-persistent-scratch-block
 #+begin_src emacs-lisp
-    (use-package persistent-scratch
-      :straight t
-      :init
-      (general-setq persistent-scratch-autosave-interval 60
-                    initial-scratch-message "Welcome to the Church of Emacs 🙏\n")
-      (run-with-idle-timer 5 nil (lambda ()
-                                   (persistent-scratch-setup-default)
-                                   (with-current-buffer "*scratch*"
-                                     (lisp-interaction-mode)))))
+  (use-package persistent-scratch
+    :straight t
+    :init
+    (general-setq persistent-scratch-autosave-interval 60
+                  initial-scratch-message "Welcome to the Church of Emacs 🙏\n")
+    (run-with-idle-timer 5 nil (lambda ()
+                                 (persistent-scratch-setup-default)
+                                 (with-current-buffer "*scratch*"
+                                   (persistent-scratch-mode)
+                                   (lisp-interaction-mode)))))
 #+end_src
 
 *** Terminal & Shell
@@ -1076,8 +1040,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package direnv
     :blackout t :straight t
     :ghook 'projectile-mode-hook
-    :commands (direnv-update-environment
-               direnv-allow)
     :config
     (add-to-list 'direnv-non-file-modes '(comint-mode
                                           term-mode
@@ -1093,14 +1055,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-hydra-block
 #+begin_src emacs-lisp
   (use-package hydra
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 **** Hercules
 #+name: init-hercules-block
 #+begin_src emacs-lisp
   (use-package hercules
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 **** Amx
@@ -1161,7 +1123,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t :after(ivy)
     :ghook 'counsel-mode-hook
     :config
-    (general-setq ivy-rich-path-style 'abbrev))
+    (general-setq ivy-rich-path-style 'relative))
 #+end_src
 
 **** Counsel
@@ -1195,7 +1157,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config
     (use-package ivy-prescient
       :demand t :straight t
-      :init (ivy-prescient-mode +1))
+      :config (ivy-prescient-mode +1))
 
     (general-setq counsel-describe-function-function #'helpful-callable)
     (general-setq counsel-describe-variable-function #'helpful-variable)
@@ -1246,30 +1208,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                      (/ (frame-height) 4)))))
 #+end_src
 
-**** Ivy-Posframe
-#+name: init-ivy-posframe-block
-#+begin_src emacs-lisp
-  (use-package ivy-posframe
-    :disabled t :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :custom
-    (ivy-posframe-style 'frame-center)
-    (ivy-posframe-hide-minibuffer t)
-    (ivy-posframe-display-functions-alist '((t . ivy-posframe-display)
-                                            (swiper . nil)
-                                            (swiper-isearch . nil)
-                                            (swiper-isearch-backward . nil)
-                                            (swiper-all . nil)
-                                            (swiper-query-replace . nil)
-                                            (swiper-isearch-toggle . nil))))
-#+end_src
-
-
 **** Ivy-Xref
 #+name: init-ivy-xref-block
 #+begin_src emacs-lisp
   (use-package ivy-xref
-    :blackout t :straight t
+    :blackout t :straight t :after (ivy)
     :config
     (general-setq xref-show-definitions-function #'ivy-xref-show-defs))
 #+end_src
@@ -1280,12 +1223,13 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package lsp-ivy
     :blackout t :straight (:host github :repo "emacs-lsp/lsp-ivy") :after (ivy lsp))
 #+end_src
+
 *** Autocomplete
 **** Hippie Expand [Built-In]
 #+name: init-hippie-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package hippie-exp
-    :straight nil
+    :disabled t :straight nil
     :general ([remap dabbrev-expand] #'hippie-expand)
     :config
     (general-setq hippie-expand-try-functions-list '(try-expand-dabbrev
@@ -1301,11 +1245,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 **** Abbrev [Built-In]
 #+name: init-abbrev-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package abbrev
-    :blackout t :straight nil
+    :disabled t :blackout t :straight nil
     :ghook 'after-init-hook
-    :init
+    :config
     (general-setq save-abbrevs 'silently
                   abbrev-file-name (no-littering-expand-var-file-name "abbrev_defs")))
 #+end_src
@@ -1313,42 +1257,42 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 **** Company
 #+name: init-company-block
 #+begin_src emacs-lisp
-  (use-package company
-    :blackout t :straight t
-    :ghook ('after-init-hook #'global-company-mode)
-    :general
-    (:keymaps
-     'company-active-map
-     "RET"     nil
-     [return]  nil
-     "TAB"     #'company-complete-selection
-     [tab]     #'company-complete-selection
-     "<right>" #'company-complete-common
-     "C-n"     #'company-select-next
-     "C-p"     #'company-select-previous)
-    :config
-    (general-setq company-auto-complete-chars nil
-                  company-async-timeout 15
-                  company-idle-delay 0.15
-                  company-minimum-prefix-length 2
-                  company-show-numbers t
-                  company-tooltip-limit 15
-                  company-tooltip-align-annotations t)
+    (use-package company
+      :defer 3 :blackout t :straight t
+      :general
+      (:keymaps
+       'company-active-map
+       "RET"     nil
+       [return]  nil
+       "TAB"     #'company-complete-selection
+       [tab]     #'company-complete-selection
+       "<right>" #'company-complete-common
+       "C-n"     #'company-select-next
+       "C-p"     #'company-select-previous)
+      :config
+      (general-setq company-auto-complete-chars nil
+                    company-async-timeout 15
+                    company-idle-delay 0.15
+                    company-minimum-prefix-length 2
+                    company-show-numbers t
+                    company-tooltip-limit 15
+                    company-tooltip-align-annotations t)
 
-    (defun djm/configure-company-backends-with-yas (backends)
-      "Add :with company-yasnippet to company BACKENDS. Taken from
-  Taken from https://github.com/syl20bnr/spacemacs/pull/179."
-      (if (and (listp backends) (memq 'company-yasnippet backends))
-          backends
-        (append (if (consp backends)
-                    backends
-                  (list backends))
-                '(:with company-yasnippet))))
+      (defun djm/configure-company-backends-with-yas (backends)
+        "Add :with company-yasnippet to company BACKENDS. Taken from
+    Taken from https://github.com/syl20bnr/spacemacs/pull/179."
+        (if (and (listp backends) (memq 'company-yasnippet backends))
+            backends
+          (append (if (consp backends)
+                      backends
+                    (list backends))
+                  '(:with company-yasnippet))))
 
-    (general-pushnew #'org-self-insert-command company-begin-commands)
+      (general-pushnew #'org-self-insert-command company-begin-commands)
 
-    (general-setq company-backends
-                  (mapcar #'djm/configure-company-backends-with-yas company-backends)))
+      (general-setq company-backends
+                    (mapcar #'djm/configure-company-backends-with-yas company-backends))
+      (global-company-mode))
 #+end_src
 
 **** Company-Box
@@ -1455,21 +1399,13 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :commands (ivy-yasnippet))
 #+end_src
 
-**** Auto-Insert [Built-In]
-#+name: init-autoinsert-block
-#+begin_src emacs-lisp
-  (use-package autoinsert
-    :disabled t :straight nil
-    :ghook ('after-init-hook #'auto-insert-mode))
-#+end_src
-
 *** Documentation
 **** Discover
 #+name: init-discover-block
 #+begin_src emacs-lisp
   (use-package discover
-    :blackout t :straight t
-    :ghook ('after-init-hook #'global-discover-mode))
+    :defer 5 :blackout t :straight t
+    :config (global-discover-mode))
 #+end_src
 
 **** Discover-My-Major
@@ -1486,11 +1422,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
-    :blackout t :straight nil
-    :ghook 'prog-mode-hook
-    :init
-    (setq eldoc-idle-delay .2
-          eldoc-echo-area-use-multiline-p nil))
+    :defer 5 :blackout t :straight nil
+    :config
+    (general-setq eldoc-idle-delay .2
+                  eldoc-echo-area-use-multiline-p nil)
+    (global-eldoc-mode))
 #+end_src
 
 **** Help [Built-In]
@@ -1498,11 +1434,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package help
     :straight nil
-    :init
+    :config
     (general-setq help-window-select t)
-    (advice-add 'help-window-display-message :override #'ignore))
+    (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
-
 **** Help-Functions-Plus
 #+name: init-help-fns-plus-block
 #+begin_src emacs-lisp
@@ -1520,7 +1455,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     ([remap describe-function] #'helpful-callable
      [remap describe-command]  #'helpful-command
      [remap describe-variable] #'helpful-variable
-     [remap describe-key]      #'helpful-key)
+     [remap describe-key]      #'helpful-key
+     "C-h m"                   #'describe-mode)
     :config
     (use-package elisp-demos
       :demand t :straight t
@@ -1546,11 +1482,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-which-key-block
 #+begin_src emacs-lisp
   (use-package which-key
-    :blackout t :straight t
-    :ghook 'after-init-hook
+    :defer 5 :blackout t :straight t
     :config
     (general-setq which-key-idle-delay 0.5
-                  which-key-frame-max-height 25))
+                  which-key-frame-max-height 25)
+    (which-key-mode))
 #+end_src
 
 **** Woman [Built-In]
@@ -1566,17 +1502,18 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package ispell
     :straight nil
-    :preface (djm/fetch-hunspell-dictionary)
-    :init (general-setq-default ispell-dictionary "en_US"
-                                ispell-program-name (executable-find "hunspell")
-                                ispell-really-hunspell t
-                                ispell-silently-savep t))
+    :config
+    (djm/fetch-hunspell-dictionary)
+    (general-setq ispell-dictionary "en_US"
+                  ispell-program-name (executable-find "hunspell")
+                  ispell-really-hunspell t
+                  ispell-silently-savep t))
 #+end_src
 
 *** Editing Tools
 **** Vimish Fold
 #+name: init-vim-fold-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :toggle no
   (use-package vimish-fold
     :straight t)
 #+end_src
@@ -1644,8 +1581,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-deadgrep-block
 #+begin_src emacs-lisp
   (use-package deadgrep
-    :straight t
-    :init (defalias 'rg #'deadgrep))
+    :straight t)
 #+end_src
 
 **** Expand-Region
@@ -1679,13 +1615,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook 'after-init-hook)
 #+end_src
 
-**** Writeroom
-#+name: init-writeroom-block
-#+begin_src emacs-lisp
-  (use-package writeroom-mode
-    :straight t)
-#+end_src
-
 **** Whitespace-Butler
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp
@@ -1713,37 +1642,33 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-aggressive-indent-block
 #+begin_src emacs-lisp
   (use-package aggressive-indent
-    :blackout t :straight t
-    :commands (aggressive-indent-mode))
+    :blackout t :straight t)
 #+end_src
 
 **** Hungry-Delete
 #+name: init-hungry-delete-block
 #+begin_src emacs-lisp
   (use-package hungry-delete
-    :blackout t :straight t
-    :commands (hungry-delete-mode))
+    :blackout t :straight t)
 #+end_src
 
 **** Smart-Hungry-Delete
 #+name: init-smart-hungry-delete-block
 #+begin_src emacs-lisp
   (use-package smart-hungry-delete
-    :blackout t :straight t
-    :commands (smart-hungry-delete-mode))
+    :blackout t :straight t)
 #+end_src
 
 **** Format-All
 #+name: init-format-all-block
 #+begin_src emacs-lisp
   (use-package format-all
-    :blackout t :straight t
-    :commands (format-all-buffer format-all-mode))
+    :blackout t :straight t)
 #+end_src
 
 **** SmartParens
 #+name: init-smartparens-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package smartparens
     :disabled t :blackout t :straight t
     :hook ((prog-mode eshell-mode text-mode) . smartparens-strict-mode)
@@ -1827,11 +1752,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package dired
     :blackout "Dired" :straight nil
-    :functions (dired wdired-change-to-wdired-mode)
-    :general
-    (:keymaps
-     'dired-mode-map
-     "C-c C-e" #'wdired-change-to-wdired-mode)
+    :ghook ('dired-mode-hook #'dired-turn-on-discover)
     :config
     (general-setq dired-auto-revert-buffer t
                   dired-dwim-target t
@@ -1848,8 +1769,11 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-wdired-block
 #+begin_src emacs-lisp
   (use-package wdired
-    :after (dired)
-    :straight nil
+    :after (dired) :straight nil
+    :general
+    (:keymaps
+     'dired-mode-map
+     "C-c C-e" #'wdired-change-to-wdired-mode)
     :config
     (general-setq wdired-create-parent-directories t
                   wdired-allow-to-change-permissions t))
@@ -1986,8 +1910,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t
     :general ("M-\\" #'dired-sidebar-toggle-sidebar)
     :config
-    (general-setq dired-sidebar-subtree-line-prefix "__"
-                  dired-sidebar-theme 'vscode
+    (general-setq dired-sidebar-theme 'none
                   dired-sidebar-use-magit-integration t
                   dired-sidebar-use-term-integration t
                   dired-sidebar-use-wdired-integration t))
@@ -2000,9 +1923,16 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight (:host github :repo "m2ym/direx-el"))
 #+end_src
 
+**** Treemacs
+#+name: init-treemacs-block
+#+begin_src emacs-lisp :tangle no
+  (use-package treemacs
+    :disabled t :straight t)
+#+end_src
+
 **** Ranger
 #+name: init-ranger-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ranger
     :disabled t :straight t)
 #+end_src
@@ -2027,10 +1957,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package ibuf-ext
     :straight nil
-    :functions (ibuffer-remove-alist
-                ibuffer-remove-duplicates
-                ibuffer-split-list)
-    :config (setq ibuffer-show-empty-filter-groups nil))
+    :config (general-setq ibuffer-show-empty-filter-groups nil))
 #+end_src
 
 **** iBuffer-Projectile
@@ -2074,14 +2001,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package bookmark
     :straight nil
-    :init (setq bookmark-save-flag +1))
+    :config (general-setq bookmark-save-flag +1))
 #+end_src
 
 **** iMenu
 #+name: init-imenu-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package imenu-anywhere
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 ** Productivity
@@ -2100,6 +2027,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
      "C-c s" #'org-search-view
      "C-c t" #'org-todo-list
      "C-c /" #'org-tags-view)
+    (:keymaps
+     'org-mode-map
+     "C-c v g" #'org-babel-goto-named-src-block)
     :preface
     (defun djm/config-org-mode ()
       (push '("TODO"       . ?▲)  prettify-symbols-alist)
@@ -2116,13 +2046,31 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       (when (display-graphic-p)
         (general-setq-local left-margin-width 2)
         (general-setq-local right-margin-width 2))
-      (set-window-buffer nil (current-buffer)))
+      (set-window-buffer nil (current-buffer))
+      (blackout 'org-indent-mode))
 
     :config
-    (general-setq org-catch-invisible-edits 'smart
+    (progn
+    ;; Make bullets prettier.
+    (font-lock-add-keywords 'org-mode
+                            `((,(rx bol (* space) (group "-") (+ space))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                              (,(rx bol (* space) (group "#+end_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋯"))))
+                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”")))))))
+
+    (general-setq org-babel-load-languages '((emacs-lisp . t )
+                                             (shell . t)
+                                             (python . t))
+                  org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
+                  org-confirm-babel-evaluate nil
                   org-default-notes-file "~/org/inbox.org"
-                  org-default-priority ?B
                   org-directory "~/org/"
                   org-enforce-todo-dependencies t
                   org-expiry-inactive-timestamps t
@@ -2155,6 +2103,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   org-special-ctrl-a/e t
                   org-special-ctrl-k t
                   org-startup-folded 'content
+                  org-startup-indented t
                   org-startup-with-inline-images t
                   org-structure-template-alist '(("a" . "export ascii")
                                                  ("c" . "center")
@@ -2171,15 +2120,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   org-use-fast-todo-selection t
                   org-use-speed-commands t
                   org-yank-adjusted-subtrees t))
-#+end_src
-
-**** Org-Indent
-#+name: init-org-indent-block
-#+begin_src emacs-lisp
-  (use-package org-indent
-    :blackout t :straight nil
-    :ghook 'org-mode-hook
-    :config (general-setq org-startup-indented t))
 #+end_src
 
 **** Org-Pomodoro
@@ -2215,7 +2155,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-org-agenda-block
 #+begin_src emacs-lisp
   (use-package org-agenda
-    :straight nil
+    :straight nil :after (org)
     :config
     (general-setq org-agenda-compact-blocks t
                   org-agenda-dim-blocked-tasks nil
@@ -2251,7 +2191,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                                    ("REFILE" . ?r))
                   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                                       (sequence "WAITING(w@/!)" "HOLD(h@/!)"  "QUESTION(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")))
-    :config
+
     (general-setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
                                            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
                                           ("n" "note [inbox]" entry (file "~/org/inbox.org")
@@ -2265,47 +2205,33 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t)
 #+end_src
 
-**** Org-Babel
-#+name: init-org-babel-block
-#+begin_src emacs-lisp
-  (use-package org-babel
-    :straight nil
-    :general
-    (:keymaps
-     'org-mode-map
-     "C-c v g" #'org-babel-goto-named-src-block)
-    :config
-    (general-setq org-confirm-babel-evaluate nil)
-    (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp  . t))))
-#+end_src
-
 **** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
-    (use-package org-src
-      :straight nil
-      :preface
-      (defun djm/org-src-supress-final-newline ()
-        (setq-local require-final-newline nil))
+  (use-package org-src
+    :straight nil :after (org)
+    :preface
+    (defun djm/org-src-supress-final-newline ()
+      (setq-local require-final-newline nil))
 
-      (defun djm/org-src-delete-trailing-space (&rest _)
-        (delete-trailing-whitespace))
+    (defun djm/org-src-delete-trailing-space (&rest _)
+      (delete-trailing-whitespace))
 
-      (defun djm/disable-flycheck-in-org-src-block ()
-        (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+    (defun djm/disable-flycheck-in-org-src-block ()
+      (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
-      :config/el-patch
-      (defun org-src--construct-edit-buffer-name (org-buffer-name lang)
-        (concat "[" org-buffer-name "]"))
+    :config/el-patch
+    (defun org-src--construct-edit-buffer-name (org-buffer-name lang)
+      (concat "[" org-buffer-name "]"))
 
-      (general-setq org-src-window-setup 'current-window
-                    org-src-fontify-natively t
-                    org-src-tab-acts-natively t)
+    (general-setq org-src-window-setup 'current-window
+                  org-src-fontify-natively t
+                  org-src-tab-acts-natively t)
 
-      (blackout 'org-src-mode " [src] ")
-      (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
-      (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-      (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
+    (blackout 'org-src-mode " [src] ")
+    (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
+    (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
+    (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
 
 **** TOC-Org
@@ -2319,7 +2245,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-ledger-block
 #+begin_src emacs-lisp
   (use-package ledger-mode
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 *** Email
@@ -2367,9 +2293,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** Web Browsing
 **** HTMLize
 #+name: init-htmlize-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package htmlize
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 **** Eww
@@ -2392,7 +2318,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-atomic-chrome-block
 #+begin_src emacs-lisp
   (use-package atomic-chrome
-    :straight t)
+    :disabled t :straight t)
 #+end_src
 
 *** Calculator
@@ -2461,7 +2387,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-git-gutter-block
 #+begin_src emacs-lisp
   (use-package git-gutter
-    :blackout t :straight t
+    :blackout t :straight t :after (projectile)
     :if (display-graphic-p)
     :ghook ('after-init-hook #'global-git-gutter-mode))
 #+end_src
@@ -2473,7 +2399,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :straight t)
 #+end_src
 
-**** With-Edititor
+**** With-Editor
 #+name: init-with-editor-block
 #+begin_src emacs-lisp
   (use-package with-editor
@@ -2533,17 +2459,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq flycheck-display-errors-delay 0.2
                   flycheck-buffer-switch-check-intermediate-buffers t
                   flycheck-checker-error-threshold 5000))
-#+end_src
-
-**** Checkdoc
-#+name: init-checkdoc-block
-#+begin_src emacs-lisp
-  (use-package checkdoc
-    :straight nil
-    :init (general-setq checkdoc-force-docstrings-flag nil
-                        checkdoc-arguments-in-order-flag nil)
-    :config
-    (blackout 'checkdoc-minor-mode))
 #+end_src
 
 **** Flycheck-Posframe
@@ -2615,15 +2530,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :mode ("\\.yaml'" "\\.yml'"))
 #+end_src
 
-*** JSON
-**** JSON-Mode
-#+name: init-json-mode-block
-#+begin_src emacs-lisp
-  (use-package json-mode
-    :straight nil
-    :mode "\\.json'")
-#+end_src
-
 *** Makefiles
 **** Make-Mode [Built-In]
 #+name: init-makefile-block
@@ -2647,8 +2553,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** Shell
 #+name: init-shell-block
 #+begin_src emacs-lisp
-  (use-package sh-script
-    :straight t
+  (use-package sh-mode
+    :straight nil
     :mode ("\\.sh'" "\\.zsh'" "\\.bash'"))
 #+end_src
 
@@ -2775,14 +2681,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 ** Theme & Aesthetics
 *** Icons
-**** VSCode-Icon
-#+name: init-vscode-icon-block
-#+begin_src emacs-lisp
-  (use-package vscode-icon
-    :straight t
-    :commands (vscode-icon-for-file))
-#+end_src
-
 **** All-The-Icons
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
@@ -2802,27 +2700,17 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 *** Themes
 **** Modelines
-***** Hide-Modeline
-#+name: init-hide-modelines-block
-#+begin_src emacs-lisp
-  (use-package hide-mode-line
-    :blackout "" :straight t
-    :commands (hide-mode-line-mode
-               hide-mode-line-reset
-               global-hide-mode-line-mode))
-#+end_src
-
 ***** Smart-Mode-Line
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
-  (use-package smart-mode-line
-    :straight t
-    :ghook ('after-init-hook #'sml/setup)
-    :init
-    (general-setq display-time-format " %a %B %d %I:%M %p"
-                  sml/vc-mode-show-backend t
-                  sml/theme nil
-                  sml/no-confirm-load-theme t))
+    (use-package smart-mode-line
+      :straight t
+      :ghook ('after-init-hook #'sml/setup)
+      :init (general-setq sml/theme nil
+                          sml/no-confirm-load-theme t)
+      :config
+      (general-setq display-time-format " %a %B %d %I:%M %p"
+                    sml/vc-mode-show-backend t))
 #+end_src
 
 
@@ -2850,25 +2738,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config (general-setq default-text-scale-amount 20))
 #+end_src
 
-***** Dimmer-Mode
-#+name: init-dimmer-block
-#+begin_src emacs-lisp
-  (use-package dimmer
-    :disabled t :blackout "" :straight t
-    :commands (dimmer-mode)
-    :custom
-    (dimmer-fraction 0.33)
-    (dimmer-exclusion-regexp-list '(".*minibuf.*"
-                                    ".*which-key.*"
-                                    ".*messages.*"
-                                    ".*async.*"
-                                    ".*warnings.*"
-                                    ".*lv.*"
-                                    ".*ilist.*"
-                                    ".*posframe.*"
-                                    ".*transient.*")))
-#+end_src
-
 ***** Highlight-Escape-Sequences
 #+name: init-highlight-escape-sequences-block
 #+begin_src emacs-lisp
@@ -2882,14 +2751,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package highlight-indent-guides
     :blackout "" :straight t
     :ghook 'python-mode-hook 'yaml-mode-hook)
-#+end_src
-
-***** Highlight-Line [Built-In]
-#+name: init-hl-line-block
-#+begin_src emacs-lisp
-  (use-package hl-line
-    :blackout t :straight nil
-    :commands (hl-line-mode global-hl-line-mode))
 #+end_src
 
 ***** Linum-Relative
@@ -2923,8 +2784,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :blackout t :straight t
-    :ghook 'prog-mode-hook)
+    :ghook 'emacs-lisp-mode-hook)
 #+end_src
+
 ***** Rainbow-Mode
 #+name: init-rainbow-mode-block
 #+begin_src emacs-lisp
@@ -2934,29 +2796,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 ***** Shackle
 #+name: init-shackle-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package shackle
-    :blackout t :straight t
-    :ghook 'after-init-hook
-    :config
-    (general-setq shackle-rules
-        '((magit-popup-mode         :select t   :align right :size 0.4)
-          (flycheck-error-list-mode :select nil :align below :size 0.25)
-          (compilation-mode         :select nil :align below :size 0.25)
-          (messages-buffer-mode     :select t   :align below :size 0.25)
-          (inferior-emacs-lisp-mode :select t   :align below :size 0.25)
-          (ert-results-mode         :select t   :align below :size 0.5)
-          (calendar-mode            :select t   :align below :size 0.25)
-          (racer-help-mode          :select t   :align right :size 0.5)
-          (help-mode                :select t   :align right :size 0.5)
-          (helpful-mode             :select t   :align right :size 0.5)
-          (" *Deletions*"           :select t   :align below :size 0.25)
-          (" *Marked Files*"        :select t   :align below :size 0.25)
-          ("*Org Select*"           :select t   :align below :size 0.33)
-          ("*Org Note*"             :select t   :align below :size 0.33)
-          ("*Org Links*"            :select t   :align below :size 0.2)
-          (" *Org todo*"            :select t   :align below :size 0.2)
-          ("*Man.*"                 :select t   :align below :size 0.5  :regexp t))))
+    :disabled t :blackout t :straight t
+    :ghook 'after-init-hook)
 #+end_src
 
 ***** Tab-Line [Built-In]
@@ -3010,7 +2853,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 ** Footer
 #+name: init-footer-block
 #+begin_src emacs-lisp
-  (message "Init.el Complete")
+  (message "Init.el complete.")
   (provide 'init)
   ;;; init.el ends here
 #+end_src

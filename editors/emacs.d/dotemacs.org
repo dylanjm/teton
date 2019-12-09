@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-09 16:07:17
+/last updated/: 2019-12-09 16:41:19
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -46,6 +46,7 @@
     - [[#cl-lib-built-in][CL-Lib (Built-In)]]
     - [[#comint-built-in][Comint (Built-In)]]
     - [[#compile-built-in][Compile (Built-In)]]
+    - [[#conf-mode][Conf-Mode]]
     - [[#cus-start-built-in][Cus-Start (Built-In)]]
     - [[#delsel-built-in][Delsel (Built-In)]]
     - [[#eldoc-built-in][Eldoc (Built-In)]]
@@ -160,12 +161,18 @@
   - [[#version-control][Version Control]]
     - [[#magit][Magit]]
     - [[#transient][Transient]]
+    - [[#hold-git-attribute][HOLD Git-Attribute]]
+    - [[#hold-git-config][HOLD Git-Config]]
+    - [[#hold-git-ignore][HOLD Git-Ignore]]
+    - [[#hold-git-link][HOLD Git-Link]]
     - [[#git-commit][Git-Commit]]
     - [[#forge][Forge]]
     - [[#git-gutter][Git-Gutter]]
     - [[#git-time-machine][Git-Time-Machine]]
     - [[#with-editor][With-Editor]]
     - [[#emacs-vdiff][Emacs-VDiff]]
+    - [[#hold-vdiff-magit][HOLD Vdiff-Magit]]
+    - [[#hold-magit-todos][HOLD Magit-Todos]]
   - [[#language-server-support][Language Server Support]]
     - [[#lsp-mode][LSP-Mode]]
   - [[#syntax--linting][Syntax & Linting]]
@@ -653,6 +660,14 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
                   compilation-scroll-output 'first-error))
 #+end_src
 
+*** Conf-Mode
+#+name: init-conf-mode-block
+#+begin_src emacs-lisp
+  (use-package conf-mode
+    :straight (:type built-in)
+    :mode ("\\.i$" "tests" "test" "post"))
+#+end_src
+
 *** Cus-Start (Built-In)
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
@@ -712,7 +727,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
-    :straight (:type built-in)
+    :blackout t :straight (:type built-in)
     :ghook ('emacs-lisp-mode-hook #'turn-on-eldoc-mode)
     :config
     (general-setq eldoc-idle-delay .2
@@ -1765,7 +1780,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
   (use-package dired-x
-    :straight (:type built-in)
+    :straight (:type built-in) :after (dired)
     :config
     (general-setq dired-x-hands-off-my-keys nil
                   dired-omit-verbose t
@@ -1881,7 +1896,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package org
     :straight t
     :ghook ('org-mode-hook #'djm/config-org-mode)
-    :gfhook 'variable-pitch-mode 'visual-line-mode
+    :gfhook 'variable-pitch-mode 'visual-line-mode 'prettify-symbols-mode
     :general
     ("C-c a" #'org-agenda
      "C-c c" #'org-capture
@@ -1905,8 +1920,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (push '("CLOSED"     . ?🏁) prettify-symbols-alist)
       (push '("DEADLINE"   . ?❗) prettify-symbols-alist)
       (push '("CLOCK"      . ?⏰) prettify-symbols-alist)
-      (blackout 'org-indent-mode)
-      (prettify-symbols-mode +1))
+      (blackout 'org-indent-mode))
+
 
     :config
     (progn
@@ -2038,7 +2053,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-src
-    :straight (:type built-in) :after (org)
+    :blackout " [src] " :straight (:type built-in) :after (org)
     :preface
     (defun djm/org-src-supress-final-newline ()
       (setq-local require-final-newline nil))
@@ -2148,6 +2163,27 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config (transient-bind-q-to-quit))
 #+end_src
 
+*** HOLD Git-Attribute
+#+name: init-git-attribute-block
+#+begin_src emacs-lisp
+
+#+end_src
+*** HOLD Git-Config
+
+#+name: init-git-config-block
+#+begin_src emacs-lisp
+
+#+end_src
+*** HOLD Git-Ignore
+#+name: init-git-ignore-block
+#+begin_src emacs-lisp
+
+#+end_src
+*** HOLD Git-Link
+#+name: init-git-link-block
+#+begin_src emacs-lisp
+
+#+end_src
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
 #+name: init-git-commit-block
 #+begin_src emacs-lisp
@@ -2194,6 +2230,16 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t)
 #+end_src
 
+*** HOLD Vdiff-Magit
+#+name: init-vdiff-magit-block
+#+begin_src emacs-lisp :tangle no
+
+#+end_src
+*** HOLD Magit-Todos
+#+name: init-magit-todo-block
+#+begin_src emacs-lisp
+
+#+end_src
 ** Language Server Support
 *** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
 #+name: init-lsp-block
@@ -2284,6 +2330,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (general-setq markdown-fontify-code-blocks-natively t
                   markdown-enable-wiki-links t
+                  markdown-enable-math t
                   mardown-indent-nenter 'indent-and-new-item
                   markdown-asymmetric-header t))
 #+end_src

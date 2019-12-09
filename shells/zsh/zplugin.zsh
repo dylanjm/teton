@@ -32,14 +32,34 @@ load=light
 zplugin ice wait lucid
 zplugin $load mafredri/zsh-async
 
-zplugin ice wait'!' lucid nocd atinit'source $ZSH/misc/slimline.zsh'
+zplugin ice wait'!' lucid nocd atinit'source $ZSH/themes/slimline.zsh'
 zplugin $load mengelbrecht/slimline
 
-# zplugin ice as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
-#     atpull'%atclone' pick"direnv" src"zhook.zsh" blockf
-# zplugin $load direnv/direnv
+zplugin ice wait atpull"zplugin creinstall -q ." blockf lucid
+zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'1' lucid blockf
+zplugin ice wait lucid
+zplugin $load zsh-users/zsh-history-substring-search
+
+zplugin ice wait as"completion" if"[ -f '${ZSH}/completions/_pyfetch' ]" blockf lucid;
+zplugin snippet "${ZSH}/completions/_pyfetch"
+
+zplugin ice wait as"completion" if"[ -f '${ZSH}/completions/_bfetch' ]" blockf lucid;
+zplugin snippet "${ZSH}/completions/_bfetch"
+
+zplugin wait'2c' atload"_zsh_autosuggest_start" lucid blockf
+zplugin $load zsh-users/zsh-autosuggestions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+ZSH_AUTOSUGGEST_MANUAL_REBIND=true
+
+zplugin ice wait'2b' atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" lucid
+zplugin $load zdharma/fast-syntax-highlighting
+
+zplugin ice wait'1' lucid
+zplugin $load hlissner/zsh-autopair
+
+zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 zstyle ":prezto:runcom" zpreztorc "$HOME/.zshrc"
 
@@ -55,29 +75,33 @@ zplugin snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-
 zplugin ice atclone"gdircolors -b LS_COLORS > clrs.zsh" \
     atpull'%atclone' pick"clrs.zsh" nocompile'!' \
     atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
-zplugin light trapd00r/LS_COLORS
+zplugin $load trapd00r/LS_COLORS
 
-#zplugin ice wait'1' lucid
-#zplugin $load davidparsson/zsh-pyenv-lazy
+zplugin ice wait'1' lucid
+zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid blockf
 zplugin $load unixorn/git-extra-commands
 
 zplugin ice wait'1' lucid blockf
-zplugin $load $ZSH/interactive
-
-zplugin ice wait'1' lucid blockf
-zplugin $load rupa/z
-
-zplugin ice wait'1' lucid
-zplugin light changyuheng/fz
-
-zplugin ice wait'1' lucid blockf
 zplugin $load zdharma/zsh-lint
 
-zplugin wait'1b' lucid blockf for \
-        atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
-        atpull"zplugin creinstall -q ." zsh-users/zsh-completions \
-        atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting
+zplugin ice wait'1a' lucid blockf
+zplugin $load rupa/z
+
+zplugin ice wait'1b' lucid blockf
+zplugin $load changyuheng/fz
+
+# zplugin ice wait'1c' multisrc"shell/*.zsh" lucid
+# zplugin $load junegunn/fzf
+
+zplugin ice wait'1d' lucid
+zplugin $load wookayin/fzf-fasd
+
+zplugin ice wait lucid blockf
+zplugin $load b4b4r07/enhancd
+
+zplugin ice wait'1' lucid blockf
+zplugin $load $ZSH/interactive
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

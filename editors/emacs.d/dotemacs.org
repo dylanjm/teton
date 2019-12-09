@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-08 22:20:24
+/last updated/: 2019-12-09 14:44:08
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -27,6 +27,7 @@
     - [[#el-patch][El-Patch]]
     - [[#general][General]]
     - [[#blackout][Blackout]]
+    - [[#dash][Dash]]
     - [[#org-plus-contrib][Org-Plus-Contrib]]
   - [[#personal-configuration][Personal Configuration]]
     - [[#variables][Variables]]
@@ -42,13 +43,11 @@
     - [[#bookmark-built-in][Bookmark (Built-In)]]
     - [[#calculator-built-in][Calculator (Built-In)]]
     - [[#calendar-built-in][Calendar (Built-In)]]
+    - [[#cl-lib-built-in][CL-Lib (Built-In)]]
     - [[#comint-built-in][Comint (Built-In)]]
     - [[#compile-built-in][Compile (Built-In)]]
     - [[#cus-start-built-in][Cus-Start (Built-In)]]
     - [[#delsel-built-in][Delsel (Built-In)]]
-    - [[#dired-built-in][Dired (Built-In)]]
-    - [[#wdired-built-in][WDired (Built-In)]]
-    - [[#dired-x-built-in][Dired-X (Built-In)]]
     - [[#eldoc-built-in][Eldoc (Built-In)]]
     - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
     - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
@@ -85,11 +84,12 @@
   - [[#themes--aesthetics][Themes & Aesthetics]]
     - [[#all-the-icons][All-The-Icons]]
     - [[#gruvbox-theme][Gruvbox Theme]]
+    - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
     - [[#smart-mode-line][Smart-Mode-Line]]
     - [[#default-text-scale][Default-Text-Scale]]
     - [[#page-break-lines][Page-Break-Lines]]
   - [[#system][System]]
-    - [[#emacs-async][Emacs-Async]]
+    - [[#async][Async]]
     - [[#osx-trash][OSX-Trash]]
     - [[#restart-emacs][Restart-Emacs]]
     - [[#firestarter][Firestarter]]
@@ -138,6 +138,9 @@
     - [[#windower][Windower]]
     - [[#windmove][Windmove]]
     - [[#dumb-jump][Dumb-Jump]]
+    - [[#dired-built-in][Dired (Built-In)]]
+    - [[#wdired-built-in][WDired (Built-In)]]
+    - [[#dired-x-built-in][Dired-X (Built-In)]]
     - [[#diredfl][Diredfl]]
     - [[#all-the-icons-dired][All-The-Icons-Dired]]
     - [[#dired-hacks][Dired-Hacks]]
@@ -148,6 +151,7 @@
     - [[#org][Org]]
   - [[#email][Email]]
     - [[#notmuch][NotMuch]]
+    - [[#mu4e][MU4E]]
   - [[#media][Media]]
     - [[#spotify][Spotify]]
     - [[#htmlize][HTMLize]]
@@ -251,6 +255,17 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)))
+
+  (prefer-coding-system 'utf-8-unix)
+  (set-language-environment "UTF-8")
+  (set-keyboard-coding-system 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (modify-coding-system-alist 'process "*" 'utf-8)
+  (set-file-name-coding-system 'utf-8)
 #+end_src
 ** Footer
 #+name: early-init-footer-block
@@ -366,7 +381,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "raxod502/blackout"))
 #+end_src
 
-*** Org-Plus-Contrib
+*** [[https://github.com/magnars/dash.el][Dash]]
+#+name: init-dash-block
+#+begin_src emacs-lisp
+  (use-package dash
+    :demand t :straight t)
+#+end_src
+*** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
   (straight-use-package 'org-plus-contrib)
@@ -383,13 +404,35 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (defvar djm--org-agenda-directory "~/org/")
 
-  (defvar djm--custom-file  "~/.cache/emacs/etc/custom.el")
-  (defvar djm--secret-file "~/.cache/emacs/etc/secret.el")
+  (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
+  (defvar djm--secret-file (no-littering-expand-etc-file-name "secret.el"))
 
   (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
 #+end_src
 
 *** Functions
+**** Active-Intervals
+
+Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
+#+name: init-active-interval-block
+#+begin_src emacs-lisp
+  (defmacro djm/run-at-active-interval (interval idle-interval &rest body)
+    "Every INTERVAL seconds, unless idle for > IDLE-INTERVAL seconds, run BODY.
+  Also, after IDLE-INTERVAL seconds of idle time, run BODY. This allows using an
+  idle timer to quickly run BODY when Emacs becomes idle but also ensures that
+  BODY is run periodically even if Emacs is actively being used."
+    (declare (indent 2))
+    `(progn
+       (run-at-time (current-time) ,interval
+                    (lambda ()
+                      (let* ((idle-time (current-idle-time))
+                             (idle-secs (when idle-time
+                                          (float-time idle-time))))
+                        (unless (and idle-secs
+                                     (> idle-secs ,idle-interval))
+                          ,@body))))
+       (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
+#+end_src
 **** Protect Buffers
 #+name: init-protected-buffers-func-block
 #+begin_src emacs-lisp
@@ -461,10 +504,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 *** Keybindings
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
-    (general-define-key
-     "RET" #'newline-and-indent
-     "C-j" #'newline-and-indent
-     "C-z" nil)
+  (general-define-key
+   "RET" #'newline-and-indent
+   "C-j" #'newline-and-indent
+   "C-z" nil
+   "<wheel-right>" #'ignore
+   "<double-wheel-right>" #'ignore
+   "<triple-wheel-right>" #'ignore
+   "<C-triple-wheel-right>" #'ignore)
 #+end_src
 
 #+name: init-aliases-block
@@ -568,11 +615,18 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   calendar-holiday-marker t))
 #+end_src
 
+*** CL-Lib (Built-In)
+#+name: init-cl-lib-block
+#+begin_src emacs-lisp
+  (use-package cl-lib
+    :demand t :straight (:type built-in))
+#+end_src
+
 *** Comint (Built-In)
 #+name: init-comint-block
 #+begin_src emacs-lisp
   (use-package comint
-    :straight (:type built-in)
+    :straight (:type built-in) :no-require t
     :config
     (general-setq comint-prompt-read-only t))
 #+end_src
@@ -608,6 +662,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           fast-but-imprecise-scrolling t
                           ffap-machine-p-known 'reject
                           fill-column 80
+                          frame-resize-pixelwise t
                           frame-title-format '("%b - Emacs")
                           history-delete-duplicates t
                           history-length 3000
@@ -631,7 +686,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           use-file-dialog nil
                           window-combination-resize t
                           window-resize-pixelwise t
-                          frame-resize-pixelwise t))
+                          x-underline-at-descent-line t))
 #+end_src
 
 *** Delsel (Built-In)
@@ -640,48 +695,6 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
   (use-package delsel
     :straight (:type built-in)
     :ghook ('emacs-startup-hook #'delete-selection-mode))
-#+end_src
-
-*** Dired (Built-In)
-#+name: init-dired-block
-#+begin_src emacs-lisp
-  (use-package dired
-    :straight (:type built-in)
-    :config
-    (general-setq dired-auto-revert-buffer t
-                  dired-dwim-target t
-                  dired-use-ls-dired t
-                  dired-ls-F-marks-symlinks t
-                  dired-hide-details-hide-symlink-targets nil
-                  dired-listing-switches "-alhvF --group-directories-first --time-style iso"
-                  dired-recursive-deletes 'always
-                  dired-recursive-copies 'always
-                  dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
-#+end_src
-
-*** WDired (Built-In)
-#+name: init-wdired-block
-#+begin_src emacs-lisp
-  (use-package wdired
-    :straight (:type built-in) :after (dired)
-    :general
-    (:keymaps
-     'dired-mode-map
-     "C-c C-e" #'wdired-change-to-wdired-mode)
-    :config
-    (general-setq wdired-create-parent-directories t
-                  wdired-allow-to-change-permissions t))
-#+end_src
-
-*** Dired-X (Built-In)
-#+name: init-dired-x-block
-#+begin_src emacs-lisp
-  (use-package dired-x
-    :straight (:type built-in)
-    :config
-    (general-setq dired-x-hands-off-my-keys nil
-                  dired-omit-verbose t
-                  dired-clean-up-buffers-too t))
 #+end_src
 
 *** Eldoc (Built-In)
@@ -758,8 +771,10 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package files
     :straight (:type built-in)
-    :init
-    (general-setq-default backup-by-copying t
+    :config
+    (general-setq-default auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
+                          backup-by-copying t
+                          backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
                           confirm-kill-processes nil
                           confirm-nonexistent-file-or-buffer nil
                           create-lockfiles nil
@@ -907,7 +922,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq recentf-max-saved-items 2000
                   recentf-max-menu-items 100
                   recentf-auto-cleanup 'never)
-    (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
+    (djm/run-at-active-interval (* 5 60) 10
+                                (recentf-save-list)))
 #+end_src
 
 *** Savehist (Built-In)
@@ -1055,51 +1071,16 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+begin_src emacs-lisp
   (use-package all-the-icons
     :straight t
-    :commands (all-the-icons-wicon
-               all-the-icons-insert
-               all-the-icons-faicon
-               all-the-icons-octicon
-               all-the-icons-material
-               all-the-icons-fileicon
-               all-the-icons-alltheicon
+    :commands (all-the-icons-insert
                all-the-icons-insert-wicon
-               all-the-icons-wicon-family
-               all-the-icons-octicon-data
-               all-the-icons--family-name
                all-the-icons-insert-faicon
-               all-the-icons-fileicon-data
-               all-the-icons-install-fonts
-               all-the-icons-faicon-family
-               all-the-icons-material-data
-               all-the-icons-octicon-family
-               all-the-icons--function-name
                all-the-icons-insert-octicon
                all-the-icons-insert-material
-               all-the-icons-material-family
-               all-the-icons-fileicon-family
-               all-the-icons-alltheicon-data
                all-the-icons-insert-fileicon
-               all-the-icons--read-candidates
                all-the-icons-insert-alltheicon
-               all-the-icons-alltheicon-family
-               all-the-icons-icon-for-url
-               all-the-icons-icon-for-dir
-               all-the-icons-icon-for-mode
-               all-the-icons-icon-for-file
-               all-the-icons-match-to-alist
-               all-the-icons--web-mode-icon
-               all-the-icons-icon-for-buffer
-               all-the-icons-icon-for-weather
                all-the-icons-insert-icons-for
-               all-the-icons-auto-mode-match?
                all-the-icons--insert-function-name
-               all-the-icons-icon-family-for-mode
-               all-the-icons-icon-family-for-file
-               all-the-icons--web-mode-icon-family
-               all-the-icons--icon-info-for-buffer
-               all-the-icons-icon-family-for-buffer
-               all-the-icons--read-candidates-for-family
-               all-the-icons-dir-is-submodule))
+               ))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -1134,6 +1115,19 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       ;; Fallbacks for math and generic symbols
       (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append)))
 #+end_src
+*** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
+CLOSED: [2019-12-09 Mon 12:23]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-09 Mon 12:23] \\
+  Not really sure I want to use this package.
+:END:
+#+name: init-unicode-fonts-block
+#+begin_src emacs-lisp :tangle no
+  (use-package unicode-fonts
+    :straight t
+    :ghook ('emacs-startup-hook #'unicode-fonts-setup))
+#+end_src
+
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
@@ -1180,7 +1174,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 ** System
 
-*** [[https://github.com/jwiegley/emacs-async][Emacs-Async]]
+*** [[https://github.com/jwiegley/emacs-async][Async]]
 #+name: init-async-block
 #+begin_src emacs-lisp
   (use-package async
@@ -1213,6 +1207,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+end_src
 
 *** [[https://gitlab.com/koral/gcmh][GCMH]]
+
+Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I haven't seen any problems so far.
 #+name: init-gchm-block
 #+begin_src emacs-lisp
   (use-package gcmh
@@ -1694,6 +1690,48 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           dumb-jump-prefer-searcher 'rg))
 #+end_src
 
+*** Dired (Built-In)
+#+name: init-dired-block
+#+begin_src emacs-lisp
+  (use-package dired
+    :blackout "Dired" :straight (:type built-in)
+    :config
+    (general-setq dired-auto-revert-buffer t
+                  dired-dwim-target t
+                  dired-use-ls-dired t
+                  dired-ls-F-marks-symlinks t
+                  dired-hide-details-hide-symlink-targets nil
+                  dired-listing-switches "-alhvF --group-directories-first --time-style iso"
+                  dired-recursive-deletes 'always
+                  dired-recursive-copies 'always
+                  dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
+#+end_src
+
+*** WDired (Built-In)
+#+name: init-wdired-block
+#+begin_src emacs-lisp
+  (use-package wdired
+    :straight (:type built-in) :after (dired)
+    :general
+    (:keymaps
+     'dired-mode-map
+     "C-c C-e" #'wdired-change-to-wdired-mode)
+    :config
+    (general-setq wdired-create-parent-directories t
+                  wdired-allow-to-change-permissions t))
+#+end_src
+
+*** Dired-X (Built-In)
+#+name: init-dired-x-block
+#+begin_src emacs-lisp
+  (use-package dired-x
+    :straight (:type built-in)
+    :config
+    (general-setq dired-x-hands-off-my-keys nil
+                  dired-omit-verbose t
+                  dired-clean-up-buffers-too t))
+#+end_src
+
 *** [[https://github.com/purcell/diredfl][Diredfl]]
 #+name: init-diredfl-block
 #+begin_src emacs-lisp
@@ -1706,7 +1744,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-dired-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons-dired
-    :straight t
+    :blackout t :straight t
     :ghook 'dired-mode-hook)
 #+end_src
 
@@ -1826,7 +1864,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       (push '("CLOSED"     . ?🏁) prettify-symbols-alist)
       (push '("DEADLINE"   . ?❗) prettify-symbols-alist)
       (push '("CLOCK"      . ?⏰) prettify-symbols-alist)
-      (blackout 'org-indent-mode))
+      (blackout 'org-indent-mode)
+      (prettify-symbols-mode +1))
 
     :config
     (progn
@@ -2004,6 +2043,12 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :disabled t :straight t
     :config
     (general-setq notmuch-search-oldest-first nil))
+#+end_src
+
+*** MU4E
+#+name: init-mu4e-block
+#+begin_src emacs-lisp :tangle no
+
 #+end_src
 
 ** Media

@@ -25,8 +25,8 @@
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore
     ~/.config/starship.toml: shells/bash/themes/starship.toml
-    ~/.config/latexmkrc: misc/latexmkrc
-    ~/.config/editorconfig: misc/editorconfig
+    ~/.config/latexmkrc: apps/latexmkrc
+    ~/.config/editorconfig: apps/editorconfig
     ~/.config/alacritty: apps/alacritty
 
 - shell:

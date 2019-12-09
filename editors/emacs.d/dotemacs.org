@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-08 22:14:51
+/last updated/: 2019-12-08 22:20:24
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -34,51 +34,51 @@
     - [[#hooks--advice][Hooks & Advice]]
     - [[#keybindings][Keybindings]]
   - [[#built-in-defaults][Built-In Defaults]]
-    - [[#advice-built-in][Advice [Built-In]]]
-    - [[#align-built-in][Align [Built-In]]]
-    - [[#ansi-color-built-in][Ansi-Color [Built-In]]]
-    - [[#auth-source-built-in][Auth-Source [Built-In]]]
-    - [[#autorevert-built-in][Autorevert [Built-In]]]
-    - [[#bookmark-built-in][Bookmark [Built-In]]]
-    - [[#calculator-built-in][Calculator [Built-In]]]
-    - [[#calendar-built-in][Calendar [Built-In]]]
-    - [[#comint-built-in][Comint [Built-In]]]
-    - [[#compile-built-in][Compile [Built-In]]]
-    - [[#cus-start-built-in][Cus-Start [Built-In]]]
-    - [[#delsel-built-in][Delsel [Built-In]]]
-    - [[#dired-built-in][Dired [Built-In]]]
-    - [[#wdired-built-in][WDired [Built-In]]]
-    - [[#dired-x-built-in][Dired-X [Built-In]]]
-    - [[#eldoc-built-in][Eldoc [Built-In]]]
-    - [[#elisp-mode-built-in][Elisp-Mode [Built-In]]]
-    - [[#emacs-lock-built-in][Emacs-Lock [Built-in]]]
-    - [[#epa-built-in][Epa [Built-In]]]
-    - [[#epg-built-in][Epg [Built-In]]]
-    - [[#face-remap-built-in][Face-Remap [Built-In]]]
-    - [[#eww-built-in][Eww [Built-In]]]
-    - [[#browse-url-built-in][Browse-Url [Built-In]]]
-    - [[#files-built-in][Files [Built-In]]]
-    - [[#frame-built-in][Frame [Built-In]]]
-    - [[#gnutls-built-in][Gnutls [Built-In]]]
-    - [[#help-built-in][Help [Built-In]]]
-    - [[#ispell-built-in][Ispell [Built-In]]]
-    - [[#make-mode-built-in][Make-Mode [Built-In]]]
-    - [[#minibuffer-built-in][Minibuffer [Built-In]]]
-    - [[#ns-win-built-in][NS-Win [Built-In]]]
-    - [[#pixel-scroll-built-in][Pixel-Scroll [Built-In]]]
-    - [[#prog-mode-built-in][Prog-Mode [Built-In]]]
-    - [[#recentf-built-in][Recentf [Built-In]]]
-    - [[#savehist-built-in][Savehist [Built-In]]]
-    - [[#saveplace-built-in][Saveplace [Built-In]]]
-    - [[#select-built-in][Select [Built-In]]]
-    - [[#shell-built-in][Shell [Built-In]]]
-    - [[#simple-built-in][Simple [Built-In]]]
-    - [[#smerge-built-in][Smerge [Built-In]]]
-    - [[#time-built-in][Time [Built-In]]]
-    - [[#uniquify-built-in][Uniquify [Built-In]]]
-    - [[#vc-hooks-built-in][VC-Hooks [Built-In]]]
-    - [[#view-built-in][View [Built-In]]]
-    - [[#winner-built-in][Winner [Built-In]]]
+    - [[#advice-built-in][Advice (Built-In)]]
+    - [[#align-built-in][Align (Built-In)]]
+    - [[#ansi-color-built-in][Ansi-Color (Built-In)]]
+    - [[#auth-source-built-in][Auth-Source (Built-In)]]
+    - [[#autorevert-built-in][Autorevert (Built-In)]]
+    - [[#bookmark-built-in][Bookmark (Built-In)]]
+    - [[#calculator-built-in][Calculator (Built-In)]]
+    - [[#calendar-built-in][Calendar (Built-In)]]
+    - [[#comint-built-in][Comint (Built-In)]]
+    - [[#compile-built-in][Compile (Built-In)]]
+    - [[#cus-start-built-in][Cus-Start (Built-In)]]
+    - [[#delsel-built-in][Delsel (Built-In)]]
+    - [[#dired-built-in][Dired (Built-In)]]
+    - [[#wdired-built-in][WDired (Built-In)]]
+    - [[#dired-x-built-in][Dired-X (Built-In)]]
+    - [[#eldoc-built-in][Eldoc (Built-In)]]
+    - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
+    - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
+    - [[#epa-built-in][Epa (Built-In)]]
+    - [[#epg-built-in][Epg (Built-In)]]
+    - [[#face-remap-built-in][Face-Remap (Built-In)]]
+    - [[#eww-built-in][Eww (Built-In)]]
+    - [[#browse-url-built-in][Browse-Url (Built-In)]]
+    - [[#files-built-in][Files (Built-In)]]
+    - [[#frame-built-in][Frame (Built-In)]]
+    - [[#gnutls-built-in][Gnutls (Built-In)]]
+    - [[#help-built-in][Help (Built-In)]]
+    - [[#ispell-built-in][Ispell (Built-In)]]
+    - [[#make-mode-built-in][Make-Mode (Built-In)]]
+    - [[#minibuffer-built-in][Minibuffer (Built-In)]]
+    - [[#ns-win-built-in][NS-Win (Built-In)]]
+    - [[#pixel-scroll-built-in][Pixel-Scroll (Built-In)]]
+    - [[#prog-mode-built-in][Prog-Mode (Built-In)]]
+    - [[#recentf-built-in][Recentf (Built-In)]]
+    - [[#savehist-built-in][Savehist (Built-In)]]
+    - [[#saveplace-built-in][Saveplace (Built-In)]]
+    - [[#select-built-in][Select (Built-In)]]
+    - [[#shell-built-in][Shell (Built-In)]]
+    - [[#simple-built-in][Simple (Built-In)]]
+    - [[#smerge-built-in][Smerge (Built-In)]]
+    - [[#time-built-in][Time (Built-In)]]
+    - [[#uniquify-built-in][Uniquify (Built-In)]]
+    - [[#vc-hooks-built-in][VC-Hooks (Built-In)]]
+    - [[#view-built-in][View (Built-In)]]
+    - [[#winner-built-in][Winner (Built-In)]]
   - [[#user-files][User Files]]
     - [[#custom-file][Custom File]]
     - [[#secret-file][Secret File]]
@@ -476,7 +476,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+end_src
 
 ** Built-In Defaults
-*** Advice [Built-In]
+*** Advice (Built-In)
 #+name: init-advice-block
 #+begin_src emacs-lisp
   (use-package advice
@@ -485,7 +485,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq ad-redefinition-action 'accept))
 #+end_src
 
-*** Align [Built-In]
+*** Align (Built-In)
 #+name: init-align-block
 #+begin_src emacs-lisp
   (use-package align
@@ -495,7 +495,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     ("C-c [" #'align-regexp))
 #+end_src
 
-*** Ansi-Color [Built-In]
+*** Ansi-Color (Built-In)
 #+name: init-ansi-color-block
 #+begin_src emacs-lisp
   (use-package ansi-color
@@ -507,7 +507,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
       (set (make-local-variable 'comint-last-output-start)
            (point-marker))))
 #+end_src
-*** Auth-Source [Built-In]
+*** Auth-Source (Built-In)
 #+name: init-auth-source-block
 #+begin_src emacs-lisp
   (use-package auth-source
@@ -517,7 +517,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                                  ,(no-littering-expand-etc-file-name "authinfo"))))
 #+end_src
 
-*** Autorevert [Built-In]
+*** Autorevert (Built-In)
 #+name: init-autorevert-block
 #+begin_src emacs-lisp
   (use-package autorevert
@@ -531,7 +531,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   auto-revert-use-notify nil))
 #+end_src
 
-*** Bookmark [Built-In]
+*** Bookmark (Built-In)
 #+name: init-bookmark-block
 #+begin_src emacs-lisp
   (use-package bookmark
@@ -539,7 +539,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config (general-setq bookmark-save-flag +1))
 #+end_src
 
-*** Calculator [Built-In]
+*** Calculator (Built-In)
 #+name: init-calc-block
 #+begin_src emacs-lisp
   (use-package calc
@@ -555,7 +555,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                     (Kib "1024 * b" "Kilo Bit")
                     (b "B / 8" "Bit"))))
 #+end_src
-*** Calendar [Built-In]
+*** Calendar (Built-In)
 #+name: init-calendar-block
 #+begin_src emacs-lisp
   (use-package calendar
@@ -568,7 +568,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   calendar-holiday-marker t))
 #+end_src
 
-*** Comint [Built-In]
+*** Comint (Built-In)
 #+name: init-comint-block
 #+begin_src emacs-lisp
   (use-package comint
@@ -577,7 +577,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq comint-prompt-read-only t))
 #+end_src
 
-*** Compile [Built-In]
+*** Compile (Built-In)
 #+name: init-compile-block
 #+begin_src emacs-lisp
   (use-package compile
@@ -589,7 +589,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   compilation-scroll-output 'first-error))
 #+end_src
 
-*** Cus-Start [Built-In]
+*** Cus-Start (Built-In)
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -634,7 +634,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           frame-resize-pixelwise t))
 #+end_src
 
-*** Delsel [Built-In]
+*** Delsel (Built-In)
 #+name: init-delsel-block
 #+begin_src emacs-lisp
   (use-package delsel
@@ -642,7 +642,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
-*** Dired [Built-In]
+*** Dired (Built-In)
 #+name: init-dired-block
 #+begin_src emacs-lisp
   (use-package dired
@@ -659,7 +659,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
 #+end_src
 
-*** WDired [Built-In]
+*** WDired (Built-In)
 #+name: init-wdired-block
 #+begin_src emacs-lisp
   (use-package wdired
@@ -673,7 +673,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   wdired-allow-to-change-permissions t))
 #+end_src
 
-*** Dired-X [Built-In]
+*** Dired-X (Built-In)
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
   (use-package dired-x
@@ -684,7 +684,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   dired-clean-up-buffers-too t))
 #+end_src
 
-*** Eldoc [Built-In]
+*** Eldoc (Built-In)
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
@@ -695,7 +695,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
-*** Elisp-Mode [Built-In]
+*** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
   (use-package elisp-mode
@@ -704,14 +704,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq emacs-lisp-docstring-fill-column 80))
 #+end_src
 
-*** Emacs-Lock [Built-in]
+*** Emacs-Lock (Built-In)
 #+name: init-emacs-lock-block
 #+begin_src emacs-lisp
   (use-package emacs-lock
     :blackout " 🔐 " :straight (:type built-in))
 #+end_src
 
-*** Epa [Built-In]
+*** Epa (Built-In)
 #+name: init-epa-block
 #+begin_src emacs-lisp
   (use-package epa
@@ -719,7 +719,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config (general-setq epa-replace-original-text t))
 #+end_src
 
-*** Epg [Built-In]
+*** Epg (Built-In)
 #+name: init-epg-block
 #+begin_src emacs-lisp
   (use-package epg
@@ -727,7 +727,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
-*** Face-Remap [Built-In]
+*** Face-Remap (Built-In)
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
   (use-package face-remap
@@ -738,14 +738,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (blackout 'variable-pitch-mode))
 #+end_src
 
-*** Eww [Built-In]
+*** Eww (Built-In)
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
   (use-package eww
     :straight (:type built-in))
 #+end_src
 
-*** Browse-Url [Built-In]
+*** Browse-Url (Built-In)
 #+name: init-browse-url-block
 #+begin_src emacs-lisp
   (use-package browse-url
@@ -753,7 +753,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :config
     (general-setq browse-urls-browser-function "firefox"))
 #+end_src
-*** Files [Built-In]
+*** Files (Built-In)
 #+name: init-files-block
 #+begin_src emacs-lisp
   (use-package files
@@ -775,7 +775,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           view-read-only t))
 #+end_src
 
-*** Frame [Built-In]
+*** Frame (Built-In)
 #+name: init-frame-block
 #+begin_src emacs-lisp
   (use-package frame
@@ -790,7 +790,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
         (menu-bar-mode -1))))
 #+end_src
 
-*** Gnutls [Built-In]
+*** Gnutls (Built-In)
 #+name: init-gnutls-block
 #+begin_src emacs-lisp
   (use-package gnutls
@@ -800,7 +800,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   gnutls-min-prime-bits 2048))
 #+end_src
 
-*** Help [Built-In]
+*** Help (Built-In)
 #+name: init-help-block
 #+begin_src emacs-lisp
   (use-package help
@@ -810,7 +810,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
 
-*** Ispell [Built-In]
+*** Ispell (Built-In)
 #+name: init-ispell-block
 #+begin_src emacs-lisp
   (use-package ispell
@@ -827,7 +827,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   ispell-silently-savep t))
 #+end_src
 
-*** Make-Mode [Built-In]
+*** Make-Mode (Built-In)
 #+name: init-makefile-block
 #+begin_src emacs-lisp :tangle no
   (use-package make-mode
@@ -838,7 +838,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                (makefile-bsdmake-mode . "Makefile")
                (makefile-imake-mode . "Makefile")))
 #+end_src
-*** Minibuffer [Built-In]
+*** Minibuffer (Built-In)
 #+name: init-mini-buffer-block
 #+begin_src emacs-lisp
   (use-package minibuffer
@@ -860,7 +860,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-add-hook 'minibuffer-setup-hook #'minibuffer-depth-indicate-mode))
 #+end_src
 
-*** NS-Win [Built-In]
+*** NS-Win (Built-In)
 #+name: init-ns-win-block
 #+begin_src emacs-lisp
   (use-package ns-win
@@ -877,7 +877,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                    ns-use-thin-smoothing t))
 #+end_src
 
-*** Pixel-Scroll [Built-In]
+*** Pixel-Scroll (Built-In)
 #+name: init-pixel-scroll-block
 #+begin_src emacs-lisp
   (use-package pixel-scroll
@@ -885,7 +885,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook 'emacs-startup-hook)
 #+end_src
 
-*** Prog-Mode [Built-In]
+*** Prog-Mode (Built-In)
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
   (use-package prog-mode
@@ -898,7 +898,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
-*** Recentf [Built-In]
+*** Recentf (Built-In)
 #+name: init-recentf-block
 #+begin_src emacs-lisp
   (use-package recentf
@@ -910,7 +910,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (run-at-time nil (* 5 60) (lambda () (let ((save-silently t)) (recentf-save-list)))))
 #+end_src
 
-*** Savehist [Built-In]
+*** Savehist (Built-In)
 #+name: init-savehist-block
 #+begin_src emacs-lisp
   (use-package savehist
@@ -927,7 +927,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 #+end_src
 
-*** Saveplace [Built-In]
+*** Saveplace (Built-In)
 #+name: init-saveplace-block
 #+begin_src emacs-lisp
   (use-package saveplace
@@ -935,7 +935,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :ghook ('after-init-hook #'save-place-mode))
 #+end_src
 
-*** Select [Built-In]
+*** Select (Built-In)
 #+name: init-select-block
 #+begin_src emacs-lisp
   (use-package select
@@ -944,14 +944,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq select-enable-clipboard t))
 #+end_src
 
-*** Shell [Built-In]
+*** Shell (Built-In)
 #+name: init-shell-block
 #+begin_src emacs-lisp
   (use-package sh-script
     :straight (:type built-in)
     :mode ("\\.sh'" "\\.zsh'" "\\.bash'"))
 #+end_src
-*** Simple [Built-In]
+*** Simple (Built-In)
 #+name: init-simple-block
 #+begin_src emacs-lisp
   (use-package simple
@@ -974,14 +974,14 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 
 #+end_src
 
-*** Smerge [Built-In]
+*** Smerge (Built-In)
 #+name: init-smerge-block
 #+begin_src emacs-lisp
   (use-package smerge-mode
     :straight (:type built-in)
     :commands (smerge-mode))
 #+end_src
-*** Time [Built-In]
+*** Time (Built-In)
 #+name: init-time-block
 #+begin_src emacs-lisp
   (use-package time
@@ -993,7 +993,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           display-time-default-load-average nil))
 #+end_src
 
-*** Uniquify [Built-In]
+*** Uniquify (Built-In)
 #+name: init-uniquify-block
 #+begin_src emacs-lisp
   (use-package uniquify
@@ -1004,7 +1004,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   uniquify-separator "/"))
 #+end_src
 
-*** VC-Hooks [Built-In]
+*** VC-Hooks (Built-In)
 #+name: init-vc-hooks-block
 #+begin_src emacs-lisp
   (use-package vc-hooks
@@ -1013,7 +1013,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq vc-follow-symlinks t))
 #+end_src
 
-*** View [Built-In]
+*** View (Built-In)
 #+name: init-view-block
 #+begin_src emacs-lisp
   (use-package view
@@ -1022,7 +1022,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     (general-setq view-inhibit-help-message t))
 #+end_src
 
-*** Winner [Built-In]
+*** Winner (Built-In)
 #+name: init-winner-block
 #+begin_src emacs-lisp
   (use-package winner

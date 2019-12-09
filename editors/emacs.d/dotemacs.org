@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-09 14:44:08
+/last updated/: 2019-12-09 16:07:17
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -83,11 +83,13 @@
     - [[#secret-file][Secret File]]
   - [[#themes--aesthetics][Themes & Aesthetics]]
     - [[#all-the-icons][All-The-Icons]]
+    - [[#cancelled-emojify][CANCELLED Emojify]]
     - [[#gruvbox-theme][Gruvbox Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
     - [[#smart-mode-line][Smart-Mode-Line]]
     - [[#default-text-scale][Default-Text-Scale]]
     - [[#page-break-lines][Page-Break-Lines]]
+    - [[#persistent-scratch][Persistent-Scratch]]
   - [[#system][System]]
     - [[#async][Async]]
     - [[#osx-trash][OSX-Trash]]
@@ -150,8 +152,8 @@
   - [[#productivity][Productivity]]
     - [[#org][Org]]
   - [[#email][Email]]
-    - [[#notmuch][NotMuch]]
-    - [[#mu4e][MU4E]]
+    - [[#hold-notmuch][HOLD NotMuch]]
+    - [[#hold-mu4e][HOLD MU4E]]
   - [[#media][Media]]
     - [[#spotify][Spotify]]
     - [[#htmlize][HTMLize]]
@@ -244,8 +246,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
   (run-with-idle-timer 5 nil (lambda ()
                                (setq-default gc-cons-threshold default-gc-cons-threshold)
-                               (garbage-collect)
-                               (message "GC returning to normal")))
+                               (garbage-collect)))
 #+end_src
 
 *** Pre-Gui Optimization
@@ -320,9 +321,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-  (setq-default use-package-verbose t
+  (setq-default use-package-verbose nil
                 use-package-always-defer t
-                use-package-compute-statistics t)
+                use-package-compute-statistics nil)
 
   (straight-use-package 'use-package)
 #+end_src
@@ -412,7 +413,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 *** Functions
 **** Active-Intervals
-
 Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
@@ -434,6 +434,7 @@ Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d
        (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
 **** Protect Buffers
+Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 #+name: init-protected-buffers-func-block
 #+begin_src emacs-lisp
   (defvar *protected-buffers* '("*scratch*" "*Messages*"))
@@ -452,7 +453,7 @@ Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d
 #+end_src
 
 **** Async Tangle
-Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou]]
+Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 #+name: init-async-tangle-func-block
 #+begin_src emacs-lisp 
   (defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
@@ -505,13 +506,22 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
   (general-define-key
-   "RET" #'newline-and-indent
-   "C-j" #'newline-and-indent
-   "C-z" nil
-   "<wheel-right>" #'ignore
-   "<double-wheel-right>" #'ignore
-   "<triple-wheel-right>" #'ignore
-   "<C-triple-wheel-right>" #'ignore)
+   "RET"                    #'newline-and-indent
+   "C-j"                    #'newline-and-indent
+   "C-z"                    nil
+   "<wheel-right>"          #'ignore
+   "<double-wheel-right>"   #'ignore
+   "<triple-wheel-right>"   #'ignore
+   "<C-triple-wheel-right>" #'ignore
+   "<wheel-down>"           #'ignore
+   "<double-wheel-down>"    #'ignore
+   "<triple-wheel-down>"    #'ignore
+   "<wheel-up>"             #'ignore
+   "<double-wheel-up>"      #'ignore
+   "<triple-wheel-up>"      #'ignore
+   "<wheel-left>"           #'ignore
+   "<double-wheel-left>"    #'ignore
+   "<triple-wheel-left>"    #'ignore)
 #+end_src
 
 #+name: init-aliases-block
@@ -668,6 +678,7 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                           history-length 3000
                           icon-title-format frame-title-format
                           initial-major-mode 'fundamental-mode
+                          initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
                           inhibit-compacting-font-caches t
                           inhibit-startup-echo-area-message t
                           inhibit-startup-screen t
@@ -908,8 +919,9 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
     :gfhook
     #'display-fill-column-indicator-mode
     #'show-paren-mode
-    #'global-prettify-symbols-mode
+    #'prettify-symbols-mode
     :config
+    (general-setq prettify-symbols-unprettify-at-point 'right)
     (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
@@ -923,7 +935,8 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                   recentf-max-menu-items 100
                   recentf-auto-cleanup 'never)
     (djm/run-at-active-interval (* 5 60) 10
-                                (recentf-save-list)))
+      (let ((inhibit-message t))
+        (recentf-save-list))))
 #+end_src
 
 *** Savehist (Built-In)
@@ -1083,6 +1096,19 @@ Sourced from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][r
                ))
 #+end_src
 
+*** CANCELLED [[https://github.com/iqbalansari/emacs-emojify][Emojify]]
+CLOSED: [2019-12-09 Mon 15:35]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-09 Mon 15:35] \\
+  I don't really like the non-apple emojis.
+:END:
+#+name: init-emojify-block
+#+begin_src emacs-lisp :tangle no
+  (use-package emojify
+    :straight t
+    :ghook ('after-init-hook #'global-emojify-mode))
+#+end_src
+
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
@@ -1139,6 +1165,7 @@ CLOSED: [2019-12-09 Mon 12:23]
       (general-setq mode-line-format (delq 'mode-line-position mode-line-format)
                     display-time-format " %a %B %d %I:%M %p"
                     sml/theme nil
+                    sml/use-projectile-p t
                     sml/no-confirm-load-theme t)
       (sml/setup)
       (general-remove-hook 'display-time-hook 'sml/propertize-time-string)))
@@ -1172,6 +1199,17 @@ CLOSED: [2019-12-09 Mon 12:23]
         org-agenda-mode-hook)))
 #+end_src
 
+*** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
+#+name: init-persistent-scratch-block
+#+begin_src emacs-lisp
+  (use-package persistent-scratch
+    :straight t
+    :init
+    (general-setq persistent-scratch-autosave-interval 60)
+    (run-with-idle-timer 3 nil
+                         (lambda ()
+                           (persistent-scratch-setup-default))))
+#+end_src
 ** System
 
 *** [[https://github.com/jwiegley/emacs-async][Async]]
@@ -1179,7 +1217,8 @@ CLOSED: [2019-12-09 Mon 12:23]
 #+begin_src emacs-lisp
   (use-package async
     :straight t
-    :ghook ('dired-mode-hook #'dired-async-mode))
+    :ghook ('dired-mode-hook #'dired-async-mode)
+    :blackout (dired-async-mode . " "))
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
@@ -1207,7 +1246,6 @@ CLOSED: [2019-12-09 Mon 12:23]
 #+end_src
 
 *** [[https://gitlab.com/koral/gcmh][GCMH]]
-
 Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I haven't seen any problems so far.
 #+name: init-gchm-block
 #+begin_src emacs-lisp
@@ -1223,7 +1261,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (if (boundp 'after-focus-change-function)
         (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
 
-    :config (general-setq gcmh-verbose t
+    :config (general-setq gcmh-verbose nil
                           gcmh-low-cons-threshold default-gc-cons-threshold
                           gcmh-high-cons-threshold extended-gc-cons-threshold))
 #+end_src
@@ -1348,8 +1386,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   counsel-describe-variable-function #'helpful-variable
                   counsel-find-file-at-point t)
 
-    (general-setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never %s -z --sort path")
-    (general-setq counsel-grep-base-command "rg -S --no-heading --line-number --color never '%s' %s")
+    (general-setq counsel-rg-base-command
+                  "rg --with-filename --no-heading --line-number --color never %s -z --sort path")
+    (general-setq counsel-grep-base-command
+                  "rg -S --no-heading --line-number --color never '%s' %s")
 
     (general-setq counsel-fzf-cmd "fd --type f | fzf -f \"%s\"")
 
@@ -1858,6 +1898,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (push '("NEXT"       . ?→)  prettify-symbols-alist)
       (push '("DONE"       . ?✓)  prettify-symbols-alist)
       (push '("CANCELLED"  . ?✘)  prettify-symbols-alist)
+      (push '("HOLD"       . ?🤚) prettify-symbols-alist)
       (push '("WAITING"    . ?𝌗) prettify-symbols-alist)
       (push '("QUESTION"   . ??)  prettify-symbols-alist)
       (push '("SCHEDULED"  . ?🗓) prettify-symbols-alist)
@@ -2036,7 +2077,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Email
-*** NotMuch
+*** HOLD [[https://notmuchmail.org/][NotMuch]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-09 Mon 15:58] \\
+  I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
+:END:
 #+name: init-notmuch-block
 #+begin_src emacs-lisp :tangle no
   (use-package notmuch
@@ -2045,7 +2090,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq notmuch-search-oldest-first nil))
 #+end_src
 
-*** MU4E
+*** HOLD [[https://github.com/emacsmirror/mu4e][MU4E]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-09 Mon 15:59] \\
+  I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
+:END:
 #+name: init-mu4e-block
 #+begin_src emacs-lisp :tangle no
 

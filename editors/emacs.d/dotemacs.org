@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-10 14:04:18
+/last updated/: 2019-12-10 19:11:26
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -29,6 +29,7 @@
     - [[#blackout][Blackout]]
     - [[#dash][Dash]]
     - [[#org-plus-contrib][Org-Plus-Contrib]]
+    - [[#defrepeater][Defrepeater]]
   - [[#personal-configuration][Personal Configuration]]
     - [[#variables][Variables]]
     - [[#functions][Functions]]
@@ -418,6 +419,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (straight-use-package 'org-plus-contrib)
 #+end_src
 
+*** [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
+#+name: init-defrepeater-block
+#+begin_src emacs-lisp
+  (use-package defrepeater
+    :straight t)
+#+end_src
 ** Personal Configuration
 *** Variables
 #+name: init-variables-block
@@ -520,6 +527,17 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
               (message "ERROR: %s as tangle failed." ,org-file)))))))
 #+end_src
 
+**** Temp Buffers
+#+name: init-temp-buffers-block
+#+begin_src emacs-lisp
+  (defun djm/new-scratch ()
+    "open up a guaranteed new scratch buffer"
+    (interactive)
+    (switch-to-buffer (cl-loop for num from 0
+                               for name = (format "blah-%03i" num)
+                               while (get-buffer name)
+                               finally return name)))
+#+end_src
 *** Hooks & Advice
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
@@ -1665,12 +1683,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 *** CSV-Mode
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
-(use-package csv-mode
-  :straight t
-  :mode ("\\.csv\\'" . csv-mode)
-  :preface
-  (defun config-langs--suppress-final-newline ()
-  :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline)))
+  (use-package csv-mode
+    :straight t
+    :mode "\\.csv\\'"
+    :preface
+    (defun config-langs--suppress-final-newline () nil)
+    :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
 #+end_src
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
@@ -2030,10 +2048,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (general-setq ibuffer-sidebar-use-custom-modeline nil))
 #+end_src
-*** Treemacs
+*** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
 #+name: init-treemacs-block
 #+begin_src emacs-lisp
-
+  (use-package treemacs
+    :straight t)
 #+end_src
 ** Productivity
 *** Org

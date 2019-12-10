@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-09 16:41:19
+/last updated/: 2019-12-09 20:57:37
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -97,6 +97,7 @@
     - [[#restart-emacs][Restart-Emacs]]
     - [[#firestarter][Firestarter]]
     - [[#gcmh][GCMH]]
+    - [[#memory-usage][Memory-Usage]]
   - [[#project-management][Project Management]]
     - [[#projectile][Projectile]]
     - [[#direnv][Direnv]]
@@ -144,11 +145,15 @@
     - [[#dired-built-in][Dired (Built-In)]]
     - [[#wdired-built-in][WDired (Built-In)]]
     - [[#dired-x-built-in][Dired-X (Built-In)]]
+    - [[#dired-du][Dired-Du]]
+    - [[#dired-k][Dired-K]]
+    - [[#dired-atool][Dired-ATool]]
     - [[#diredfl][Diredfl]]
     - [[#all-the-icons-dired][All-The-Icons-Dired]]
     - [[#dired-hacks][Dired-Hacks]]
     - [[#dired-git-info][Dired-Git-Info]]
     - [[#fd-dired][FD-Dired]]
+    - [[#dired-rsync][Dired-Rsync]]
     - [[#ibuffer][iBuffer]]
   - [[#productivity][Productivity]]
     - [[#org][Org]]
@@ -239,7 +244,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
                 command-line-ns-option-alist nil
-                frame-inhibit-implied-resize t)
+                frame-inhibit-implied-resize t
+                load-prefer-newer t)
 
   (setq file-name-handler-alist nil
         gc-cons-percentage 0.6
@@ -571,6 +577,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
       (set (make-local-variable 'comint-last-output-start)
            (point-marker))))
 #+end_src
+
 *** Auth-Source (Built-In)
 #+name: init-auth-source-block
 #+begin_src emacs-lisp
@@ -1000,7 +1007,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+begin_src emacs-lisp
   (use-package simple
     :straight (:type built-in)
-    :init
+    :config
     (general-setq blink-matching-paren t
                   column-number-mode nil
                   display-time-mode t
@@ -1042,7 +1049,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+begin_src emacs-lisp
   (use-package uniquify
     :straight (:type built-in)
-    :init
+    :config
     (general-setq uniquify-ignore-buffers-re "^\\*"
                   uniquify-buffer-name-style 'forward
                   uniquify-separator "/"))
@@ -1053,7 +1060,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+begin_src emacs-lisp
   (use-package vc-hooks
     :straight (:type built-in)
-    :init
+    :config
     (general-setq vc-follow-symlinks t))
 #+end_src
 
@@ -1281,6 +1288,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                           gcmh-high-cons-threshold extended-gc-cons-threshold))
 #+end_src
 
+*** [[https://github.com/emacsmirror/memory-usage][Memory-Usage]]
+#+name: init-memory-usage-block
+#+begin_src emacs-lisp
+  (use-package memory-usage
+    :straight t)
+#+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
@@ -1750,13 +1763,19 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package dired
     :blackout "Dired" :straight (:type built-in)
+    :general
+    (:keymaps 'dired-mode-map
+              "h" #'dired-up-directory
+              "n" #'dired-next-line
+              "p" #'dired-previous-line
+              "f" #'counsel-find-file)
     :config
     (general-setq dired-auto-revert-buffer t
                   dired-dwim-target t
                   dired-use-ls-dired t
                   dired-ls-F-marks-symlinks t
                   dired-hide-details-hide-symlink-targets nil
-                  dired-listing-switches "-alhvF --group-directories-first --time-style iso"
+                  dired-listing-switches "-lha --group-directories-first"
                   dired-recursive-deletes 'always
                   dired-recursive-copies 'always
                   dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
@@ -1785,6 +1804,30 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq dired-x-hands-off-my-keys nil
                   dired-omit-verbose t
                   dired-clean-up-buffers-too t))
+#+end_src
+
+*** [[https://github.com/calancha/dired-du][Dired-Du]]
+#+name: init-dired-du-block
+#+begin_src emacs-lisp :tangle no
+  (use-package dired-du
+    :straight t
+    :ghook ('dired-mode-hook #'dired-du-mode))
+#+end_src
+*** [[https://github.com/syohex/emacs-dired-k][Dired-K]]
+#+name: init-dired-k-block
+#+begin_src emacs-lisp :tangle no
+  (use-package dired-k
+    :straight t
+    :ghook
+    ('dired-initial-position-hook #'dired-k)
+    ('dired-after-readin-hook #'dired-k-no-revert))
+#+end_src
+
+*** [[https://github.com/HKey/dired-atool][Dired-ATool]]
+#+name: init-dired-atool-block
+#+begin_src emacs-lisp
+  (use-package dired-atool
+    :straight t)
 #+end_src
 
 *** [[https://github.com/purcell/diredfl][Diredfl]]
@@ -1825,7 +1868,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
      "C-c C-r" #'dired-narrow-regexp))
 
   (use-package dired-collapse
-    :straight dired-hacks)
+    :straight dired-hacks
+    :general
+    (:keymaps 'dired-mode-map
+              "c" #'dired-collapse-mode))
 
   (use-package dired-tagsistant
      :straight dired-hacks)
@@ -1877,6 +1923,15 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight (:host github :repo "yqrashawn/fd-dired"))
 #+end_src
 
+*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
+#+name: init-dired-rsync-block
+#+begin_src emacs-lisp
+  (use-package dired-rsync
+    :straight t
+    :general
+    (:keymaps 'dired-mode-map
+              "C-c C-r" #'dired-rsync))
+#+end_src
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp

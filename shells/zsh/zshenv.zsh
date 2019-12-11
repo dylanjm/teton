@@ -11,6 +11,8 @@ export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"
 
+export PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig"
+
 export LANG=en_US.UTF-8
 export EDITOR='emacsclient -a "" -c'
 export HISTFILE="$ZSH_CACHE/zsh_history"
@@ -61,7 +63,8 @@ path=($PYENV_ROOT/bin
       /usr/sbin
       /sbin
       /usr/local/texlive/2019/bin/x86_64-darwin
-      /usr/local/opt/texinfo/bin)
+      /usr/local/opt/texinfo/bin
+      /opt/X11/bin)
 
 typeset -U PATH FPATH MODULE_PATH
 export PATH

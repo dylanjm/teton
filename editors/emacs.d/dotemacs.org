@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-11 15:19:47
+/last updated/: 2019-12-11 16:44:41
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -63,6 +63,7 @@
     - [[#frame-built-in][Frame (Built-In)]]
     - [[#gnutls-built-in][Gnutls (Built-In)]]
     - [[#help-built-in][Help (Built-In)]]
+    - [[#hideshow-built-in][Hideshow (Built-In)]]
     - [[#ispell-built-in][Ispell (Built-In)]]
     - [[#make-mode-built-in][Make-Mode (Built-In)]]
     - [[#minibuffer-built-in][Minibuffer (Built-In)]]
@@ -90,6 +91,7 @@
     - [[#gruvbox-theme][Gruvbox Theme]]
     - [[#cancelled-darktooth-theme][CANCELLED Darktooth Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
+    - [[#dimmer-mode][Dimmer-Mode]]
     - [[#smart-mode-line][Smart-Mode-Line]]
     - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
     - [[#default-text-scale][Default-Text-Scale]]
@@ -97,14 +99,19 @@
     - [[#persistent-scratch][Persistent-Scratch]]
   - [[#system][System]]
     - [[#async][Async]]
+    - [[#pdf-tools][PDF-Tools]]
     - [[#osx-trash][OSX-Trash]]
     - [[#restart-emacs][Restart-Emacs]]
     - [[#firestarter][Firestarter]]
     - [[#gcmh][GCMH]]
     - [[#memory-usage][Memory-Usage]]
+  - [[#shells][Shells]]
+    - [[#vterm][Vterm]]
+    - [[#vterm-toggle][Vterm-Toggle]]
   - [[#project-management][Project Management]]
     - [[#projectile][Projectile]]
     - [[#direnv][Direnv]]
+    - [[#taskrunner][Taskrunner]]
   - [[#frameworks][Frameworks]]
     - [[#prescient][Prescient]]
     - [[#posframe][Posframe]]
@@ -130,8 +137,10 @@
     - [[#interactive-align][Interactive-Align]]
     - [[#multiple-cursors][Multiple-Cursors]]
     - [[#string-inflection][String-Inflection]]
+    - [[#tiny][Tiny]]
     - [[#visual-regexp][Visual-Regexp]]
     - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
+    - [[#wgrep][Wgrep]]
     - [[#zop-to-char][Zop-To-Char]]
   - [[#minor-modes][Minor Modes]]
     - [[#aggressive-indent][Aggressive-Indent]]
@@ -206,6 +215,7 @@
     - [[#flycheck-pos-tip][Flycheck-Pos-Tip]]
     - [[#flycheck-pycheckers][Flycheck-Pycheckers]]
   - [[#languages][Languages]]
+    - [[#emacs-lisp][Emacs-Lisp]]
     - [[#markdown][Markdown]]
     - [[#yaml][YAML]]
     - [[#latex][LaTeX]]
@@ -213,6 +223,7 @@
     - [[#python][Python]]
   - [[#miscellaneous][Miscellaneous]]
     - [[#speedtype][SpeedType]]
+    - [[#ledger][Ledger]]
   - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
@@ -305,6 +316,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (modify-coding-system-alist 'process "*" 'utf-8)
   (set-file-name-coding-system 'utf-8)
 #+end_src
+
 ** Footer
 #+name: early-init-footer-block
 #+begin_src emacs-lisp
@@ -383,7 +395,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY")
+                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "PKG_CONFIG_PATH")
                   exec-path-from-shell-arguments '("-i"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -932,6 +944,13 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
 
+*** Hideshow (Built-In)
+#+name: init-hideshow-block
+#+begin_src emacs-lisp
+  (use-package hideshow
+    :blackout (hs-minor-mode . "") :straight (:type built-in)
+    :ghook ('prog-mode-hook #'hs-minor-mode))
+#+end_src
 *** Ispell (Built-In)
 #+name: init-ispell-block
 #+begin_src emacs-lisp
@@ -1244,6 +1263,13 @@ CLOSED: [2019-12-09 Mon 12:23]
     :ghook ('emacs-startup-hook #'unicode-fonts-setup))
 #+end_src
 
+*** [[https://github.com/gonewest818/dimmer.el][Dimmer-Mode]]
+#+name: init-dimmer-block
+#+begin_src emacs-lisp
+  (use-package dimmer
+    :straight t
+    :ghook 'after-init-hook)
+#+end_src
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
@@ -1318,6 +1344,23 @@ CLOSED: [2019-12-09 Mon 12:23]
     :blackout (dired-async-mode . " "))
 #+end_src
 
+*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
+Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
+#+name: init-pdf-tools-block
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :straight t
+    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
+              "n" #'pdf-view-next-page
+              "N" #'pdf-view-previous-page
+              "p" #'pdf-view-previous-page)
+    :config
+    (progn
+      (pdf-tools-install)
+      (general-setq pdf-view-display-size 'fit-page
+                    pdf-annot-activate-created-annotations t)))
+#+end_src
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
 #+name: init-osx-trash-block
 #+begin_src emacs-lisp
@@ -1369,6 +1412,21 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package memory-usage
     :straight t)
 #+end_src
+** Shells
+*** [[https://github.com/akermu/emacs-libvterm][Vterm]]
+#+name: init-vterm-block
+#+begin_src emacs-lisp
+  (use-package vterm
+    :straight t
+    :config
+    (general-setq vterm-install t))
+#+end_src
+*** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
+#+name: init-vterm-toggle-block
+#+begin_src emacs-lisp
+  (use-package vterm-toggle
+    :straight (:host github :repo "jixiuf/vterm-toggle"))
+#+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
@@ -1405,6 +1463,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (add-hook 'compilation-mode-hook #'direnv-update-environment))
 #+end_src
 
+*** [[https://github.com/emacs-taskrunner/emacs-taskrunner][Taskrunner]]
+#+name: init-taskrunner-block
+#+begin_src emacs-lisp
+  (use-package taskrunner
+    :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner"))
+#+end_src
 ** Frameworks
 *** [[https://github.com/raxod502/prescient.el][Prescient]]
 #+name: init-prescient-block
@@ -1414,7 +1478,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config (prescient-persist-mode +1))
 #+end_src
 
-*** Posframe
+*** [[https://github.com/tumashu/posframe][Posframe]]
 #+name: init-posframe-block
 #+begin_src emacs-lisp :tangle no
   (use-package posframe
@@ -1441,7 +1505,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                         (counsel-mark-ring . nil))))
 #+end_src
 
-*** Ivy-Posframe
+*** [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
 #+name: init-ivy-posframe-block
 #+begin_src emacs-lisp :tangle no
   (use-package ivy-posframe
@@ -1588,6 +1652,71 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package company-box
     :blackout t :straight t
     :ghook 'company-mode-hook)
+
+  (require 'el-patch)
+
+  (cl-eval-when (compile)
+    (require 'company-box))
+
+  (el-patch-feature company-box)
+
+  ;; Fix background colour on theme change.
+
+  (with-eval-after-load 'company-box
+    (el-patch-defun company-box--display (string)
+      "Display the completions."
+      (company-box--render-buffer string)
+      (unless (company-box--get-frame)
+        (company-box--set-frame (company-box--make-frame)))
+      (el-patch-add
+        (with-selected-frame (company-box--get-frame)
+          (set-background-color (face-background 'company-box-background nil t))))
+      (company-box--set-frame-position (company-box--get-frame))
+      (unless (frame-visible-p (company-box--get-frame))
+        (make-frame-visible (company-box--get-frame)))
+      (company-box--update-scrollbar (company-box--get-frame) t)))
+
+
+  ;; Make sure we don't show a header line in company-box.
+
+  (with-eval-after-load 'company-box
+    (el-patch-defun company-box--render-buffer (string)
+      (let ((selection company-selection))
+        (with-current-buffer (company-box--get-buffer)
+          (erase-buffer)
+          (insert string "\n")
+          (setq mode-line-format nil
+                (el-patch-add header-line-format nil)
+                display-line-numbers nil
+                truncate-lines t
+                cursor-in-non-selected-windows nil)
+          (setq-local scroll-step 1)
+          (setq-local scroll-conservatively 10000)
+          (setq-local scroll-margin  0)
+          (setq-local scroll-preserve-screen-position t)
+          (add-hook 'window-configuration-change-hook 'company-box--prevent-changes t t)
+          (company-box--update-line selection)))))
+
+  ;; Fix the foreground and background colours of documentation popup frames.
+
+  (with-eval-after-load 'company-box-doc
+    (el-patch-defun company-box-doc--show (selection frame)
+      (-when-let* ((valid-state (and (eq (selected-frame) frame)
+                                     (company-box--get-frame)
+                                     (frame-visible-p (company-box--get-frame))))
+                   (candidate (nth selection company-candidates))
+                   (doc (or (company-call-backend 'quickhelp-string candidate)
+                            (company-box-doc--fetch-doc-buffer candidate)))
+                   (doc (company-box-doc--make-buffer doc)))
+        (unless (frame-live-p (frame-parameter nil 'company-box-doc-frame))
+          (set-frame-parameter nil 'company-box-doc-frame (company-box-doc--make-frame doc)))
+        (el-patch-add
+          (with-selected-frame (frame-parameter nil 'company-box-doc-frame)
+            (set-foreground-color (face-foreground 'company-box-candidate nil t))
+            (set-background-color (face-background 'company-box-background nil t))))
+        (company-box-doc--set-frame-position (frame-parameter nil 'company-box-doc-frame))
+        (unless (frame-visible-p (frame-parameter nil 'company-box-doc-frame))
+          (make-frame-visible (frame-parameter nil 'company-box-doc-frame))))))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -1700,6 +1829,13 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t)
 #+end_src
 
+*** [[https://github.com/abo-abo/tiny][Tiny]]
+#+name: init-tiny-block
+#+begin_src emacs-lisp
+  (use-package tiny
+    :straight t
+    :general ("C-:" #'tiny-expand))
+#+end_src
 *** [[https://github.com/benma/visual-regexp.el][Visual-Regexp]]
 #+name: init-visual-regexp-block
 #+begin_src emacs-lisp
@@ -1716,6 +1852,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq vr/engine 'python))
 #+end_src
 
+*** [[https://github.com/mhayashi1120/Emacs-wgrep][Wgrep]]
+#+name: init-wgrep-block
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :straight t)
+#+end_src
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
 #+name: init-zop-to-char-block
 #+begin_src emacs-lisp
@@ -1735,7 +1877,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
-*** CSV-Mode
+*** [[https://elpa.gnu.org/packages/csv-mode.html][CSV-Mode]]
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
   (use-package csv-mode
@@ -1925,9 +2067,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package dired-git-info
     :straight t
     :general
-    (:keymaps
-     'dired-mode-map
-     ":" #'dired-git-info-mode))
+    (:keymaps 'dired-mode-map ":" #'dired-git-info-mode))
 #+end_src
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
@@ -2365,6 +2505,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   org-confirm-babel-evaluate nil
                   org-default-notes-file "~/org/inbox.org"
                   org-directory "~/org/"
+                  org-ellipsis "↴"
                   org-enforce-todo-dependencies t
                   org-expiry-inactive-timestamps t
                   org-export-coding-system 'utf-8
@@ -2454,7 +2595,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                    ("CANCELLED" . ?c)
                                    ("REFILE" . ?r))
                   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)"  "QUESTION(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")))
+                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)"  "QUESTION(h@/!)" "CANCELLED(c@/!)" "|" "PHONE" "MEETING")))
 
     (general-setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
                                            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
@@ -2574,7 +2715,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package magit
     :straight t
-    :general ("C-x g" #'magit-status
+    :general ("C-x g"   #'magit-status
               "C-x M-g" #'magit-dispatch)
     :config
     (general-setq magit-view-git-manual-method 'man))
@@ -2709,6 +2850,48 @@ CLOSED: [2019-12-11 Wed 13:56]
 
     (use-package lsp-ui-doc
       :demand t :straight (:type built-in)))
+
+  (cl-eval-when (compile)
+    (require 'lsp-mode)
+    (require 'lsp-ui-flycheck))
+
+  (el-patch-feature lsp-mode)
+  (el-patch-feature lsp-ui-flycheck)
+
+  (with-eval-after-load 'lsp-ui-flycheck
+    (el-patch-defun lsp-ui-flycheck--report nil
+      (el-patch-wrap 1
+        (ignore-errors
+          (and flycheck-mode
+               lsp-ui-flycheck-live-reporting
+               (flycheck-buffer))))))
+
+  (with-eval-after-load 'lsp-mode
+    (el-patch-defun lsp--on-diagnostics (workspace params)
+      "Callback for textDocument/publishDiagnostics.
+  interface PublishDiagnosticsParams {
+      uri: string;
+      diagnostics: Diagnostic[];
+  }
+  PARAMS contains the diagnostics data.
+  WORKSPACE is the workspace that contains the diagnostics."
+      (let* ((file (lsp--uri-to-path (gethash "uri" params)))
+             (diagnostics (gethash "diagnostics" params))
+             (buffer (lsp--buffer-for-file file))
+             (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
+        (el-patch-wrap 2
+          (when (hash-table-p workspace-diagnostics)
+            (if (seq-empty-p diagnostics)
+                (remhash file workspace-diagnostics)
+              (when (or lsp-report-if-no-buffer buffer)
+                (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics)))))
+
+        (run-hooks 'lsp-diagnostics-updated-hook)
+
+        (when buffer
+          (save-mark-and-excursion
+            (with-current-buffer buffer
+              (run-hooks 'lsp-after-diagnostics-hook)))))))
 #+end_src
 
 ** Syntax & Linting
@@ -2718,6 +2901,40 @@ CLOSED: [2019-12-11 Wed 13:56]
   (use-package flycheck
     :blackout t :straight t
     :ghook ('prog-mode-hook #'global-flycheck-mode))
+
+
+  (el-patch-feature flycheck-posframe)
+
+  (defvar flycheck-posframe-override-parameters nil)
+  (defvar flycheck-posframe-internal-border-width nil)
+
+  (cl-eval-when (compile)
+    (require 'flycheck-posframe))
+
+  ;; Provide a nice way to override posframe parameters.
+
+  (with-eval-after-load 'flycheck-posframe
+    (el-patch-defun flycheck-posframe-show-posframe (errors)
+      "Display ERRORS, using posframe.el library."
+      (flycheck-posframe-hide-posframe)
+      (when (and errors
+                 (not (run-hook-with-args-until-success 'flycheck-posframe-inhibit-functions)))
+        (let ((poshandler (intern (format "posframe-poshandler-%s" flycheck-posframe-position))))
+          (unless (functionp poshandler)
+            (setq poshandler nil))
+          (posframe-show
+           flycheck-posframe-buffer
+           :string (flycheck-posframe-format-errors errors)
+           :background-color (face-background 'flycheck-posframe-background-face nil t)
+           :position (point)
+           :internal-border-width flycheck-posframe-border-width
+           :internal-border-color (face-foreground 'flycheck-posframe-border-face nil t)
+           :poshandler poshandler
+           (el-patch-add
+             :internal-border-width flycheck-posframe-internal-border-width
+             :override-parameters flycheck-posframe-override-parameters)))
+        (dolist (hook flycheck-posframe-hide-posframe-hooks)
+          (add-hook hook #'flycheck-posframe-hide-posframe nil t)))))
 #+end_src
 
 *** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
@@ -2758,6 +2975,94 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 ** Languages
+*** Emacs-Lisp
+#+name: init-elisp-identation-block
+#+begin_src emacs-lisp
+  (el-patch-feature lisp-mode)
+
+  ;; Improve indentation for plists.
+
+  (with-eval-after-load 'lisp-mode
+    (with-no-warnings
+      (el-patch-defun lisp-indent-function (indent-point state)
+        "This function is the normal value of the variable `lisp-indent-function'.
+  The function `calculate-lisp-indent' calls this to determine
+  if the arguments of a Lisp function call should be indented specially.
+  INDENT-POINT is the position at which the line being indented begins.
+  Point is located at the point to indent under (for default indentation);
+  STATE is the `parse-partial-sexp' state for that position.
+  If the current line is in a call to a Lisp function that has a non-nil
+  property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
+  it specifies how to indent.  The property value can be:
+  ,* `defun', meaning indent `defun'-style
+    (this is also the case if there is no property and the function
+    has a name that begins with \"def\", and three or more arguments);
+  ,* an integer N, meaning indent the first N arguments specially
+    (like ordinary function arguments), and then indent any further
+    arguments like a body;
+  ,* a function to call that returns the indentation (or nil).
+    `lisp-indent-function' calls this function with the same two arguments
+    that it itself received.
+  This function returns either the indentation to use, or nil if the
+  Lisp function does not specify a special indentation."
+        (el-patch-let (($cond (and (elt state 2)
+                                   (el-patch-wrap 1 1
+                                     (or (not (looking-at "\\sw\\|\\s_"))
+                                         (looking-at ":")))))
+                       ($then (progn
+                                (if (not (> (save-excursion (forward-line 1) (point))
+                                            calculate-lisp-indent-last-sexp))
+                                    (progn (goto-char calculate-lisp-indent-last-sexp)
+                                           (beginning-of-line)
+                                           (parse-partial-sexp (point)
+                                                               calculate-lisp-indent-last-sexp 0 t)))
+                                ;; Indent under the list or under the first sexp on the same
+                                ;; line as calculate-lisp-indent-last-sexp.  Note that first
+                                ;; thing on that line has to be complete sexp since we are
+                                ;; inside the innermost containing sexp.
+                                (backward-prefix-chars)
+                                (current-column)))
+                       ($else (let ((function (buffer-substring (point)
+                                                                (progn (forward-sexp 1) (point))))
+                                    method)
+                                (setq method (or (function-get (intern-soft function)
+                                                               'lisp-indent-function)
+                                                 (get (intern-soft function) 'lisp-indent-hook)))
+                                (cond ((or (eq method 'defun)
+                                           (and (null method)
+                                                (> (length function) 3)
+                                                (string-match "\\`def" function)))
+                                       (lisp-indent-defform state indent-point))
+                                      ((integerp method)
+                                       (lisp-indent-specform method state
+                                                             indent-point normal-indent))
+                                      (method
+                                       (funcall method indent-point state))))))
+          (let ((normal-indent (current-column))
+                (el-patch-add
+                  (orig-point (point))))
+            (goto-char (1+ (elt state 1)))
+            (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+            (el-patch-swap
+              (if $cond
+                  ;; car of form doesn't seem to be a symbol
+                  $then
+                $else)
+              (cond
+               ;; car of form doesn't seem to be a symbol, or is a keyword
+               ($cond $then)
+               ((and (save-excursion
+                       (goto-char indent-point)
+                       (skip-syntax-forward " ")
+                       (not (looking-at ":")))
+                     (save-excursion
+                       (goto-char orig-point)
+                       (looking-at ":")))
+                (save-excursion
+                  (goto-char (+ 2 (elt state 1)))
+                  (current-column)))
+               (t $else))))))))
+#+end_src
 *** Markdown
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]
 #+name: init-markdown-block
@@ -2880,6 +3185,12 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 
+*** [[https://github.com/ledger/ledger-mode][Ledger]]
+#+name: init-ledger-block
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :straight t)
+#+end_src
 ** Footer
 #+name: init-footer-block
 #+begin_src emacs-lisp

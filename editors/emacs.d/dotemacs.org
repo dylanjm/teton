@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-09 20:57:37
+/last updated/: 2019-12-10 14:04:18
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -88,6 +88,7 @@
     - [[#gruvbox-theme][Gruvbox Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
     - [[#smart-mode-line][Smart-Mode-Line]]
+    - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
     - [[#default-text-scale][Default-Text-Scale]]
     - [[#page-break-lines][Page-Break-Lines]]
     - [[#persistent-scratch][Persistent-Scratch]]
@@ -103,7 +104,9 @@
     - [[#direnv][Direnv]]
   - [[#frameworks][Frameworks]]
     - [[#prescient][Prescient]]
+    - [[#posframe][Posframe]]
     - [[#ivy-prescient][Ivy-Prescient]]
+    - [[#ivy-posframe][Ivy-Posframe]]
     - [[#flx][FLX]]
     - [[#ivy][Ivy]]
     - [[#counsel][Counsel]]
@@ -127,6 +130,7 @@
     - [[#string-inflection][String-Inflection]]
     - [[#emacs-format-all-the-code][Emacs-Format-All-The-Code]]
   - [[#minor-modes][Minor Modes]]
+    - [[#csv-mode][CSV-Mode]]
     - [[#editorconfig][EditorConfig]]
     - [[#ws-butler][WS-Butler]]
     - [[#whitespace-cleanup][Whitespace-Cleanup]]
@@ -154,7 +158,10 @@
     - [[#dired-git-info][Dired-Git-Info]]
     - [[#fd-dired][FD-Dired]]
     - [[#dired-rsync][Dired-Rsync]]
+    - [[#dired-sidebar][Dired-Sidebar]]
     - [[#ibuffer][iBuffer]]
+    - [[#ibuffer-sidebar][iBuffer-Sidebar]]
+    - [[#treemacs][Treemacs]]
   - [[#productivity][Productivity]]
     - [[#org][Org]]
   - [[#email][Email]]
@@ -265,10 +272,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
+  (setq-default initial-frame-alist '((window-right-divider-width . 20)
+                                      (window-bottom-divider-width . 20)))
+
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
-                                      (vertical-scroll-bars)))
+                                      (vertical-scroll-bars)
+                                      (font . "Iosevka SS09-20:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -1193,6 +1204,13 @@ CLOSED: [2019-12-09 Mon 12:23]
       (general-remove-hook 'display-time-hook 'sml/propertize-time-string)))
 #+end_src
 
+*** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
+#+name: init-hide-mode-line-block
+#+begin_src emacs-lisp
+  (use-package hide-mode-line
+    :straight t
+    :commands (hide-mode-line-mode))
+#+end_src
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
 #+name: init-default-text-scale-block
 #+begin_src emacs-lisp
@@ -1339,6 +1357,18 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config (prescient-persist-mode +1))
 #+end_src
 
+*** Posframe
+#+name: init-posframe-block
+#+begin_src emacs-lisp :tangle no
+  (use-package posframe
+    :straight t
+    :custom
+    (posframe-arghandler #'hemacs-posframe-arghandler)
+    :config
+    (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
+      (let ((info '(:internal-border-width 12 :min-width 80)))
+        (or (plist-get info arg-name) value))))
+#+end_src
 *** [[https://github.com/raxod502/prescient.el][Ivy-Prescient]]
 #+name: init-ivy-prescient-block
 #+begin_src emacs-lisp
@@ -1354,6 +1384,16 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                         (counsel-mark-ring . nil))))
 #+end_src
 
+*** Ivy-Posframe
+#+name: init-ivy-posframe-block
+#+begin_src emacs-lisp :tangle no
+  (use-package ivy-posframe
+    :blackout t :straight t
+    :ghook 'ivy-mode-hook
+    :config
+    (general-setq ivy-posframe-style 'frame-center
+                  ivy-posframe-hide-minibuffer t))
+#+end_src
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
 #+begin_src emacs-lisp
@@ -1622,6 +1662,16 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t)
 #+end_src
 ** Minor Modes
+*** CSV-Mode
+#+name: init-csv-mode-block
+#+begin_src emacs-lisp
+(use-package csv-mode
+  :straight t
+  :mode ("\\.csv\\'" . csv-mode)
+  :preface
+  (defun config-langs--suppress-final-newline ()
+  :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline)))
+#+end_src
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
@@ -1932,6 +1982,32 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (:keymaps 'dired-mode-map
               "C-c C-r" #'dired-rsync))
 #+end_src
+*** [[https://github.com/jojojames/dired-sidebar][Dired-Sidebar]]
+#+name: init-dired-sidebar-block
+#+begin_src emacs-lisp
+  (use-package dired-sidebar
+    :straight t
+    :commands (dired-sidebar-toggle-sidebar)
+    :general
+    ("C-c w s" #'djm/toggle-sidebar
+     "M-]" #'dired-sidebar-toggle-sidebar)
+    :init
+    (defun djm/toggle-sidebar ()
+      (interactive)
+      (dired-sidebar-toggle-sidebar)
+      (all-the-icons-dired-mode -1)
+      (hide-mode-line-mode +1)
+      (when (require 'ibuffer-sidebar nil 'noerror)
+        (ibuffer-sidebar-toggle-sidebar)
+        (hide-mode-line-mode +1)))
+    :config
+    (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+    (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+    (general-setq dired-sidebar-use-term-integration t
+                  dired-sidebar-use-magit-integration t
+                  dired-sidebar-subtree-line-prefix "⎯"
+                  dired-sidebar-use-custom-modeline nil))
+#+end_src
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
@@ -1943,6 +2019,22 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq ibuffer-expert t))
 #+end_src
 
+*** [[https://github.com/jojojames/ibuffer-sidebar][iBuffer-Sidebar]]
+#+name: init-ibuffer-sidebar
+#+begin_src emacs-lisp
+  (use-package ibuffer-sidebar
+    :straight t
+    :commands (ibuffer-sidebar-toggle-sidebar)
+    :general
+    ("M-[" #'ibuffer-sidebar-toggle-sidebar)
+    :config
+    (general-setq ibuffer-sidebar-use-custom-modeline nil))
+#+end_src
+*** Treemacs
+#+name: init-treemacs-block
+#+begin_src emacs-lisp
+
+#+end_src
 ** Productivity
 *** Org
 **** Org-Mode
@@ -2298,7 +2390,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 ** Language Server Support
 *** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
 #+name: init-lsp-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package lsp-mode
     :straight t
     :ghook ('python-mode-hook #'lsp-deferred)
@@ -2326,20 +2418,15 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 ** Syntax & Linting
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck
     :blackout t :straight t
-    :ghook ('prog-mode-hook #'global-flycheck-mode)
-    :config
-    (general-pushnew 'idle-buffer-switch flycheck-check-syntax-automatically)
-    (general-setq flycheck-display-errors-delay 0.2
-                  flycheck-buffer-switch-check-intermediate-buffers t
-                  flycheck-checker-error-threshold 5000))
+    :ghook ('prog-mode-hook #'global-flycheck-mode))
 #+end_src
 
 *** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
 #+name: init-flycheck-posframe-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-posframe
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
@@ -2349,7 +2436,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-popup-tip
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
@@ -2358,17 +2445,17 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/flycheck/flycheck-pos-tip][Flycheck-Pos-Tip]]
 #+name: init-flycheck-pos-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-pos-tip
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook
-    :config (general-setq flycheck-pos-tip-timeout 15))
+    :ghook 'flycheck-mode-hook)
+
 #+end_src
 
 *** [[https://github.com/msherry/flycheck-pycheckers][Flycheck-Pycheckers]]
 #+name: init-flycheck-pycheckers-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-pycheckers
     :straight t
     :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup))
@@ -2424,7 +2511,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-python-block
 #+begin_src emacs-lisp
   (use-package python
-    :straight (:type built-in)
+    :straight nil
     :mode ("\\.py\\'")
     :gfhook 'djm/python-no-reindent-on-colon
     :config
@@ -2441,14 +2528,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
         (setq-local flycheck-python-pycompile-executable executable)
         (setq-local flycheck-python-pylint-executable "pylint")
         (setq-local flycheck-python-flake8-executable "flake8")
-        (setq-local lsp-python-executbale-cmd executable)))
+        (setq-local lsp-python-executable executable)))
 
-    (setq python-fill-docstring-style 'django
-          python-shell-interpreter "python"
-          python-indent-guess-indent-offset-verbose nil))
+    (general-setq python-fill-docstring-style 'django
+                  python-shell-interpreter "python"
+                  python-indent-guess-indent-offset-verbose nil))
 
   (use-package pyenv-mode
-    :blackout :straight t
+    :blackout t :straight t
     :ghook 'python-mode-hook
     :ghook ('projectile-switch-project-hook #'projectile-pyenv-mode-set)
     :config
@@ -2468,10 +2555,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package blacken
     :straight t :after (python)
     :commands (blacken-buffer))
-
-  (use-package py-yapf
-    :straight t :after (python)
-    :commands (py-yapf-buffer))
 #+end_src
 
 ** Miscellaneous

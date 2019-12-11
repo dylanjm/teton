@@ -37,7 +37,7 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 
 export ENHANCD_DIR="$XDG_CACHE_HOME/zsh/enhancd"
 export ENHANCD_FILTER=fzf:fzy:peco
-export ENHANCD_COMPLETION_BEHAVIOR=list
+export ENHANCD_COMPLETION_BEHAVIOR=history
 export ENHANCD_DISABLE_HOME=1
 
 export GPG_TTY=$(tty)

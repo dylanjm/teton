@@ -86,7 +86,7 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>1610 1308 620 392 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>2564 10 1272 2127 0 0 3840 2137 </string>
+	<string>4504 2137 2512 605 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>3841 0 1918 2137 3840 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -424,11 +424,11 @@
 			<key>HotKey Alternate Shortcuts</key>
 			<array/>
 			<key>HotKey Characters</key>
-			<string></string>
+			<string></string>
 			<key>HotKey Characters Ignoring Modifiers</key>
-			<string>}</string>
+			<string></string>
 			<key>HotKey Key Code</key>
-			<integer>30</integer>
+			<integer>36</integer>
 			<key>HotKey Modifier Activation</key>
 			<integer>3</integer>
 			<key>HotKey Modifier Flags</key>
@@ -5601,7 +5601,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>447</integer>
+	<integer>475</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -6391,7 +6391,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-12-09T15:54:44Z</date>
+	<date>2019-12-10T15:54:45Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>

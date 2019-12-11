@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io/api/r,rust,julia,latex,macos,emacs,python
 # Edit at https://www.gitignore.io/?templates=r,rust,julia,latex,macos,emacs,python
 
+.editorconfig
 ## ZSH
 *.zwc
 .envrc

@@ -98,8 +98,8 @@ zplugin $load changyuheng/fz
 zplugin ice wait'1d' lucid
 zplugin $load wookayin/fzf-fasd
 
-zplugin ice wait lucid blockf
-zplugin $load b4b4r07/enhancd
+# zplugin ice wait lucid blockf
+# zplugin $load b4b4r07/enhancd
 
 zplugin ice wait'1' lucid blockf
 zplugin $load $ZSH/interactive

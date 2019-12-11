@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-10 19:11:26
+/last updated/: 2019-12-11 15:19:47
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -28,6 +28,7 @@
     - [[#general][General]]
     - [[#blackout][Blackout]]
     - [[#dash][Dash]]
+    - [[#f][F]]
     - [[#org-plus-contrib][Org-Plus-Contrib]]
     - [[#defrepeater][Defrepeater]]
   - [[#personal-configuration][Personal Configuration]]
@@ -87,6 +88,7 @@
     - [[#all-the-icons][All-The-Icons]]
     - [[#cancelled-emojify][CANCELLED Emojify]]
     - [[#gruvbox-theme][Gruvbox Theme]]
+    - [[#cancelled-darktooth-theme][CANCELLED Darktooth Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
     - [[#smart-mode-line][Smart-Mode-Line]]
     - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
@@ -114,57 +116,66 @@
     - [[#swiper][Swiper]]
   - [[#autocompletion][Autocompletion]]
     - [[#company-mode][Company-Mode]]
+    - [[#company-box][Company-Box]]
     - [[#company-prescient][Company-Prescient]]
     - [[#company-flx][Company-FLX]]
     - [[#yasnippet][Yasnippet]]
   - [[#documentation][Documentation]]
     - [[#helpful][Helpful]]
   - [[#editing-tools][Editing Tools]]
-    - [[#multiple-cursors][Multiple-Cursors]]
-    - [[#zop-to-char][Zop-To-Char]]
-    - [[#interactive-align][Interactive-Align]]
-    - [[#visual-regexp][Visual-Regexp]]
-    - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
     - [[#anzu][Anzu]]
     - [[#deadgrep][Deadgrep]]
-    - [[#expand-region][Expand-Region]]
-    - [[#string-inflection][String-Inflection]]
     - [[#emacs-format-all-the-code][Emacs-Format-All-The-Code]]
+    - [[#expand-region][Expand-Region]]
+    - [[#interactive-align][Interactive-Align]]
+    - [[#multiple-cursors][Multiple-Cursors]]
+    - [[#string-inflection][String-Inflection]]
+    - [[#visual-regexp][Visual-Regexp]]
+    - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
+    - [[#zop-to-char][Zop-To-Char]]
   - [[#minor-modes][Minor Modes]]
+    - [[#aggressive-indent][Aggressive-Indent]]
     - [[#csv-mode][CSV-Mode]]
     - [[#editorconfig][EditorConfig]]
-    - [[#ws-butler][WS-Butler]]
-    - [[#whitespace-cleanup][Whitespace-Cleanup]]
-    - [[#undo-tree][Undo-Tree]]
-    - [[#aggressive-indent][Aggressive-Indent]]
-    - [[#hungry-delete][Hungry-Delete]]
     - [[#highlight-indent-guides][Highlight-Indent-Guides]]
+    - [[#hungry-delete][Hungry-Delete]]
     - [[#rainbow-delimiters][Rainbow-Delimiters]]
     - [[#rainbow-mode][Rainbow-Mode]]
+    - [[#undo-tree][Undo-Tree]]
+    - [[#whitespace-cleanup][Whitespace-Cleanup]]
+    - [[#ws-butler][WS-Butler]]
   - [[#navigation][Navigation]]
-    - [[#avy][Avy]]
     - [[#ace-window][Ace-Window]]
-    - [[#windower][Windower]]
-    - [[#windmove][Windmove]]
-    - [[#dumb-jump][Dumb-Jump]]
+    - [[#avy][Avy]]
     - [[#dired-built-in][Dired (Built-In)]]
+    - [[#dired][Dired+]]
     - [[#wdired-built-in][WDired (Built-In)]]
     - [[#dired-x-built-in][Dired-X (Built-In)]]
-    - [[#dired-du][Dired-Du]]
-    - [[#dired-k][Dired-K]]
-    - [[#dired-atool][Dired-ATool]]
-    - [[#diredfl][Diredfl]]
     - [[#all-the-icons-dired][All-The-Icons-Dired]]
-    - [[#dired-hacks][Dired-Hacks]]
+    - [[#dired-atool][Dired-ATool]]
+    - [[#dired-du][Dired-Du]]
     - [[#dired-git-info][Dired-Git-Info]]
-    - [[#fd-dired][FD-Dired]]
+    - [[#dired-hacks][Dired-Hacks]]
+    - [[#dired-k][Dired-K]]
     - [[#dired-rsync][Dired-Rsync]]
     - [[#dired-sidebar][Dired-Sidebar]]
+    - [[#diredfl][Diredfl]]
+    - [[#fd-dired][FD-Dired]]
+    - [[#dumb-jump][Dumb-Jump]]
     - [[#ibuffer][iBuffer]]
+    - [[#ibuffer-extension][iBuffer-Extension]]
     - [[#ibuffer-sidebar][iBuffer-Sidebar]]
+    - [[#ibuffer-projectile][iBuffer-Projectile]]
     - [[#treemacs][Treemacs]]
-  - [[#productivity][Productivity]]
-    - [[#org][Org]]
+    - [[#windmove][Windmove]]
+    - [[#windower][Windower]]
+  - [[#org][Org]]
+    - [[#org-mode][Org-Mode]]
+    - [[#org-agenda][Org-Agenda]]
+    - [[#org-src][Org-Src]]
+    - [[#org-bullets][Org-Bullets]]
+    - [[#org-scrum][Org-Scrum]]
+    - [[#toc-org][TOC-Org]]
   - [[#email][Email]]
     - [[#hold-notmuch][HOLD NotMuch]]
     - [[#hold-mu4e][HOLD MU4E]]
@@ -174,18 +185,18 @@
   - [[#version-control][Version Control]]
     - [[#magit][Magit]]
     - [[#transient][Transient]]
-    - [[#hold-git-attribute][HOLD Git-Attribute]]
-    - [[#hold-git-config][HOLD Git-Config]]
-    - [[#hold-git-ignore][HOLD Git-Ignore]]
-    - [[#hold-git-link][HOLD Git-Link]]
+    - [[#git-attribute][Git-Attribute]]
+    - [[#git-config][Git-Config]]
+    - [[#git-ignore][Git-Ignore]]
+    - [[#git-link][Git-Link]]
     - [[#git-commit][Git-Commit]]
     - [[#forge][Forge]]
     - [[#git-gutter][Git-Gutter]]
     - [[#git-time-machine][Git-Time-Machine]]
     - [[#with-editor][With-Editor]]
     - [[#emacs-vdiff][Emacs-VDiff]]
-    - [[#hold-vdiff-magit][HOLD Vdiff-Magit]]
-    - [[#hold-magit-todos][HOLD Magit-Todos]]
+    - [[#vdiff-magit][Vdiff-Magit]]
+    - [[#cancelled-magit-todos][CANCELLED Magit-Todos]]
   - [[#language-server-support][Language Server Support]]
     - [[#lsp-mode][LSP-Mode]]
   - [[#syntax--linting][Syntax & Linting]]
@@ -277,6 +288,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
+                                      (alpha . (95 95))
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
@@ -413,6 +425,12 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (use-package dash
     :demand t :straight t)
 #+end_src
+*** [[https://github.com/rejeep/f.el][F]]
+#+name: init-f-block
+#+begin_src emacs-lisp
+  (use-package f
+    :demand t :straight t)
+#+end_src
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
@@ -537,6 +555,33 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
                                for name = (format "blah-%03i" num)
                                while (get-buffer name)
                                finally return name)))
+#+end_src
+**** Font-Config
+#+name: init-font-config-block
+#+begin_src emacs-lisp
+  (defun djm/config-fonts ()
+    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'ultra-light)
+    (set-face-attribute 'font-lock-comment-face nil :family "Iosevka SS09" :weight 'ultra-light :slant 'italic)
+    (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka SS09" :weight 'ultra-light)
+
+    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+    (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)
+    (dolist (script '(symbol mathematical))
+      (set-fontset-font t script (font-spec :family "XITS Math" :weight 'normal) nil nil))
+
+    ;; Define a font set stack for symbols, greek and math characters
+    (dolist (script '(symbol greek))
+      (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
+      (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'append)
+      (set-fontset-font t script (font-spec :family "DejaVu Sans Mono") nil 'prepend))
+
+    ;; Colored Emoji on OS X, prefer over everything else!
+    (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
+    (set-fontset-font t 'unicode (font-spec :family "DejaVuSansMono Nerd Font") nil 'prepend)
+    (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+    ;; Fallbacks for math and generic symbols
+    (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 *** Hooks & Advice
 #+name: init-personal-hooks-block
@@ -1143,8 +1188,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
                all-the-icons-insert-fileicon
                all-the-icons-insert-alltheicon
                all-the-icons-insert-icons-for
-               all-the-icons--insert-function-name
-               ))
+               all-the-icons-faicon))
 #+end_src
 
 *** CANCELLED [[https://github.com/iqbalansari/emacs-emojify][Emojify]]
@@ -1169,28 +1213,23 @@ CLOSED: [2019-12-09 Mon 15:35]
     :preface
     (defun djm/load-gruvbox-theme ()
       (load-theme 'gruvbox-dark-hard t)
-      (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'ultra-light)
-      (set-face-attribute 'font-lock-comment-face nil :family "Iosevka SS09" :weight 'ultra-light :slant 'italic)
-      (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka SS09" :weight 'ultra-light)
-
-      ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-      (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)
-      (dolist (script '(symbol mathematical))
-        (set-fontset-font t script (font-spec :family "XITS Math" :weight 'normal) nil nil))
-
-      ;; Define a font set stack for symbols, greek and math characters
-      (dolist (script '(symbol greek))
-        (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
-        (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'append)
-        (set-fontset-font t script (font-spec :family "DejaVu Sans Mono") nil 'prepend))
-
-      ;; Colored Emoji on OS X, prefer over everything else!
-      (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
-      (set-fontset-font t 'unicode (font-spec :family "DejaVuSansMono Nerd Font") nil 'prepend)
-      (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
-
-      ;; Fallbacks for math and generic symbols
-      (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append)))
+      (djm/config-fonts)))
+#+end_src
+*** CANCELLED [[https://github.com/emacsfodder/emacs-theme-darktooth][Darktooth Theme]]
+CLOSED: [2019-12-11 Wed 12:58]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-11 Wed 12:58] \\
+  I'll try modifying this later.
+:END:
+#+name: init-darktooth-block
+#+begin_src emacs-lisp :tangle no
+  (use-package darktooth-theme
+    :straight t
+    :ghook ('emacs-startup-hook #'djm/load-darktooth-theme)
+    :preface
+    (defun djm/load-darktooth-theme ()
+      (load-theme 'darktooth t)
+      (djm/config-fonts)))
 #+end_src
 *** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
 CLOSED: [2019-12-09 Mon 12:23]
@@ -1543,6 +1582,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   (mapcar #'djm/configure-company-backends-with-yas company-backends)))
 #+end_src
 
+*** [[https://github.com/sebastiencs/company-box][Company-Box]]
+#+name: init-company-box-block
+#+begin_src emacs-lisp
+  (use-package company-box
+    :blackout t :straight t
+    :ghook 'company-mode-hook)
+#+end_src
+
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
 #+name: init-company-prescient-block
 #+begin_src emacs-lisp
@@ -1599,6 +1646,43 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Editing Tools
+*** [[https://github.com/syohex/emacs-anzu][Anzu]]
+#+name: init-anzu-block
+#+begin_src emacs-lisp
+  (use-package anzu
+    :straight t
+    :general ([remap query-replace] #'anzu-query-replace-regexp))
+#+end_src
+
+*** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
+#+name: init-deadgrep-block
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :straight t
+    :init (defalias 'rg #'deadgrep))
+#+end_src
+
+*** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
+#+name: init-format-all-block
+#+begin_src emacs-lisp
+  (use-package format-all
+    :straight t)
+#+end_src
+*** [[https://github.com/magnars/expand-region.el][Expand-Region]]
+#+name: init-expand-region-block
+#+begin_src emacs-lisp
+  (use-package expand-region
+    :straight t
+    :general ("C-=" #'er/expand-region))
+#+end_src
+
+*** [[https://github.com/mkcms/interactive-align][Interactive-Align]]
+#+name: init-interactive-align-block
+#+begin_src emacs-lisp :tangle no
+  (use-package ialign
+    :straight t)
+#+end_src
+
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -1609,20 +1693,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
      "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
-*** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
-#+name: init-zop-to-char-block
+*** [[https://github.com/akicho8/string-inflection][String-Inflection]]
+#+name: init-string-inflection-block
 #+begin_src emacs-lisp
-  (use-package zop-to-char
-    :straight t
-    :general
-    ("M-z" #'zop-to-char
-     "M-Z" #'zop-up-to-char))
-#+end_src
-
-*** [[https://github.com/mkcms/interactive-align][Interactive-Align]]
-#+name: init-interactive-align-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ialign
+  (use-package string-inflection
     :straight t)
 #+end_src
 
@@ -1642,44 +1716,25 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq vr/engine 'python))
 #+end_src
 
-*** [[https://github.com/syohex/emacs-anzu][Anzu]]
-#+name: init-anzu-block
+*** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
+#+name: init-zop-to-char-block
 #+begin_src emacs-lisp
-  (use-package anzu
+  (use-package zop-to-char
     :straight t
-    :general ([remap query-replace] #'anzu-query-replace-regexp))
+    :general
+    ("M-z" #'zop-to-char
+     "M-Z" #'zop-up-to-char))
 #+end_src
 
-*** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
-#+name: init-deadgrep-block
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :straight t
-    :init (defalias 'rg #'deadgrep))
-#+end_src
-
-*** [[https://github.com/magnars/expand-region.el][Expand-Region]]
-#+name: init-expand-region-block
-#+begin_src emacs-lisp
-  (use-package expand-region
-    :straight t
-    :general ("C-=" #'er/expand-region))
-#+end_src
-
-*** [[https://github.com/akicho8/string-inflection][String-Inflection]]
-#+name: init-string-inflection-block
-#+begin_src emacs-lisp
-  (use-package string-inflection
-    :straight t)
-#+end_src
-
-*** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
-#+name: init-format-all-block
-#+begin_src emacs-lisp
-  (use-package format-all
-    :straight t)
-#+end_src
 ** Minor Modes
+*** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
+#+name: init-aggressive-indent-block
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :blackout t :straight t
+    :ghook 'emacs-lisp-mode-hook)
+#+end_src
+
 *** CSV-Mode
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
@@ -1698,12 +1753,48 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook 'emacs-startup-hook)
 #+end_src
 
-*** [[https://github.com/lewang/ws-butler][WS-Butler]]
-#+name: init-ws-butler-block
+*** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
+#+name: init-highlight-indent-guides-block
 #+begin_src emacs-lisp
-  (use-package ws-butler
+  (use-package highlight-indent-guides
     :blackout t :straight t
-    :ghook ('emacs-startup-hook #'ws-butler-global-mode))
+    :ghook 'python-mode-hook 'yaml-mode-hook)
+#+end_src
+*** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
+#+name: init-hungry-delete-block
+#+begin_src emacs-lisp
+  (use-package hungry-delete
+    :blackout t :straight t
+    :ghook 'emacs-lisp-mode-hook)
+#+end_src
+
+*** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
+#+name: init-rainbow-delimiters-block
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :blackout t :straight t
+    :ghook 'prog-mode-hook)
+#+end_src
+*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
+#+name: init-rainbow-mode-block
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :blackout t :straight t
+    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
+#+end_src
+*** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
+#+name: init-undo-tree-block
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :blackout t :straight t
+    :general
+    ("C-/" #'undo-tree-undo
+     "C-?" #'undo-tree-redo)
+    :config
+    (general-setq undo-tree-save-history t
+                  undo-tree-visualizer-timestamps t
+                  undo-tree-visualizer-diff t)
+    (global-undo-tree-mode +1))
 #+end_src
 
 *** [[https://github.com/purcell/whitespace-cleanup-mode][Whitespace-Cleanup]]
@@ -1721,69 +1812,15 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (general-setq show-trailing-whitespace t))
 #+end_src
-*** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
-#+name: init-undo-tree-block
+*** [[https://github.com/lewang/ws-butler][WS-Butler]]
+#+name: init-ws-butler-block
 #+begin_src emacs-lisp
-  (use-package undo-tree
-    :straight t
-    :general
-    ("C-/" #'undo-tree-undo
-     "C-?" #'undo-tree-redo)
-    :config
-    (general-setq undo-tree-save-history t
-                  undo-tree-visualizer-timestamps t
-                  undo-tree-visualizer-diff t)
-    (global-undo-tree-mode +1))
+  (use-package ws-butler
+    :blackout t :straight t
+    :ghook ('emacs-startup-hook #'ws-butler-global-mode))
 #+end_src
 
-*** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
-#+name: init-aggressive-indent-block
-#+begin_src emacs-lisp
-  (use-package aggressive-indent
-    :blackout t :straight t
-    :ghook 'emacs-lisp-mode-hook)
-#+end_src
-
-*** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
-#+name: init-hungry-delete-block
-#+begin_src emacs-lisp
-  (use-package hungry-delete
-    :blackout t :straight t
-    :ghook 'emacs-lisp-mode-hook)
-#+end_src
-
-*** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
-#+name: init-highlight-indent-guides-block
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :straight t
-    :ghook 'python-mode-hook 'yaml-mode-hook)
-#+end_src
-*** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
-#+name: init-rainbow-delimiters-block
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :blackout t :straight t
-    :ghook 'prog-mode-hook)
-#+end_src
-*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
-#+name: init-rainbow-mode-block
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :blackout t :straight t
-    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
-#+end_src
 ** Navigation
-*** [[https://github.com/abo-abo/avy][Avy]]
-#+name: init-avy-block
-#+begin_src emacs-lisp
-  (use-package avy
-    :straight t
-    :config
-    (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-                  avy-all-windows nil))
-#+end_src
-
 *** [[https://github.com/abo-abo/ace-window][Ace-Window]]
 #+name: init-ace-window-block
 #+begin_src emacs-lisp
@@ -1794,36 +1831,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)))
 #+end_src
 
-*** [[https://gitlab.com/ambrevar/emacs-windower][Windower]]
-#+name: init-windower-block
+*** [[https://github.com/abo-abo/avy][Avy]]
+#+name: init-avy-block
 #+begin_src emacs-lisp
-  (use-package windower
-    :straight (:host gitlab :repo "ambrevar/emacs-windower")
-    :general
-    ("C-c w o" #'windower-switch-to-last-buffer
-     "C-c w t" #'windower-toggle-split))
-#+end_src
-
-*** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
-#+name: init-windmove-block
-#+begin_src emacs-lisp
-  (use-package windmove
+  (use-package avy
     :straight t
-    :general
-    ("C-c w j" #'windmove-left
-     "C-c w l" #'windmove-right
-     "C-c w n" #'windmove-down
-     "C-c w u" #'windmove-up))
-#+end_src
-
-*** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
-#+name: init-dumb-jump-block
-#+begin_src emacs-lisp
-  (use-package dumb-jump
-    :straight t
-    :commands (dumb-jump-mode)
-    :config (general-setq dumb-jump-selector 'ivy
-                          dumb-jump-prefer-searcher 'rg))
+    :config
+    (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
+                  avy-all-windows nil))
 #+end_src
 
 *** Dired (Built-In)
@@ -1846,9 +1861,20 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   dired-listing-switches "-lha --group-directories-first"
                   dired-recursive-deletes 'always
                   dired-recursive-copies 'always
-                  dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
+                  dired-deletion-confirmer '(lambda (x) t)) ;; Don't confirm deleting files
+    (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
 
+*** Dired+
+#+name: init-dired-plus-block
+#+begin_src emacs-lisp
+  (use-package dired+
+    :straight dired-plus
+    :init
+    (general-setq diredp-hide-details-initially-flag nil
+                  diredp-hide-details-propagate-flag t
+                  diredp-wrap-around-flag nil))
+#+end_src
 *** WDired (Built-In)
 #+name: init-wdired-block
 #+begin_src emacs-lisp
@@ -1862,7 +1888,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq wdired-create-parent-directories t
                   wdired-allow-to-change-permissions t))
 #+end_src
-
 *** Dired-X (Built-In)
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
@@ -1873,6 +1898,19 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   dired-omit-verbose t
                   dired-clean-up-buffers-too t))
 #+end_src
+*** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
+#+name: init-dired-all-the-icons-block
+#+begin_src emacs-lisp
+  (use-package all-the-icons-dired
+    :blackout t :straight t
+    :ghook 'dired-mode-hook)
+#+end_src
+*** [[https://github.com/HKey/dired-atool][Dired-ATool]]
+#+name: init-dired-atool-block
+#+begin_src emacs-lisp
+  (use-package dired-atool
+    :straight t)
+#+end_src
 
 *** [[https://github.com/calancha/dired-du][Dired-Du]]
 #+name: init-dired-du-block
@@ -1881,37 +1919,15 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t
     :ghook ('dired-mode-hook #'dired-du-mode))
 #+end_src
-*** [[https://github.com/syohex/emacs-dired-k][Dired-K]]
-#+name: init-dired-k-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dired-k
+*** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
+#+name: init-dired-git-info-block
+#+begin_src emacs-lisp
+  (use-package dired-git-info
     :straight t
-    :ghook
-    ('dired-initial-position-hook #'dired-k)
-    ('dired-after-readin-hook #'dired-k-no-revert))
-#+end_src
-
-*** [[https://github.com/HKey/dired-atool][Dired-ATool]]
-#+name: init-dired-atool-block
-#+begin_src emacs-lisp
-  (use-package dired-atool
-    :straight t)
-#+end_src
-
-*** [[https://github.com/purcell/diredfl][Diredfl]]
-#+name: init-diredfl-block
-#+begin_src emacs-lisp
-  (use-package diredfl
-    :straight t
-    :ghook 'dired-mode-hook)
-#+end_src
-
-*** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
-#+name: init-dired-all-the-icons-block
-#+begin_src emacs-lisp
-  (use-package all-the-icons-dired
-    :blackout t :straight t
-    :ghook 'dired-mode-hook)
+    :general
+    (:keymaps
+     'dired-mode-map
+     ":" #'dired-git-info-mode))
 #+end_src
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
@@ -1973,22 +1989,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
      "<backtab>" #'dired-subtree-cycle))
 #+end_src
 
-*** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
-#+name: init-dired-git-info-block
-#+begin_src emacs-lisp
-  (use-package dired-git-info
+*** [[https://github.com/syohex/emacs-dired-k][Dired-K]]
+#+name: init-dired-k-block
+#+begin_src emacs-lisp :tangle no
+  (use-package dired-k
     :straight t
-    :general
-    (:keymaps
-     'dired-mode-map
-     ":" #'dired-git-info-mode))
-#+end_src
-
-*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
-#+name: init-fd-dired-block
-#+begin_src emacs-lisp
-  (use-package fd-dired
-    :straight (:host github :repo "yqrashawn/fd-dired"))
+    :ghook
+    ('dired-initial-position-hook #'dired-k)
+    ('dired-after-readin-hook #'dired-k-no-revert))
 #+end_src
 
 *** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
@@ -2026,6 +2034,31 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   dired-sidebar-subtree-line-prefix "⎯"
                   dired-sidebar-use-custom-modeline nil))
 #+end_src
+*** [[https://github.com/purcell/diredfl][Diredfl]]
+#+name: init-diredfl-block
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :straight t
+    :ghook 'dired-mode-hook)
+#+end_src
+
+*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
+#+name: init-fd-dired-block
+#+begin_src emacs-lisp
+  (use-package fd-dired
+    :straight (:host github :repo "yqrashawn/fd-dired"))
+#+end_src
+
+*** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
+#+name: init-dumb-jump-block
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :straight t
+    :commands (dumb-jump-mode)
+    :config (general-setq dumb-jump-selector 'ivy
+                          dumb-jump-prefer-searcher 'rg))
+#+end_src
+
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
@@ -2034,9 +2067,189 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :general
     ([remap list-buffers] #'ibuffer)
     :config
-    (general-setq ibuffer-expert t))
-#+end_src
+    (general-setq ibuffer-expert t
+                  ibuffer-show-empty-filter-groups nil)
+    (general-setq ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+    (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"
+                                                              "*git-auto-push*"
+                                                              "*Backtrace*"
+                                                              "*new*"
+                                                              "*Org*"
+                                                              "*Help*")))))
 
+  (with-eval-after-load 'ibuffer
+    (define-ibuffer-column mode
+      (:inline t)
+      (with-current-buffer (current-buffer)
+        (let ((icon (all-the-icons-icon-for-buffer)))
+          (if (stringp icon)
+              icon
+            " ")))))
+
+  (with-eval-after-load 'ibuffer
+    (require 'dired+)
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (propertize (f-abbrev filename) 'face 'shadow)))))
+
+  ;; Show buffer name in a consistent way.
+
+  (with-eval-after-load 'ibuffer
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string)))))
+
+  ;; Show a horizontal rule using page-break-lines instead of using dashes.
+
+  (with-eval-after-load 'ibuffer
+    (el-patch-defun ibuffer-update-title-and-summary (format)
+      (ibuffer-assert-ibuffer-mode)
+      ;; Don't do funky font-lock stuff here
+      (let ((inhibit-modification-hooks t))
+        (if (get-text-property (point-min) 'ibuffer-title)
+            (delete-region (point-min)
+                           (next-single-property-change
+                            (point-min) 'ibuffer-title)))
+        (goto-char (point-min))
+        (add-text-properties
+         (point)
+         (progn
+           (let ((opos (point)))
+             ;; Insert the title names.
+             (dolist (element format)
+               (insert
+                (if (stringp element)
+                    element
+                  (pcase-let ((`(,sym ,min ,_max ,align) element))
+                    ;; Ignore a negative min when we're inserting the title
+                    (when (cl-minusp min)
+                      (setq min (- min)))
+                    (let* ((name (or (get sym 'ibuffer-column-name)
+                                     (error "Unknown column %s in ibuffer-formats" sym)))
+                           (len (length name))
+                           (hmap (get sym 'header-mouse-map))
+                           (strname (if (< len min)
+                                        (ibuffer-format-column name
+                                                               (- min len)
+                                                               align)
+                                      name)))
+                      (when hmap
+                        (setq
+                         strname
+                         (propertize strname 'mouse-face 'highlight 'keymap hmap)))
+                      strname)))))
+             (add-text-properties opos (point) `(ibuffer-title-header t))
+             (insert "\n")
+             ;; Add the underlines
+
+             (el-patch-swap (let ((str (save-excursion
+                                         (forward-line -1)
+                                         (beginning-of-line)
+                                         (buffer-substring (point) (line-end-position)))))
+                              (apply #'insert (mapcar
+                                               (lambda (c)
+                                                 (if (not (or (eq c ?\s)
+                                                              (eq c ?\n)))
+                                                     ?-
+                                                   ?\s))
+                                               str)))
+                            (insert ""))
+             (insert "\n"))
+           (point))
+         `(ibuffer-title t font-lock-face ,ibuffer-title-face))
+        ;; Now, insert the summary columns.
+        (goto-char (point-max))
+        (if (get-text-property (1- (point-max)) 'ibuffer-summary)
+            (delete-region (previous-single-property-change
+                            (point-max) 'ibuffer-summary)
+                           (point-max)))
+        (if ibuffer-display-summary
+            (add-text-properties
+             (point)
+             (progn
+               (insert "\n")
+               (dolist (element format)
+                 (insert
+                  (if (stringp element)
+                      (make-string (length element) ?\s)
+                    (pcase-let ((`(,sym ,min ,_max ,align) element))
+                      ;; Ignore a negative min when we're inserting the title.
+                      (when (cl-minusp min)
+                        (setq min (- min)))
+                      (let* ((summary
+                              (if (get sym 'ibuffer-column-summarizer)
+                                  (funcall (get sym 'ibuffer-column-summarizer)
+                                           (get sym 'ibuffer-column-summary))
+                                (make-string
+                                 (length (get sym 'ibuffer-column-name))
+                                 ?\s)))
+                             (len (length summary)))
+                        (if (< len min)
+                            (ibuffer-format-column summary
+                                                   (- min len)
+                                                   align)
+                          summary))))))
+               (point))
+             `(ibuffer-summary t)))))
+
+    )
+
+  ;; Change the way groups are rendered.
+
+  (with-eval-after-load 'ibuffer
+    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+      (add-text-properties
+       (point)
+       (progn
+         (insert (el-patch-remove "[ ")
+                 display-name
+                 (el-patch-remove " ]"))
+         (point))
+       `(ibuffer-filter-group-name
+         ,name
+         font-lock-face ,ibuffer-filter-group-name-face
+         keymap ,ibuffer-mode-filter-group-map
+         mouse-face highlight
+         help-echo ,(let ((echo '(if tooltip-mode
+                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                   "mouse-1: toggle marks  mouse-2: hide/show")))
+                      (if (> (length filter-string) 0)
+                          `(concat ,filter-string
+                                   (if tooltip-mode "\n" " ")
+                                   ,echo)
+                        echo))))
+      (insert "\n")
+      (when bmarklist
+        (put-text-property
+         (point)
+         (progn
+           (dolist (entry bmarklist)
+             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+           (point))
+         'ibuffer-filter-group
+         name))
+      (el-patch-add (insert "\n"))))
+#+end_src
+*** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
+#+name: init-ibuffer-ext-block
+#+begin_src emacs-lisp
+  (use-package ibuf-ext
+    :straight (:type built-in)
+    :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
+    :config (setq ibuffer-show-empty-filter-groups nil))
+#+end_src
 *** [[https://github.com/jojojames/ibuffer-sidebar][iBuffer-Sidebar]]
 #+name: init-ibuffer-sidebar
 #+begin_src emacs-lisp
@@ -2048,15 +2261,55 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (general-setq ibuffer-sidebar-use-custom-modeline nil))
 #+end_src
+*** [[https://github.com/purcell/ibuffer-projectile][iBuffer-Projectile]]
+#+name: init-ibuffer-projectile-block
+#+begin_src emacs-lisp
+  (use-package ibuffer-projectile
+    :straight t
+    :ghook ('ibuffer-hook #'djm/config-ibuffer-projectile)
+    :preface
+    (defun djm/config-ibuffer-projectile ()
+      (ibuffer-projectile-set-filter-groups)
+      (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*direnv*" "*straight-process*" "lsp" "flycheck") (buffer-name)))))
+      (unless (eq ibuffer-sorting-mode 'alphabetic)
+        (ibuffer-do-sort-by-alphabetic))
+
+      (when (bound-and-true-p page-break-lines-mode)
+        (page-break-lines--update-display-tables)))
+    :config
+    (general-setq ibuffer-projectile-prefix ""))
+#+end_src
 *** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
 #+name: init-treemacs-block
 #+begin_src emacs-lisp
   (use-package treemacs
     :straight t)
 #+end_src
-** Productivity
-*** Org
-**** Org-Mode
+*** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
+#+name: init-windmove-block
+#+begin_src emacs-lisp
+  (use-package windmove
+    :straight t
+    :general
+    ("C-c w j" #'windmove-left
+     "C-c w l" #'windmove-right
+     "C-c w n" #'windmove-down
+     "C-c w u" #'windmove-up))
+#+end_src
+
+*** [[https://gitlab.com/ambrevar/emacs-windower][Windower]]
+#+name: init-windower-block
+#+begin_src emacs-lisp
+  (use-package windower
+    :straight (:host gitlab :repo "ambrevar/emacs-windower")
+    :general
+    ("C-c w o" #'windower-switch-to-last-buffer
+     "C-c w t" #'windower-toggle-split))
+#+end_src
+
+** Org
+*** Org-Mode
 #+name: init-org-block
 #+begin_src emacs-lisp
   (use-package org
@@ -2162,7 +2415,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   org-yank-adjusted-subtrees t))
 #+end_src
 
-**** Org-Agenda
+*** Org-Agenda
 #+name: init-org-agenda-block
 #+begin_src emacs-lisp
   (use-package org-agenda
@@ -2215,7 +2468,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package org-super-agenda
     :straight t)
 #+end_src
-**** Org-Src
+*** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-src
@@ -2242,7 +2495,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
     (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
-**** [[https://github.com/sabof/org-bullets][Org-Bullets]]
+*** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
   (use-package org-bullets
@@ -2250,7 +2503,13 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook 'org-mode-hook)
 #+end_src
 
-**** [[https://github.com/snosov1/toc-org][TOC-Org]]
+*** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]
+#+name: init-org-scrum-block
+#+begin_src emacs-lisp
+  (use-package org-scrum
+    :straight (:host github :repo "ianxm/emacs-scrum"))
+#+end_src
+*** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
 #+begin_src emacs-lisp
   (use-package toc-org
@@ -2329,27 +2588,33 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config (transient-bind-q-to-quit))
 #+end_src
 
-*** HOLD Git-Attribute
+*** [[https://github.com/magit/git-modes][Git-Attribute]]
 #+name: init-git-attribute-block
 #+begin_src emacs-lisp
-
+  (use-package gitattributes-mode
+    :straight t)
 #+end_src
-*** HOLD Git-Config
-
+*** [[https://github.com/magit/git-modes][Git-Config]]
 #+name: init-git-config-block
 #+begin_src emacs-lisp
-
+  (use-package gitconfig-mode
+    :straight t)
 #+end_src
-*** HOLD Git-Ignore
+
+*** [[https://github.com/magit/git-modes][Git-Ignore]]
 #+name: init-git-ignore-block
 #+begin_src emacs-lisp
-
+  (use-package gitignore-mode
+    :straight t)
 #+end_src
-*** HOLD Git-Link
+
+*** [[https://github.com/sshaw/git-link][Git-Link]]
 #+name: init-git-link-block
 #+begin_src emacs-lisp
-
+  (use-package git-link
+    :straight t)
 #+end_src
+
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
 #+name: init-git-commit-block
 #+begin_src emacs-lisp
@@ -2396,16 +2661,28 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t)
 #+end_src
 
-*** HOLD Vdiff-Magit
+*** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
-#+begin_src emacs-lisp :tangle no
-
-#+end_src
-*** HOLD Magit-Todos
-#+name: init-magit-todo-block
 #+begin_src emacs-lisp
-
+  (use-package vdiff-magit
+    :straight t)
 #+end_src
+
+*** CANCELLED [[https://github.com/alphapapa/magit-todos][Magit-Todos]]
+CLOSED: [2019-12-11 Wed 13:56]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-11 Wed 13:56] \\
+  Causing errors from python when using during magit. Will come back to this later.
+
+  =Warning (magit-todos): File has lines too long for Emacs to search.  Consider excluding it from scans: ./framework/doc/content/contrib/plotly/plotly.min.js=
+:END:
+#+name: init-magit-todo-block
+#+begin_src emacs-lisp :tangle no
+  (use-package magit-todos
+    :demand t :straight t :after magit
+    :config (magit-todos-mode))
+#+end_src
+
 ** Language Server Support
 *** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
 #+name: init-lsp-block
@@ -2527,11 +2804,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 *** Python
+**** Python [Built-In]
 #+name: init-python-block
 #+begin_src emacs-lisp
   (use-package python
     :straight nil
-    :mode ("\\.py\\'")
+    :mode ("\\.py\\'" . python-mode)
     :gfhook 'djm/python-no-reindent-on-colon
     :config
     (defun djm/python-no-reindent-on-colon ()
@@ -2552,7 +2830,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq python-fill-docstring-style 'django
                   python-shell-interpreter "python"
                   python-indent-guess-indent-offset-verbose nil))
+#+end_src
 
+**** [[https://github.com/pythonic-emacs/pyenv-mode][Pyenv]]
+#+name: init-pyenv-block
+#+begin_src emacs-lisp
   (use-package pyenv-mode
     :blackout t :straight t
     :ghook 'python-mode-hook
@@ -2563,21 +2845,34 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
         (if (member project (pyenv-mode-versions))
             (pyenv-mode-set project)
           (pyenv-mode-unset)))))
+#+end_src
 
+**** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
+#+name: init-lsp-python-ms-block
+#+begin_src emacs-lisp
   (use-package lsp-python-ms
     :demand t :straight t :after (:all lsp-clients python))
+#+end_src
 
+**** [[https://github.com/pythonic-emacs/anaconda-mode][Anaconda-Mode]]
+#+name: init-anaconda-mode-block
+#+begin_src emacs-lisp
   (use-package anaconda-mode
-    :straight t :after (python)
+    :blackout t :straight t :after (python)
     :ghook 'python-mode-hook)
+#+end_src
 
+**** [[https://github.com/pythonic-emacs/blacken][Blacken]]
+#+name: init-blacken-block
+#+begin_src emacs-lisp
   (use-package blacken
     :straight t :after (python)
     :commands (blacken-buffer))
 #+end_src
 
+
 ** Miscellaneous
-*** SpeedType
+*** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block
 #+begin_src emacs-lisp
   (use-package speed-type
@@ -2605,5 +2900,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 # time-stamp-active: t
 # time-stamp-start: "\/last updated\/:[ ]*"
 # time-stamp-end: "$"
+# page-break-lines-mode: nil
 # firestarter: (djm/config-tangle)
 # End:

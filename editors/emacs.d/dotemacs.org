@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-11 16:44:41
+/last updated/: 2019-12-11 16:57:24
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -2505,7 +2505,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   org-confirm-babel-evaluate nil
                   org-default-notes-file "~/org/inbox.org"
                   org-directory "~/org/"
-                  org-ellipsis "↴"
+                  org-ellipsis "…"
                   org-enforce-todo-dependencies t
                   org-expiry-inactive-timestamps t
                   org-export-coding-system 'utf-8

@@ -11,7 +11,6 @@ if [[ "$TERM" == 'dumb' ]]; then
   return 1
 fi
 
-
 #
 # Options
 #
@@ -32,7 +31,7 @@ unsetopt list_beep
 
 # Use caching to make completion for commands such as dpkg and apt usable.
 zstyle ':completion::complete:*' use-cache on
-zstyle ':completion::complete:*' cache-path "$CACHE/zsh/zcompcache"
+zstyle cache-path "$XDG_CACHE_HOME/zsh"
 
 # Case-insensitive (all), partial-word, and then substring completion.
 if zstyle -t ':prezto:module:completion:*' case-sensitive; then

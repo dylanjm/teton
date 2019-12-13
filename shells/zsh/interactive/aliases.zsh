@@ -28,6 +28,7 @@ alias org='cd $HOME/org'
 ###
 ### Commands
 ###
+alias history='history 1'
 alias ls='gls -la --color=tty --group-directories-first'
 alias lx='exa -lah --icons --time=changed --time-style long-iso --group-directories-first'
 alias glx='exa -lah --icons --time=changed --time-style long-iso --git --sort=modified'

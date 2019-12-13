@@ -47,12 +47,12 @@ export LESS_TERMCAP_us=$'\E[01;32m'             # begin underline
 ###
 ### Z
 ###
-export _Z_DATA="$CACHE/zsh/z"
+export _Z_DATA="$XDG_CACHE_HOME/zsh/z"
 
 ###
 ### CCACHE
 ###
-export CCACHE_DIR="$CACHE/ccache"
+export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
 
 ###
 ### FZF
@@ -70,7 +70,8 @@ export ENHANCD_DISABLE_HOME=1
 ###
 ### Julia
 ###
-#export JULIA_BINDIR="$HOME/.config/julia"
+export JULIA_NUM_THREADS=12
+export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
 
 ###
 ### Rust/Cargo
@@ -81,6 +82,7 @@ export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
 ### Python
 ###
 export PYENV_ROOT="$XDG_CONFIG_HOME/pyenv"
+export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
 export PYLINTHOME="XDG_CACHE_HOME/pylint.d"
 

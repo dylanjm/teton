@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-14 13:25:22
+/last updated/: 2019-12-15 18:33:25
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -188,7 +188,7 @@
     - [[#dired-x-built-in][Dired-X (Built-In)]]
     - [[#all-the-icons-dired][All-The-Icons-Dired]]
     - [[#dired-atool][Dired-ATool]]
-    - [[#dired-du][Dired-Du]]
+    - [[#cancelled-dired-du][CANCELLED Dired-Du]]
     - [[#dired-git-info][Dired-Git-Info]]
     - [[#dired-hacks][Dired-Hacks]]
     - [[#dired-k][Dired-K]]
@@ -330,7 +330,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-                                      (alpha . (90 90))
+                                      (alpha . (98 98))
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
@@ -2357,7 +2357,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t)
 #+end_src
 
-*** [[https://github.com/calancha/dired-du][Dired-Du]]
+*** CANCELLED [[https://github.com/calancha/dired-du][Dired-Du]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-15 Sun 18:32] \\
+  This has a lot of overhead for directories.
+:END:
 #+name: init-dired-du-block
 #+begin_src emacs-lisp :tangle no
   (use-package dired-du

@@ -11,7 +11,7 @@ export DOTFILES="$HOME/dotz"
 export ZSH="$DOTFILES/shells/zsh"
 export ZSH_CACHE="$CACHE/zsh"
 
-export PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig"
+#export PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig"
 
 export LANG=en_US.UTF-8
 export EDITOR='emacsclient -a "" -c'
@@ -41,6 +41,8 @@ export ENHANCD_DIR="$XDG_CACHE_HOME/zsh/enhancd"
 export ENHANCD_FILTER=fzf:fzy:peco
 export ENHANCD_COMPLETION_BEHAVIOR=history
 export ENHANCD_DISABLE_HOME=1
+
+#export JULIA_BINDIR="$HOME/.config/julia"
 
 export GPG_TTY=$(tty)
 

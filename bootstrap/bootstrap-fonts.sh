@@ -12,14 +12,14 @@ declare -a arr=("https://github.com/be5invis/Iosevka/releases/download/v2.3.3/01
                )
 
 for i in "${arr[@]}"; do
-    echo "Installing $(basename $i) to ~/Library/Fonts"
-    TMPFILE=`mktemp`
-    PWD=`pwd`
-    curl -s "$i" -L -o $TMPFILE && unzip -q $TMPFILE -d "/tmp/font-temp"
-    rm $TMPFILE
+    echo "Installing $(basename "$i") to ~/Library/Fonts"
+    TMPFILE=$(mktemp)
+    TMPDIR="/tmp/font-temp"
+    PWD=$(pwd)
+    curl -s "$i" -L -o "$TMPFILE" && unzip -q "$TMPFILE" -d "$TMPDIR"
+    rm "$TMPFILE"
 
-    find /tmp/font-temp/* -type f -name "*.ttf" -not -path "./ttf-unhinted/*" |
-        xargs -I{} cp {} ~/Library/Fonts/
+    find "$TMPDIR"/* -type f -name "*.ttf" -not -path "*/ttf-unhinted/*" -exec cp {} ~/Library/Fonts \;
 
     rm -rf /tmp/font-temp
 done

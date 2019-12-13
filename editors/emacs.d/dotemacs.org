@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-11 16:57:24
+/last updated/: 2019-12-12 10:23:13
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -56,6 +56,7 @@
     - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
     - [[#epa-built-in][Epa (Built-In)]]
     - [[#epg-built-in][Epg (Built-In)]]
+    - [[#ert-built-in][ERT (Built-In)]]
     - [[#face-remap-built-in][Face-Remap (Built-In)]]
     - [[#eww-built-in][Eww (Built-In)]]
     - [[#browse-url-built-in][Browse-Url (Built-In)]]
@@ -859,6 +860,12 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :config (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
+*** ERT (Built-In)
+#+name: init-ert-block
+#+begin_src emacs-lisp
+  (use-package ert
+    :straight (:type built-in))
+#+end_src
 *** Face-Remap (Built-In)
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
@@ -1549,7 +1556,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   ivy-height 15
                   ivy-virtual-abbreviate 'name
                   ivy-count-format "(%d/%d) "
-                  ivy-flx-limit 2000
+                  ivy-flx-limit 4000
                   ivy-sort-max-size 50000))
 #+end_src
 
@@ -1651,7 +1658,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package company-box
     :blackout t :straight t
-    :ghook 'company-mode-hook)
+    :ghook 'company-mode-hook
+    :config
+    (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
+                  company-box-enable-icon t))
 
   (require 'el-patch)
 
@@ -2976,6 +2986,7 @@ CLOSED: [2019-12-11 Wed 13:56]
 
 ** Languages
 *** Emacs-Lisp
+**** Block
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
   (el-patch-feature lisp-mode)
@@ -3109,7 +3120,7 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 *** Python
-**** Python [Built-In]
+**** Python (Built-In)
 #+name: init-python-block
 #+begin_src emacs-lisp
   (use-package python

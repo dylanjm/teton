@@ -1,0 +1,103 @@
+#!/bin/bash
+
+NORMAL='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[1;35m'
+CYAN='\033[0;36m'
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTRED='\033[1;31m'
+LIGHTGREEN='\033[1;32m'
+YELLOW='\033[0;33m'
+LIGHTBLUE='\033[0;34m'
+LIGHTPURPLE='\033[0;35m'
+LIGHTCYAN='\033[0;36m'
+WHITE='\033[0;37m'
+
+dry_run=0
+lookback=1
+folder=0
+
+function usage () {
+    printf "Usage: bisfetch [-n] [-l num] [-f folder] [folder(s) ...]\n"
+    printf "  -h \t - show this message\n"
+    printf "  -n \t - perform a dry-run\n"
+    printf "  -l \t - Integer value; Look back a previous run; Defaults to 1 (most-recent)\n"
+    printf "  -f \t - Folder of interest; The flag is optional but a folder is required."
+    printf "\n"
+    printf "Folder of interest required! Possible folder names include:\n\n"
+    (printf "Calvert_Cliffs-1_PROTOTYPE   IFA_636					       RIA_CABRI_REP_Na4\n"
+    printf "FUMEXII_Regate			     IFA_677					       RIA_NSRR_FK\n"
+    printf "HBEP					     LOCA_ANL_cladding_burst_tests	   Riso_AN2\n"
+    printf "HbepR1					     LOCA_Hardy_cladding_test		   Riso_AN3\n"
+    printf "IFA_431					     LOCA_IFA_650				       Riso_AN4\n"
+    printf "IFA_432					     LOCA_MT4_MT6A				       Riso_AN8\n"
+    printf "IFA_513					     LOCA_ORNL_cladding_burst_tests	   Riso_GE7_ZX115\n"
+    printf "IFA_515_RodA1			     LOCA_PUZRY_cladding_burst_tests   Riso_GEm_STR013\n"
+    printf "IFA_519					     LOCA_REBEKA_cladding_burst_tests  Riso_II3\n"
+    printf "IFA_534					     OSIRIS_H09				           Riso_II5\n"
+    printf "IFA_535					     OSIRIS_J12				           Super_Ramp\n"
+    printf "IFA_562					     RE_Ginna_Rodlets			       Tribulation\n"
+    printf "IFA_597_3				     RIA_CABRI_REP_Na			       US_PWR_16_x_16\n") | column -t
+}
+
+while getopts ":hnql:f:" flag; do
+    case "$flag" in
+        n ) dry_run=1
+            ;;
+        q ) # quiet
+            ;;
+        l ) lookback=${OPTARG}
+            ;;
+        h ) usage
+            exit 0
+            ;;
+        f ) folder="${OPTARG}"
+            ;;
+        : ) echo "Invalid options: $OPTARG requires an argurment" 1>&2
+            exit 1
+            ;;
+        \? ) echo "Usage: bisfetch [-n] [-l num] [-f folder] [folder(s) ...]"
+             exit 1
+             ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "$folder" == 0 ] && [ -z "$1" ] && echo "You must specify a folder of interest"
+[ -n "$1" ] && folder="$1"
+
+files=($(ssh falcon1 -qn 'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
+             'sort -t\t -r -nk1,5 | ' \
+             'sed -n '"$lookback"'p | ' \
+             'cut -f2-); ' \
+             'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -not -path "*/doc/*" -printf "%p\n"'))
+
+
+local_paths=($(for i in "${files[@]}"; do
+                  echo "$i" |
+                      sed -E "s|/projects/bison/git/bison_[0-9]{8}|$HOME/Documents/projects/bison|g"
+              done
+             ))
+
+
+printf "\t📁 Inspecting Nightly Folder %b for Assessment Case %b\n" "${MAGENTA}${files[1]:20:14}${NORMAL}" "${MAGENTA}$folder${NORMAL}"
+
+for ((i=0; i<${#files[@]}; i++)); do
+	printf "\t╭─ %b %s\n" "${BLUE}Remote =>${NORMAL}" "${files[i]}"
+	printf "\t├─ %b %s\n" "${YELLOW}Local  =>${NORMAL}" "${local_paths[i]}"
+
+    if [[ $dry_run == 0 ]]; then
+        if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
+            printf "\t╰─ ${GREEN}File Creation Successful!${NORMAL}\n\n"
+        else
+            printf "\t╰─ Error Fetching File!\n\n"
+        fi
+    else
+        printf "\t╰─\n"
+    fi
+done

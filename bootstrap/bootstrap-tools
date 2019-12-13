@@ -26,7 +26,7 @@ fi
 
 # Check for Homebrew
 echo -ne "$marker Checking for Homebrew installation - $status"\\r
-if [[ ! -e "$(which brew)" ]]; then
+if [[ ! -e "$(command -v brew)" ]]; then
 	echo -e "$marker Checking for Homebrew installation - $status_bad"
 	ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
@@ -56,7 +56,7 @@ if [ "$REPLY" != "4" ]; then
         echo -e "$marker Checking for $opt installation - $status_bad"
 	    echo "Installing latest version of $opt from homebrew"
 	    echo ""
-	    brew install $opt
+	    brew install "$opt"
     else
         echo -e "$marker Checking for $opt installation - $status_good"
     fi
@@ -65,7 +65,7 @@ if [ "$REPLY" != "4" ]; then
     if ! grep -Fxq "/usr/local/bin/$opt" /etc/shells; then
         echo -e "$marker Checking /etc/shells - $status_bad"
 	    echo "Adding /usr/local/bin/$opt to /etc/shells file"
-	    echo '/usr/local/bin/$opt' | tee -a /etc/shells
+	    echo "/usr/local/bin/$opt" | tee -a /etc/shells
     else
         echo -e "$marker Checking /etc/shells - $status_good"
     fi
@@ -92,5 +92,13 @@ select opt in "Yes" "No"; do
 done
 
 if [ $opt = "Yes" ]; then
-	brew bundle --file=$(pwd)/bootstrap/Brewfile
+	brew bundle --file="$(pwd)/bootstrap/Brewfile"
+fi
+
+if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l)" -lt 200 ]]; then
+    echo ""
+    echo -e "$marker Installing fonts"
+
+    # shellcheck source=bootstrap-fonts.sh
+    source "$DOTFILES/bootstrap/bootstrap-fonts.sh"
 fi

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-12 21:06:17
+/last updated/: 2019-12-13 16:10:37
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -27,6 +27,7 @@
     - [[#el-patch][El-Patch]]
     - [[#general][General]]
     - [[#blackout][Blackout]]
+    - [[#use-package-company][Use-Package-Company]]
     - [[#dash][Dash]]
     - [[#f][F]]
     - [[#org-plus-contrib][Org-Plus-Contrib]]
@@ -102,14 +103,13 @@
     - [[#default-text-scale][Default-Text-Scale]]
     - [[#page-break-lines][Page-Break-Lines]]
     - [[#persistent-scratch][Persistent-Scratch]]
-  - [[#system][System]]
-    - [[#async][Async]]
-    - [[#pdf-tools][PDF-Tools]]
-    - [[#osx-trash][OSX-Trash]]
+  - [[#meta][Meta]]
     - [[#restart-emacs][Restart-Emacs]]
-    - [[#firestarter][Firestarter]]
-    - [[#gcmh][GCMH]]
     - [[#memory-usage][Memory-Usage]]
+    - [[#gcmh][GCMH]]
+  - [[#system][System]]
+    - [[#osx-trash][OSX-Trash]]
+    - [[#pdf-tools][PDF-Tools]]
   - [[#shells][Shells]]
     - [[#vterm][Vterm]]
     - [[#vterm-toggle][Vterm-Toggle]]
@@ -120,17 +120,19 @@
   - [[#frameworks][Frameworks]]
     - [[#prescient][Prescient]]
     - [[#hold-posframe][HOLD Posframe]]
-    - [[#ivy-prescient][Ivy-Prescient]]
-    - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
     - [[#flx][FLX]]
     - [[#ivy][Ivy]]
+    - [[#ivy-prescient][Ivy-Prescient]]
+    - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
   - [[#autocompletion][Autocompletion]]
-    - [[#company-mode][Company-Mode]]
+    - [[#company][Company]]
     - [[#company-box][Company-Box]]
     - [[#company-prescient][Company-Prescient]]
     - [[#company-flx][Company-FLX]]
+    - [[#company-shell][Company-Shell]]
+    - [[#company-emoji][Company-Emoji]]
     - [[#yasnippet][Yasnippet]]
   - [[#documentation][Documentation]]
     - [[#helpful][Helpful]]
@@ -158,9 +160,7 @@
     - [[#undo-tree][Undo-Tree]]
     - [[#whitespace-cleanup][Whitespace-Cleanup]]
     - [[#ws-butler][WS-Butler]]
-  - [[#navigation][Navigation]]
-    - [[#ace-window][Ace-Window]]
-    - [[#avy][Avy]]
+  - [[#file-explorer][File Explorer]]
     - [[#dired-built-in][Dired (Built-In)]]
     - [[#cancelled-dired][CANCELLED Dired+]]
     - [[#wdired-built-in][WDired (Built-In)]]
@@ -175,6 +175,9 @@
     - [[#dired-sidebar][Dired-Sidebar]]
     - [[#diredfl][Diredfl]]
     - [[#fd-dired][FD-Dired]]
+  - [[#navigation][Navigation]]
+    - [[#ace-window][Ace-Window]]
+    - [[#avy][Avy]]
     - [[#dumb-jump][Dumb-Jump]]
     - [[#ibuffer][iBuffer]]
     - [[#ibuffer-extension][iBuffer-Extension]]
@@ -307,7 +310,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
-                                      (font . "Iosevka SS09-14:weight=ultra-light")))
+                                      (font . "Iosevka SS09-24:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -435,6 +438,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "raxod502/blackout"))
 #+end_src
 
+*** [[https://github.com/Foltik/use-package-company][Use-Package-Company]]
+#+name: init-use-package-company-block
+#+begin_src emacs-lisp
+  (use-package use-package-company
+    :straight (:host github :repo "Foltik/use-package-company")
+    :defines (company-backends))
+#+end_src
 *** [[https://github.com/magnars/dash.el][Dash]]
 #+name: init-dash-block
 #+begin_src emacs-lisp
@@ -1393,54 +1403,7 @@ CLOSED: [2019-12-09 Mon 12:23]
                          (lambda ()
                            (persistent-scratch-setup-default))))
 #+end_src
-** System
-
-*** [[https://github.com/jwiegley/emacs-async][Async]]
-#+name: init-async-block
-#+begin_src emacs-lisp
-  (use-package async
-    :straight t
-    :ghook ('dired-mode-hook #'dired-async-mode)
-    :blackout (dired-async-mode . " "))
-#+end_src
-
-h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
-#+name: init-auto-compile-block
-#+begin_src emacs-lisp
-  (use-package auto-compile
-    :straight t
-    :config
-    (general-setq auto-compile-display-buffer nil
-                  auto-compile-mode-line-counter t
-                  auto-compile-source-recreate-deletes-dest t
-                  auto-compile-toggle-deletes-nonlib-dest t
-                  auto-compile-update-autoloads t))
-#+end_src
-*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
-Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
-#+name: init-pdf-tools-block
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :straight t
-    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
-              "n" #'pdf-view-next-page
-              "N" #'pdf-view-previous-page
-              "p" #'pdf-view-previous-page)
-    :config
-    (progn
-      (pdf-tools-install)
-      (general-setq pdf-view-display-size 'fit-page
-                    pdf-annot-activate-created-annotations t)))
-#+end_src
-*** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
-#+name: init-osx-trash-block
-#+begin_src emacs-lisp
-  (use-package osx-trash
-    :straight t
-    :ghook ('after-init-hook #'osx-trash-setup))
-#+end_src
-
+** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 #+name: init-restart-emacs-block
 #+begin_src emacs-lisp
@@ -1449,14 +1412,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :init (defalias 're #'restart-emacs))
 #+end_src
 
-*** [[https://github.com/wasamasa/firestarter][Firestarter]]
-#+name: init-firestarter-block
+*** [[https://github.com/emacsmirror/memory-usage][Memory-Usage]]
+#+name: init-memory-usage-block
 #+begin_src emacs-lisp
-  (use-package firestarter
-    :straight t
-    :ghook 'before-save-hook)
+  (use-package memory-usage
+    :straight t)
 #+end_src
-
 *** [[https://gitlab.com/koral/gcmh][GCMH]]
 Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I haven't seen any problems so far.
 #+name: init-gchm-block
@@ -1477,12 +1438,31 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                           gcmh-low-cons-threshold default-gc-cons-threshold
                           gcmh-high-cons-threshold extended-gc-cons-threshold))
 #+end_src
-
-*** [[https://github.com/emacsmirror/memory-usage][Memory-Usage]]
-#+name: init-memory-usage-block
+** System
+*** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
+#+name: init-osx-trash-block
 #+begin_src emacs-lisp
-  (use-package memory-usage
-    :straight t)
+  (use-package osx-trash
+    :straight t
+    :ghook ('after-init-hook #'osx-trash-setup))
+#+end_src
+
+*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
+Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
+#+name: init-pdf-tools-block
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :straight t
+    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
+              "n" #'pdf-view-next-page
+              "N" #'pdf-view-previous-page
+              "p" #'pdf-view-previous-page)
+    :config
+    (progn
+      (pdf-tools-install)
+      (general-setq pdf-view-display-size 'fit-page
+                    pdf-annot-activate-created-annotations t)))
 #+end_src
 ** Shells
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
@@ -1566,35 +1546,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (let ((info '(:internal-border-width 12 :min-width 80)))
         (or (plist-get info arg-name) value))))
 #+end_src
-*** [[https://github.com/raxod502/prescient.el][Ivy-Prescient]]
-#+name: init-ivy-prescient-block
-#+begin_src emacs-lisp
-  (use-package ivy-prescient
-    :straight t :after (counsel)
-    :ghook 'counsel-mode-hook
-    :config
-    (general-add-hook 'ivy-sort-functions-alist
-                      '((ivy-omni-org . nil)
-                        (swiper . nil)
-                        (org-starter-swiper-config-files . nil)
-                        (counsel-minibuffer-history . nil)
-                        (counsel-mark-ring . nil))))
-#+end_src
-
-*** HOLD [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-12 Thu 19:20] \\
-  Requires too much configuration.
-:END:
-#+name: init-ivy-posframe-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ivy-posframe
-    :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :config
-    (general-setq ivy-posframe-style 'frame-center
-                  ivy-posframe-hide-minibuffer t))
-#+end_src
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
 #+begin_src emacs-lisp
@@ -1633,6 +1584,34 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   ivy-sort-max-size 50000))
 #+end_src
 
+*** [[https://github.com/raxod502/prescient.el][Ivy-Prescient]]
+#+name: init-ivy-prescient-block
+#+begin_src emacs-lisp
+  (use-package ivy-prescient
+    :straight t :after (counsel)
+    :ghook 'counsel-mode-hook
+    :config
+    (general-add-hook 'ivy-sort-functions-alist
+                      '((ivy-omni-org . nil)
+                        (swiper . nil)
+                        (org-starter-swiper-config-files . nil)
+                        (counsel-minibuffer-history . nil)
+                        (counsel-mark-ring . nil))))
+#+end_src
+*** HOLD [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-12 Thu 19:20] \\
+  Requires too much configuration.
+:END:
+#+name: init-ivy-posframe-block
+#+begin_src emacs-lisp :tangle no
+  (use-package ivy-posframe
+    :blackout t :straight t
+    :ghook 'ivy-mode-hook
+    :config
+    (general-setq ivy-posframe-style 'frame-center
+                  ivy-posframe-hide-minibuffer t))
+#+end_src
 *** [[https://github.com/abo-abo/swiper][Counsel]]
 #+name: init-counsel-block
 #+begin_src emacs-lisp
@@ -1685,55 +1664,44 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Autocompletion
-*** [[https://github.com/company-mode/company-mode][Company-Mode]]
+*** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
     :blackout t :straight t
     :ghook ('after-init-hook #'global-company-mode)
     :general
-    (:keymaps
-     'company-active-map
+    (:keymaps 'company-active-map
      "RET"     nil
      [return]  nil
-     "TAB"     #'company-complete-selection
-     [tab]     #'company-complete-selection
-     "<right>" #'company-complete-common
+     "TAB"     #'company-complete
+     [tab]     #'company-complete
+     "C-f"     #'company-complete-selection
      "C-n"     #'company-select-next
-     "C-p"     #'company-select-previous)
+     "C-p"     #'company-select-previous
+     "M-/"     #'company-other-backend)
     :config
-    (general-setq company-auto-complete-chars nil
-                  company-async-timeout 15
-                  company-echo-delay 0
-                  company-idle-delay 0.15
+    (general-setq company-async-timeout 15
+                  company-dabbrev-downcase nil
+                  company-dabbrev-other-buffers t
+                  company-dabbrev-code-other-buffers 'code
+                  company-idle-delay .10
                   company-minimum-prefix-length 2
-                  company-show-numbers t
+                  company-show-numbers nil
                   company-tooltip-flip-when-above t
-                  company-tooltip-limit 15
+                  company-tooltip-limit 30
                   company-tooltip-align-annotations t)
 
-    (general-setq company-backends '((company-semantic
-                                      company-capf
-                                      company-yasnippet
-                                      company-files
-                                      company-keywords)
-                                     (company-dabbrev-code)
-                                     company-dabbrev))
+    (general-setq company-auto-complete (lambda ()
+                                          (and (company-tooltip-visible-p)
+                                               (copmany-explicit-action-p))))
 
-  (defun djm/configure-company-backends-with-yas (backends)
-    "Add :with company-yasnippet to company BACKENDS. Taken from
-    Taken from https://github.com/syl20bnr/spacemacs/pull/179."
-    (if (and (listp backends) (memq 'company-yasnippet backends))
-        backends
-      (append (if (consp backends)
-                  backends
-                (list backends))
-              '(:with company-yasnippet))))
-
-  (general-pushnew #'org-self-insert-command company-begin-commands)
-
-  (general-setq company-backends
-                (mapcar #'djm/configure-company-backends-with-yas company-backends)))
+    (general-setq company-continue-commands '(not save-buffer
+                                                  save-some-buffers
+                                                  save-buffers-kill-emacs
+                                                  comint-previous-matching-input-from-input
+                                                  comint-next-matching-input-from-input
+                                                  completion-at-point)))
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
@@ -1745,10 +1713,9 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config/el-patch
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
                   company-box-enable-icon t)
-    (el-patch-feature company-box)
 
     ;; Fix background colour on theme change.
-    (el-patch-defun company-box--display (string)
+    (defun company-box--display (string)
       "Display the completions."
       (company-box--render-buffer string)
       (unless (company-box--get-frame)
@@ -1762,7 +1729,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (company-box--update-scrollbar (company-box--get-frame) t))
 
     ;; Make sure we don't show a header line in company-box.
-    (el-patch-defun company-box--render-buffer (string)
+    (defun company-box--render-buffer (string)
       (let ((selection company-selection))
         (with-current-buffer (company-box--get-buffer)
           (erase-buffer)
@@ -1780,7 +1747,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
           (company-box--update-line selection))))
 
     ;; Fix the foreground and background colours of documentation popup frames.
-    (el-patch-defun company-box-doc--show (selection frame)
+    (defun company-box-doc--show (selection frame)
       (-when-let* ((valid-state (and (eq (selected-frame) frame)
                                      (company-box--get-frame)
                                      (frame-visible-p (company-box--get-frame))))
@@ -1813,6 +1780,18 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package company-flx
     :straight t
     :ghook 'company-mode-hook)
+#+end_src
+*** [[https://github.com/Alexander-Miller/company-shell][Company-Shell]]
+#+name: init-company-shell-block
+#+begin_src emacs-lisp
+  (use-package company-shell
+    :straight t)
+#+end_src
+*** [[https://github.com/dunn/company-emoji][Company-Emoji]]
+#+name: init-company-emoji-block
+#+begin_src emacs-lisp
+  (use-package company-emoji
+    :straight t)
 #+end_src
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
@@ -1974,7 +1953,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t
     :mode "\\.csv\\'"
     :preface
-    (defun config-langs--suppress-final-newline () nil)
+    (defun config-langs--suppress-final-newline ()
+      (setq-local require-final-newline nil))
     :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
 #+end_src
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
@@ -2052,27 +2032,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook ('emacs-startup-hook #'ws-butler-global-mode))
 #+end_src
 
-** Navigation
-*** [[https://github.com/abo-abo/ace-window][Ace-Window]]
-#+name: init-ace-window-block
-#+begin_src emacs-lisp
-  (use-package ace-window
-    :straight t
-    :general ("C-x o" #'ace-window)
-    :config
-    (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)))
-#+end_src
-
-*** [[https://github.com/abo-abo/avy][Avy]]
-#+name: init-avy-block
-#+begin_src emacs-lisp
-  (use-package avy
-    :straight t
-    :config
-    (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-                  avy-all-windows nil))
-#+end_src
-
+** File Explorer
 *** Dired (Built-In)
 #+name: init-dired-block
 #+begin_src emacs-lisp
@@ -2283,6 +2243,27 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight (:host github :repo "yqrashawn/fd-dired"))
 #+end_src
 
+** Navigation
+*** [[https://github.com/abo-abo/ace-window][Ace-Window]]
+#+name: init-ace-window-block
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :straight t
+    :general ("C-x o" #'ace-window)
+    :config
+    (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)))
+#+end_src
+
+*** [[https://github.com/abo-abo/avy][Avy]]
+#+name: init-avy-block
+#+begin_src emacs-lisp
+  (use-package avy
+    :straight t
+    :config
+    (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
+                  avy-all-windows nil))
+#+end_src
+
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
 #+name: init-dumb-jump-block
 #+begin_src emacs-lisp
@@ -2309,7 +2290,71 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                                               "*Backtrace*"
                                                               "*new*"
                                                               "*Org*"
-                                                              "*Help*")))))
+                                                              "*Help*"))))
+
+    (define-ibuffer-column mode
+      (:inline t)
+      (with-current-buffer (current-buffer)
+        (let ((icon (all-the-icons-icon-for-buffer)))
+          (if (stringp icon)
+              icon
+            " "))))
+
+
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (propertize (f-abbrev filename) 'face 'shadow))))
+
+    ;; Show buffer name in a consistent way.
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+
+    ;; Change the way groups are rendered.
+    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+      (add-text-properties
+       (point)
+       (progn
+         (insert (el-patch-remove "[ ")
+                 display-name
+                 (el-patch-remove " ]"))
+         (point))
+       `(ibuffer-filter-group-name
+         ,name
+         font-lock-face ,ibuffer-filter-group-name-face
+         keymap ,ibuffer-mode-filter-group-map
+         mouse-face highlight
+         help-echo ,(let ((echo '(if tooltip-mode
+                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                   "mouse-1: toggle marks  mouse-2: hide/show")))
+                      (if (> (length filter-string) 0)
+                          `(concat ,filter-string
+                                   (if tooltip-mode "\n" " ")
+                                   ,echo)
+                        echo))))
+      (insert "\n")
+      (when bmarklist
+        (put-text-property
+         (point)
+         (progn
+           (dolist (entry bmarklist)
+             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+           (point))
+         'ibuffer-filter-group
+         name))
+      (el-patch-add (insert "\n"))))
 #+end_src
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
 #+name: init-ibuffer-ext-block
@@ -2992,6 +3037,34 @@ CLOSED: [2019-12-11 Wed 13:56]
                   (goto-char (+ 2 (elt state 1)))
                   (current-column)))
                (t $else))))))))
+#+end_src
+**** [[https://github.com/wasamasa/firestarter][Firestarter]]
+#+name: init-firestarter-block
+#+begin_src emacs-lisp
+  (use-package firestarter
+    :straight t
+    :ghook 'before-save-hook)
+#+end_src
+**** [[https://github.com/jwiegley/emacs-async][Async]]
+#+name: init-async-block
+#+begin_src emacs-lisp
+  (use-package async
+    :straight t
+    :ghook ('dired-mode-hook #'dired-async-mode)
+    :blackout (dired-async-mode . " "))
+#+end_src
+
+h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
+#+name: init-auto-compile-block
+#+begin_src emacs-lisp
+  (use-package auto-compile
+    :straight t
+    :config
+    (general-setq auto-compile-display-buffer nil
+                  auto-compile-mode-line-counter t
+                  auto-compile-source-recreate-deletes-dest t
+                  auto-compile-toggle-deletes-nonlib-dest t
+                  auto-compile-update-autoloads t))
 #+end_src
 *** Markdown
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]

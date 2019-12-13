@@ -47,6 +47,9 @@ zplugin snippet "${ZSH}/completions/_pyfetch"
 zplugin ice wait as"completion" if"[ -f '${ZSH}/completions/_bfetch' ]" blockf lucid;
 zplugin snippet "${ZSH}/completions/_bfetch"
 
+zplugin ice wait as"completion" if"[ -f '${ZSH}/completions/_bisfetch' ]" blockf lucid;
+zplugin snippet "${ZSH}/completions/_bisfetch"
+
 zplugin wait'2c' atload"_zsh_autosuggest_start" lucid blockf
 zplugin $load zsh-users/zsh-autosuggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)

@@ -34,6 +34,7 @@ export CCACHE_DIR="$CACHE/ccache"
 
 export PYENV_ROOT="$HOME/.config/pyenv"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
+export PYLINTHOME="XDG_CACHE_HOME/pylint.d"
 
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
 

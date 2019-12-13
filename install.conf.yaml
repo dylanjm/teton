@@ -28,6 +28,8 @@
     ~/.config/latexmkrc: apps/latexmkrc
     ~/.config/editorconfig: apps/editorconfig
     ~/.config/alacritty: apps/alacritty
+    ~/.config/direnv: apps/direnv
+    ~/.config/qutebrowser: apps/qutebrowser
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

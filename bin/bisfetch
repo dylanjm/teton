@@ -1,103 +1,129 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 NORMAL='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-ORANGE='\033[0;33m'
-BLUE='\033[0;34m'
-MAGENTA='\033[1;35m'
-CYAN='\033[0;36m'
-LIGHTGRAY='\033[0;37m'
-DARKGRAY='\033[1;30m'
-LIGHTRED='\033[1;31m'
-LIGHTGREEN='\033[1;32m'
-YELLOW='\033[0;33m'
-LIGHTBLUE='\033[0;34m'
-LIGHTPURPLE='\033[0;35m'
-LIGHTCYAN='\033[0;36m'
-WHITE='\033[0;37m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+MAGENTA='\033[1;4;35m'
+YELLOW='\033[1;33m'
 
 dry_run=0
 lookback=1
-folder=0
+folder=""
+BISON=${BISON_DIR:-$HOME/Documents/projects/bison}
 
-function usage () {
-    printf "Usage: bisfetch [-n] [-l num] [-f folder] [folder(s) ...]\n"
-    printf "  -h \t - show this message\n"
-    printf "  -n \t - perform a dry-run\n"
-    printf "  -l \t - Integer value; Look back a previous run; Defaults to 1 (most-recent)\n"
-    printf "  -f \t - Folder of interest; The flag is optional but a folder is required."
-    printf "\n"
-    printf "Folder of interest required! Possible folder names include:\n\n"
-    (printf "Calvert_Cliffs-1_PROTOTYPE   IFA_636					       RIA_CABRI_REP_Na4\n"
-    printf "FUMEXII_Regate			     IFA_677					       RIA_NSRR_FK\n"
-    printf "HBEP					     LOCA_ANL_cladding_burst_tests	   Riso_AN2\n"
-    printf "HbepR1					     LOCA_Hardy_cladding_test		   Riso_AN3\n"
-    printf "IFA_431					     LOCA_IFA_650				       Riso_AN4\n"
-    printf "IFA_432					     LOCA_MT4_MT6A				       Riso_AN8\n"
-    printf "IFA_513					     LOCA_ORNL_cladding_burst_tests	   Riso_GE7_ZX115\n"
-    printf "IFA_515_RodA1			     LOCA_PUZRY_cladding_burst_tests   Riso_GEm_STR013\n"
-    printf "IFA_519					     LOCA_REBEKA_cladding_burst_tests  Riso_II3\n"
-    printf "IFA_534					     OSIRIS_H09				           Riso_II5\n"
-    printf "IFA_535					     OSIRIS_J12				           Super_Ramp\n"
-    printf "IFA_562					     RE_Ginna_Rodlets			       Tribulation\n"
-    printf "IFA_597_3				     RIA_CABRI_REP_Na			       US_PWR_16_x_16\n") | column -t
+function foldernames() {
+
+	(
+		printf "IFA_677	                         RE_Ginna_Rodlets                  LOCA_ORNL_cladding_burst_tests  IFA_519\n"
+		printf "OSIRIS_H09	                     Riso_II5				           IFA_535					       IFA_636\n"
+		printf "RIA_NSRR_FK				         IFA_432					       LOCA_IFA_650				       LOCA_MT4_MT6A\n"
+		printf "Riso_II3				         Calvert_Cliffs-1_PROTOTYPE		   IFA_534					       LOCA_Hardy_cladding_test\n"
+		printf "IFA_562					         LOCA_REBEKA_cladding_burst_tests  HBEP					           OSIRIS_J12\n"
+		printf "LOCA_PUZRY_cladding_burst_tests	 FUMEXII_Regate				       Riso_AN3				           IFA_515_RodA1\n"
+		printf "Riso_GEm_STR013				     Riso_GE7_ZX115				       Riso_AN4				           IFA_431\n"
+		printf "LOCA_ANL_cladding_burst_tests	 RIA_CABRI_REP_Na4			       HbepR1					       RIA_CABRI_REP_Na\n"
+		printf "Tribulation				         LOCA_cladding_creep_tests		   IFA_597_3				       US_PWR_16_x_16\n"
+		printf "Riso_AN8				         Riso_AN2				           Super_Ramp\n"
+	) |
+		column -t
 }
 
-while getopts ":hnql:f:" flag; do
-    case "$flag" in
-        n ) dry_run=1
-            ;;
-        q ) # quiet
-            ;;
-        l ) lookback=${OPTARG}
-            ;;
-        h ) usage
-            exit 0
-            ;;
-        f ) folder="${OPTARG}"
-            ;;
-        : ) echo "Invalid options: $OPTARG requires an argurment" 1>&2
-            exit 1
-            ;;
-        \? ) echo "Usage: bisfetch [-n] [-l num] [-f folder] [folder(s) ...]"
-             exit 1
-             ;;
-    esac
+function usage() {
+	printf "%b\n" "${YELLOW}USAGE${NORMAL}:"
+	printf "  %s\n\n" "bisfetch [-n] [-l num] [-f folder] [<folder(s)> ...]"
+
+	printf "%b\n" "${YELLOW}FLAGS${NORMAL}:"
+	printf "  %s  %s\n" "-h" "- show this message"
+	printf "  %s  %s\n" "-n" "- perform a dry-run"
+	printf "  %s  %s\n" "-l" "- Look back a previous run; Defaults to 1 (most-recent)"
+	printf "  %s  %s\n\n" "-f" "- Folder of interest; The flag is optional but a folder is required."
+
+	printf "%b\n" "${YELLOW}ARGS${NORMAL}:"
+	printf "  %s  %s\n\n" "<folder(s)>" "- Folder of interest from remote machine. To fetch all folders specify '*'"
+	printf "%b\n" "${GREEN}Possible folder names include:${NORMAL}"
+	foldernames
+	exit 1
+}
+
+while getopts ":hnl:f:" flag; do
+	case "$flag" in
+	n)
+		dry_run=1
+		;;
+	l)
+		lookback=${OPTARG}
+		;;
+	h)
+		usage
+		;;
+	f)
+		folder="${OPTARG}"
+		;;
+	:)
+		echo "Invalid options: $OPTARG requires an argurment" 1>&2
+		exit 1
+		;;
+	\?)
+		echo "Usage: bisfetch [-n] [-l num] [-f folder] [folder(s) ...]"
+		exit 1
+		;;
+	esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-[ "$folder" == 0 ] && [ -z "$1" ] && echo "You must specify a folder of interest"
+# Check to ensure folder is specified
+if [ -z "$folder" ] && [ -z "$1" ]; then
+	printf "%b\n\n" "${RED}You must specify a folder of interest:${NORMAL}"
+	foldernames
+	exit 1
+fi
+
+# If no -f flag then assign folder to first ARG
 [ -n "$1" ] && folder="$1"
 
-files=($(ssh falcon1 -qn 'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
-             'sort -t\t -r -nk1,5 | ' \
-             'sed -n '"$lookback"'p | ' \
-             'cut -f2-); ' \
-             'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -not -path "*/doc/*" -printf "%p\n"'))
+# Find all *_out.csv files on Falcon1 for specific folder
+# This is some bash-fu, but bassically we want to find the most recently
+# modified folder of the type 'bison_XXXXXXXX'
+# We then want to find all the *_out.csv files inside the folder specified at the
+# command-line within the 'bison_XXXXXXXX' folder.
+mapfile -t files < <(ssh falcon1 -qn 'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
+	'sort -t\t -r -nk1,5 | ' \
+	'sed -n '"$lookback"'p | ' \
+	'cut -f2-); ' \
+	'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -not -path "*/doc/*" -printf "%p\n" 2>/dev/null')
 
+# Modify remote paths to fit for local paths
+mapfile -t local_paths < <(for i in "${files[@]}"; do
+	echo "$i" |
+		sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
+done)
 
-local_paths=($(for i in "${files[@]}"; do
-                  echo "$i" |
-                      sed -E "s|/projects/bison/git/bison_[0-9]{8}|$HOME/Documents/projects/bison|g"
-              done
-             ))
+# If ssh returned no results then error out.
+if [[ -z "${files[0]}" ]]; then
+	printf "%b\n\n" "${RED}ERROR: Folder '$folder' Not Found!${NORMAL}"
+	printf "%b\n" "${YELLOW}Possible Folder Names Include:${NORMAL}"
+	foldernames
+	exit 1
+else
+	printf "\n\t📁 Inspecting Nightly Folder %b for Assessment %b:\n" \
+		"${MAGENTA}${files[0]:20:14}${NORMAL}" "${MAGENTA}$folder${NORMAL}"
+fi
 
+for ((i = 0; i < ${#files[@]}; i++)); do
+	if [[ $dry_run == 0 ]]; then
+		printf "\t╭─ %b %s\n" "${BLUE}Remote =>${NORMAL}" "${files[i]}"
+		printf "\t├─ %b %s\n" "${YELLOW}Local  =>${NORMAL}" "${local_paths[i]}"
+		printf "\t╰─ Fetching Remote File...\r"
 
-printf "\t📁 Inspecting Nightly Folder %b for Assessment Case %b\n" "${MAGENTA}${files[1]:20:14}${NORMAL}" "${MAGENTA}$folder${NORMAL}"
-
-for ((i=0; i<${#files[@]}; i++)); do
-	printf "\t╭─ %b %s\n" "${BLUE}Remote =>${NORMAL}" "${files[i]}"
-	printf "\t├─ %b %s\n" "${YELLOW}Local  =>${NORMAL}" "${local_paths[i]}"
-
-    if [[ $dry_run == 0 ]]; then
-        if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
-            printf "\t╰─ ${GREEN}File Creation Successful!${NORMAL}\n\n"
-        else
-            printf "\t╰─ Error Fetching File!\n\n"
-        fi
-    else
-        printf "\t╰─\n"
-    fi
+		if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
+			printf "\t%b\n\n" "╰─ Fetching Remote File… ${GREEN}Successful!${NORMAL}"
+		else
+			printf "\t%b\n\n" "╰─ Fetching Remote File… ${RED}Error!{$NORMAL}"
+		fi
+	else
+		printf "\t╭─ %b %s\n" "${BLUE}Remote =>${NORMAL}" "${files[i]}"
+		printf "\t╰─ %b %s\n\n" "${YELLOW}Local  =>${NORMAL}" "${local_paths[i]}"
+	fi
 done

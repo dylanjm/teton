@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-12 10:23:13
+/last updated/: 2019-12-12 19:04:55
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -304,7 +304,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
-                                      (font . "Iosevka SS09-20:weight=ultra-light")))
+                                      (font . "Iosevka SS09-14:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -2019,7 +2019,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** Dired+
 #+name: init-dired-plus-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package dired+
     :straight dired-plus
     :init
@@ -2216,7 +2216,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t
     :general
     ([remap list-buffers] #'ibuffer)
-    :config
+    :config/el-patch
     (general-setq ibuffer-expert t
                   ibuffer-show-empty-filter-groups nil)
     (general-setq ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
@@ -2225,19 +2225,17 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                                               "*Backtrace*"
                                                               "*new*"
                                                               "*Org*"
-                                                              "*Help*")))))
+                                                              "*Help*"))))
 
-  (with-eval-after-load 'ibuffer
     (define-ibuffer-column mode
       (:inline t)
       (with-current-buffer (current-buffer)
         (let ((icon (all-the-icons-icon-for-buffer)))
           (if (stringp icon)
               icon
-            " ")))))
+            " "))))
 
-  (with-eval-after-load 'ibuffer
-    (require 'dired+)
+
     (define-ibuffer-column filename-and-process
       (:name "Filename/Process")
       (let ((proc (get-buffer-process buffer))
@@ -2248,22 +2246,18 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                     (if (> (length filename) 0)
                         (format " %s" filename)
                       ""))
-          (propertize (f-abbrev filename) 'face 'shadow)))))
+          (propertize (f-abbrev filename) 'face 'shadow))))
 
-  ;; Show buffer name in a consistent way.
-
-  (with-eval-after-load 'ibuffer
+    ;; Show buffer name in a consistent way.
     (define-ibuffer-column name
       (:inline t)
       (let ((string (buffer-name)))
         (if (not (seq-position string ?\n))
             string
           (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string)))))
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
 
-  ;; Show a horizontal rule using page-break-lines instead of using dashes.
-
-  (with-eval-after-load 'ibuffer
+    ;; Show a horizontal rule using page-break-lines instead of using dashes.
     (el-patch-defun ibuffer-update-title-and-summary (format)
       (ibuffer-assert-ibuffer-mode)
       ;; Don't do funky font-lock stuff here
@@ -2352,9 +2346,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                                    align)
                           summary))))))
                (point))
-             `(ibuffer-summary t)))))
-
-    )
+             `(ibuffer-summary t))))))
 
   ;; Change the way groups are rendered.
 

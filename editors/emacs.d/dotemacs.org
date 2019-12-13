@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-12 19:04:55
+/last updated/: 2019-12-12 21:06:17
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -43,6 +43,7 @@
     - [[#auth-source-built-in][Auth-Source (Built-In)]]
     - [[#autorevert-built-in][Autorevert (Built-In)]]
     - [[#bookmark-built-in][Bookmark (Built-In)]]
+    - [[#browse-url-built-in][Browse-Url (Built-In)]]
     - [[#calculator-built-in][Calculator (Built-In)]]
     - [[#calendar-built-in][Calendar (Built-In)]]
     - [[#cl-lib-built-in][CL-Lib (Built-In)]]
@@ -51,20 +52,22 @@
     - [[#conf-mode][Conf-Mode]]
     - [[#cus-start-built-in][Cus-Start (Built-In)]]
     - [[#delsel-built-in][Delsel (Built-In)]]
+    - [[#doc-view][Doc-View]]
+    - [[#ediff-built-in][Ediff (Built-In)]]
     - [[#eldoc-built-in][Eldoc (Built-In)]]
     - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
     - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
     - [[#epa-built-in][Epa (Built-In)]]
     - [[#epg-built-in][Epg (Built-In)]]
-    - [[#ert-built-in][ERT (Built-In)]]
-    - [[#face-remap-built-in][Face-Remap (Built-In)]]
+    - [[#ert-built-in][Ert (Built-In)]]
     - [[#eww-built-in][Eww (Built-In)]]
-    - [[#browse-url-built-in][Browse-Url (Built-In)]]
+    - [[#face-remap-built-in][Face-Remap (Built-In)]]
     - [[#files-built-in][Files (Built-In)]]
     - [[#frame-built-in][Frame (Built-In)]]
     - [[#gnutls-built-in][Gnutls (Built-In)]]
     - [[#help-built-in][Help (Built-In)]]
     - [[#hideshow-built-in][Hideshow (Built-In)]]
+    - [[#image-built-in][Image (Built-In)]]
     - [[#ispell-built-in][Ispell (Built-In)]]
     - [[#make-mode-built-in][Make-Mode (Built-In)]]
     - [[#minibuffer-built-in][Minibuffer (Built-In)]]
@@ -92,7 +95,8 @@
     - [[#gruvbox-theme][Gruvbox Theme]]
     - [[#cancelled-darktooth-theme][CANCELLED Darktooth Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
-    - [[#dimmer-mode][Dimmer-Mode]]
+    - [[#cancelled-dimmer-mode][CANCELLED Dimmer-Mode]]
+    - [[#highlight-todo][Highlight-Todo]]
     - [[#smart-mode-line][Smart-Mode-Line]]
     - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
     - [[#default-text-scale][Default-Text-Scale]]
@@ -115,9 +119,9 @@
     - [[#taskrunner][Taskrunner]]
   - [[#frameworks][Frameworks]]
     - [[#prescient][Prescient]]
-    - [[#posframe][Posframe]]
+    - [[#hold-posframe][HOLD Posframe]]
     - [[#ivy-prescient][Ivy-Prescient]]
-    - [[#ivy-posframe][Ivy-Posframe]]
+    - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
     - [[#flx][FLX]]
     - [[#ivy][Ivy]]
     - [[#counsel][Counsel]]
@@ -158,7 +162,7 @@
     - [[#ace-window][Ace-Window]]
     - [[#avy][Avy]]
     - [[#dired-built-in][Dired (Built-In)]]
-    - [[#dired][Dired+]]
+    - [[#cancelled-dired][CANCELLED Dired+]]
     - [[#wdired-built-in][WDired (Built-In)]]
     - [[#dired-x-built-in][Dired-X (Built-In)]]
     - [[#all-the-icons-dired][All-The-Icons-Dired]]
@@ -224,7 +228,7 @@
     - [[#python][Python]]
   - [[#miscellaneous][Miscellaneous]]
     - [[#speedtype][SpeedType]]
-    - [[#ledger][Ledger]]
+    - [[#hold-ledger][HOLD Ledger]]
   - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
@@ -279,7 +283,6 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                 load-prefer-newer t)
 
   (setq file-name-handler-alist nil
-        gc-cons-percentage 0.6
         gc-cons-threshold extended-gc-cons-threshold
         package-enable-at-startup nil)
 
@@ -596,6 +599,16 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     ;; Fallbacks for math and generic symbols
     (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
+**** Clean-Up Yanked Text
+Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]]
+#+name: init-yank-ws-cleanup-block
+#+begin_src emacs-lisp
+  (defun djm/yank-ws-cleanup (&rest _)
+    (whitespace-cleanup)
+    (delete-trailing-whitespace))
+
+  (general-add-advice #'insert-for-yank :after #'djm/yank-ws-cleanup)
+#+end_src
 *** Hooks & Advice
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
@@ -658,6 +671,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
   (use-package ansi-color
     :straight (:type built-in)
     :ghook ('compilation-filter-hook #'compilation-ansi-color-process-output)
+    :functions (ansi-color-apply-on-region)
     :preface
     (defun compilation-ansi-color-process-output ()
       (ansi-color-process-output nil)
@@ -672,7 +686,8 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :straight (:type built-in)
     :config
     (general-setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
-                                 ,(no-littering-expand-etc-file-name "authinfo"))))
+                                 ,(no-littering-expand-etc-file-name "authinfo"))
+                  auth-source-do-cache t))
 #+end_src
 
 *** Autorevert (Built-In)
@@ -697,6 +712,14 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :config (general-setq bookmark-save-flag +1))
 #+end_src
 
+*** Browse-Url (Built-In)
+#+name: init-browse-url-block
+#+begin_src emacs-lisp
+  (use-package browse-url
+    :straight (:type built-in)
+    :config
+    (general-setq browse-urls-browser-function "firefox"))
+#+end_src
 *** Calculator (Built-In)
 #+name: init-calc-block
 #+begin_src emacs-lisp
@@ -749,6 +772,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :straight (:type built-in) :no-require t
     :config
     (general-setq compilation-message-face 'compilation-base-face
+                  compilation-environment '("TERM=screen-256color")
                   compilation-always-kill t
                   compilation-ask-about-save nil
                   compilation-scroll-output 'first-error))
@@ -768,9 +792,12 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
   (use-package cus-start
     :straight (:type built-in)
     :init
-    (general-setq-default auto-save-list-file-prefix nil
+    (general-setq-default apropos-do-all t
+                          auto-save-list-file-prefix nil
                           auto-save-list-file-name nil
                           auto-window-vscroll nil
+                          bidi-paragraph-separate-re "^"
+                          bidi-paragraph-start-re "^"
                           cursor-in-non-selected-windows nil
                           cursor-type 'bar
                           delete-by-moving-to-trash t
@@ -817,6 +844,22 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
+*** Doc-View
+#+name: init-doc-view-block
+#+begin_src emacs-lisp
+  (use-package doc-view
+    :straight (:type built-in)
+    :config
+    (general-setq doc-view-continuous t))
+#+end_src
+*** Ediff (Built-In)
+#+name: init-ediff-block
+#+begin_src emacs-lisp
+  (use-package ediff
+    :straight (:type built-in)
+    :config
+    (general-setq ediff-window-setup-function #'ediff-setup-windows-plain))
+#+end_src
 *** Eldoc (Built-In)
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
@@ -860,12 +903,19 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     :config (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
-*** ERT (Built-In)
+*** Ert (Built-In)
 #+name: init-ert-block
 #+begin_src emacs-lisp
   (use-package ert
     :straight (:type built-in))
 #+end_src
+*** Eww (Built-In)
+#+name: init-web-browsing-block
+#+begin_src emacs-lisp
+  (use-package eww
+    :straight (:type built-in))
+#+end_src
+
 *** Face-Remap (Built-In)
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
@@ -875,22 +925,6 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
     (blackout 'buffer-face-mode)
     (blackout 'visual-line-mode)
     (blackout 'variable-pitch-mode))
-#+end_src
-
-*** Eww (Built-In)
-#+name: init-web-browsing-block
-#+begin_src emacs-lisp
-  (use-package eww
-    :straight (:type built-in))
-#+end_src
-
-*** Browse-Url (Built-In)
-#+name: init-browse-url-block
-#+begin_src emacs-lisp
-  (use-package browse-url
-    :straight (:type built-in)
-    :config
-    (general-setq browse-urls-browser-function "firefox"))
 #+end_src
 *** Files (Built-In)
 #+name: init-files-block
@@ -957,6 +991,14 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
   (use-package hideshow
     :blackout (hs-minor-mode . "") :straight (:type built-in)
     :ghook ('prog-mode-hook #'hs-minor-mode))
+#+end_src
+*** Image (Built-In)
+#+name: init-image-block
+#+begin_src emacs-lisp
+  (use-package image
+    :straight (:type built-in)
+    :config
+    (imagemagick-register-types))
 #+end_src
 *** Ispell (Built-In)
 #+name: init-ispell-block
@@ -1161,7 +1203,8 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
   (use-package vc-hooks
     :straight (:type built-in)
     :config
-    (general-setq vc-follow-symlinks t))
+    (general-setq vc-follow-symlinks t
+                  vc-handled-backends nil))
 #+end_src
 
 *** View (Built-In)
@@ -1270,12 +1313,22 @@ CLOSED: [2019-12-09 Mon 12:23]
     :ghook ('emacs-startup-hook #'unicode-fonts-setup))
 #+end_src
 
-*** [[https://github.com/gonewest818/dimmer.el][Dimmer-Mode]]
+*** CANCELLED [[https://github.com/gonewest818/dimmer.el][Dimmer-Mode]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-12 Thu 19:24] \\
+  Needs a ton of configuration.
+:END:
 #+name: init-dimmer-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package dimmer
     :straight t
     :ghook 'after-init-hook)
+#+end_src
+*** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
+#+name: init-highlight-todo-block
+#+begin_src emacs-lisp
+  (use-package hl-todo
+    :straight t)
 #+end_src
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
 #+name: init-smart-mode-line-block
@@ -1351,6 +1404,18 @@ CLOSED: [2019-12-09 Mon 12:23]
     :blackout (dired-async-mode . " "))
 #+end_src
 
+h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
+#+name: init-auto-compile-block
+#+begin_src emacs-lisp
+  (use-package auto-compile
+    :straight t
+    :config
+    (general-setq auto-compile-display-buffer nil
+                  auto-compile-mode-line-counter t
+                  auto-compile-source-recreate-deletes-dest t
+                  auto-compile-toggle-deletes-nonlib-dest t
+                  auto-compile-update-autoloads t))
+#+end_src
 *** [[https://github.com/politza/pdf-tools][PDF-Tools]]
 Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
 #+name: init-pdf-tools-block
@@ -1485,7 +1550,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config (prescient-persist-mode +1))
 #+end_src
 
-*** [[https://github.com/tumashu/posframe][Posframe]]
+*** HOLD [[https://github.com/tumashu/posframe][Posframe]]
+:LOGBOOK:
+- State "HOLD"       from "CANCELLED"          [2019-12-12 Thu 19:20] \\
+  This is too much configuration right now.
+:END:
 #+name: init-posframe-block
 #+begin_src emacs-lisp :tangle no
   (use-package posframe
@@ -1512,7 +1581,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                         (counsel-mark-ring . nil))))
 #+end_src
 
-*** [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
+*** HOLD [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-12 Thu 19:20] \\
+  Requires too much configuration.
+:END:
 #+name: init-ivy-posframe-block
 #+begin_src emacs-lisp :tangle no
   (use-package ivy-posframe
@@ -1631,26 +1704,36 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (general-setq company-auto-complete-chars nil
                   company-async-timeout 15
+                  company-echo-delay 0
                   company-idle-delay 0.15
                   company-minimum-prefix-length 2
                   company-show-numbers t
+                  company-tooltip-flip-when-above t
                   company-tooltip-limit 15
                   company-tooltip-align-annotations t)
 
-    (defun djm/configure-company-backends-with-yas (backends)
-      "Add :with company-yasnippet to company BACKENDS. Taken from
-  Taken from https://github.com/syl20bnr/spacemacs/pull/179."
-      (if (and (listp backends) (memq 'company-yasnippet backends))
-          backends
-        (append (if (consp backends)
-                    backends
-                  (list backends))
-                '(:with company-yasnippet))))
+    (general-setq company-backends '((company-semantic
+                                      company-capf
+                                      company-yasnippet
+                                      company-files
+                                      company-keywords)
+                                     (company-dabbrev-code)
+                                     company-dabbrev))
 
-    (general-pushnew #'org-self-insert-command company-begin-commands)
+  (defun djm/configure-company-backends-with-yas (backends)
+    "Add :with company-yasnippet to company BACKENDS. Taken from
+    Taken from https://github.com/syl20bnr/spacemacs/pull/179."
+    (if (and (listp backends) (memq 'company-yasnippet backends))
+        backends
+      (append (if (consp backends)
+                  backends
+                (list backends))
+              '(:with company-yasnippet))))
 
-    (general-setq company-backends
-                  (mapcar #'djm/configure-company-backends-with-yas company-backends)))
+  (general-pushnew #'org-self-insert-command company-begin-commands)
+
+  (general-setq company-backends
+                (mapcar #'djm/configure-company-backends-with-yas company-backends)))
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
@@ -1659,20 +1742,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package company-box
     :blackout t :straight t
     :ghook 'company-mode-hook
-    :config
+    :config/el-patch
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                  company-box-enable-icon t))
+                  company-box-enable-icon t)
+    (el-patch-feature company-box)
 
-  (require 'el-patch)
-
-  (cl-eval-when (compile)
-    (require 'company-box))
-
-  (el-patch-feature company-box)
-
-  ;; Fix background colour on theme change.
-
-  (with-eval-after-load 'company-box
+    ;; Fix background colour on theme change.
     (el-patch-defun company-box--display (string)
       "Display the completions."
       (company-box--render-buffer string)
@@ -1684,12 +1759,9 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (company-box--set-frame-position (company-box--get-frame))
       (unless (frame-visible-p (company-box--get-frame))
         (make-frame-visible (company-box--get-frame)))
-      (company-box--update-scrollbar (company-box--get-frame) t)))
+      (company-box--update-scrollbar (company-box--get-frame) t))
 
-
-  ;; Make sure we don't show a header line in company-box.
-
-  (with-eval-after-load 'company-box
+    ;; Make sure we don't show a header line in company-box.
     (el-patch-defun company-box--render-buffer (string)
       (let ((selection company-selection))
         (with-current-buffer (company-box--get-buffer)
@@ -1705,11 +1777,9 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
           (setq-local scroll-margin  0)
           (setq-local scroll-preserve-screen-position t)
           (add-hook 'window-configuration-change-hook 'company-box--prevent-changes t t)
-          (company-box--update-line selection)))))
+          (company-box--update-line selection))))
 
-  ;; Fix the foreground and background colours of documentation popup frames.
-
-  (with-eval-after-load 'company-box-doc
+    ;; Fix the foreground and background colours of documentation popup frames.
     (el-patch-defun company-box-doc--show (selection frame)
       (-when-let* ((valid-state (and (eq (selected-frame) frame)
                                      (company-box--get-frame)
@@ -1781,7 +1851,16 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     ([remap describe-function] #'helpful-callable
      [remap describe-command]  #'helpful-command
      [remap describe-variable] #'helpful-variable
-     [remap describe-key]      #'helpful-key))
+     [remap describe-key]      #'helpful-key)
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*helpful ")
+                   (display-buffer-reuse-window
+                    display-buffer-pop-up-window)
+                   (reusable-frames . visible)
+                   (side            . right)
+                   (slot            . 1)
+                   (window-width    . 0.5))))
 #+end_src
 
 ** Editing Tools
@@ -1798,6 +1877,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package deadgrep
     :straight t
+    :if (executable-find "rg")
     :init (defalias 'rg #'deadgrep))
 #+end_src
 
@@ -2017,7 +2097,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
 
-*** Dired+
+*** CANCELLED Dired+
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-12 Thu 19:08] \\
+  This changes the way dired works too much.
+:END:
 #+name: init-dired-plus-block
 #+begin_src emacs-lisp :tangle no
   (use-package dired+
@@ -2225,164 +2309,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                                               "*Backtrace*"
                                                               "*new*"
                                                               "*Org*"
-                                                              "*Help*"))))
-
-    (define-ibuffer-column mode
-      (:inline t)
-      (with-current-buffer (current-buffer)
-        (let ((icon (all-the-icons-icon-for-buffer)))
-          (if (stringp icon)
-              icon
-            " "))))
-
-
-    (define-ibuffer-column filename-and-process
-      (:name "Filename/Process")
-      (let ((proc (get-buffer-process buffer))
-            (filename (ibuffer-make-column-filename buffer mark)))
-        (if proc
-            (concat (propertize (format "(%s %s)" proc (process-status proc))
-                                'font-lock-face 'italic)
-                    (if (> (length filename) 0)
-                        (format " %s" filename)
-                      ""))
-          (propertize (f-abbrev filename) 'face 'shadow))))
-
-    ;; Show buffer name in a consistent way.
-    (define-ibuffer-column name
-      (:inline t)
-      (let ((string (buffer-name)))
-        (if (not (seq-position string ?\n))
-            string
-          (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
-
-    ;; Show a horizontal rule using page-break-lines instead of using dashes.
-    (el-patch-defun ibuffer-update-title-and-summary (format)
-      (ibuffer-assert-ibuffer-mode)
-      ;; Don't do funky font-lock stuff here
-      (let ((inhibit-modification-hooks t))
-        (if (get-text-property (point-min) 'ibuffer-title)
-            (delete-region (point-min)
-                           (next-single-property-change
-                            (point-min) 'ibuffer-title)))
-        (goto-char (point-min))
-        (add-text-properties
-         (point)
-         (progn
-           (let ((opos (point)))
-             ;; Insert the title names.
-             (dolist (element format)
-               (insert
-                (if (stringp element)
-                    element
-                  (pcase-let ((`(,sym ,min ,_max ,align) element))
-                    ;; Ignore a negative min when we're inserting the title
-                    (when (cl-minusp min)
-                      (setq min (- min)))
-                    (let* ((name (or (get sym 'ibuffer-column-name)
-                                     (error "Unknown column %s in ibuffer-formats" sym)))
-                           (len (length name))
-                           (hmap (get sym 'header-mouse-map))
-                           (strname (if (< len min)
-                                        (ibuffer-format-column name
-                                                               (- min len)
-                                                               align)
-                                      name)))
-                      (when hmap
-                        (setq
-                         strname
-                         (propertize strname 'mouse-face 'highlight 'keymap hmap)))
-                      strname)))))
-             (add-text-properties opos (point) `(ibuffer-title-header t))
-             (insert "\n")
-             ;; Add the underlines
-
-             (el-patch-swap (let ((str (save-excursion
-                                         (forward-line -1)
-                                         (beginning-of-line)
-                                         (buffer-substring (point) (line-end-position)))))
-                              (apply #'insert (mapcar
-                                               (lambda (c)
-                                                 (if (not (or (eq c ?\s)
-                                                              (eq c ?\n)))
-                                                     ?-
-                                                   ?\s))
-                                               str)))
-                            (insert ""))
-             (insert "\n"))
-           (point))
-         `(ibuffer-title t font-lock-face ,ibuffer-title-face))
-        ;; Now, insert the summary columns.
-        (goto-char (point-max))
-        (if (get-text-property (1- (point-max)) 'ibuffer-summary)
-            (delete-region (previous-single-property-change
-                            (point-max) 'ibuffer-summary)
-                           (point-max)))
-        (if ibuffer-display-summary
-            (add-text-properties
-             (point)
-             (progn
-               (insert "\n")
-               (dolist (element format)
-                 (insert
-                  (if (stringp element)
-                      (make-string (length element) ?\s)
-                    (pcase-let ((`(,sym ,min ,_max ,align) element))
-                      ;; Ignore a negative min when we're inserting the title.
-                      (when (cl-minusp min)
-                        (setq min (- min)))
-                      (let* ((summary
-                              (if (get sym 'ibuffer-column-summarizer)
-                                  (funcall (get sym 'ibuffer-column-summarizer)
-                                           (get sym 'ibuffer-column-summary))
-                                (make-string
-                                 (length (get sym 'ibuffer-column-name))
-                                 ?\s)))
-                             (len (length summary)))
-                        (if (< len min)
-                            (ibuffer-format-column summary
-                                                   (- min len)
-                                                   align)
-                          summary))))))
-               (point))
-             `(ibuffer-summary t))))))
-
-  ;; Change the way groups are rendered.
-
-  (with-eval-after-load 'ibuffer
-    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
-      (add-text-properties
-       (point)
-       (progn
-         (insert (el-patch-remove "[ ")
-                 display-name
-                 (el-patch-remove " ]"))
-         (point))
-       `(ibuffer-filter-group-name
-         ,name
-         font-lock-face ,ibuffer-filter-group-name-face
-         keymap ,ibuffer-mode-filter-group-map
-         mouse-face highlight
-         help-echo ,(let ((echo '(if tooltip-mode
-                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
-                                   "mouse-1: toggle marks  mouse-2: hide/show")))
-                      (if (> (length filter-string) 0)
-                          `(concat ,filter-string
-                                   (if tooltip-mode "\n" " ")
-                                   ,echo)
-                        echo))))
-      (insert "\n")
-      (when bmarklist
-        (put-text-property
-         (point)
-         (progn
-           (dolist (entry bmarklist)
-             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
-           (point))
-         'ibuffer-filter-group
-         name))
-      (el-patch-add (insert "\n"))))
+                                                              "*Help*")))))
 #+end_src
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
 #+name: init-ibuffer-ext-block
@@ -2978,7 +2905,7 @@ CLOSED: [2019-12-11 Wed 13:56]
 
 ** Languages
 *** Emacs-Lisp
-**** Block
+**** Fix Identation
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
   (el-patch-feature lisp-mode)
@@ -3188,7 +3115,11 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 
-*** [[https://github.com/ledger/ledger-mode][Ledger]]
+*** HOLD [[https://github.com/ledger/ledger-mode][Ledger]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-12 Thu 19:22] \\
+  Need to setup ledger first.
+:END:
 #+name: init-ledger-block
 #+begin_src emacs-lisp
   (use-package ledger-mode

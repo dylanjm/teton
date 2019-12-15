@@ -2,10 +2,10 @@
 
 while read -r line; do
     dname="${line%/*}"
-    lname=$(echo $dname | cut -d'/' -f6-)
+    lname=$(echo "$dname" | cut -d'/' -f6-)
     mkdir -p "$lname"  || {
 	printf "error: unable to create '%s'.\n", "$lname" >&2
 	continue
     }
-    echo $line
+    echo "$line"
 done < <(ls ~/Documents/projects/bison/assessment/LWR/validation/)

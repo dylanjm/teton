@@ -1,0 +1,104 @@
+#=iCloud==============================================================================
+IMAPAccount icloud
+Host imap.mail.me.com
+User xxxxxxxxxxxxxx
+PassCmd "security find-generic-password -s mbsync-icloud-password -w"
+Port 993
+SSLType IMAPS
+SSLVersions TLSv1.2
+AuthMechs LOGIN PLAIN
+
+IMAPStore icloud-remote
+Account icloud
+
+MaildirStore icloud-local
+Path ~/.cache/mail/icloud/
+Inbox ~/.cache/mail/icloud/inbox
+Trash Trash
+
+#
+# Channels and Groups
+# (so that we can rename local directories and flatten the hierarchy)
+#
+#
+Channel icloud-folders
+Master :icloud-remote:
+Slave :icloud-local:
+Patterns "INBOX" "Archive" "Deleted*" "Drafts" "Junk" "Notes" "Sent*"
+Create Both
+Expunge Both
+SyncState *
+
+Group icloud
+Channel icloud-folders
+
+#=Gmail==============================================================================
+IMAPAccount gmail
+Host imap.gmail.com
+User xxxxxxxxxxxxxxxxxxxx
+PassCmd "gpg -q --for-your-eyes-only --no-tty -d ~/.cache/emacs/etc/mbsyncpass-gmail.gpg"
+AuthMechs LOGIN
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+Imapstore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Path ~/.cache/mail/gmail/
+Inbox ~/.cache/mail/gmail/Inbox
+Trash Trash
+
+#
+# Channels and Groups
+# (so that we can rename local directories and flatten the hierarchy)
+#
+#
+Channel gmail-inbox
+Master :gmail-remote:
+Slave :gmail-local:
+Patterns "INBOX"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-trash
+Master :gmail-remote:"[Gmail]/Trash"
+Slave :gmail-local:"[gmail].Trash"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-sent
+Master :gmail-remote:"[Gmail]/Sent Mail"
+Slave :gmail-local:"[gmail].Sent Mail"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-all
+Master :gmail-remote:"[Gmail]/All Mail"
+Slave :gmail-local:"[gmail].All Mail"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-starred
+Master :gmail-remote:"[Gmail]/Starred"
+Slave :gmail-local:"[gmail].Starred"
+Create Both
+Expunge Both
+SyncState *
+
+# GROUPS PUT TOGETHER CHANNELS, SO THAT WE CAN INVOKE
+# MBSYNC ON A GROUP TO SYNC ALL CHANNELS
+#
+# FOR INSTANCE: "mbsync gmail" GETS MAIL FROM
+# "gmail-inbox", "gmail-sent", and "gmail-trash"
+#
+Group gmail
+Channel gmail-inbox
+Channel gmail-sent
+Channel gmail-trash
+Channel gmail-all
+Channel gmail-starred

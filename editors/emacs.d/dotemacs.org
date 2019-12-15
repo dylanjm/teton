@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-13 16:10:37
+/last updated/: 2019-12-14 13:25:22
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -21,13 +21,14 @@
     - [[#straight][Straight]]
     - [[#use-package][Use-Package]]
   - [[#initial-demands][Initial Demands]]
-    - [[#benchmark-init][Benchmark-Init]]
+    - [[#cancelled-benchmark-init][CANCELLED Benchmark-Init]]
     - [[#exec-path-from-shell][Exec-Path-From-Shell]]
     - [[#no-littering][No-Littering]]
     - [[#el-patch][El-Patch]]
+    - [[#annalist][Annalist]]
     - [[#general][General]]
     - [[#blackout][Blackout]]
-    - [[#use-package-company][Use-Package-Company]]
+    - [[#hold-use-package-company][HOLD Use-Package-Company]]
     - [[#dash][Dash]]
     - [[#f][F]]
     - [[#org-plus-contrib][Org-Plus-Contrib]]
@@ -50,10 +51,10 @@
     - [[#cl-lib-built-in][CL-Lib (Built-In)]]
     - [[#comint-built-in][Comint (Built-In)]]
     - [[#compile-built-in][Compile (Built-In)]]
-    - [[#conf-mode][Conf-Mode]]
+    - [[#conf-mode-built-in][Conf-Mode (Built-In)]]
     - [[#cus-start-built-in][Cus-Start (Built-In)]]
     - [[#delsel-built-in][Delsel (Built-In)]]
-    - [[#doc-view][Doc-View]]
+    - [[#doc-view-built-in][Doc-View (Built-In)]]
     - [[#ediff-built-in][Ediff (Built-In)]]
     - [[#eldoc-built-in][Eldoc (Built-In)]]
     - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
@@ -61,6 +62,7 @@
     - [[#epa-built-in][Epa (Built-In)]]
     - [[#epg-built-in][Epg (Built-In)]]
     - [[#ert-built-in][Ert (Built-In)]]
+    - [[#eshell-built-in][Eshell (Built-In)]]
     - [[#eww-built-in][Eww (Built-In)]]
     - [[#face-remap-built-in][Face-Remap (Built-In)]]
     - [[#files-built-in][Files (Built-In)]]
@@ -70,6 +72,7 @@
     - [[#hideshow-built-in][Hideshow (Built-In)]]
     - [[#image-built-in][Image (Built-In)]]
     - [[#ispell-built-in][Ispell (Built-In)]]
+    - [[#ls-lisp-built-in][LS-Lisp (Built-In)]]
     - [[#make-mode-built-in][Make-Mode (Built-In)]]
     - [[#minibuffer-built-in][Minibuffer (Built-In)]]
     - [[#ns-win-built-in][NS-Win (Built-In)]]
@@ -94,15 +97,20 @@
     - [[#all-the-icons][All-The-Icons]]
     - [[#cancelled-emojify][CANCELLED Emojify]]
     - [[#gruvbox-theme][Gruvbox Theme]]
+    - [[#poet-theme][Poet-Theme]]
     - [[#cancelled-darktooth-theme][CANCELLED Darktooth Theme]]
     - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
     - [[#cancelled-dimmer-mode][CANCELLED Dimmer-Mode]]
     - [[#highlight-todo][Highlight-Todo]]
+    - [[#perfect-margin][Perfect-Margin]]
     - [[#smart-mode-line][Smart-Mode-Line]]
+    - [[#cancelled-doom-modeline][CANCELLED Doom-Modeline]]
     - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
     - [[#default-text-scale][Default-Text-Scale]]
+    - [[#olivetti-mode][Olivetti-Mode]]
     - [[#page-break-lines][Page-Break-Lines]]
     - [[#persistent-scratch][Persistent-Scratch]]
+    - [[#sublimity][Sublimity]]
   - [[#meta][Meta]]
     - [[#restart-emacs][Restart-Emacs]]
     - [[#memory-usage][Memory-Usage]]
@@ -111,6 +119,9 @@
     - [[#osx-trash][OSX-Trash]]
     - [[#pdf-tools][PDF-Tools]]
   - [[#shells][Shells]]
+    - [[#aweshell][Aweshell]]
+    - [[#eshell-prompt-extras][Eshell-Prompt-Extras]]
+    - [[#eshell-up][Eshell-Up]]
     - [[#vterm][Vterm]]
     - [[#vterm-toggle][Vterm-Toggle]]
   - [[#project-management][Project Management]]
@@ -124,6 +135,8 @@
     - [[#ivy][Ivy]]
     - [[#ivy-prescient][Ivy-Prescient]]
     - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
+    - [[#ivy-dired-history][Ivy-Dired-History]]
+    - [[#flyspell-correct-ivy][Flyspell-Correct-Ivy]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
   - [[#autocompletion][Autocompletion]]
@@ -136,9 +149,11 @@
     - [[#yasnippet][Yasnippet]]
   - [[#documentation][Documentation]]
     - [[#helpful][Helpful]]
+    - [[#which-key][Which-Key]]
   - [[#editing-tools][Editing Tools]]
     - [[#anzu][Anzu]]
     - [[#deadgrep][Deadgrep]]
+    - [[#crux][Crux]]
     - [[#emacs-format-all-the-code][Emacs-Format-All-The-Code]]
     - [[#expand-region][Expand-Region]]
     - [[#interactive-align][Interactive-Align]]
@@ -149,6 +164,11 @@
     - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
     - [[#wgrep][Wgrep]]
     - [[#zop-to-char][Zop-To-Char]]
+  - [[#writing][Writing]]
+    - [[#flyspell-built-in][Flyspell (Built-In)]]
+    - [[#flyspell-correct][Flyspell-Correct]]
+    - [[#typo][Typo]]
+    - [[#writegood][Writegood]]
   - [[#minor-modes][Minor Modes]]
     - [[#aggressive-indent][Aggressive-Indent]]
     - [[#csv-mode][CSV-Mode]]
@@ -158,6 +178,7 @@
     - [[#rainbow-delimiters][Rainbow-Delimiters]]
     - [[#rainbow-mode][Rainbow-Mode]]
     - [[#undo-tree][Undo-Tree]]
+    - [[#wc-mode][WC-Mode]]
     - [[#whitespace-cleanup][Whitespace-Cleanup]]
     - [[#ws-butler][WS-Butler]]
   - [[#file-explorer][File Explorer]]
@@ -183,6 +204,7 @@
     - [[#ibuffer-extension][iBuffer-Extension]]
     - [[#ibuffer-sidebar][iBuffer-Sidebar]]
     - [[#ibuffer-projectile][iBuffer-Projectile]]
+    - [[#smart-jump][Smart-Jump]]
     - [[#treemacs][Treemacs]]
     - [[#windmove][Windmove]]
     - [[#windower][Windower]]
@@ -190,8 +212,10 @@
     - [[#org-mode][Org-Mode]]
     - [[#org-agenda][Org-Agenda]]
     - [[#org-src][Org-Src]]
+    - [[#org-ob][Org-Ob]]
     - [[#org-bullets][Org-Bullets]]
     - [[#org-scrum][Org-Scrum]]
+    - [[#org-wc][Org-WC]]
     - [[#toc-org][TOC-Org]]
   - [[#email][Email]]
     - [[#hold-notmuch][HOLD NotMuch]]
@@ -306,11 +330,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-                                      (alpha . (95 95))
+                                      (alpha . (90 90))
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
-                                      (font . "Iosevka SS09-24:weight=ultra-light")))
+                                      (font . "Iosevka SS09-14:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -385,7 +409,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 ** Initial Demands
-*** [[https://github.com/dholm/benchmark-init-el][Benchmark-Init]]
+*** CANCELLED [[https://github.com/dholm/benchmark-init-el][Benchmark-Init]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-14 Sat 12:54] \\
+  Only enable this when I'm benchmarking my init
+:END:
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp :tangle no
   (use-package benchmark-init
@@ -402,10 +430,11 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "PKG_CONFIG_PATH")
+                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME")
                   exec-path-from-shell-arguments '("-i"))
     (exec-path-from-shell-initialize))
 #+end_src
+
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp
@@ -424,6 +453,13 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     (require 'el-patch))
 #+end_src
 
+*** [[https://github.com/noctuid/annalist.el][Annalist]]
+#+name: init-annalist-block
+#+begin_src emacs-lisp
+  (use-package annalist
+    :straight (:host github :repo "noctuid/annalist.el"))
+#+end_src
+
 *** [[https://github.com/noctuid/general.el][General]]
 #+name: init-general-block
 #+begin_src emacs-lisp
@@ -438,25 +474,32 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :straight (:host github :repo "raxod502/blackout"))
 #+end_src
 
-*** [[https://github.com/Foltik/use-package-company][Use-Package-Company]]
+*** HOLD [[https://github.com/Foltik/use-package-company][Use-Package-Company]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-14 Sat 13:13] \\
+  I keep getting an error when using this package.
+:END:
 #+name: init-use-package-company-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package use-package-company
     :straight (:host github :repo "Foltik/use-package-company")
     :defines (company-backends))
 #+end_src
+
 *** [[https://github.com/magnars/dash.el][Dash]]
 #+name: init-dash-block
 #+begin_src emacs-lisp
   (use-package dash
     :demand t :straight t)
 #+end_src
+
 *** [[https://github.com/rejeep/f.el][F]]
 #+name: init-f-block
 #+begin_src emacs-lisp
   (use-package f
     :demand t :straight t)
 #+end_src
+
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
@@ -467,8 +510,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+name: init-defrepeater-block
 #+begin_src emacs-lisp
   (use-package defrepeater
-    :straight t)
+    :demand t :straight t)
 #+end_src
+
 ** Personal Configuration
 *** Variables
 #+name: init-variables-block
@@ -530,7 +574,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 **** Async Tangle
 Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 #+name: init-async-tangle-func-block
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
     "The Configuration File.")
 
@@ -586,8 +630,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()
-    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'ultra-light)
-    (set-face-attribute 'font-lock-comment-face nil :family "Iosevka SS09" :weight 'ultra-light :slant 'italic)
+    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Vollkorn" :weight 'regular)
     (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka SS09" :weight 'ultra-light)
 
     ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
@@ -788,7 +831,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   compilation-scroll-output 'first-error))
 #+end_src
 
-*** Conf-Mode
+*** Conf-Mode (Built-In)
 #+name: init-conf-mode-block
 #+begin_src emacs-lisp
   (use-package conf-mode
@@ -814,6 +857,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           disabled-command-function nil
                           default-directory "~"
                           echo-keystrokes 0.02
+                          electric-pair-mode 1
                           enable-recursive-minibuffers t
                           fast-but-imprecise-scrolling t
                           ffap-machine-p-known 'reject
@@ -854,7 +898,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
-*** Doc-View
+*** Doc-View (Built-In)
 #+name: init-doc-view-block
 #+begin_src emacs-lisp
   (use-package doc-view
@@ -917,6 +961,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-ert-block
 #+begin_src emacs-lisp
   (use-package ert
+    :straight (:type built-in))
+#+end_src
+*** Eshell (Built-In)
+#+name: init-eshell-block
+#+begin_src emacs-lisp
+  (use-package eshell
     :straight (:type built-in))
 #+end_src
 *** Eww (Built-In)
@@ -1027,6 +1077,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   ispell-silently-savep t))
 #+end_src
 
+*** LS-Lisp (Built-In)
+#+name: init-ls-lisp-block
+#+begin_src emacs-lisp
+  (use-package ls-lisp
+    :straight (:type built-in) :after (dired))
+#+end_src
 *** Make-Mode (Built-In)
 #+name: init-makefile-block
 #+begin_src emacs-lisp :tangle no
@@ -1054,6 +1110,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (defun djm/minibuffer-exit-hook ()
       "Upon exiting the minibuffer, we'll set everything back to normal"
       (setq gc-cons-threshold default-gc-cons-threshold))
+
+    (defun djm/not-in-minibuffer-p (&rest _args)
+      (not (minibuffer-window-active-p (selected-window))))
+
+    (general-add-advice 'run-window-configuration-change-hook
+                        :before-while
+                        #'djm/not-in-minibuffer-p)
+
+    (general-advice-add 'frame-purpose--buffer-list-update-hook
+                        :before-while
+                        #'optimize-minibuf/not-in-minibuf-p)
 
     (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
     (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
@@ -1148,11 +1215,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** Shell (Built-In)
-#+name: init-shell-block
+#+name: init-shell-script-block
 #+begin_src emacs-lisp
   (use-package sh-script
     :straight (:type built-in)
-    :mode ("\\.sh'" "\\.zsh'" "\\.bash'"))
+    :mode (("\\.zshenv'" . sh-mode)
+           ("\\.[a-zA-Z]+rc'" . sh-mode))
+    :config
+    (general-setq sh-indentation 2
+                  sh-basic-offset 2))
 #+end_src
 *** Simple (Built-In)
 #+name: init-simple-block
@@ -1294,6 +1365,14 @@ CLOSED: [2019-12-09 Mon 15:35]
       (load-theme 'gruvbox-dark-hard t)
       (djm/config-fonts)))
 #+end_src
+
+*** [[https://github.com/kunalb/poet][Poet-Theme]]
+#+name: init-poet-theme-block
+#+begin_src emacs-lisp
+  (use-package poet-theme
+    :straight t)
+#+end_src
+
 *** CANCELLED [[https://github.com/emacsfodder/emacs-theme-darktooth][Darktooth Theme]]
 CLOSED: [2019-12-11 Wed 12:58]
 :LOGBOOK:
@@ -1310,6 +1389,7 @@ CLOSED: [2019-12-11 Wed 12:58]
       (load-theme 'darktooth t)
       (djm/config-fonts)))
 #+end_src
+
 *** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
 CLOSED: [2019-12-09 Mon 12:23]
 :LOGBOOK:
@@ -1332,15 +1412,43 @@ CLOSED: [2019-12-09 Mon 12:23]
 #+begin_src emacs-lisp :tangle no
   (use-package dimmer
     :straight t
-    :ghook 'after-init-hook)
+    :ghook 'after-init-hook
+    :config
+    (defun djm/dimmer-process-all--fake ())
+
+    (defun djm/dimmer-disable ()
+      (advice-add 'dimmer-process-all :override
+                  'djm/dimmer-process-all--fake))
+
+    (defun djm/dimmer-enable ()
+      (advice-remove 'dimmer-process-all 'djm/dimmer-process-all--fake))
+
+    (add-hook 'minibuffer-setup-hook 'djm/dimmer-disable)
+    (add-hook 'minibuffer-exit-hook 'djm/dimmer-enable))
 #+end_src
+
 *** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
 #+name: init-highlight-todo-block
 #+begin_src emacs-lisp
   (use-package hl-todo
     :straight t)
 #+end_src
+
+*** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
+
+#+name: init-perfect-margin-block
+#+begin_src emacs-lisp
+  (use-package perfect-margin
+    :straight t)
+#+end_src
+
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
+CLOSED: [2019-12-13 Fri 21:48]
+:LOGBOOK:
+- State "DONE"       from "HOLD"         [2019-12-13 Fri 21:48]
+- State "HOLD"       from              [2019-12-13 Fri 21:18] \\
+  Testing out doom-modeline package
+:END:
 #+name: init-smart-mode-line-block
 #+begin_src emacs-lisp
   (use-package smart-mode-line
@@ -1354,9 +1462,23 @@ CLOSED: [2019-12-09 Mon 12:23]
                     sml/use-projectile-p t
                     sml/no-confirm-load-theme t)
       (sml/setup)
-      (general-remove-hook 'display-time-hook 'sml/propertize-time-string)))
+      (general-remove-hook 'display-time-hook 'sml/propertize-time-string))
+    :custom-face
+    (mode-line ((t (:box (:line-width 5 :color "#282828")))))
+    (mode-line-inactive ((t (:box (:line-width 5 :color "#1d2021"))))))
 #+end_src
 
+*** CANCELLED [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-13 Fri 21:47] \\
+  I can't seem to enjoy this package
+:END:
+#+name: init-doom-mode-line-block
+#+begin_src emacs-lisp :tangle no
+  (use-package doom-modeline
+    :straight t
+    :ghook 'emacs-startup-hook)
+#+end_src
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
 #+name: init-hide-mode-line-block
 #+begin_src emacs-lisp
@@ -1364,6 +1486,7 @@ CLOSED: [2019-12-09 Mon 12:23]
     :straight t
     :commands (hide-mode-line-mode))
 #+end_src
+
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
 #+name: init-default-text-scale-block
 #+begin_src emacs-lisp
@@ -1374,6 +1497,13 @@ CLOSED: [2019-12-09 Mon 12:23]
      "<C-s-down>" #'default-text-scale-decrease
      "<C-M-s-down>" #'default-text-scale-reset)
     :config (general-setq default-text-scale-amount 20))
+#+end_src
+
+*** [[https://github.com/rnkn/olivetti][Olivetti-Mode]]
+#+name: init-olivetti-block
+#+begin_src emacs-lisp
+  (use-package olivetti
+    :straight t)
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
@@ -1403,6 +1533,14 @@ CLOSED: [2019-12-09 Mon 12:23]
                          (lambda ()
                            (persistent-scratch-setup-default))))
 #+end_src
+
+*** [[https://github.com/zk-phi/sublimity][Sublimity]]
+#+name: init-subliminity-block
+#+begin_src emacs-lisp
+  (use-package sublimity
+    :straight t)
+#+end_src
+
 ** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 #+name: init-restart-emacs-block
@@ -1465,6 +1603,40 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                     pdf-annot-activate-created-annotations t)))
 #+end_src
 ** Shells
+*** [[https://github.com/manateelazycat/aweshell][Aweshell]]
+#+name: init-aweshell-block
+#+begin_src emacs-lisp
+  (use-package aweshell
+    :straight (:host github :repo "manateelazycat/aweshell")
+    :commands (aweshell-new
+               aweshell-next
+               aweshell-prev
+               aweshell-clear-buffer
+               aweshell-sudo-toggle
+               aweshell-switch-buffer
+               aweshell-dedicated-toggle
+               aweshell-dedicated-open
+               aweshell-dedicated-close)
+    :config
+    (general-setq eshell-highlight-prompt nil
+                  eshell-prompt-function 'epe-theme-lambda)
+    (general-setq eshell-up-ignore-case nil
+                  eshell-up-print-parent-dir t)
+    (general-setq aweshell-use-exec-path-from-shell t
+                  aweshell-dedicated-window-height 25))
+#+end_src
+*** [[https://github.com/zwild/eshell-prompt-extras#themes][Eshell-Prompt-Extras]]
+#+name: init-eshell-prompt-extras-block
+#+begin_src emacs-lisp
+  (use-package eshell-prompt-extras
+    :straight t)
+#+end_src
+*** [[https://github.com/peterwvj/eshell-up][Eshell-Up]]
+#+name: init-eshell-up
+#+begin_src emacs-lisp
+  (use-package eshell-up
+    :straight t)
+#+end_src
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
 #+name: init-vterm-block
 #+begin_src emacs-lisp
@@ -1612,6 +1784,20 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq ivy-posframe-style 'frame-center
                   ivy-posframe-hide-minibuffer t))
 #+end_src
+*** [[https://github.com/jixiuf/ivy-dired-history][Ivy-Dired-History]]
+#+name: init-ivy-dired-history-block
+#+begin_src emacs-lisp
+  (use-package ivy-dired-history
+    :straight t :after (ivy dired savehist)
+    :init
+    (general-pushnew 'ivy-dired-history-variable savehist-additional-variables))
+#+end_src
+*** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct-Ivy]]
+#+name: init-flyspell-correct-ivy
+#+begin_src emacs-lisp
+  (use-package flyspell-correct-ivy
+    :straight t)
+#+end_src
 *** [[https://github.com/abo-abo/swiper][Counsel]]
 #+name: init-counsel-block
 #+begin_src emacs-lisp
@@ -1654,7 +1840,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
 #+name: init-swiper-block
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (use-package swiper
     :straight t
     :general ("C-s" #'swiper
@@ -1674,9 +1860,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (:keymaps 'company-active-map
      "RET"     nil
      [return]  nil
-     "TAB"     #'company-complete
-     [tab]     #'company-complete
-     "C-f"     #'company-complete-selection
+     "TAB"     #'company-complete-selection
+     [tab]     #'company-complete-selection
+     "C-f"     #'company-complete-common
      "C-n"     #'company-select-next
      "C-p"     #'company-select-previous
      "M-/"     #'company-other-backend)
@@ -1690,18 +1876,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   company-show-numbers nil
                   company-tooltip-flip-when-above t
                   company-tooltip-limit 30
-                  company-tooltip-align-annotations t)
-
-    (general-setq company-auto-complete (lambda ()
-                                          (and (company-tooltip-visible-p)
-                                               (copmany-explicit-action-p))))
-
-    (general-setq company-continue-commands '(not save-buffer
-                                                  save-some-buffers
-                                                  save-buffers-kill-emacs
-                                                  comint-previous-matching-input-from-input
-                                                  comint-next-matching-input-from-input
-                                                  completion-at-point)))
+                  company-tooltip-align-annotations t))
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
@@ -1785,7 +1960,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
   (use-package company-shell
-    :straight t)
+    :straight t
+    :after (shell company))
 #+end_src
 *** [[https://github.com/dunn/company-emoji][Company-Emoji]]
 #+name: init-company-emoji-block
@@ -1842,13 +2018,25 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                    (window-width    . 0.5))))
 #+end_src
 
+*** [[https://github.com/justbur/emacs-which-key][Which-Key]]
+#+name: init-which-key-block
+#+begin_src emacs-lisp
+  (use-package which-key
+    :straight t
+    :ghook emacs-startup-hook
+    :config
+    (which-key-setup-side-window-bottom))
+#+end_src
 ** Editing Tools
 *** [[https://github.com/syohex/emacs-anzu][Anzu]]
 #+name: init-anzu-block
 #+begin_src emacs-lisp
   (use-package anzu
-    :straight t
-    :general ([remap query-replace] #'anzu-query-replace-regexp))
+    :blackout t :straight t
+    :ghook ('emacs-startup-hook #'global-anzu-mode)
+    :general
+    ([remap query-replace] #'anzu-query-replace
+     [remap query-replace-regexp] #'anzu-query-replace-regexp))
 #+end_src
 
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
@@ -1860,6 +2048,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :init (defalias 'rg #'deadgrep))
 #+end_src
 
+*** [[https://github.com/bbatsov/crux][Crux]]
+#+name: init-crux-block
+#+begin_src emacs-lisp
+  (use-package crux
+    :straight t)
+#+end_src
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
 #+begin_src emacs-lisp
@@ -1937,6 +2131,34 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "M-Z" #'zop-up-to-char))
 #+end_src
 
+** Writing
+*** Flyspell (Built-In)
+#+name: init-flyspell-block
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :straight (:type built-in)
+    :config
+    (general-setq flyspell-abbrev-p t
+                  flyspell-use-global-abbrev-table-p t))
+#+end_src
+*** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]]
+#+name: init-flyspell-correct-block
+#+begin_src emacs-lisp
+  (use-package flyspell-correct
+    :straight t)
+#+end_src
+*** [[https://github.com/jorgenschaefer/typoel][Typo]]
+#+name: init-typo-block
+#+begin_src emacs-lisp
+  (use-package typo
+    :straight t)
+#+end_src
+*** [[https://github.com/bnbeckwith/writegood-mode][Writegood]]
+#+name: init-writegood-block
+#+begin_src emacs-lisp
+  (use-package writegood-mode
+    :straight t)
+#+end_src
 ** Minor Modes
 *** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
 #+name: init-aggressive-indent-block
@@ -2009,6 +2231,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (global-undo-tree-mode +1))
 #+end_src
 
+*** [[https://github.com/bnbeckwith/wc-mode][WC-Mode]]
+#+name: init-wc-mode-block
+#+begin_src emacs-lisp
+  (use-package wc-mode
+    :straight t)
+#+end_src
 *** [[https://github.com/purcell/whitespace-cleanup-mode][Whitespace-Cleanup]]
 #+name: init-whitespace-cleanup-block
 #+begin_src emacs-lisp :tangle no
@@ -2040,10 +2268,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout "Dired" :straight (:type built-in)
     :general
     (:keymaps 'dired-mode-map
-              "h" #'dired-up-directory
-              "n" #'dired-next-line
-              "p" #'dired-previous-line
-              "f" #'counsel-find-file)
+     "h" #'dired-up-directory
+     "n" #'dired-next-line
+     "p" #'dired-previous-line
+     "f" #'counsel-find-file)
     :config
     (general-setq dired-auto-revert-buffer t
                   dired-dwim-target t
@@ -2054,10 +2282,30 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   dired-recursive-deletes 'always
                   dired-recursive-copies 'always
                   dired-deletion-confirmer '(lambda (x) t)) ;; Don't confirm deleting files
+    ;;;;; File size format
+    (defun djm/ls-lisp-format-file-size (file-size human-readable)
+      (if human-readable
+          (format " %6s" (file-size-human-readable file-size))
+        (format (if (floatp file-size)
+                    ls-lisp-filesize-f-fmt
+                  ls-lisp-filesize-d-fmt)
+                file-size)))
+
+    (advice-add #'ls-lisp-format-file-size :override
+                #'djm/ls-lisp-format-file-size)
+
+  ;;;;; Time format
+    (defun akirak/ls-lisp-format-time (file-attr time-index)
+      (let ((time (nth (or time-index 5) file-attr)))
+        (format-time-string "%F %R" time)))
+
+    (advice-add #'ls-lisp-format-time :override
+                #'djm/ls-lisp-format-time)
+
     (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
 
-*** CANCELLED Dired+
+*** CANCELLED [[https://www.emacswiki.org/emacs/dired+.el][Dired+]]
 :LOGBOOK:
 - State "CANCELLED"  from              [2019-12-12 Thu 19:08] \\
   This changes the way dired works too much.
@@ -2088,10 +2336,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
   (use-package dired-x
-    :straight (:type built-in) :after (dired)
+    :demand t :straight (:type built-in) :after (dired)
     :config
-    (general-setq dired-x-hands-off-my-keys nil
+    (general-setq dired-x-hands-off-my-keys t
                   dired-omit-verbose t
+                  dired-omit-files-p t
                   dired-clean-up-buffers-too t))
 #+end_src
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
@@ -2155,10 +2404,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      :straight dired-hacks)
 
   (use-package dired-open
-    :straight dired-hacks)
+    :straight dired-hacks
+    :config
+    (general-setq dired-open-functions '(dired-open-by-extension
+                                         dired-open-subdir)))
 
   (use-package dired-list
-     :straight dired-hacks)
+    :straight dired-hacks)
 
   (use-package dired-images
      :straight (dired-hacks eimp))
@@ -2394,6 +2646,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq ibuffer-projectile-prefix ""))
 #+end_src
+*** [[https://github.com/jojojames/smart-jump][Smart-Jump]]
+#+name: init-smart-jump-block
+#+begin_src emacs-lisp
+  (use-package smart-jump
+    :straight t
+    :config
+    (general-pushnew '(elisp-mode lisp-interaction-mode) smart-jump-default-mode-list)
+    (smart-jump-setup-default-registers))
+#+end_src
 *** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
 #+name: init-treemacs-block
 #+begin_src emacs-lisp
@@ -2471,12 +2732,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                 (,(rx bol (* space) (group "#+end_quote") symbol-end)
                                  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”")))))))
 
-    (general-setq org-babel-load-languages '((emacs-lisp . t )
-                                             (shell . t)
-                                             (python . t))
-                  org-catch-invisible-edits 'smart
+    (general-setq org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
-                  org-confirm-babel-evaluate nil
                   org-default-notes-file "~/org/inbox.org"
                   org-directory "~/org/"
                   org-ellipsis "…"
@@ -2610,6 +2867,31 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
     (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
+*** Org-Ob
+#+name: init-org-ob-block
+#+begin_src emacs-lisp
+  (use-package ob
+    :straight nil :after org
+    :config
+    (general-setq org-babel-load-languages  '((emacs-lisp . t)
+                                              (java . t)
+                                              (shell . t)
+                                              (python . t)
+                                              (sqlite . t))
+                  org-confirm-babel-evaluate nil))
+
+  (use-package ob-shell
+    :straight (:type built-in))
+
+  (use-package ob-python
+    :straight (:type built-in))
+
+  (use-package ob-emacs-lisp
+    :straight (:type built-in))
+
+  (use-package ob-sqlite
+    :straight (:type built-in))
+#+end_src
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
@@ -2623,6 +2905,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package org-scrum
     :straight (:host github :repo "ianxm/emacs-scrum"))
+#+end_src
+*** [[https://github.com/tesujimath/org-wc][Org-WC]]
+#+name: init-org-src-block
+#+begin_src emacs-lisp :tangle no
+  (use-package org-wc
+    :straight t :after (org))
 #+end_src
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
@@ -2741,7 +3029,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/magit/forge][Forge]]
 #+name: init-forge-block
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (use-package forge
     :straight t :after (magit))
 #+end_src
@@ -2874,21 +3162,28 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+begin_src emacs-lisp
   (use-package flycheck
     :blackout t :straight t
-    :ghook ('prog-mode-hook #'global-flycheck-mode))
+    :ghook ('prog-mode-hook #'global-flycheck-mode)
+    :config
+    (general-setq flycheck-sh-shellcheck-executable "shellcheck"
+                  flycheck-shellcheck-follow-sources t)
+    (general-pushnew 'sh-shellcheck flycheck-checkers))
+#+end_src
 
+*** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
+#+name: init-flycheck-posframe-block
+#+begin_src emacs-lisp
+  (use-package flycheck-posframe
+    :blackout t :straight t :after (flycheck)
+    :if (display-graphic-p)
+    :ghook 'flycheck-mode-hook
+    :config/el-patch
+    (flycheck-posframe-configure-pretty-defaults)
 
-  (el-patch-feature flycheck-posframe)
+    (defvar flycheck-posframe-override-parameters nil)
+    (defvar flycheck-posframe-internal-border-width nil)
 
-  (defvar flycheck-posframe-override-parameters nil)
-  (defvar flycheck-posframe-internal-border-width nil)
-
-  (cl-eval-when (compile)
-    (require 'flycheck-posframe))
-
-  ;; Provide a nice way to override posframe parameters.
-
-  (with-eval-after-load 'flycheck-posframe
-    (el-patch-defun flycheck-posframe-show-posframe (errors)
+    ;; Provide a nice way to override posframe parameters.
+    (defun flycheck-posframe-show-posframe (errors)
       "Display ERRORS, using posframe.el library."
       (flycheck-posframe-hide-posframe)
       (when (and errors
@@ -2909,16 +3204,6 @@ CLOSED: [2019-12-11 Wed 13:56]
              :override-parameters flycheck-posframe-override-parameters)))
         (dolist (hook flycheck-posframe-hide-posframe-hooks)
           (add-hook hook #'flycheck-posframe-hide-posframe nil t)))))
-#+end_src
-
-*** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
-#+name: init-flycheck-posframe-block
-#+begin_src emacs-lisp
-  (use-package flycheck-posframe
-    :blackout t :straight t :after (flycheck)
-    :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook
-    :config (flycheck-posframe-configure-pretty-defaults))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
@@ -3194,7 +3479,7 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
   Need to setup ledger first.
 :END:
 #+name: init-ledger-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ledger-mode
     :straight t)
 #+end_src

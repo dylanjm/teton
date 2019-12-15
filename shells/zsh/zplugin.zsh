@@ -18,9 +18,7 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
-[[ -d $CACHE/zplugin ]] && {
-   rm -rf $CACHE/zplugin
-}
+test -d $CACHE/zplugin && { rm -rf $CACHE/zplugin }
 
 ###
 ### Load Zsh Plugins
@@ -50,15 +48,6 @@ zplugin snippet "${ZSH}/completions/_bfetch"
 zplugin ice wait as"completion" if"[ -f '${ZSH}/completions/_bisfetch' ]" blockf lucid;
 zplugin snippet "${ZSH}/completions/_bisfetch"
 
-zplugin wait'2c' atload"_zsh_autosuggest_start" lucid blockf
-zplugin $load zsh-users/zsh-autosuggestions
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-ZSH_AUTOSUGGEST_MANUAL_REBIND=true
-
-zplugin ice wait'2b' atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" lucid
-zplugin $load zdharma/fast-syntax-highlighting
-
 zplugin ice wait'1' lucid
 zplugin $load hlissner/zsh-autopair
 
@@ -67,21 +56,16 @@ zplugin $load laggardkernel/zsh-thefuck
 zstyle ":prezto:runcom" zpreztorc "$HOME/.zshrc"
 
 zplugin ice wait'1' lucid
-zplugin snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
-
-zplugin ice wait'1' lucid
 zplugin snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/completion.zsh
 
 zplugin ice wait'1' lucid
 zplugin snippet https://raw.githubusercontent.com/junegunn/fzf/master/shell/key-bindings.zsh
 
-zplugin ice atclone"gdircolors -b LS_COLORS > clrs.zsh" \
-    atpull'%atclone' pick"clrs.zsh" nocompile'!' \
-    atload'zstyle ":completion:*" list-colors “${(s.:.)LS_COLORS}”'
-zplugin $load trapd00r/LS_COLORS
+export LS_COLORS="$(vivid generate solarized-dark)"
+export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124:di=38;5;12"
 
-zplugin ice wait'1' lucid
-zplugin $load davidparsson/zsh-pyenv-lazy
+# zplugin ice wait'1' lucid
+# zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid blockf
 zplugin $load unixorn/git-extra-commands
@@ -95,16 +79,19 @@ zplugin $load rupa/z
 zplugin ice wait'1b' lucid blockf
 zplugin $load changyuheng/fz
 
-# zplugin ice wait'1c' multisrc"shell/*.zsh" lucid
-# zplugin $load junegunn/fzf
-
 zplugin ice wait'1d' lucid
 zplugin $load wookayin/fzf-fasd
 
-# zplugin ice wait lucid blockf
-# zplugin $load b4b4r07/enhancd
-
 zplugin ice wait'1' lucid blockf
 zplugin $load $ZSH/interactive
+
+zplugin ice wait'2b' atload"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" lucid
+zplugin $load zdharma/fast-syntax-highlighting
+
+zplugin wait'2c' atload"_zsh_autosuggest_start" lucid
+zplugin $load zsh-users/zsh-autosuggestions
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

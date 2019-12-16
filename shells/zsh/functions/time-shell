@@ -1,3 +1,11 @@
+#!/usr/local/bin/zsh
+
 function time-shell(){
-    for i in $(seq 1 10); do /usr/bin/time $SHELL -i -c exit; done
+  if [[ -e "$(command -v hyperfine)" ]]; then
+    hyperfine $SHELL -i -c exit
+  else
+    for i in $(seq 1 10); do
+      /usr/bin/time $SHELL -i -c exit
+    done
+  fi
 }

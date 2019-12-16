@@ -1,3 +1,5 @@
+#!/usr/bin/local/zsh
+
 setopt extendedglob local_options
 autoload -Uz compinit
 local zcompf="${ZPLGM[ZCOMPDUMP_PATH]:-${ZDOTDIR:-$HOME}/.zcompdump}"

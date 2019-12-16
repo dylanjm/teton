@@ -18,7 +18,7 @@ zmodload zdharma/zplugin 2>/dev/null || zpl module build
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
-test -d $CACHE/zplugin && { rm -rf $CACHE/zplugin }
+test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
 
 ###
 ### Load Zsh Plugins
@@ -54,6 +54,7 @@ export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
 # zplugin ice wait'1' lucid
 # zplugin $load davidparsson/zsh-pyenv-lazy
+
 zplugin ice wait lucid blockf
 zplugin $load $ZSH/interactive
 
@@ -81,7 +82,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=true
 ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 
-zplugin ice wait'3' lucid
-zplugin $load zsh-users/zsh-history-substring-search
+# zplugin ice wait'3' lucid
+# zplugin $load zsh-users/zsh-history-substring-search
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

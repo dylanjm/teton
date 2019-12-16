@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-16 22:57:22
+/last updated/: 2019-12-16 23:31:13
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -124,6 +124,7 @@
     - [[#eshell-prompt-extras][Eshell-Prompt-Extras]]
     - [[#eshell-up][Eshell-Up]]
     - [[#vterm][Vterm]]
+    - [[#multi-libvterm][Multi-Libvterm]]
     - [[#vterm-toggle][Vterm-Toggle]]
   - [[#project-management][Project Management]]
     - [[#projectile][Projectile]]
@@ -1654,13 +1655,31 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq vterm-install t))
 #+end_src
+*** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
+#+name: init-multi-vterm-block
+#+begin_src emacs-lisp
+  (use-package multi-libvterm
+    :straight (:host github :repo "suonlight/multi-libvterm"))
+#+end_src
 *** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
 #+name: init-vterm-toggle-block
 #+begin_src emacs-lisp
   (use-package vterm-toggle
-    :straight (:host github :repo "jixiuf/vterm-toggle")
+    :straight t
     :commands (vterm-toggle
-               vterm-toggle-cd))
+               vterm-toggle-cd)
+    :general
+    ("C-c x v" #'vterm-toggle-cd)
+    :config
+    (general-setq vterm-toggle-fullscreen-p nil)
+    (add-to-list 'display-buffer-alist
+                 '("^v?term.*"
+                   (display-buffer-reuse-window display-buffer-at-bottom)
+                   (display-buffer-reuse-window display-buffer-in-direction)
+                   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                   (dedicated . t) ;dedicated is supported in emacs27
+                   (reusable-frames . visible)
+                   (window-height . 0.5))))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]

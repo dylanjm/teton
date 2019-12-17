@@ -43,14 +43,14 @@ zplugin $load hlissner/zsh-autopair
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate gruvbox-dark)"
+export LS_COLORS="$(vivid generate snazzy)"
 export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
 zplugin ice wait'1' lucid blockf
 zplugin $load zsh-users/zsh-completions
 
-zplugin ice wait'1' lucid
-zplugin $load davidparsson/zsh-pyenv-lazy
+# zplugin ice wait'1' lucid
+# zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' multisrc"*.zsh" lucid
 zplugin $load $ZSH/interactive
@@ -69,6 +69,9 @@ zplugin $load rupa/z
 
 zplugin ice wait'1b' lucid blockf
 zplugin $load changyuheng/fz
+
+zplugin ice wait'2' lucid as"null" sbin atclone'./build.zsh' atpull'%atclone' blockf
+zplugin $load molovo/zunit
 
 zplugin ice wait'2' lucid as"null" sbin"color.zsh -> color"
 zplugin $load molovo/color

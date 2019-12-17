@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-16 10:29:43
+/last updated/: 2019-12-16 22:57:22
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -110,6 +110,7 @@
     - [[#olivetti-mode][Olivetti-Mode]]
     - [[#page-break-lines][Page-Break-Lines]]
     - [[#persistent-scratch][Persistent-Scratch]]
+    - [[#rainbow-mode][Rainbow-Mode]]
     - [[#sublimity][Sublimity]]
   - [[#meta][Meta]]
     - [[#restart-emacs][Restart-Emacs]]
@@ -176,7 +177,6 @@
     - [[#highlight-indent-guides][Highlight-Indent-Guides]]
     - [[#hungry-delete][Hungry-Delete]]
     - [[#rainbow-delimiters][Rainbow-Delimiters]]
-    - [[#rainbow-mode][Rainbow-Mode]]
     - [[#undo-tree][Undo-Tree]]
     - [[#wc-mode][WC-Mode]]
     - [[#whitespace-cleanup][Whitespace-Cleanup]]
@@ -1534,6 +1534,13 @@ CLOSED: [2019-12-13 Fri 21:48]
                            (persistent-scratch-setup-default))))
 #+end_src
 
+*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
+#+name: init-rainbow-mode-block
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :blackout t :straight t
+    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
+#+end_src
 *** [[https://github.com/zk-phi/sublimity][Sublimity]]
 #+name: init-subliminity-block
 #+begin_src emacs-lisp
@@ -1617,6 +1624,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                aweshell-dedicated-toggle
                aweshell-dedicated-open
                aweshell-dedicated-close)
+    :general
+    ("C-c x t" #'aweshell-dedicated-toggle)
     :config
     (general-setq eshell-highlight-prompt nil
                   eshell-prompt-function 'epe-theme-lambda)
@@ -1649,7 +1658,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-vterm-toggle-block
 #+begin_src emacs-lisp
   (use-package vterm-toggle
-    :straight (:host github :repo "jixiuf/vterm-toggle"))
+    :straight (:host github :repo "jixiuf/vterm-toggle")
+    :commands (vterm-toggle
+               vterm-toggle-cd))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
@@ -1811,6 +1822,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-x C-r"                        #'counsel-recentf
      "C-x C-l"                        #'counsel-find-library
      "C-x C-u"                        #'counsel-unicode-char
+     "C-x C-v"                        #'counsel-set-variable
      "C-c k"                          #'counsel-rg
      "C-h F"                          #'counsel-describe-face
      "C-h f"                          #'counsel-describe-function
@@ -1961,7 +1973,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package company-shell
     :straight t
-    :after (shell company))
+    :ghook ('sh-mode-hook #'djm/company-shell-config)
+    :preface
+    (defun djm/company-shell-config ()
+      (general-pushnew '(company-shell company-shell-env company-fish-shell) company-backends)))
 #+end_src
 *** [[https://github.com/dunn/company-emoji][Company-Emoji]]
 #+name: init-company-emoji-block
@@ -2022,8 +2037,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-which-key-block
 #+begin_src emacs-lisp
   (use-package which-key
-    :straight t
-    :ghook emacs-startup-hook
+    :blackout t :straight t
+    :ghook 'emacs-startup-hook
     :config
     (which-key-setup-side-window-bottom))
 #+end_src
@@ -2052,7 +2067,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-crux-block
 #+begin_src emacs-lisp
   (use-package crux
-    :straight t)
+    :straight t
+    :general
+    ("C-c i d" #'crux-downcase-region
+     "C-c i u" #'crux-upcase-region))
 #+end_src
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
@@ -2089,7 +2107,19 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
   (use-package string-inflection
-    :straight t)
+    :straight t
+    :general
+    ("C-c i u" #'string-inflection-upcase
+     "C-c i t" #'string-inflection-toggle
+     "C-c i c" #'string-inflection-camelcase
+     "C-c i _" #'string-inflection-underscore
+     "C-c i a" #'string-inflection-all-cycle
+     "C-c i k" #'string-inflection-kebab-case
+     "C-c i l" #'string-inflection-lower-camelcase
+     "C-c i C" #'string-inflection-capital-underscore
+     "C-c i j" #'string-inflection-java-style-cycle
+     "C-c i r" #'string-inflection-ruby-style-cycle
+     "C-c i p" #'string-inflection-python-style-cycle))
 #+end_src
 
 *** [[https://github.com/abo-abo/tiny][Tiny]]
@@ -2208,13 +2238,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package rainbow-delimiters
     :blackout t :straight t
     :ghook 'prog-mode-hook)
-#+end_src
-*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
-#+name: init-rainbow-mode-block
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :blackout t :straight t
-    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
 #+end_src
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
 #+name: init-undo-tree-block
@@ -3180,34 +3203,8 @@ CLOSED: [2019-12-11 Wed 13:56]
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook
-    :config/el-patch
-    (flycheck-posframe-configure-pretty-defaults)
-
-    (defvar flycheck-posframe-override-parameters nil)
-    (defvar flycheck-posframe-internal-border-width nil)
-
-    ;; Provide a nice way to override posframe parameters.
-    (defun flycheck-posframe-show-posframe (errors)
-      "Display ERRORS, using posframe.el library."
-      (flycheck-posframe-hide-posframe)
-      (when (and errors
-                 (not (run-hook-with-args-until-success 'flycheck-posframe-inhibit-functions)))
-        (let ((poshandler (intern (format "posframe-poshandler-%s" flycheck-posframe-position))))
-          (unless (functionp poshandler)
-            (setq poshandler nil))
-          (posframe-show
-           flycheck-posframe-buffer
-           :string (flycheck-posframe-format-errors errors)
-           :background-color (face-background 'flycheck-posframe-background-face nil t)
-           :position (point)
-           :internal-border-width flycheck-posframe-border-width
-           :internal-border-color (face-foreground 'flycheck-posframe-border-face nil t)
-           :poshandler poshandler
-           (el-patch-add
-             :internal-border-width flycheck-posframe-internal-border-width
-             :override-parameters flycheck-posframe-override-parameters)))
-        (dolist (hook flycheck-posframe-hide-posframe-hooks)
-          (add-hook hook #'flycheck-posframe-hide-posframe nil t)))))
+    :config
+    (flycheck-posframe-configure-pretty-defaults))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]

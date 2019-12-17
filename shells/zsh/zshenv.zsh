@@ -103,7 +103,7 @@ module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
-      $ZPLGM[HOME_DIR]/polaris/bin  # ?
+      $ZPLGM[HOME_DIR]/polaris/bin  # Zplugin Installed Programs
       $DOTFILES/bin                 # Personal CLT Tools
       /usr/local/opt/fzf/bin        # FZF Completions
       /usr/local/bin                # Homebrew Installations

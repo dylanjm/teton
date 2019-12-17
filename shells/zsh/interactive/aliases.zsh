@@ -5,6 +5,10 @@ alias zconf="$EDITOR $ZSH &"
 alias econf="$EDITOR $DOTFILES/editors/emacs.d &"
 alias kemc="brew services restart emacs-head"
 alias et="emacsclient -t"
+if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
+    alias clear='printf "\e]51;Evterm-clear-scrollback\e\\";tput clear'
+fi
+
 
 # TODO
 

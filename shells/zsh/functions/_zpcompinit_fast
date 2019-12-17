@@ -1,4 +1,6 @@
 #!/usr/bin/local/zsh
+# Author: NICHOLAS85
+# Source: https://github.com/zdharma/zplugin-configs/blob/master/NICHOLAS85/.zplugin/plugins/_local---config-files/functions/_zpcompinit_fast
 
 setopt extendedglob local_options
 autoload -Uz compinit

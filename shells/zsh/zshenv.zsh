@@ -15,6 +15,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export LANG="en_US.UTF-8"
 export EDITOR='emacsclient -a "" -c'
 export HISTFILE="$XDG_CACHE_HOME/zsh/zsh_history"
+export HISTSIZE=120000
+export SAVEHIST=100000
 export CACHE="$XDG_CACHE_HOME"
 export DOTFILES="$HOME/dotz"
 

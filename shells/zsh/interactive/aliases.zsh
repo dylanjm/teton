@@ -1,4 +1,10 @@
 ###
+### ZSH
+###
+# unalias run-help
+# autoload run-help
+
+###
 ### Emacs
 ###
 alias zconf="$EDITOR $ZSH &"

@@ -97,7 +97,11 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 ###
 ### Paths
 ###
-fpath+=($ZSH/functions)
+fpath=($XDG_CACHE_HOME/zsh/zplugin/completions
+       /usr/local/share/zsh/site-functions
+       /usr/local/Cellar/zsh/5.7.1/share/zsh/functions
+       $ZSH/functions)
+
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
 path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils

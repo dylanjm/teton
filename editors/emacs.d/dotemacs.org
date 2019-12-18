@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-16 23:31:13
+/last updated/: 2019-12-17 14:05:25
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -432,7 +432,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
     :init
     (setq exec-path-from-shell-check-startup-files t
                   exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME")
-                  exec-path-from-shell-arguments '("-i"))
+                  exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -1653,7 +1653,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package vterm
     :straight t
     :config
-    (general-setq vterm-install t))
+    (general-setq vterm-install t
+                  cursor-type 'bar))
 #+end_src
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
@@ -1669,17 +1670,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :commands (vterm-toggle
                vterm-toggle-cd)
     :general
-    ("C-c x v" #'vterm-toggle-cd)
+    ("C-c x v" #'vterm-toggle)
     :config
     (general-setq vterm-toggle-fullscreen-p nil)
     (add-to-list 'display-buffer-alist
                  '("^v?term.*"
                    (display-buffer-reuse-window display-buffer-at-bottom)
                    (display-buffer-reuse-window display-buffer-in-direction)
-                   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                   (dedicated . t) ;dedicated is supported in emacs27
+                   (dedicated . t)
                    (reusable-frames . visible)
-                   (window-height . 0.5))))
+                   (window-height . 0.3))))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]

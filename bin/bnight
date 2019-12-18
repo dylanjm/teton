@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+NORMAL='\033[0m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+YELLOW='\033[1;33m'
+
+while read -r line; do ## read line at a time from find output on server
+  lpath=$(echo "$line" | sed -E 's|/projects/bison/git/./||g')
+
+  folder=$(printf "%-35b" "${YELLOW}${line:22:14}${NORMAL}" | tr ' ' '.')
+  file=$(printf "%-80b" "${BLUE}$(basename "$line")${NORMAL}" | tr ' ' '.')
+
+  if [[ -e "$HOME/Desktop/performance/$lpath" ]]; then
+    status="${RED}skipping${NORMAL}"
+    printf "%s%s%b\n" "$folder" "$file" "$status"
+    continue
+  else
+    status="${GREEN}copying${NORMAL}"
+    printf "%s%s%b\n" "$folder" "$file" "$status"
+    rsync -aW --no-compress --relative falcon1:"$line" "$HOME/Desktop/performance/"
+  fi
+
+done < <(ssh -qn falcon1 '$HOME/.cargo/bin/fd --type d --max-depth 1 "bison_[0-9]{8}$" /projects/bison/git --changed-within 2weeks -exec printf "%s\n" "{}/assessment" |' \
+             'xargs -I{} $HOME/.cargo/bin/fd --no-ignore --type f -a -e csv -E "**/doc/**" -E "**/gold/**" -E "**/SM/**" ".*_metrics" {} |' \
+             'sed -E "s|/projects/bison/git/|/projects/bison/git/./|g"')

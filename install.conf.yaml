@@ -30,6 +30,7 @@
     ~/.config/alacritty: apps/alacritty
     ~/.config/direnv: apps/direnv
     ~/.config/qutebrowser: apps/qutebrowser
+    ~/.config/R: apps/R
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

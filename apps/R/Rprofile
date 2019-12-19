@@ -1,0 +1,2 @@
+options(Ncpus = 16)
+options(dependencies = TRUE)

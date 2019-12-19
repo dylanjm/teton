@@ -12,6 +12,7 @@ export XDG_DATA_HOME="$HOME/.local/share"
 ###
 ### Config
 ###
+export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export EDITOR='emacsclient -a "" -c'
 export HISTFILE="$XDG_CACHE_HOME/zsh/zsh_history"
@@ -70,10 +71,25 @@ export ENHANCD_COMPLETION_BEHAVIOR=history
 export ENHANCD_DISABLE_HOME=1
 
 ###
+### Java
+###
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home"
+
+###
 ### Julia
 ###
 export JULIA_NUM_THREADS=12
 export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
+
+###
+### R
+###
+export R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
+export R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
+export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
+export R_HISTFILE="$XDG_CACHE_HOME/Rhistory"
+export R_LIBS_USER="$HOME/Library/R/3.6/library"
+
 
 ###
 ### Rust/Cargo
@@ -104,7 +120,8 @@ fpath=($XDG_CACHE_HOME/zsh/zplugin/completions
 
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
-path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
+path=(/usr/local/opt/llvm/bin
+      $XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZPLGM[HOME_DIR]/polaris/bin  # Zplugin Installed Programs

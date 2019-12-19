@@ -1,6 +1,8 @@
 # --------
 # Makevars
 # --------
+# This file was taken from: https://www.btskinner.io/code/install-r-with-openblas-and-openmp-on-macos-mojave/
+# Tutorial at: https://luispuerto.github.io/luisspuerto.net-testing/blog/2018/01/12/install-r-100-homebrew-edition-with-openblas-openmp-my-version/
 
 # General note
 # - need to repeat options across C++ flavors (e.g., 11, 14)
@@ -13,13 +15,14 @@ HI=/usr/local/include
 
 # MacOS 10.15 Xcode header location (October 2019)
 # (do "xcrun -show-sdk-path" in terminal to get path; change if yours is different)
-XH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+#XH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+XH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 # ccache
 CCACHE=$(HB)/ccache
 
 # Make using all cores (set # to # of cores on your machine)
-MAKE=make -j4
+MAKE=make -j8
 
 # GNU version (August 2019)
 GNU_VER=9
@@ -55,8 +58,8 @@ CXX17FLAGS=$(STD_FLAGS)
 # Preprocessor FLAGS
 # NB: -isysroot refigures the include path to the Xcode SDK we set above
 CPPFLAGS=-isysroot $(XH) -I$(HI) \
-	-I$(HO)/llvm/include -I$(HO)/openssl/include \
-	-I$(HO)/gettext/include	-I$(HO)/tcl-tk/include
+    -I$(HO)/llvm/include -I$(HO)/openssl/include \
+    -I$(HO)/gettext/include	-I$(HO)/tcl-tk/include
 
 # Linker flags (suggested by homebrew)
 LDFLAGS+=-L$(HO)/llvm/lib -Wl,-rpath,$(HO)/llvm/lib

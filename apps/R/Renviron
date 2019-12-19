@@ -1,2 +1,5 @@
-PKG_CONFIG_PATH=/opt/X11/lib/pkgconfig
-options(Ncpus = 6)
+R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
+R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
+R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
+
+PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_2/lib/pkgconfig"

@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-19 12:39:00
+/last updated/: 2019-12-19 16:52:24
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -159,7 +159,7 @@
     - [[#crux][Crux]]
     - [[#emacs-format-all-the-code][Emacs-Format-All-The-Code]]
     - [[#expand-region][Expand-Region]]
-    - [[#interactive-align][Interactive-Align]]
+    - [[#hold-interactive-align][HOLD Interactive-Align]]
     - [[#multiple-cursors][Multiple-Cursors]]
     - [[#string-inflection][String-Inflection]]
     - [[#tiny][Tiny]]
@@ -2079,7 +2079,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-=" #'er/expand-region))
 #+end_src
 
-*** [[https://github.com/mkcms/interactive-align][Interactive-Align]]
+*** HOLD [[https://github.com/mkcms/interactive-align][Interactive-Align]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-19 Thu 14:46] \\
+  I don't really use this package yet.
+:END:
 #+name: init-interactive-align-block
 #+begin_src emacs-lisp :tangle no
   (use-package ialign

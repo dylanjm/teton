@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-18 21:43:04
+/last updated/: 2019-12-19 12:39:00
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -248,11 +248,13 @@
     - [[#flycheck-popup-tip][Flycheck-Popup-Tip]]
     - [[#flycheck-pos-tip][Flycheck-Pos-Tip]]
     - [[#flycheck-pycheckers][Flycheck-Pycheckers]]
+    - [[#polymode][Polymode]]
   - [[#languages][Languages]]
     - [[#emacs-lisp][Emacs-Lisp]]
     - [[#markdown][Markdown]]
     - [[#yaml][YAML]]
     - [[#latex][LaTeX]]
+    - [[#ess][ESS]]
     - [[#julia][Julia]]
     - [[#python][Python]]
   - [[#miscellaneous][Miscellaneous]]
@@ -3122,9 +3124,10 @@ CLOSED: [2019-12-11 Wed 13:56]
     :ghook ('python-mode-hook #'lsp-deferred)
     :ghook ('c-mode-hook      #'lsp-deferred)
     :config
-    (setq lsp-prefer-flymake nil
-          lsp-enable-snippet nil
-          lsp-restart nil)
+    (general-setq lsp-prefer-flymake nil
+                  lsp-enable-snippet nil
+                  lsp-restart nil
+                  lsp-julia-package-dir nil)
 
     (use-package lsp-clients
       :demand t :straight (:type built-in)))
@@ -3234,6 +3237,15 @@ CLOSED: [2019-12-11 Wed 13:56]
     :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup))
 #+end_src
 
+*** [[https://github.com/polymode/polymode][Polymode]]
+#+name: init-polymode-block
+#+begin_src emacs-lisp
+  (use-package polymode
+    :straight t)
+
+  (use-package poly-R
+    :straight t :after ess)
+#+end_src
 ** Languages
 *** Emacs-Lisp
 **** Fix Identation
@@ -3374,6 +3386,15 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
     :straight t)
 #+end_src
 
+**** [[https://github.com/polymode/poly-markdown][Poly-Markdown]]
+#+name: init-poly-markdown
+#+begin_src emacs-lisp
+  (use-package poly-markdown
+    :straight t
+    :mode (("\\.md'" . poly-markdown-mode)
+           ("\\.Rmd'" . poly-markdown+r-mode)
+           ("\\.rmd'" . poly-markdown+r-mode)))
+#+end_src
 *** YAML
 **** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
 #+name: init-yaml-block
@@ -3390,11 +3411,60 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 
 #+end_src
 
+*** ESS
+#+name: init-ess-block
+#+begin_src emacs-lisp
+  (use-package ess
+    :straight t
+    :general
+    (:keymaps '(ess-mode-map inferior-ess-mode-map)
+     "C-c ." #'djm/R-pipe-operator)
+    :preface
+    (defun djm/R-pipe-operator ()
+      "R - piping operator (%>%)"
+      (interactive)
+      (just-one-space 1)
+      (insert "%>%")
+      (reindent-then-newline-and-indent))
+    :config
+    (general-setq comint-move-point-for-output t
+                  comint-scroll-show-maximum-output t
+                  comint-scroll-to-bottom-on-output t
+                  ess-ask-for-ess-directory nil
+                  ess-style 'RStudio
+                  ess-eval-visibly 'nowait
+                  ess-fill-calls-newlines t
+                  ess-help-own-frame 'one
+                  ess-history-file nil
+                  ess-indent-with-fancy-comments nil
+                  ess-nuke-trailing-whitespace t
+                  ess-offset-arguments 'prev-line
+                  ess-roxy-fontify-examples t
+                  ess-use-auto-complete nil
+                  ess-use-company t
+                  inferior-R-args "--no-restore --quiet --no-save"
+                  inferior-ess-same-window nil
+                  comint-scroll-to-botom-on-input t))
+#+end_src
 *** Julia
+**** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
 #+name: init-julia-block
 #+begin_src emacs-lisp
   (use-package julia-mode
     :straight t)
+#+end_src
+**** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
+#+name: init-julia-repl-block
+#+begin_src emacs-lisp
+  (use-package julia-repl
+    :straight t
+    :ghook 'julia-mode-hook)
+#+end_src
+**** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
+#+name: init-lsp-julia-block
+#+begin_src emacs-lisp
+  (use-package lsp-julia
+    :straight (:host github :repo "non-Jedi/lsp-julia"))
 #+end_src
 
 *** Python

@@ -15,6 +15,7 @@ autoload -Uz _zplugin
 
 ### Check if zmodule is installed and built.
 zmodload zdharma/zplugin 2>/dev/null || zpl module build
+zmodload -i zsh/complist
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
@@ -50,9 +51,6 @@ export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 zplugin ice wait'1' lucid blockf
 zplugin $load zsh-users/zsh-completions
 
-# zplugin ice wait'1' lucid
-# zplugin $load davidparsson/zsh-pyenv-lazy
-
 zplugin ice wait'1' multisrc"*.zsh" lucid
 zplugin $load $ZSH/interactive
 
@@ -76,6 +74,9 @@ zplugin $load molovo/zunit
 
 zplugin ice wait'2' lucid as"null" sbin"color.zsh -> color"
 zplugin $load molovo/color
+
+zplugin ice wait"2" lucid as"program" pick"revolver"
+zplugin $load psprint/revolver
 
 zplugin wait'2b' lucid for \
         atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting \

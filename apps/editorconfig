@@ -1,9 +1,10 @@
+# http://editorconfig.org
 root = true
 
 [*]
-indent_style = space
-indent_size = 2
 end_of_line = lf
+indent_size = 4
+indent_style = space
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
@@ -11,6 +12,14 @@ insert_final_newline = true
 [*.py]
 indent_size = 4
 
-# Tab indentation (no size specified)
-[Makefile]
+[{Vagrant,Cap,Rake,Gem}file]
+indent_size = 2
+
+[*.{el,rb,cr,lua,y{a,}ml,json,toml,coffee,css,s{a,c}ss,styl,slim,jade,pug,html,{,z}sh}]
+indent_size = 2
+
+[*.go]
+indent_style = tab
+
+[{Makefile,gitconfig}]
 indent_style = tab

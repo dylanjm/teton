@@ -61,15 +61,10 @@ case "$1" in
         pygmentize -f terminal -l sh "$1";;
 
     *)
-        if grep -q "#\!/bin/" "$1" 2> /dev/null; then
-            pygmentize -f terminal -l sh "$1"
-        elif grep -q "#\!/usr/bin/env" "$1" 2> /dev/null; then
-            pygmentize -f terminal -l sh "$1"
-        elif grep -q "#\!/usr/bin/local/" "$1" 2> /dev/null; then
-            pygmentize -f terminal -l sh "$1"
-        else
-            exit 1
-        fi
+      if ! grep -E "#\!/.+[/ ](ba|z)?sh" "$1" >/dev/null; then
+        exit 1
+      fi
+      pygmentize -f terminal -l sh "$1"
 esac
 
 exit $?

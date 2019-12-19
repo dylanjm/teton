@@ -1,5 +1,5 @@
 #!/usr/local/bin/zsh
-#unsetopt GLOBAL_RCS
+unsetopt GLOBAL_RCS
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
@@ -9,6 +9,8 @@ typeset -A ZPLGM
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_BIN_HOME="$HOME/.local/bin"
+export CACHE="$XDG_CACHE_HOME"
 
 ###
 ### Config
@@ -16,11 +18,16 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export EDITOR='emacsclient -a "" -c'
+export BROWSER='open'
+export DOTFILES="$HOME/dotz"
+
+###
+### History
+###
 export HISTFILE="$XDG_CACHE_HOME/zsh/zsh_history"
+export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=120000
 export SAVEHIST=100000
-export CACHE="$XDG_CACHE_HOME"
-export DOTFILES="$HOME/dotz"
 
 ###
 ### ZSH
@@ -37,9 +44,9 @@ export ZPLGM[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
 ###
 ### Less
 ###
-export LESS="-R -F -i -J -M -R -W -x4 -z-4"
-export LESSOPEN='|lessfilter %s'
-export LESSHISTFILE="$XDG_CACHE_HOME/zsh/lesshst"
+export LESS="-g -i -M -R -S -w -z-4"
+export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
+export LESSHISTFILE="$XDG_DATA_HOME/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'             # begin blinking
 export LESS_TERMCAP_md=$'\E[01;31m'             # begin bold
 export LESS_TERMCAP_me=$'\E[0m'                 # end mode
@@ -57,6 +64,11 @@ export _Z_DATA="$XDG_CACHE_HOME/zsh/z"
 ### CCACHE
 ###
 export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
+
+###
+### FASD
+###
+export _FASD_DATA="$XDG_CACHE_HOME/fasd"
 
 ###
 ### FZF
@@ -79,7 +91,7 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/
 ###
 ### Julia
 ###
-export JULIA_NUM_THREADS=12
+export JULIA_NUM_THREADS=16
 export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
 
 ###
@@ -91,11 +103,11 @@ export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
 export R_HISTFILE="$XDG_CACHE_HOME/Rhistory"
 export R_LIBS_USER="$HOME/Library/R/3.6/library"
 
-
 ###
 ### Rust/Cargo
 ###
 export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
+export RUSTUP_HOME="XDG_DATA_HOME/rustup"
 
 ###
 ### Python

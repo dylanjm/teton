@@ -1,9 +1,9 @@
-* Dot-Z
+#+title: Dotz
+#+author: Dylan McDowell
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
 [[file:https://img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg]]
 [[file:https://img.shields.io/badge/shell-ZSH-orange.svg]]
 [[file:https://img.shields.io/github/last-commit/dylanjm/dotz.svg]]
-------------------------------------------------------------------------------------------
 
 /file last updated/: 2019-12-20 12:28:22
 
@@ -17,22 +17,38 @@ My personal dotfile configuration focused on macOS support. At the moment there 
 
 My design phillosphy is that a personal  configuration should remain relatively transparent and not abstract away the bulk of  customisation. Each line of code should be clearly understood and purposefully written to contribute to the organization of the entire configuration. Dotfiles should serve as a measure of convience, but also as a long-running history of workflow experiments. Through time, dotfiles should evolve and and adopt new features and methods. So often, I come across monolithic  configurations that haven't been updated in two years. At this day and age, two years is outdated. This is why  my configuration  maxes out native features, to establish a base of conistency. I am then free to experiment with actively developed projects to keep my config up-to-date and relevant.
 
-#+begin_src sh :results output :exports results
-  echo "Directory structure:"
-  tree -d -L 1 ~/dotz
+#+begin_src bash :results output :exports results
+   echo "Directory structure:"
+   mapfile -t dirs < <(tree -d -L 1 ~/dotz)
+   comments=(
+     ""
+     "# Config files for apps like: BTT, iTerm, Python, Julia, etc."
+     "# Personal scripts that I've added to my path."
+     "# Bootstraping files to install fonts, homebrew, command-line-tools, etc."
+     "# Git submodule that manages installation and symlinking dotfiles to proper locations."
+     "# Editor configurations for Emacs, Vim, etc."
+     "# Global git config and ignore files."
+     "# Temporary location for random files."
+     "# Environment and shell configuration files for zsh, bash, and fish."
+     ""
+   )
+   paste <(printf "%-20s\n" "${dirs[@]}") <(printf "%s\n" "${comments[@]}")
 #+end_src
 
 #+RESULTS:
 #+begin_example
 Directory structure:
-├── apps         # Configuration files for apps like: BTT, iTerm, Python, Julia, Rust, etc.
-├── bin          # Personal scripts that I've added to my path.
-├── bootstrap    # Bootstraping files to install fonts, homebrew, command-line-tools, etc.
-├── dotbot       # Git submodule that manages installation and symlinking dotfiles to proper locations.
-├── editors      # Editor configurations for Emacs, Vim, etc.
-├── git          # Global git config and ignore files.
-├── misc         # Temporary location for random files.
-└── shells       # Environment and shell configuration files for zsh, bash, and fish.
+/Users/djm/dotz
+├── apps      	# Config files for apps like: BTT, iTerm, Python, Julia, etc.
+├── bin       	# Personal scripts that I've added to my path.
+├── bootstrap 	# Bootstraping files to install fonts, homebrew, command-line-tools, etc.
+├── dotbot    	# Git submodule that manages installation and symlinking dotfiles to proper locations.
+├── editors   	# Editor configurations for Emacs, Vim, etc.
+├── git       	# Global git config and ignore files.
+├── misc      	# Temporary location for random files.
+└── shells    	# Environment and shell configuration files for zsh, bash, and fish.
+
+8 directories
 #+end_example
 
 * Installation

@@ -32,10 +32,10 @@ alias dotshell="cd $ZSH"
 alias dotem="cd $DOTFILES/editors/emacs.d"
 alias dotbin='cd $DOTFILES/bin'
 
-alias cache='cd $CACHE'
-alias cachem='cd $CACHE/emacs'
-alias cachez='cd $CACHE/zsh'
-alias plugins='cd $CACHE/zsh/zplugin/plugins'
+alias cache='cd $XDG_CACHE_HOME'
+alias cachem='cd $XDG_CACHE_HOME/emacs'
+alias cachez='cd $XDG_CACHE_HOME/zsh'
+alias plugins='cd $XDG_CACHE_HOME/zsh/zplugin/plugins'
 
 alias org='cd $HOME/org'
 
@@ -54,7 +54,7 @@ alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified
 alias refresh='source $HOME/.zshrc; echo "Reloaded .zshrc."'
 alias reload='exec $SHELL -l -i'
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
-alias bubu='brew update && brew upgrade'
+alias bubu='brew update && brew upgrade && brew cleanup'
 
 ###
 ### Git aliases

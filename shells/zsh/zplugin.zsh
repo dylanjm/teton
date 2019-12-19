@@ -32,7 +32,8 @@ zplugin light-mode for \
     zplugin/z-a-patch-dl \
     zplugin/z-a-submods \
     zplugin/z-a-bin-gem-node \
-    zplugin/z-a-rust
+    zplugin/z-a-rust \
+    zplugin/z-a-man
 
 zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
 zplugin $load sindresorhus/pure

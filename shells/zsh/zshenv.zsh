@@ -1,4 +1,5 @@
 #!/usr/local/bin/zsh
+#unsetopt GLOBAL_RCS
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
@@ -113,9 +114,9 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 ###
 ### Paths
 ###
-fpath=($XDG_CACHE_HOME/zsh/zplugin/completions
+fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
        /usr/local/share/zsh/site-functions
-       /usr/local/Cellar/zsh/5.7.1/share/zsh/functions
+       $XDG_CACHE_HOME/zsh/zplugin/completions
        $ZSH/functions)
 
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)

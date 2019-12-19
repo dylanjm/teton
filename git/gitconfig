@@ -2,16 +2,19 @@
 	name = Dylan McDowell
 	email = dylanjm@users.noreply.github.com
 [core]
-    pager = less -S -R -F -i -J -M -R -W -x4 -z-4
+    pager = diff-so-fancy | less --tabs=4 -RFX
     warnAmbiguousRefs = true
 	editor = emacsclient -a "emacs" -c
 	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
 	excludesfile = /Users/mcdodj/.gitignore
+[github]
+    user = dylanjm
+[rebase]
+    autosquash = true
+[push]
+    default = current
 [branch]
     autosetuprebase = always
-[rerere]
-    enabled = 1
-    autoupdate = 1
 [color]
 	ui = auto
 [color "branch"]
@@ -28,6 +31,3 @@
        added = green bold
        changed = yellow bold
        untracked = red bold
-[pager]
-	branch = false
-    stash = false

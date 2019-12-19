@@ -29,6 +29,7 @@ brew "coreutils"
 brew "curl"
 brew "dash"
 brew "dbus", restart_service: true
+brew "diff-so-fancy"
 brew "diffutils"
 brew "direnv"
 brew "doxygen"

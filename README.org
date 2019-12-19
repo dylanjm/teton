@@ -1,9 +1,6 @@
 #+title: Dotz
 #+author: Dylan McDowell
-#+html: <img alt="macOS Support" src="https://img.shields.io/badge/platform-macOS-blue">
-#+html: <img alt="Main Editor: Emacs" src="https://img.shields.io/badge/editor-Emacs27%2B-blueviolet">
-#+html: <img alt="Main Shell: ZSH" src="https://img.shields.io/badge/shell-ZSH-orange">
-#+html: <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/dylanjm/dotz">
+#+html: <img alt="macOS Support" src="https://img.shields.io/badge/platform-macOS-blue"> <img alt="Main Editor: Emacs" src="https://img.shields.io/badge/editor-Emacs27%2B-blueviolet"> <img alt="Main Shell: ZSH" src="https://img.shields.io/badge/shell-ZSH-orange"> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/dylanjm/dotz">
 
 /file last updated/: 2019-12-20 12:28:22
 

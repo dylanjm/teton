@@ -1,6 +1,8 @@
 #+title: Dotz
 #+author: Dylan McDowell
 
+/last updated/: 2019-12-19 23:19:53
+
 * Summary
 My personal dotfile configuration focused on macOS support. At the moment there are no plans to add support for other operating systems. This is because both my personal and work machine run macOS; However I have tried to implement these files in a modular way that would easily support other *nix operating systems in the future. The focus on macOS allows for a simplicity in configuration that should be easy to understand and implement in your own workflow. While creating these dotfiles, my major development goals (in no particular order)  are:
 
@@ -19,14 +21,14 @@ My design phillosphy is that a personal  configuration should remain relatively 
 #+RESULTS:
 #+begin_example
 Directory structure:
-├── apps         # Configuration files for applications like: Karabiner, BTT, iTerm, Python, Julia, Rust etc.
+├── apps         # Configuration files for apps like: BTT, iTerm, Python, Julia, Rust, etc.
 ├── bin          # Personal scripts that I've added to my path.
 ├── bootstrap    # Bootstraping files to install fonts, homebrew, command-line-tools, etc.
-├── dotbot       # Git submodule that manages installation and symlinking dotfiles to proper locations
+├── dotbot       # Git submodule that manages installation and symlinking dotfiles to proper locations.
 ├── editors      # Editor configurations for Emacs, Vim, etc.
-├── git          # Global git config and ignore files
-├── misc         # Temporary location for files that may or may not become a permanant addition to my config
-└── shells       # Environment and shell configuration files for zsh, bash, and fish
+├── git          # Global git config and ignore files.
+├── misc         # Temporary location for random files.
+└── shells       # Environment and shell configuration files for zsh, bash, and fish.
 #+end_example
 
 * Installation
@@ -35,3 +37,12 @@ Directory structure:
 * Features
 ** Zsh
 ** Emacs
+
+* COMMENT Local Variables
+# Local Variables:
+# time-stamp-line-limit: 2000
+# time-stamp-format: "%Y-%m-%d %H:%M:%S"
+# time-stamp-active: t
+# time-stamp-start: "\/last updated\/:[ ]*"
+# time-stamp-end: "$"
+# End:

@@ -1,7 +1,7 @@
 #+title: Dotz
 #+author: Dylan McDowell
 
-#+BEGIN_EXPORT html
+
 <style>
   .inline-block {
    display: inline-block;
@@ -25,7 +25,6 @@
       <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/dylanjm/dotz">
     </div>
 </div>
-#+END_EXPORT
 
 /file last updated/: 2019-12-20 12:28:22
 

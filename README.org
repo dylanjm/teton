@@ -11,7 +11,6 @@ My personal dotfile configuration focused on macOS support. At the moment there 
 
 My design phillosphy is that a personal  configuration should remain relatively transparent and not abstract away the bulk of  customisation. Each line of code should be clearly understood and purposefully written to contribute to the organization of the entire configuration. Dotfiles should serve as a measure of convience, but also as a long-running history of workflow experiments. Through time, dotfiles should evolve and and adopt new features and methods. So often, I come across monolithic  configurations that haven't been updated in two years. At this day and age, two years is outdated. This is why  my configuration  maxes out native features, to establish a base of conistency. I am then free to experiment with actively developed projects to keep my config up-to-date and relevant.
 
-
 #+begin_src sh :results output :exports results
   echo "Directory structure:"
   tree -d -L 1 ~/dotz
@@ -20,16 +19,14 @@ My design phillosphy is that a personal  configuration should remain relatively 
 #+RESULTS:
 #+begin_example
 Directory structure:
-├── apps
-├── bin
-├── bootstrap
-├── dotbot
-├── editors
-├── git
-├── misc
-└── shells
-
-8 directories
+├── apps         # Configuration files for applications like: Karabiner, BTT, iTerm, Python, Julia, Rust etc.
+├── bin          # Personal scripts that I've added to my path.
+├── bootstrap    # Bootstraping files to install fonts, homebrew, command-line-tools, etc.
+├── dotbot       # Git submodule that manages installation and symlinking dotfiles to proper locations
+├── editors      # Editor configurations for Emacs, Vim, etc.
+├── git          # Global git config and ignore files
+├── misc         # Temporary location for files that may or may not become a permanant addition to my config
+└── shells       # Environment and shell configuration files for zsh, bash, and fish
 #+end_example
 
 * Installation

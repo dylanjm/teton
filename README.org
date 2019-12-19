@@ -1,9 +1,9 @@
 #+title: Dotz
 #+author: Dylan McDowell
-[[https://img.shields.io/badge/platform-macOS-blue]]
-[[https://img.shields.io/badge/editor-Emacs27%2B-blueviolet]]
-[[https://img.shields.io/badge/shell-ZSH-orange]]
-[[https://img.shields.io/github/last-commit/dylanjm/dotz]]
+[[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
+[[file:https://img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg]]
+[[file:https://img.shields.io/badge/shell-ZSH-orange.svg]]
+[[file:https://img.shields.io/github/last-commit/dylanjm/dotz.svg]]
 
 /file last updated/: 2019-12-20 12:28:22
 

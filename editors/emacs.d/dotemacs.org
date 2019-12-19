@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-17 14:05:25
+/last updated/: 2019-12-17 18:48:56
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -2974,7 +2974,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-notmuch-block
 #+begin_src emacs-lisp :tangle no
   (use-package notmuch
-    :disabled t :straight t
+    :straight t
     :config
     (general-setq notmuch-search-oldest-first nil))
 #+end_src
@@ -2986,7 +2986,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 :END:
 #+name: init-mu4e-block
 #+begin_src emacs-lisp :tangle no
-
+  (use-package mu4e
+    :straight t)
 #+end_src
 
 ** Media

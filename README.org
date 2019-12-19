@@ -11,6 +11,27 @@ My personal dotfile configuration focused on macOS support. At the moment there 
 
 My design phillosphy is that a personal  configuration should remain relatively transparent and not abstract away the bulk of  customisation. Each line of code should be clearly understood and purposefully written to contribute to the organization of the entire configuration. Dotfiles should serve as a measure of convience, but also as a long-running history of workflow experiments. Through time, dotfiles should evolve and and adopt new features and methods. So often, I come across monolithic  configurations that haven't been updated in two years. At this day and age, two years is outdated. This is why  my configuration  maxes out native features, to establish a base of conistency. I am then free to experiment with actively developed projects to keep my config up-to-date and relevant.
 
+
+#+begin_src sh :results output :exports results
+  echo "Directory structure:"
+  tree -d -L 1 ~/dotz
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Directory structure:
+├── apps
+├── bin
+├── bootstrap
+├── dotbot
+├── editors
+├── git
+├── misc
+└── shells
+
+8 directories
+#+end_example
+
 * Installation
 ** Dotbot
 

@@ -1,5 +1,6 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
+zstyle cache-path "$XDG_CACHE_HOME/zsh/zcompdump"
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
@@ -33,6 +34,7 @@ export SAVEHIST=100000
 ### ZSH
 ###
 export ZSH="$DOTFILES/shells/zsh"
+export _cache_dir="$XDG_CACHE_HOME/zsh/zcompdump"
 
 ###
 ### Zplugin

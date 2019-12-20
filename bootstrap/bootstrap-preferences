@@ -7,6 +7,9 @@ osascript -e 'tell application "System Preferences" to quit'
 # Ask for the administrator password upfront
 sudo -v
 
+# Disable Auto-Correct
+defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false
+
 # Increase window resize speed for Cocoa applications
 defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 

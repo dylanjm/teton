@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-19 16:52:24
+/last updated/: 2019-12-19 23:19:53
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -57,6 +57,7 @@
     - [[#doc-view-built-in][Doc-View (Built-In)]]
     - [[#ediff-built-in][Ediff (Built-In)]]
     - [[#eldoc-built-in][Eldoc (Built-In)]]
+    - [[#electric-built-in][Electric (Built-In)]]
     - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
     - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
     - [[#epa-built-in][Epa (Built-In)]]
@@ -66,12 +67,14 @@
     - [[#eww-built-in][Eww (Built-In)]]
     - [[#face-remap-built-in][Face-Remap (Built-In)]]
     - [[#files-built-in][Files (Built-In)]]
+    - [[#flyspell-built-in][Flyspell (Built-In)]]
     - [[#frame-built-in][Frame (Built-In)]]
     - [[#gnutls-built-in][Gnutls (Built-In)]]
     - [[#help-built-in][Help (Built-In)]]
     - [[#hideshow-built-in][Hideshow (Built-In)]]
     - [[#image-built-in][Image (Built-In)]]
-    - [[#ispell-built-in][Ispell (Built-In)]]
+    - [[#imenu-built-in][iMenu (Built-In)]]
+    - [[#ispell-built-in][iSpell (Built-In)]]
     - [[#ls-lisp-built-in][LS-Lisp (Built-In)]]
     - [[#make-mode-built-in][Make-Mode (Built-In)]]
     - [[#minibuffer-built-in][Minibuffer (Built-In)]]
@@ -132,6 +135,7 @@
     - [[#direnv][Direnv]]
     - [[#taskrunner][Taskrunner]]
   - [[#frameworks][Frameworks]]
+    - [[#amx][AMX]]
     - [[#prescient][Prescient]]
     - [[#hold-posframe][HOLD Posframe]]
     - [[#flx][FLX]]
@@ -139,7 +143,6 @@
     - [[#ivy-prescient][Ivy-Prescient]]
     - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
     - [[#ivy-dired-history][Ivy-Dired-History]]
-    - [[#flyspell-correct-ivy][Flyspell-Correct-Ivy]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
   - [[#autocompletion][Autocompletion]]
@@ -168,7 +171,7 @@
     - [[#wgrep][Wgrep]]
     - [[#zop-to-char][Zop-To-Char]]
   - [[#writing][Writing]]
-    - [[#flyspell-built-in][Flyspell (Built-In)]]
+    - [[#flyspell-correct-ivy][Flyspell-Correct-Ivy]]
     - [[#flyspell-correct][Flyspell-Correct]]
     - [[#typo][Typo]]
     - [[#writegood][Writegood]]
@@ -219,6 +222,8 @@
     - [[#org-scrum][Org-Scrum]]
     - [[#org-wc][Org-WC]]
     - [[#toc-org][TOC-Org]]
+    - [[#calfw][Calfw]]
+    - [[#calfw-org][Calfw-Org]]
   - [[#email][Email]]
     - [[#hold-notmuch][HOLD NotMuch]]
     - [[#hold-mu4e][HOLD MU4E]]
@@ -227,6 +232,7 @@
     - [[#htmlize][HTMLize]]
   - [[#version-control][Version Control]]
     - [[#magit][Magit]]
+    - [[#magit-gitflow][Magit-Gitflow]]
     - [[#transient][Transient]]
     - [[#git-attribute][Git-Attribute]]
     - [[#git-config][Git-Config]]
@@ -309,8 +315,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
+                bidi-paragraph-direction 'left-to-right
                 command-line-ns-option-alist nil
                 frame-inhibit-implied-resize t
+                inhibit-default-init t
                 load-prefer-newer t)
 
   (setq file-name-handler-alist nil
@@ -532,6 +540,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar djm--secret-file (no-littering-expand-etc-file-name "secret.el"))
 
   (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
+
+  (defconst EMACS27+ (> emacs-major-version 26))
+  (defconst IS-MAC (eq system-type 'darwin))
 #+end_src
 
 *** Functions
@@ -733,7 +744,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (defun compilation-ansi-color-process-output ()
       (ansi-color-process-output nil)
       (set (make-local-variable 'comint-last-output-start)
-           (point-marker))))
+           (point-marker)))
+    :config
+    (general-setq ansi-color-for-comint-mode t))
 #+end_src
 
 *** Auth-Source (Built-In)
@@ -819,7 +832,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package comint
     :straight (:type built-in) :no-require t
     :config
-    (general-setq comint-prompt-read-only t))
+    (general-setq comint-prompt-read-only t
+                  comint-move-point-for-output t
+                  comint-scroll-show-maximum-output t
+                  comint-scroll-to-bottom-on-output t
+                  comint-scroll-to-botom-on-input t))
 #+end_src
 
 *** Compile (Built-In)
@@ -868,18 +885,23 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           fill-column 80
                           frame-resize-pixelwise t
                           frame-title-format '("%b - Emacs")
+                          highlight-nonselected-windows nil
                           history-delete-duplicates t
                           history-length 3000
                           icon-title-format frame-title-format
+                          indicate-buffer-boundaries nil
+                          indicate-empty-lines nil
                           initial-major-mode 'fundamental-mode
                           initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
                           inhibit-compacting-font-caches t
                           inhibit-startup-echo-area-message t
                           inhibit-startup-screen t
                           indent-tabs-mode nil
+                          resize-mini-windows 'grow-only
+                          max-mini-window-height 0.15
+                          ring-bell-function #'ignore
                           split-width-threshold 160
                           split-height-threshold nil
-                          ring-bell-function #'ignore
                           scroll-conservatively 101
                           scroll-margin 5
                           scroll-preserve-screen-position t
@@ -887,10 +909,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           sentence-end-double-space nil
                           tab-always-indent 'complete
                           tab-width 4
+                          truncate-lines t
+                          truncate-partial-width-windows nil
                           use-dialog-box nil
                           use-file-dialog nil
+                          visible-bell nil
                           window-combination-resize t
                           window-resize-pixelwise t
+                          word-wrap t
                           x-underline-at-descent-line t))
 #+end_src
 
@@ -916,7 +942,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package ediff
     :straight (:type built-in)
     :config
-    (general-setq ediff-window-setup-function #'ediff-setup-windows-plain))
+    (general-setq ediff-window-setup-function #'ediff-setup-windows-plain
+                  ediff-diff-options "-w"
+                  ediff-split-window-function #'split-window-horizontally))
 #+end_src
 *** Eldoc (Built-In)
 #+name: init-eldoc-block
@@ -929,6 +957,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
+*** Electric (Built-In)
+#+name: init-electric-block
+#+begin_src emacs-lisp
+  (use-package electric
+    :straight (:type built-in)
+    :config
+    (general-setq-default electric-indent-chars '(?\n ?\^?)))
+#+end_src
 *** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
@@ -996,7 +1032,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package files
     :straight (:type built-in)
     :config
-    (general-setq-default auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
+    (general-setq-default auto-mode-case-fold nil
+                          auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
                           backup-by-copying t
                           backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
                           confirm-kill-processes nil
@@ -1004,6 +1041,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           create-lockfiles nil
                           delete-old-versions t
                           enable-local-variables :all
+                          find-file-suppress-same-file-warnings t
                           find-file-visit-truename t
                           insert-directory-program "gls"
                           kept-new-versions 6
@@ -1014,6 +1052,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           view-read-only t))
 #+end_src
 
+*** Flyspell (Built-In)
+#+name: init-flyspell-block
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :straight (:type built-in)
+    :config
+    (general-setq flyspell-abbrev-p t
+                  flyspell-use-global-abbrev-table-p t
+                  flyspell-issue-welcome-flag nil
+                  flyspell-issue-message-flag nil))
+#+end_src
 *** Frame (Built-In)
 #+name: init-frame-block
 #+begin_src emacs-lisp
@@ -1036,7 +1085,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:type built-in)
     :config
     (general-setq gnutls-verify-error t
-                  gnutls-min-prime-bits 2048))
+                  gnutls-min-prime-bits 2048
+                  tls-checktrust gnutls-verify-error
+                  tls-program '("guntls-cli --x509cafile %g -p %p %h"
+                                "gnutls-cli -p %p %h"
+                                "openssl s_client -connect %h:%p -no_ssl2 -no_ssl3 -ign_eof")))
 #+end_src
 
 *** Help (Built-In)
@@ -1064,7 +1117,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (imagemagick-register-types))
 #+end_src
-*** Ispell (Built-In)
+*** iMenu (Built-In)
+#+name: init-imenu-block
+#+begin_src emacs-lisp
+  (use-package imenu
+    :straight (:type built-in))
+#+end_src
+
+*** iSpell (Built-In)
 #+name: init-ispell-block
 #+begin_src emacs-lisp
   (use-package ispell
@@ -1078,7 +1138,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq ispell-dictionary "en_US"
                   ispell-program-name (executable-find "hunspell")
                   ispell-really-hunspell t
-                  ispell-silently-savep t))
+                  ispell-silently-savep t)
+    (general-pushnew '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
+                       ("#\\+BEGIN_SRC" . "#\\+END_SRC")
+                       ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")) ispell-skip-region-alist))
 #+end_src
 
 *** LS-Lisp (Built-In)
@@ -1106,6 +1169,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-g" #'minibuffer-keyboard-quit)
     :config
+    (general-setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+
     (defun djm/minibuffer-setup-hook ()
       "With modern packages like Ivy/Counsel, let's extend the gc-threshold while
     using the minibuffer to maximize performance"
@@ -1128,7 +1193,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
     (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
-    (general-add-hook 'minibuffer-setup-hook #'minibuffer-depth-indicate-mode))
+    (general-add-hook 'minibuffer-setup-hook #'minibuffer-depth-indicate-mode)
+    (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 #+end_src
 
 *** NS-Win (Built-In)
@@ -1143,9 +1209,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   mac-right-option-modifier 'none
                   mac-function-modifier 'hyper)
 
-    (general-setq  ns-pop-up-frames nil
-                   ns-use-native-fullscreen nil
-                   ns-use-thin-smoothing t))
+    (general-setq ns-pop-up-frames nil
+                  ns-use-native-fullscreen nil
+                  ns-use-thin-smoothing t)
+
+    (and (or (daemonp)
+             (display-graphic-p))
+         (require 'ns-auto-titlebar nil t)
+         (ns-auto-titlebar-mode +1)))
 #+end_src
 
 *** Pixel-Scroll (Built-In)
@@ -1197,8 +1268,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                                   kill-ring
                                                   regexp-search-ring
                                                   extended-command-history)
-                  savehist-autosave-interval 60))
-
+                  savehist-autosave-interval nil
+                  savehist-save-minibuffer-history t))
 #+end_src
 
 *** Saveplace (Built-In)
@@ -1215,7 +1286,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package select
     :straight (:type built-in)
     :init
-    (general-setq select-enable-clipboard t))
+    (general-setq select-enable-clipboard t
+                  x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
 
 *** Shell (Built-In)
@@ -1237,9 +1309,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq blink-matching-paren t
                   column-number-mode nil
+                  delete-trailing-lines nil
                   display-time-mode t
                   eval-expression-print-length nil
                   eval-expression-print-level nil
+                  idle-update-delay 1
                   inhibit-point-motion-hooks t
                   kill-do-not-save-duplicates t
                   kill-ring-max 300
@@ -1249,7 +1323,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   save-interprogram-paste-before-kill t
                   set-mark-command-repeat-pop t
                   show-trailing-whitespace nil))
-
 #+end_src
 
 *** Smerge (Built-In)
@@ -1605,13 +1678,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
     :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
               "n" #'pdf-view-next-page
-              "N" #'pdf-view-previous-page
               "p" #'pdf-view-previous-page)
     :config
-    (progn
-      (pdf-tools-install)
-      (general-setq pdf-view-display-size 'fit-page
-                    pdf-annot-activate-created-annotations t)))
+    (pdf-tools-install)
+    (general-setq pdf-view-display-size 'fit-page
+                  pdf-view-use-scaling t
+                  pdf-view-use-imagemagick nil
+                  pdf-annot-activate-created-annotations t))
 #+end_src
 ** Shells
 *** [[https://github.com/manateelazycat/aweshell][Aweshell]]
@@ -1740,6 +1813,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner"))
 #+end_src
 ** Frameworks
+*** [[https://github.com/DarwinAwardWinner/amx][AMX]]
+#+name: init-amx-block
+#+begin_src emacs-lisp
+  (use-package amx
+    :straight t
+    :ghook 'ivy-mode-hook)
+
+#+end_src
 *** [[https://github.com/raxod502/prescient.el][Prescient]]
 #+name: init-prescient-block
 #+begin_src emacs-lisp
@@ -1790,16 +1871,24 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      'ivy-switch-buffer-map
      "C-x k" #'ivy-switch-buffer-kill)
     :config
+    (require 'counsel nil t)
     (general-setq ivy-dynamic-exhibit-delay-ms 100
                   ivy-use-selectable-prompt t
                   ivy-case-fold-search-default 'auto
                   ivy-initial-inputs-alist nil
                   ivy-use-virtual-buffers t
-                  ivy-height 15
+                  ivy-height 17
+                  ivy-wrap t
+                  ivy-fixed-height-minibuffer t
+                  ivy-magic-slash-non-match-action nil
+                  ivy-on-del-error-function #'ignore
                   ivy-virtual-abbreviate 'name
                   ivy-count-format "(%d/%d) "
                   ivy-flx-limit 4000
-                  ivy-sort-max-size 50000))
+                  ivy-sort-max-size 50000)
+
+    (setf (alist-get 't ivy-format-functions-alist)
+          #'ivy-format-function-line))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Ivy-Prescient]]
@@ -1838,12 +1927,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :init
     (general-pushnew 'ivy-dired-history-variable savehist-additional-variables))
 #+end_src
-*** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct-Ivy]]
-#+name: init-flyspell-correct-ivy
-#+begin_src emacs-lisp
-  (use-package flyspell-correct-ivy
-    :straight t)
-#+end_src
 *** [[https://github.com/abo-abo/swiper][Counsel]]
 #+name: init-counsel-block
 #+begin_src emacs-lisp
@@ -1865,7 +1948,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq counsel-describe-function-function #'helpful-callable
                   counsel-describe-variable-function #'helpful-variable
-                  counsel-find-file-at-point t)
+                  counsel-find-file-at-point t
+                  counsel-locate-cmd #'counsel-locate-cmd-mdfind)
 
     (general-setq counsel-rg-base-command
                   "rg --with-filename --no-heading --line-number --color never %s -z --sort path")
@@ -1893,7 +1977,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-s" #'swiper
               "C-r" #'swiper)
     :config
-    (general-setq swiper-goto-start-of-match t))
+    (general-setq swiper-goto-start-of-match t
+                  swiper-action-recenter t))
 #+end_src
 
 ** Autocompletion
@@ -2159,14 +2244,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Writing
-*** Flyspell (Built-In)
-#+name: init-flyspell-block
+*** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct-Ivy]]
+#+name: init-flyspell-correct-ivy
 #+begin_src emacs-lisp
-  (use-package flyspell
-    :straight (:type built-in)
-    :config
-    (general-setq flyspell-abbrev-p t
-                  flyspell-use-global-abbrev-table-p t))
+  (use-package flyspell-correct-ivy
+    :straight t)
 #+end_src
 *** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]]
 #+name: init-flyspell-correct-block
@@ -2247,7 +2329,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq undo-tree-save-history t
                   undo-tree-visualizer-timestamps t
-                  undo-tree-visualizer-diff t)
+                  undo-tree-visualizer-diff t
+                  undo-limit 800000
+                  undo-strong-limit 1200000
+                  undo-outer-limit 1200000)
     (global-undo-tree-mode +1))
 #+end_src
 
@@ -2277,7 +2362,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package ws-butler
     :blackout t :straight t
-    :ghook ('emacs-startup-hook #'ws-butler-global-mode))
+    :ghook ('emacs-startup-hook #'ws-butler-global-mode)
+    :config
+    (general-pushnew
+     '(special-mode comint-mode term-mode eshell-mode vterm-mode)
+     ws-butler-global-exempt-modes))
 #+end_src
 
 ** File Explorer
@@ -2951,6 +3040,34 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
+*** [[https://github.com/kiwanami/emacs-calfw][Calfw]]
+#+name: init-calfw-block
+#+begin_src emacs-lisp
+  (use-package calfw
+    :straight t
+    :commands cfw:open-calendar-buffer
+    :config
+    (general-setq cfw:face-item-separator-color nil
+                  cfw:render-line-breaker 'cfw:render-line-breaker-none
+                  cfw:fchar-junction ?╋
+                  cfw:fchar-vertical-line ?┃
+                  cfw:fchar-horizontal-line ?━
+                  cfw:fchar-left-junction ?┣
+                  cfw:fchar-right-junction ?┫
+                  cfw:fchar-top-junction ?┯
+                  cfw:fchar-top-left-corner ?┏
+                  cfw:fchar-top-right-corner ?┓))
+#+end_src
+*** [[https://github.com/kiwanami/emacs-calfw][Calfw-Org]]
+#+name: init-calfw-org-block
+#+begin_src emacs-lisp
+  (use-package calfw-org
+    :straight calfw
+    :commands (cfw:open-org-calendar
+               cfw:org-create-source
+               cfw:open-org-calendar-withkevin
+               my-open-calendar))
+#+end_src
 ** Email
 *** HOLD [[https://notmuchmail.org/][NotMuch]]
 :LOGBOOK:
@@ -3013,9 +3130,23 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-x g"   #'magit-status
               "C-x M-g" #'magit-dispatch)
     :config
-    (general-setq magit-view-git-manual-method 'man))
+    (general-setq magit-view-git-manual-method 'man
+                  transient-default-level 5
+                  magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
+                  magit-diff-refine-hunk t
+                  magit-save-repository-buffers nil
+                  transient-display-buffer-action '(display-buffer-below-selected))
+    (general-add-hook 'magit-popup-mode-hook #'hide-mode-line-mode))
+
 #+end_src
 
+*** [[https://github.com/jtatarik/magit-gitflow][Magit-Gitflow]]
+#+name: init-magit-gitflow-block
+#+begin_src emacs-lisp
+  (use-package magit-gitflow
+    :straight t
+    :ghook ('magit-mode-hook #'turn-on-magit-gitflow))
+#+end_src
 *** [[https://github.com/magit/transient][Transient]]
 #+name: init-transient-block
 #+begin_src emacs-lisp
@@ -3034,14 +3165,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-git-config-block
 #+begin_src emacs-lisp
   (use-package gitconfig-mode
-    :straight t)
+    :straight git-modes)
 #+end_src
 
 *** [[https://github.com/magit/git-modes][Git-Ignore]]
 #+name: init-git-ignore-block
 #+begin_src emacs-lisp
   (use-package gitignore-mode
-    :straight t)
+    :straight git-modes)
 #+end_src
 
 *** [[https://github.com/sshaw/git-link][Git-Link]]
@@ -3055,9 +3186,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-git-commit-block
 #+begin_src emacs-lisp
   (use-package git-commit
-    :straight (:type built-in)
+    :straight nil
+    :ghook ('after-find-file #'global-git-commit-mode)
     :config
-    (general-setq git-commit-summary-max-length 50))
+    (general-setq git-commit-summary-max-length 50
+                  git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line)))
 #+end_src
 
 *** [[https://github.com/magit/forge][Forge]]
@@ -3080,7 +3213,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
   (use-package git-timemachine
-    :straight t)
+    :straight t
+    :config
+    (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
@@ -3131,7 +3266,9 @@ CLOSED: [2019-12-11 Wed 13:56]
     (general-setq lsp-prefer-flymake nil
                   lsp-enable-snippet nil
                   lsp-restart nil
-                  lsp-julia-package-dir nil)
+                  lsp-auto-guess-root t
+                  lsp-keep-workspace-alive nil)
+
 
     (use-package lsp-clients
       :demand t :straight (:type built-in)))
@@ -3141,53 +3278,14 @@ CLOSED: [2019-12-11 Wed 13:56]
     :ghook 'lsp-mode-hook
     :general ("C-c f" #'lsp-ui-sideline-apply-code-actions)
     :config
-    (general-setq lsp-ui-sideline-show-hover nil
+    (general-setq lsp-ui-doc-max-height 8
+                  lsp-uid-doc-max-width 35
+                  lsp-ui-sideline-ignore-duplicate t
+                  lsp-ui-sideline-show-hover nil
                   lsp-eldoc-enable-hover nil)
 
     (use-package lsp-ui-doc
       :demand t :straight (:type built-in)))
-
-  (cl-eval-when (compile)
-    (require 'lsp-mode)
-    (require 'lsp-ui-flycheck))
-
-  (el-patch-feature lsp-mode)
-  (el-patch-feature lsp-ui-flycheck)
-
-  (with-eval-after-load 'lsp-ui-flycheck
-    (el-patch-defun lsp-ui-flycheck--report nil
-      (el-patch-wrap 1
-        (ignore-errors
-          (and flycheck-mode
-               lsp-ui-flycheck-live-reporting
-               (flycheck-buffer))))))
-
-  (with-eval-after-load 'lsp-mode
-    (el-patch-defun lsp--on-diagnostics (workspace params)
-      "Callback for textDocument/publishDiagnostics.
-  interface PublishDiagnosticsParams {
-      uri: string;
-      diagnostics: Diagnostic[];
-  }
-  PARAMS contains the diagnostics data.
-  WORKSPACE is the workspace that contains the diagnostics."
-      (let* ((file (lsp--uri-to-path (gethash "uri" params)))
-             (diagnostics (gethash "diagnostics" params))
-             (buffer (lsp--buffer-for-file file))
-             (workspace-diagnostics (lsp--workspace-diagnostics workspace)))
-        (el-patch-wrap 2
-          (when (hash-table-p workspace-diagnostics)
-            (if (seq-empty-p diagnostics)
-                (remhash file workspace-diagnostics)
-              (when (or lsp-report-if-no-buffer buffer)
-                (puthash file (seq-map #'lsp--make-diag diagnostics) workspace-diagnostics)))))
-
-        (run-hooks 'lsp-diagnostics-updated-hook)
-
-        (when buffer
-          (save-mark-and-excursion
-            (with-current-buffer buffer
-              (run-hooks 'lsp-after-diagnostics-hook)))))))
 #+end_src
 
 ** Syntax & Linting
@@ -3199,7 +3297,10 @@ CLOSED: [2019-12-11 Wed 13:56]
     :ghook ('prog-mode-hook #'global-flycheck-mode)
     :config
     (general-setq flycheck-sh-shellcheck-executable "shellcheck"
-                  flycheck-shellcheck-follow-sources t)
+                  flycheck-shellcheck-follow-sources t
+                  flycheck-emacs-lisp-load-path 'inherit
+                  flycheck-check-syntax-automatically '(save mode-enabled)
+                  flycheck-display-errors-delay 0.25)
     (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
@@ -3211,7 +3312,11 @@ CLOSED: [2019-12-11 Wed 13:56]
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook
     :config
-    (flycheck-posframe-configure-pretty-defaults))
+    (flycheck-posframe-configure-pretty-defaults)
+    (general-setq flycheck-posframe-warning-prefix "⚠ "
+                  flycheck-posframe-info-prefix "… "
+                  flycheck-posframe-error-prefix "🚫 ")
+    (general-add-hook 'flycheck-posframe-inhibit-functions #'company--active-p))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
@@ -3220,7 +3325,9 @@ CLOSED: [2019-12-11 Wed 13:56]
   (use-package flycheck-popup-tip
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook)
+    :ghook 'flycheck-mode-hook
+    :config
+    (general-setq flycheck-popup-tip-error-prefix "ˣ "))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-pos-tip][Flycheck-Pos-Tip]]
@@ -3252,6 +3359,13 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 ** Languages
 *** Emacs-Lisp
+**** Elisp-Mode (Built-In)
+#+name: init-elisp-mode-block
+#+begin_src emacs-lisp
+  (use-package elisp-mode
+    :straight (:type built-in)
+    :mode ("\\.Cask\\'" . emacs-lisp-mode))
+#+end_src
 **** Fix Identation
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
@@ -3356,7 +3470,7 @@ CLOSED: [2019-12-11 Wed 13:56]
     :blackout (dired-async-mode . " "))
 #+end_src
 
-h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
+**** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 #+name: init-auto-compile-block
 #+begin_src emacs-lisp
   (use-package auto-compile
@@ -3431,10 +3545,7 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
       (insert "%>%")
       (reindent-then-newline-and-indent))
     :config
-    (general-setq comint-move-point-for-output t
-                  comint-scroll-show-maximum-output t
-                  comint-scroll-to-bottom-on-output t
-                  ess-ask-for-ess-directory nil
+    (general-setq ess-ask-for-ess-directory nil
                   ess-style 'RStudio
                   ess-eval-visibly 'nowait
                   ess-fill-calls-newlines t
@@ -3447,8 +3558,7 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
                   ess-use-auto-complete nil
                   ess-use-company t
                   inferior-R-args "--no-restore --quiet --no-save"
-                  inferior-ess-same-window nil
-                  comint-scroll-to-botom-on-input t))
+                  inferior-ess-same-window nil))
 #+end_src
 *** Julia
 **** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
@@ -3519,7 +3629,9 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 #+name: init-lsp-python-ms-block
 #+begin_src emacs-lisp
   (use-package lsp-python-ms
-    :demand t :straight t :after (:all lsp-clients python))
+    :demand t :straight t :after (:all lsp-clients python)
+    :config
+    (general-setq lsp-python-ms-python-executable-cmd python-shell-interpreter))
 #+end_src
 
 **** [[https://github.com/pythonic-emacs/anaconda-mode][Anaconda-Mode]]
@@ -3527,7 +3639,9 @@ h*** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 #+begin_src emacs-lisp
   (use-package anaconda-mode
     :blackout t :straight t :after (python)
-    :ghook 'python-mode-hook)
+    :ghook 'python-mode-hook
+    :config
+    (general-setq anaconda-mode-eldoc-as-single-line t))
 #+end_src
 
 **** [[https://github.com/pythonic-emacs/blacken][Blacken]]

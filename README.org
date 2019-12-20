@@ -1,4 +1,4 @@
-#+html: <div align="center"><h1 style="font-size:300%;">Tetong</h1>
+#+html: <div align="center"><p style="font-size:300%;">Teton</p>
 #+html: <i>Dotfiles that make you feel at home.</i>
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
 [[file:https://img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg]]

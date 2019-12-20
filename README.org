@@ -1,3 +1,19 @@
 #+title: Dotz
-#+subtitle: That *nix rice tho...
 #+author: Dylan McDowell
+
+* Summary
+My personal dotfile configuration focused on macOS support. At the moment there are no plans to add support for other operating systems. This is because both my personal and work machine run macOS; However I have tried to implement these files in a modular way that would easily support other *nix operating systems in the future. The focus on macOS allows for a simplicity in configuration that should be easy to understand and implement in your own workflow. While creating these dotfiles, my major development goals (in no particular order)  are:
+
+- Startup speed
+- Seamless navigation within/between applications
+- Max out native customisation before resorting to 3rd party applications
+- Clear and concise documentation for all features and settings
+
+My design phillosphy is that a personal  configuration should remain relatively transparent and not abstract away the bulk of  customisation. Each line of code should be clearly understood and purposefully written to contribute to the organization of the entire configuration. Dotfiles should serve as a measure of convience, but also as a long-running history of workflow experiments. Through time, dotfiles should evolve and and adopt new features and methods. So often, I come across monolithic  configurations that haven't been updated in two years. At this day and age, two years is outdated. This is why  my configuration  maxes out native features, to establish a base of conistency. I am then free to experiment with actively developed projects to keep my config up-to-date and relevant.
+
+* Installation
+** Dotbot
+
+* Features
+** Zsh
+** Emacs

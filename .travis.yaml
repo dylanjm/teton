@@ -9,3 +9,6 @@ matrix:
       script:
         - set -eo pipefail
         - ./install < test/bootstrap-tools.txt
+notifications:
+  email: false
+  irc: false

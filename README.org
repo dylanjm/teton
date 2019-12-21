@@ -6,10 +6,12 @@
 #+ATTR_ORG: :width 1000
 [[file:editors/emacs.d/assets/greg-rakozy-_Q4mepyyjMw-unsplash.jpg]]
 
+#+BEGIN_CENTER
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
 [[file:https://img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg]]
 [[file:https://img.shields.io/badge/shell-ZSH-orange.svg]]
 [[file:https://img.shields.io/github/last-commit/dylanjm/dotz.svg]]
+#+END_CENTER
 
 /Photo by Greg Rakozy on Unsplash/
 

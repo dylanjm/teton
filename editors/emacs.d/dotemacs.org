@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-19 23:19:53
+/last updated/: 2019-12-21 16:00:09
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -140,11 +140,11 @@
     - [[#hold-posframe][HOLD Posframe]]
     - [[#flx][FLX]]
     - [[#ivy][Ivy]]
-    - [[#ivy-prescient][Ivy-Prescient]]
     - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
     - [[#ivy-dired-history][Ivy-Dired-History]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
+    - [[#selectrum][Selectrum]]
   - [[#autocompletion][Autocompletion]]
     - [[#company][Company]]
     - [[#company-box][Company-Box]]
@@ -249,6 +249,7 @@
   - [[#language-server-support][Language Server Support]]
     - [[#lsp-mode][LSP-Mode]]
   - [[#syntax--linting][Syntax & Linting]]
+    - [[#apheleia][Apheleia]]
     - [[#flycheck][Flycheck]]
     - [[#flycheck-posframe][Flycheck-Posframe]]
     - [[#flycheck-popup-tip][Flycheck-Popup-Tip]]
@@ -1827,6 +1828,21 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package prescient
     :straight t
     :config (prescient-persist-mode +1))
+
+  (use-package ivy-prescient
+    :straight t :after (counsel)
+    :ghook 'counsel-mode-hook
+    :config
+    (general-add-hook 'ivy-sort-functions-alist
+                      '((ivy-omni-org . nil)
+                        (swiper . nil)
+                        (org-starter-swiper-config-files . nil)
+                        (counsel-minibuffer-history . nil)
+                        (counsel-mark-ring . nil))))
+
+  (use-package selectrum-prescient
+    :disabled t :straight (:host github :repo "raxod502/prescient.el"
+                        :files ("selectrum-prescient.el")))
 #+end_src
 
 *** HOLD [[https://github.com/tumashu/posframe][Posframe]]
@@ -1891,20 +1907,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
           #'ivy-format-function-line))
 #+end_src
 
-*** [[https://github.com/raxod502/prescient.el][Ivy-Prescient]]
-#+name: init-ivy-prescient-block
-#+begin_src emacs-lisp
-  (use-package ivy-prescient
-    :straight t :after (counsel)
-    :ghook 'counsel-mode-hook
-    :config
-    (general-add-hook 'ivy-sort-functions-alist
-                      '((ivy-omni-org . nil)
-                        (swiper . nil)
-                        (org-starter-swiper-config-files . nil)
-                        (counsel-minibuffer-history . nil)
-                        (counsel-mark-ring . nil))))
-#+end_src
 *** HOLD [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-12 Thu 19:20] \\
@@ -1981,6 +1983,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   swiper-action-recenter t))
 #+end_src
 
+*** [[https://github.com/raxod502/selectrum][Selectrum]]
+#+name: init-selectrum-block
+#+begin_src emacs-lisp :tangle no
+  (use-package selectrum
+    :straight (:host github :repo "raxod502/selectrum"))
+#+end_src
 ** Autocompletion
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
@@ -3289,6 +3297,12 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 ** Syntax & Linting
+*** [[https://github.com/raxod502/apheleia][Apheleia]]
+#+name: init-apheleia-block
+#+begin_src emacs-lisp
+  (use-package apheleia
+    :straight (:host github :repo "raxod502/apheleia"))
+#+end_src
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
 #+begin_src emacs-lisp

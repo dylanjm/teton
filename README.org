@@ -50,8 +50,15 @@ Directory structure:
 #+end_example
 
 * Installation
-** [[https://github.com/anishathalye/dotbot][Dotbot]]
+I use a simple dotfile management tool called [[https://github.com/anishathalye/dotbot][dotbot]] that runs all my bootstrap scripts and symlinks files to their proper location. Dotbot is configured through the =install.conf.yaml= file. You can choose to clone this repo directly or fork it to make your own changes. Then run the following commands in your shell.
 
+#+begin_src bash :exports code
+$ git clone https://github.com/dylanjm/dotz.git ~/dotz
+$ cd ~/dotz
+$ ./install
+#+end_src
+
+Dotbot will then launch the =bootstrap-tools= script and walk you through the installation and symlinking process. If the script encounters any errors, it will automatically exit and the configuration will not be complete.
 * Features
 ** Zsh
 - Extremly fast and configurable package manager - [[https://github.com/zdharma/zplugin][Zplugin]].

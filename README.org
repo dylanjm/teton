@@ -1,5 +1,5 @@
-
-#+html: <div align="center"><h1><i>Teton</i></h1>Dotfiles that make you feel at home
+#+html: <div align="center"><h1 style="font-size:300%;">Tetong</h1>
+#+html: <i>Dotfiles that make you feel at home.</i>
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
 [[file:https://img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg]]
 [[file:https://img.shields.io/badge/shell-ZSH-orange.svg]]

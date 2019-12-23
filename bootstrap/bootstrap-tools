@@ -37,7 +37,7 @@ if [[ ! -e "$(command -v brew)" ]]; then
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
     printf "%b\n" "$marker Checking for Homebrew installation - $status_good"
-    brew upgrade > /dev/null &
+    brew upgrade > /dev/null
 fi
 
 printf "\n%s\n" "Please select a default shell:"

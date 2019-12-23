@@ -82,7 +82,7 @@ if [ "$REPLY" != "4" ]; then
     printf "%b\r" "$marker Checking \$SHELL - $status"
     if [ "$SHELL" != "/usr/local/bin/$opt" ]; then
         printf "%b\n" "$marker Checking \$SHELL - $status_bad"
-        chsh -s "/usr/local/bin/$opt"
+        sudo chsh -s "/usr/local/bin/$opt" "$USER"
         printf "%s is now your default shell. Please restart your terminal once this script has finished" "$opt"
     else
         printf "%b\n" "$marker Checking \$SHELL - $status_good"

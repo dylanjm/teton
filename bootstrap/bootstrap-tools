@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 sudo true
-set -e
+set -eo pipefail
 
 NORMAL='\033[0m'
 GREEN='\033[0;32m'

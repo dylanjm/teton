@@ -107,11 +107,11 @@ if [ $opt = "Yes" ]; then
 fi
 
 printf "%b\r" "$marker Checking font installations - $status"
-if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l)" -lt 200 ]]; then
+if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l) 2>/dev/null" -lt 200 ]]; then
     printf "%b\n" "$marker Checking font installations - $status_bad"
 
     # shellcheck source=bootstrap-fonts.sh
-    source "$DOTFILES/bootstrap/bootstrap-fonts.sh"
+    source ./bootstrap/bootstrap-fonts.sh
 else
     printf "%b\n" "$marker Checking font installations - $status_good"
 fi

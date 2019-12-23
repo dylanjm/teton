@@ -1,6 +1,4 @@
-# https://stackoverflow.com/questions/27644586/how-to-set-up-travis-ci-with-multiple-languages
-# Test on Both GNU/Linux and Mac OS
-name: Test on Mac OS X
+name: Test on macOS
 os: osx
 osx_image: xcode11.3
 sudo: required

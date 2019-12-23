@@ -103,7 +103,7 @@ select opt in "Yes" "No"; do
 done
 
 if [ $opt = "Yes" ]; then
-    brew bundle --file="$DOTFILES/bootstrap/Brewfile"
+    brew bundle --file="./bootstrap/Brewfile"
 fi
 
 printf "%b\r" "$marker Checking font installations - $status"

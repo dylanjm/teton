@@ -73,8 +73,8 @@ if [ "$REPLY" != "4" ]; then
     printf "%b\r" "$marker Checking /etc/shells - $status"
     if ! grep -Fxq "/usr/local/bin/$opt" /etc/shells; then
         printf "%b\n" "$marker Checking /etc/shells - $status_bad"
-        printf "Adding /usr/local/bin/%s to /etc/shells file" "$opt"
-        sudo echo "/usr/local/bin/$opt" | tee -a /etc/shells
+        printf "Adding /usr/local/bin/%s to /etc/shells\n" "$opt"
+        echo "/usr/local/bin/$opt" | sudo tee -a /etc/shells
     else
         printf "%b\n" "$marker Checking /etc/shells $status_good"
     fi

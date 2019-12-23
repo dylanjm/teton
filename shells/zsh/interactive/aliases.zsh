@@ -1,8 +1,6 @@
 ###
 ### ZSH
 ###
-# unalias run-help
-# autoload run-help
 
 ###
 ### Emacs
@@ -14,7 +12,6 @@ alias et="emacsclient -t"
 if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='printf "\e]51;Evterm-clear-scrollback\e\\";tput clear'
 fi
-
 
 # TODO
 
@@ -66,7 +63,6 @@ alias gcm='git commit -m'
 alias gp='git push'
 alias gco='git checkout'
 alias gcob='git checkout -b'
-
 
 ###
 ### Personal Aliases

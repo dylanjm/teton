@@ -3,7 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-21 16:00:09
+/last updated/: 2019-12-22 20:43:09
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -2911,6 +2911,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                                  ("el" . "src emacs-lisp")
                                                  ("d" . "definition")
                                                  ("t" . "theorem"))
+                  org-tags-column 0
                   org-use-fast-todo-selection t
                   org-use-speed-commands t
                   org-yank-adjusted-subtrees t))
@@ -2990,7 +2991,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-setq org-src-window-setup 'current-window
                   org-src-fontify-natively t
-                  org-src-tab-acts-natively t)
+                  org-src-tab-acts-natively t
+                  org-edit-src-content-indentation nil)
 
     (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
@@ -3026,7 +3028,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package org-bullets
     :straight t
-    :ghook 'org-mode-hook)
+    :ghook 'org-mode-hook
+    :config
+    (general-setq org-bullets-bullet-list '("⯄" "❂" "⦾" "✤")))
 #+end_src
 
 *** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]

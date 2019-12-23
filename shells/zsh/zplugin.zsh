@@ -15,11 +15,11 @@ autoload -Uz _zplugin
 
 ### Check if zmodule is installed and built.
 zmodload zdharma/zplugin 2>/dev/null || zpl module build
-zmodload -i zsh/complist
+#zmodload -i zsh/complist
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
-test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
+#test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
 
 ###
 ### Load Zsh Plugins
@@ -28,62 +28,62 @@ test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
 # Change to load=load for debugging.
 load=light
 
-zplugin light-mode for \
-    zplugin/z-a-test \
-    zplugin/z-a-patch-dl \
-    zplugin/z-a-submods \
-    zplugin/z-a-bin-gem-node \
-    zplugin/z-a-rust \
-    zplugin/z-a-man
+# zplugin light-mode for \
+#     zplugin/z-a-test \
+#     zplugin/z-a-patch-dl \
+#     zplugin/z-a-submods \
+#     zplugin/z-a-bin-gem-node \
+#     zplugin/z-a-rust \
+#     zplugin/z-a-man
 
-zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
-zplugin $load sindresorhus/pure
+# zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
+# zplugin $load sindresorhus/pure
 
-zplugin ice wait'1' lucid
-zplugin $load hlissner/zsh-autopair
+# zplugin ice wait'1' lucid
+# zplugin $load hlissner/zsh-autopair
 
-zplugin ice wait'1' lucid
-zplugin $load laggardkernel/zsh-thefuck
+# zplugin ice wait'1' lucid
+# zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate snazzy)"
-export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
+# export LS_COLORS="$(vivid generate snazzy)"
+# export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
-zplugin ice wait'1' lucid blockf
-zplugin $load zsh-users/zsh-completions
+# zplugin ice wait'1' lucid blockf
+# zplugin $load zsh-users/zsh-completions
 
 zplugin ice wait'1' multisrc"*.zsh" lucid
 zplugin $load $ZSH/interactive
 
-zplugin ice wait'1' lucid
-zplugin $load unixorn/git-extra-commands
+# zplugin ice wait'1' lucid
+# zplugin $load unixorn/git-extra-commands
 
-zplugin ice wait'1' lucid
-zplugin $load zdharma/zsh-lint
+# zplugin ice wait'1' lucid
+# zplugin $load zdharma/zsh-lint
 
-zplugin ice wait'1' atinit'zstyle ":history-search-multi-word" page-size "7"' lucid
-zplugin $load zdharma/history-search-multi-word
+# zplugin ice wait'1' atinit'zstyle ":history-search-multi-word" page-size "7"' lucid
+# zplugin $load zdharma/history-search-multi-word
 
-zplugin ice wait'1a' lucid blockf
-zplugin $load rupa/z
+# zplugin ice wait'1a' lucid blockf
+# zplugin $load rupa/z
 
-zplugin ice wait'1b' lucid blockf
-zplugin $load changyuheng/fz
+# zplugin ice wait'1b' lucid blockf
+# zplugin $load changyuheng/fz
 
-zplugin ice wait'2' lucid as"null" sbin atclone'./build.zsh' atpull'%atclone' blockf
-zplugin $load molovo/zunit
+# zplugin ice wait'2' lucid as"null" sbin atclone'./build.zsh' atpull'%atclone' blockf
+# zplugin $load molovo/zunit
 
-zplugin ice wait'2' lucid as"null" sbin"color.zsh -> color"
-zplugin $load molovo/color
+# zplugin ice wait'2' lucid as"null" sbin"color.zsh -> color"
+# zplugin $load molovo/color
 
-zplugin ice wait"2" lucid as"program" pick"revolver"
-zplugin $load psprint/revolver
+# zplugin ice wait"2" lucid as"program" pick"revolver"
+# zplugin $load psprint/revolver
 
-zplugin wait'2b' lucid for \
-        atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting \
-        atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
+# zplugin wait'2b' lucid for \
+#         atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" zdharma/fast-syntax-highlighting \
+#         atload"!_zsh_autosuggest_start" zsh-users/zsh-autosuggestions \
 
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-ZSH_AUTOSUGGEST_MANUAL_REBIND=true
+# ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# ZSH_AUTOSUGGEST_USE_ASYNC=true
+# ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 
 zflai-msg "[zshrc] Zplugin block took ${(M)$(( SECONDS * 1000 ))#*.?} ms"

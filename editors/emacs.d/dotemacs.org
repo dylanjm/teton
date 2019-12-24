@@ -3,11 +3,7 @@
 #+startup: content
 #+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
 
-[[file:https://img.shields.io/badge/GNU%20Emacs-27.0.50-b48ead.svg?style=flat-square]]
-[[file:https://img.shields.io/badge/org--mode-9.3-489a9f.svg?style=flat-square]]
-[[file:https://img.shields.io/badge/use--package-2.4-88c0d0.svg?style=flat-square]]
-
-/last updated/: 2019-12-23 16:42:30
+/last updated/: 2019-12-23 19:37:05
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -351,7 +347,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
                                       (vertical-scroll-bars)
-                                      (font . "Iosevka SS09-24:weight=ultra-light")))
+                                      (font . "Iosevka SS09-16:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -2896,7 +2892,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                 org-archive)
                   org-outline-path-complete-in-steps nil
                   org-pretty-entities t
-                  org-return-follows-link t
+                  org-return-follows-link nil
                   org-show-notification-handler 'message
                   org-special-ctrl-a/e t
                   org-special-ctrl-k t

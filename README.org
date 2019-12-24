@@ -2,8 +2,6 @@
 
 [[file:https://travis-ci.com/dylanjm/teton.svg?branch=master]]
 [[file:https:/img.shields.io/badge/platform-macOS-blue.svg?style=flat-square]]
-[[file:https:/img.shields.io/badge/editor-Emacs27%2B-blueviolet.svg?style=flat-square]]
-[[file:https:/img.shields.io/badge/shell-ZSH-orange.svg?style=flat-square]]
 [[file:https:/img.shields.io/github/last-commit/dylanjm/teton.svg?style=flat-square]]
 
 * Summary

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg?style=flat-square]]
 
-/last updated/: 2019-12-23 21:53:52
+/last updated/: 2019-12-24 11:02:37
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -145,7 +145,7 @@
     - [[#ivy-dired-history][Ivy-Dired-History]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
-    - [[#selectrum][Selectrum]]
+    - [[#hold-selectrum][HOLD Selectrum]]
   - [[#autocompletion][Autocompletion]]
     - [[#company][Company]]
     - [[#company-box][Company-Box]]
@@ -197,7 +197,7 @@
     - [[#cancelled-dired-du][CANCELLED Dired-Du]]
     - [[#dired-git-info][Dired-Git-Info]]
     - [[#dired-hacks][Dired-Hacks]]
-    - [[#dired-k][Dired-K]]
+    - [[#cancelled-dired-k][CANCELLED Dired-K]]
     - [[#dired-rsync][Dired-Rsync]]
     - [[#dired-sidebar][Dired-Sidebar]]
     - [[#diredfl][Diredfl]]
@@ -229,7 +229,7 @@
     - [[#hold-notmuch][HOLD NotMuch]]
     - [[#hold-mu4e][HOLD MU4E]]
   - [[#media][Media]]
-    - [[#spotify][Spotify]]
+    - [[#hold-spotify][HOLD Spotify]]
     - [[#htmlize][HTMLize]]
   - [[#version-control][Version Control]]
     - [[#magit][Magit]]
@@ -313,42 +313,43 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 20000000)
+  (defvar default-gc-cons-threshold 67108864) ;; 64 mb
 
   (setq-default auto-window-vscroll nil
-                bidi-display-reordering 'left-to-right
-                bidi-paragraph-direction 'left-to-right
-                command-line-ns-option-alist nil
-                frame-inhibit-implied-resize t
-                inhibit-default-init t
-                load-prefer-newer t)
+		bidi-display-reordering 'left-to-right
+		bidi-paragraph-direction 'left-to-right
+		command-line-ns-option-alist nil
+		frame-inhibit-implied-resize t
+		inhibit-default-init t
+		site-run-file nil
+		load-prefer-newer t)
 
   (setq file-name-handler-alist nil
-        gc-cons-threshold extended-gc-cons-threshold
-        package-enable-at-startup nil)
+	gc-cons-threshold extended-gc-cons-threshold
+	package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
     (setq file-name-handler-alist default-file-name-handler-alist
-          gc-cons-percentage 0.1))
+	  gc-cons-percentage 0.1))
 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
   (run-with-idle-timer 5 nil (lambda ()
-                               (setq-default gc-cons-threshold default-gc-cons-threshold)
-                               (garbage-collect)))
+			       (setq-default gc-cons-threshold default-gc-cons-threshold)
+			       (garbage-collect)))
 #+end_src
 
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
-                                      (window-bottom-divider-width . 20)))
+				      (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-                                      (alpha . (98 98))
-                                      (tool-bar-lines . 0)
-                                      (ns-appearance . dark)
-                                      (vertical-scroll-bars)
-                                      (font . "Iosevka SS09-16:weight=ultra-light")))
+				      (alpha . (100 100))
+				      (tool-bar-lines . 0)
+				      (ns-appearance . dark)
+				      (vertical-scroll-bars)
+				      (font . "Iosevka SS09-16:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -1154,7 +1155,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 *** Make-Mode (Built-In)
 #+name: init-makefile-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package make-mode
     :straight (:type built-in)
     :blackout ((makefile-automake-mode . "Makefile")
@@ -1398,7 +1399,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** Secret File
 #+name: init-secret-load-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (when (file-exists-p djm--secret-file)
     (load djm--secret-file :noerror))
 #+end_src
@@ -1984,7 +1985,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   swiper-action-recenter t))
 #+end_src
 
-*** [[https://github.com/raxod502/selectrum][Selectrum]]
+*** HOLD [[https://github.com/raxod502/selectrum][Selectrum]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-24 Tue 11:00] \\
+  This eventually might be a replacement for ivy soon.
+:END:
 #+name: init-selectrum-block
 #+begin_src emacs-lisp :tangle no
   (use-package selectrum
@@ -2353,7 +2358,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 *** [[https://github.com/purcell/whitespace-cleanup-mode][Whitespace-Cleanup]]
 #+name: init-whitespace-cleanup-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package whitespace-cleanup-mode
     :blackout t :straight t
     :ghook whitespace-modes
@@ -2565,7 +2570,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "<backtab>" #'dired-subtree-cycle))
 #+end_src
 
-*** [[https://github.com/syohex/emacs-dired-k][Dired-K]]
+*** CANCELLED [[https://github.com/syohex/emacs-dired-k][Dired-K]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-24 Tue 11:01] \\
+  I don't like the dired-k styling
+:END:
 #+name: init-dired-k-block
 #+begin_src emacs-lisp :tangle no
   (use-package dired-k
@@ -2992,8 +3001,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-setq org-src-window-setup 'current-window
                   org-src-fontify-natively t
-                  org-src-tab-acts-natively t
-                  org-edit-src-content-indentation nil)
+                  org-src-tab-acts-natively t)
 
     (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
     (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
@@ -3042,7 +3050,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 *** [[https://github.com/tesujimath/org-wc][Org-WC]]
 #+name: init-org-src-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package org-wc
     :straight t :after (org))
 #+end_src
@@ -3107,7 +3115,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Media
-*** [[https://github.com/danielfm/spotify.el][Spotify]]
+*** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-24 Tue 11:01] \\
+  I'll come back to this later
+:END:
 #+name: init-spotify-block
 #+begin_src emacs-lisp :tangle no
   (use-package spotify
@@ -3670,7 +3682,6 @@ CLOSED: [2019-12-11 Wed 13:56]
     :straight t :after (python)
     :commands (blacken-buffer))
 #+end_src
-
 
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]

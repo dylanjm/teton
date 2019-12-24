@@ -9,6 +9,8 @@ apps/direnv/allow/
 ### Emacs ###
 # -*- mode: gitignore; -*-
 straight/
+init.el
+early-init.el
 transient/
 dotemacs.bak.org
 *~

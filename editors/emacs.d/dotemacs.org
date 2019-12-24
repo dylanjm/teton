@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg?style=flat-square]]
 
-/last updated/: 2019-12-24 11:02:37
+/last updated/: 2019-12-24 13:32:10
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -122,7 +122,7 @@
     - [[#gcmh][GCMH]]
   - [[#system][System]]
     - [[#osx-trash][OSX-Trash]]
-    - [[#pdf-tools][PDF-Tools]]
+    - [[#hold-pdf-tools][HOLD PDF-Tools]]
   - [[#shells][Shells]]
     - [[#aweshell][Aweshell]]
     - [[#eshell-prompt-extras][Eshell-Prompt-Extras]]
@@ -131,6 +131,7 @@
     - [[#vterm][Vterm]]
     - [[#multi-libvterm][Multi-Libvterm]]
     - [[#vterm-toggle][Vterm-Toggle]]
+    - [[#term-keys][Term-Keys]]
   - [[#project-management][Project Management]]
     - [[#projectile][Projectile]]
     - [[#direnv][Direnv]]
@@ -146,6 +147,7 @@
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
     - [[#hold-selectrum][HOLD Selectrum]]
+    - [[#snails][Snails]]
   - [[#autocompletion][Autocompletion]]
     - [[#company][Company]]
     - [[#company-box][Company-Box]]
@@ -153,10 +155,12 @@
     - [[#company-flx][Company-FLX]]
     - [[#company-shell][Company-Shell]]
     - [[#company-emoji][Company-Emoji]]
+    - [[#company-tabnine][Company-Tabnine]]
     - [[#yasnippet][Yasnippet]]
   - [[#documentation][Documentation]]
     - [[#helpful][Helpful]]
     - [[#which-key][Which-Key]]
+    - [[#discover-my-major][Discover-My-Major]]
   - [[#editing-tools][Editing Tools]]
     - [[#anzu][Anzu]]
     - [[#deadgrep][Deadgrep]]
@@ -165,7 +169,9 @@
     - [[#expand-region][Expand-Region]]
     - [[#hold-interactive-align][HOLD Interactive-Align]]
     - [[#multiple-cursors][Multiple-Cursors]]
+    - [[#popup-kill-ring][Popup-Kill-Ring]]
     - [[#string-inflection][String-Inflection]]
+    - [[#sudo-edit][Sudo-Edit]]
     - [[#tiny][Tiny]]
     - [[#visual-regexp][Visual-Regexp]]
     - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
@@ -219,6 +225,7 @@
     - [[#org-agenda][Org-Agenda]]
     - [[#org-src][Org-Src]]
     - [[#org-ob][Org-Ob]]
+    - [[#ox-gfm][Ox-GFM]]
     - [[#org-bullets][Org-Bullets]]
     - [[#org-scrum][Org-Scrum]]
     - [[#org-wc][Org-WC]]
@@ -262,12 +269,14 @@
     - [[#markdown][Markdown]]
     - [[#yaml][YAML]]
     - [[#latex][LaTeX]]
+    - [[#go][Go]]
     - [[#ess][ESS]]
     - [[#julia][Julia]]
     - [[#python][Python]]
   - [[#miscellaneous][Miscellaneous]]
     - [[#speedtype][SpeedType]]
     - [[#hold-ledger][HOLD Ledger]]
+    - [[#2048-game][2048-Game]]
   - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
@@ -316,40 +325,40 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar default-gc-cons-threshold 67108864) ;; 64 mb
 
   (setq-default auto-window-vscroll nil
-		bidi-display-reordering 'left-to-right
-		bidi-paragraph-direction 'left-to-right
-		command-line-ns-option-alist nil
-		frame-inhibit-implied-resize t
-		inhibit-default-init t
-		site-run-file nil
-		load-prefer-newer t)
+        bidi-display-reordering 'left-to-right
+        bidi-paragraph-direction 'left-to-right
+        command-line-ns-option-alist nil
+        frame-inhibit-implied-resize t
+        inhibit-default-init t
+        site-run-file nil
+        load-prefer-newer t)
 
   (setq file-name-handler-alist nil
-	gc-cons-threshold extended-gc-cons-threshold
-	package-enable-at-startup nil)
+    gc-cons-threshold extended-gc-cons-threshold
+    package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
     (setq file-name-handler-alist default-file-name-handler-alist
-	  gc-cons-percentage 0.1))
+      gc-cons-percentage 0.1))
 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
   (run-with-idle-timer 5 nil (lambda ()
-			       (setq-default gc-cons-threshold default-gc-cons-threshold)
-			       (garbage-collect)))
+                   (setq-default gc-cons-threshold default-gc-cons-threshold)
+                   (garbage-collect)))
 #+end_src
 
 *** Pre-Gui Optimization
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
-				      (window-bottom-divider-width . 20)))
+                      (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-				      (alpha . (100 100))
-				      (tool-bar-lines . 0)
-				      (ns-appearance . dark)
-				      (vertical-scroll-bars)
-				      (font . "Iosevka SS09-16:weight=ultra-light")))
+                      (alpha . (100 100))
+                      (tool-bar-lines . 0)
+                      (ns-appearance . dark)
+                      (vertical-scroll-bars)
+                      (font . "Iosevka SS09-16:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -416,9 +425,10 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-  (setq-default use-package-verbose nil
+  (setq-default use-package-verbose t
                 use-package-always-defer t
-                use-package-compute-statistics nil)
+                use-package-compute-statistics t
+                use-package-enable-imenu-support t)
 
   (straight-use-package 'use-package)
 #+end_src
@@ -1077,6 +1087,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (blink-cursor-mode -1)
       (tooltip-mode -1)
       (mouse-wheel-mode -1)
+      (global-so-long-mode +1)
       (unless (display-graphic-p)
         (menu-bar-mode -1))))
 #+end_src
@@ -1325,6 +1336,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   mode-line-percent-position nil
                   save-interprogram-paste-before-kill t
                   set-mark-command-repeat-pop t
+                  shift-select-mode nil
                   show-trailing-whitespace nil))
 #+end_src
 
@@ -1382,7 +1394,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package winner
     :straight (:type built-in)
-    :ghook 'after-init-hook)
+    :ghook 'after-init-hook
+    :config
+    (general-setq winner-boring-buffers '("*Completions*"
+                                          "*Compile-Log*"
+                                          "*inferior-lisp*"
+                                          "*Fuzzy Completions*"
+                                          "*Apropos*"
+                                          "*Help*"
+                                          "*cvs*"
+                                          "*Buffer List*"
+                                          "*Ibuffer*")))
 #+end_src
 
 ** User Files
@@ -1672,10 +1694,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook ('after-init-hook #'osx-trash-setup))
 #+end_src
 
-*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
+*** HOLD [[https://github.com/politza/pdf-tools][PDF-Tools]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-24 Tue 11:34] \\
+  Getting compile errors with this package now
+:END:
 Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
 #+name: init-pdf-tools-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package pdf-tools
     :straight t
     :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
@@ -1738,7 +1764,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package vterm
     :straight t
     :preface
-    (setq vterm-install t)
+    (general-setq vterm-install t)
     :config
     (general-setq vterm-install t
                   cursor-type 'bar
@@ -1772,6 +1798,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                    (dedicated . t)
                    (reusable-frames . visible)
                    (window-height . 0.3))))
+#+end_src
+*** [[https://github.com/CyberShadow/term-keys][Term-Keys]]
+#+name: init-term-keys-block
+#+begin_src emacs-lisp
+  (use-package term-keys
+    :straight (:host github :repo "CyberShadow/term-keys"))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
@@ -1995,6 +2027,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package selectrum
     :straight (:host github :repo "raxod502/selectrum"))
 #+end_src
+*** [[https://github.com/manateelazycat/snails][Snails]]
+#+name: init-snails-block
+#+begin_src emacs-lisp
+  (use-package snails
+    :straight (:host github :repo "manateelazycat/snails"))
+#+end_src
 ** Autocompletion
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
@@ -2076,6 +2114,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package company-emoji
     :straight t)
 #+end_src
+*** [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]]
+#+name: init-company-tabnine-block
+#+begin_src emacs-lisp
+  (use-package company-tabnine
+    :straight t
+    :ghook ('company-mode-hook #'arco/configure-tabnine)
+    :preface
+    (defun arco/configure-tabnine ()
+      (add-to-list 'company-backends #'company-tabnine)))
+#+end_src
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2132,7 +2180,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook 'emacs-startup-hook
     :config
+    (general-setq which-key-separator " "
+                  which-key-prefix-prefix "+")
     (which-key-setup-side-window-bottom))
+#+end_src
+*** [[https://github.com/jguenther/discover-my-major][Discover-My-Major]]
+#+name: init-discover-my-major-block
+#+begin_src emacs-lisp
+  (use-package discover-my-major
+    :straight t
+    :general
+    ("C-h C-m" #'discover-my-major))
 #+end_src
 ** Editing Tools
 *** [[https://github.com/syohex/emacs-anzu][Anzu]]
@@ -2162,7 +2220,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :general
     ("C-c i d" #'crux-downcase-region
-     "C-c i u" #'crux-upcase-region))
+     "C-c i u" #'crux-upcase-region
+     [remap move-beginning-of-line] #'crux-move-beginning-of-line
+     [remap kill-line] #'crux-smart-kill-line))
 #+end_src
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
@@ -2199,6 +2259,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
+*** [[https://github.com/waymondo/popup-kill-ring][Popup-Kill-Ring]]
+#+name: init-popup-kill-ring-block
+#+begin_src emacs-lisp
+  (use-package popup-kill-ring
+    :straight t)
+#+end_src
 *** [[https://github.com/akicho8/string-inflection][String-Inflection]]
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
@@ -2218,6 +2284,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-c i p" #'string-inflection-python-style-cycle))
 #+end_src
 
+*** [[https://github.com/nflath/sudo-edit][Sudo-Edit]]
+#+name: init-sudo-edit-block
+#+begin_src emacs-lisp
+  (use-package sudo-edit
+    :straight t
+    :commands (sudo-edit))
+#+end_src
 *** [[https://github.com/abo-abo/tiny][Tiny]]
 #+name: init-tiny-block
 #+begin_src emacs-lisp
@@ -2652,7 +2725,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :config
     (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-                  avy-all-windows nil))
+                  avy-all-windows nil
+                  avy-timeout-seconds 0.3
+                  avy-style 'pre))
 #+end_src
 
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
@@ -3031,6 +3106,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (use-package ob-sqlite
     :straight (:type built-in))
+#+end_src
+*** Ox-GFM
+#+name: init-ox-gfm-block
+#+begin_src emacs-lisp
+  (use-package ox-gfm
+    :straight nil)
 #+end_src
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
@@ -3560,6 +3641,13 @@ CLOSED: [2019-12-11 Wed 13:56]
 
 #+end_src
 
+*** Go
+#+name: init-go-block
+#+begin_src emacs-lisp
+  (use-package go-mode
+    :mode "\\.go\\'"
+    :ghook ('before-save-hook #'gofmt-before-save))
+#+end_src
 *** ESS
 #+name: init-ess-block
 #+begin_src emacs-lisp
@@ -3700,6 +3788,12 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+name: init-ledger-block
 #+begin_src emacs-lisp :tangle no
   (use-package ledger-mode
+    :straight t)
+#+end_src
+*** [[https://github.com/emacsmirror/2048-game][2048-Game]]
+#+name: init-2048-block
+#+begin_src emacs-lisp
+  (use-package 2048-game
     :straight t)
 #+end_src
 ** Footer

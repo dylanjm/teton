@@ -1,7 +1,6 @@
 #+title: Arco Emacs
 #+author: Dylan McDowell
-#+startup: content
-#+property: header-args :tangle "~/dotz/editors/emacs.d/init.el"
+#+property: header-args :tangle "~/teton/editors/emacs.d/init.el"
 
 /last updated/: 2019-12-23 19:37:05
 
@@ -290,7 +289,7 @@ This document is my current emacs config which contains the code for my =early-i
 
 * Early-Init
 :properties:
-:header-args: :tangle "~/dotz/editors/emacs.d/early-init.el"
+:header-args: :tangle "~/teton/editors/emacs.d/early-init.el"
 :end:
 ** Header
 #+name: early-init-header-block

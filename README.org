@@ -1,8 +1,10 @@
 #+title: Teton
 
-[[file:https://travis-ci.com/dylanjm/teton.svg?branch=master]]
-[[file:https:/img.shields.io/badge/platform-macOS-blue.svg?style=flat-square]]
-[[file:https:/img.shields.io/github/last-commit/dylanjm/teton.svg?style=flat-square]]
+[[file:https://travis-ci.com/dylanjm/teton.svg]]
+
+[[file:https:/img.shields.io/badge/platform-macOS-blue.svg]]
+
+[[file:https:/img.shields.io/github/last-commit/dylanjm/teton.svg]]
 
 * Summary
 My personal dotfile configuration focused on macOS support. At the moment there are no plans to add support for other operating systems. This is because both my personal and work machine run macOS; However I have tried to implement these files in a modular way that would easily support other *nix operating systems in the future. The focus on macOS allows for a simplicity in configuration that should be easy to understand and implement in your own workflow. While creating these dotfiles, my major development goals (in no particular order)  are:

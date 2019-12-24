@@ -1,9 +1,7 @@
 #+title: Teton
 
 [[file:https://travis-ci.com/dylanjm/teton.svg]]
-
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
-
  [[file:https://img.shields.io/github/last-commit/dylanjm/teton.svg]]
 
 * Summary

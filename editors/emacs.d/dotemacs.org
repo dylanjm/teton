@@ -2,7 +2,11 @@
 #+author: Dylan McDowell
 #+property: header-args :tangle "~/teton/editors/emacs.d/init.el"
 
-/last updated/: 2019-12-23 19:37:05
+[[file:https://img.shields.io/badge/GNU%20Emacs-26.3-b48ead.svg?style=flat-square]]
+[[file:https://img.shields.io/badge/org--mode-9.2.3-489a9f.svg?style=flat-square]]
+[[file:https://img.shields.io/badge/use--package-2.4-88c0d0.svg?style=flat-square]]
+
+/last updated/: 2019-12-23 21:44:33
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]

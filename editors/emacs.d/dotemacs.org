@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-05 17:59:46
+/last updated/: 2020-01-05 18:24:17
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -83,6 +83,7 @@ This document is my current emacs config which contains the code for my =early-i
 ** Preliminary Configuration
 You'll see a similar configuration in other dotfiles online. By default, Emac's runs it garbage collector when the
 *** Garbage Collection
+You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion. The FLX README suggest we do this to keep emacs running nice and smooth.
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -114,6 +115,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** Pre-Gui Optimization
+Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=, and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
@@ -162,6 +164,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 ** Package Management
 *** [[https://github.com/raxod502/straight.el][Straight]]
+Straight.el is my package manager of choice. It is extremely powerful in it's design and ensures you have a functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup much more to anything I've tried.
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
   (eval-and-compile
@@ -189,6 +192,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
+Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend the time on learning how to leverage the package strengths, it's almost impossible to think of doing your config any other way. There are some people who choose not to use this package. They believe that it abstracts too much away from the user. I think they have a point. There may be a day I can move past relying on Use-Package. Until then, it's a great way to organize and setup a config.
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
   (setq-default use-package-verbose t
@@ -214,6 +218,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
+Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
 #+name: init-environment-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
@@ -227,6 +232,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
+Not super stoked on using this package, as I might replace it later with my own setup, but until then it's a good way to keep your emacs directory clean.
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
@@ -237,6 +243,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
+Great package by the same author of Straight.el. It's similar to adding advice to functions but with a twist. Helpful if you need to future proof your emacs or need to alter a function from a package.
 #+name: init-el-patch-block
 #+begin_src emacs-lisp
   (use-package el-patch :straight t)
@@ -245,6 +252,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/noctuid/annalist.el][Annalist]]
+Not quite sure what this package does except for the fact that it works in unison with General.el
 #+name: init-annalist-block
 #+begin_src emacs-lisp
   (use-package annalist
@@ -252,12 +260,14 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/noctuid/general.el][General]]
+Great package for managing key-bindings and other customizations.
 #+name: init-general-block
 #+begin_src emacs-lisp
   (use-package general :demand t :straight t)
 #+end_src
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
+Similar to packages like minions, diminish, or delight. You can alter how your minor and major modes show up in the mode-line.
 #+name: init-blackout-block
 #+begin_src emacs-lisp
   (use-package blackout
@@ -278,6 +288,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/magnars/dash.el][Dash]]
+Great Elisp library that I use throughout my config.
 #+name: init-dash-block
 #+begin_src emacs-lisp
   (use-package dash
@@ -285,6 +296,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/rejeep/f.el][F]]
+Great Elisp library used throughout my config
 #+name: init-f-block
 #+begin_src emacs-lisp
   (use-package f
@@ -292,6 +304,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
+We need to intercept the built-in org-version that ships with emacs. For some reason we have to do this early. I'm not really sure why though.
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
   (straight-use-package
@@ -299,6 +312,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 #+end_src
 
 *** [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
+Experimental package that lets you define functions to be repeated with keystrokes. It seems very interesting that I might use in the future.
 #+name: init-defrepeater-block
 #+begin_src emacs-lisp
   (use-package defrepeater
@@ -307,6 +321,7 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 ** Personal Configuration
 *** Variables
+Here are some of my personal variables that I will need to refer to at some point.
 #+name: init-variables-block
 #+begin_src emacs-lisp
   (defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
@@ -327,7 +342,9 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 
 *** Functions
 **** Active-Intervals
-Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
+This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config.
+
+Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]].
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
   (defmacro djm/run-at-active-interval (interval idle-interval &rest body)
@@ -348,6 +365,8 @@ Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d
        (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
 **** Protect Buffers
+There are certain buffers I don't want to delete on accident.
+
 Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 #+name: init-protected-buffers-func-block
 #+begin_src emacs-lisp
@@ -367,6 +386,8 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+end_src
 
 **** Async Tangle
+This saves me tons of time tangling this config file.
+
 Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 #+name: init-async-tangle-func-block
 #+begin_src emacs-lisp
@@ -411,6 +432,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+end_src
 
 **** Temp Buffers
+Sometimes I need a different scratch buffer to do some work on.
 #+name: init-temp-buffers-block
 #+begin_src emacs-lisp
   (defun djm/new-scratch ()
@@ -422,6 +444,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
                                finally return name)))
 #+end_src
 **** Font-Config
+Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on setting this up perfectly but I do set up Apple-Emoji Support.
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()

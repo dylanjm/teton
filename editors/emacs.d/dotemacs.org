@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2019-12-28 20:00:28
+/last updated/: 2020-01-05 17:59:46
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3508,6 +3508,13 @@ CLOSED: [2019-12-11 Wed 13:56]
                   (goto-char (+ 2 (elt state 1)))
                   (current-column)))
                (t $else))))))))
+#+end_src
+**** [[https://gitlab.com/ideasman42/emacs-elisp-autofmt][Elisp-Autoformat]]
+#+name: init-elisp-autoformat-block
+#+begin_src emacs-lisp
+  (use-package elisp-autofmt
+    :straight (:host gitlab :repo "ideasman42/emacs-elisp-autofmt")
+    :ghook ('emacs-lisp-mode-hook #'elisp-autofmt-save-hook-for-this-buffer))
 #+end_src
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
 #+name: init-firestarter-block

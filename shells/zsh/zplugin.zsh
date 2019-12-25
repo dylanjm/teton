@@ -48,7 +48,7 @@ zplugin $load hlissner/zsh-autopair
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate molokai)"
+export LS_COLORS="$(vivid generate gruvbox)"
 export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
 zplugin ice wait'1' lucid blockf

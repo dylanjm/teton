@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg?style=flat-square]]
 
-/last updated/: 2019-12-24 13:32:10
+/last updated/: 2019-12-24 15:57:24
 
 * Table of Contents :TOC@3:noexport:
 - [[#about][About]]
@@ -273,6 +273,7 @@
     - [[#ess][ESS]]
     - [[#julia][Julia]]
     - [[#python][Python]]
+    - [[#rust][Rust]]
   - [[#miscellaneous][Miscellaneous]]
     - [[#speedtype][SpeedType]]
     - [[#hold-ledger][HOLD Ledger]]
@@ -977,6 +978,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:type built-in)
     :config
     (general-setq-default electric-indent-chars '(?\n ?\^?)))
+
 #+end_src
 *** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
@@ -1088,6 +1090,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (tooltip-mode -1)
       (mouse-wheel-mode -1)
       (global-so-long-mode +1)
+      (global-subword-mode +1)
       (unless (display-graphic-p)
         (menu-bar-mode -1))))
 #+end_src
@@ -1921,7 +1924,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      'ivy-switch-buffer-map
      "C-x k" #'ivy-switch-buffer-kill)
     :config
-    (require 'counsel nil t)
     (general-setq ivy-dynamic-exhibit-delay-ms 100
                   ivy-use-selectable-prompt t
                   ivy-case-fold-search-default 'auto
@@ -3684,7 +3686,32 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+name: init-julia-block
 #+begin_src emacs-lisp
   (use-package julia-mode
-    :straight t)
+    :straight t
+    :interpreter "julia"
+    :config
+    ;; Borrow matlab.el's fontification of math operators
+    ;; From <https://ogbe.net/emacsconfig.html>
+    (dolist (mode '(julia-mode ess-julia-mode))
+      (font-lock-add-keywords
+       mode
+       `((,(let ((OR "\\|"))
+             (concat "\\(" ;; stolen `matlab.el' operators first
+                     "[<>!]=?" OR
+                     "\\.[/*^']" OR
+                     "==" OR
+                     "=>" OR
+                     "\\<xor\\>" OR
+                     "[-+*\\/^&|$]=?" OR ;; this has to come before next (updating operators)
+                     "[-!^&|*+\\/~:]" OR
+                     ;; more extra julia operators follow
+                     "[%$]" OR
+                     ;; bitwise operators
+                     ">>>" OR ">>" OR "<<" OR
+                     ">>>=" OR ">>" OR "<<" OR
+                     ;; comparison
+                     "[<>!]=?" OR
+                     "\\)"))
+          1 font-lock-type-face)))))
 #+end_src
 **** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
 #+name: init-julia-repl-block
@@ -3771,6 +3798,25 @@ CLOSED: [2019-12-11 Wed 13:56]
     :commands (blacken-buffer))
 #+end_src
 
+*** Rust
+#+name: init-rust-block
+#+begin_src emacs-lisp
+  (use-package rustic
+    :straight t
+    :mode ("\\.rs$" . rustic-mode)
+    :commands rustic-run-cargo-command rustic-cargo-outdated
+    :config
+    (general-setq rustic-indent-method-chain t
+                  rustic-flycheck-setup-mode-line-p nil
+                  rustic-format-trigger nil
+                  rustic-lsp-client nil))
+
+  (use-package racer
+    :straight t :after rustic
+    :ghook 'rustic-mode-hook
+    :config
+    (general-setq auto-mode-alist (delete '("\\.rs\\'" . rust-mode) auto-mode-alist)))
+#+end_src
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block

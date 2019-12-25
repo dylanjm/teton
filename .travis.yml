@@ -1,9 +1,0 @@
-name: Test on macOS
-os: osx
-osx_image: xcode11.3
-sudo: required
-
-script: bash ./install < test/bootstrap-tools.txt
-
-notifications:
-  email: false

@@ -2,282 +2,46 @@
 #+author: Dylan McDowell
 #+property: header-args :tangle "~/teton/editors/emacs.d/init.el"
 
-[[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg?style=flat-square]]
+[[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2019-12-24 15:57:24
+/last updated/: 2019-12-24 22:01:42
 
-* Table of Contents :TOC@3:noexport:
+* Table of Contents :TOC@2:noexport:
 - [[#about][About]]
   - [[#literate-programming-in-org][Literate Programming in Org]]
   - [[#system-requirements][System Requirements]]
 - [[#early-init][Early-Init]]
   - [[#header][Header]]
   - [[#preliminary-configuration][Preliminary Configuration]]
-    - [[#garbage-collection][Garbage Collection]]
-    - [[#pre-gui-optimization][Pre-Gui Optimization]]
   - [[#footer][Footer]]
 - [[#init][Init]]
   - [[#header-1][Header]]
   - [[#package-management][Package Management]]
-    - [[#straight][Straight]]
-    - [[#use-package][Use-Package]]
   - [[#initial-demands][Initial Demands]]
-    - [[#cancelled-benchmark-init][CANCELLED Benchmark-Init]]
-    - [[#exec-path-from-shell][Exec-Path-From-Shell]]
-    - [[#no-littering][No-Littering]]
-    - [[#el-patch][El-Patch]]
-    - [[#annalist][Annalist]]
-    - [[#general][General]]
-    - [[#blackout][Blackout]]
-    - [[#hold-use-package-company][HOLD Use-Package-Company]]
-    - [[#dash][Dash]]
-    - [[#f][F]]
-    - [[#org-plus-contrib][Org-Plus-Contrib]]
-    - [[#defrepeater][Defrepeater]]
   - [[#personal-configuration][Personal Configuration]]
-    - [[#variables][Variables]]
-    - [[#functions][Functions]]
-    - [[#hooks--advice][Hooks & Advice]]
-    - [[#keybindings][Keybindings]]
   - [[#built-in-defaults][Built-In Defaults]]
-    - [[#advice-built-in][Advice (Built-In)]]
-    - [[#align-built-in][Align (Built-In)]]
-    - [[#ansi-color-built-in][Ansi-Color (Built-In)]]
-    - [[#auth-source-built-in][Auth-Source (Built-In)]]
-    - [[#autorevert-built-in][Autorevert (Built-In)]]
-    - [[#bookmark-built-in][Bookmark (Built-In)]]
-    - [[#browse-url-built-in][Browse-Url (Built-In)]]
-    - [[#calculator-built-in][Calculator (Built-In)]]
-    - [[#calendar-built-in][Calendar (Built-In)]]
-    - [[#cl-lib-built-in][CL-Lib (Built-In)]]
-    - [[#comint-built-in][Comint (Built-In)]]
-    - [[#compile-built-in][Compile (Built-In)]]
-    - [[#conf-mode-built-in][Conf-Mode (Built-In)]]
-    - [[#cus-start-built-in][Cus-Start (Built-In)]]
-    - [[#delsel-built-in][Delsel (Built-In)]]
-    - [[#doc-view-built-in][Doc-View (Built-In)]]
-    - [[#ediff-built-in][Ediff (Built-In)]]
-    - [[#eldoc-built-in][Eldoc (Built-In)]]
-    - [[#electric-built-in][Electric (Built-In)]]
-    - [[#elisp-mode-built-in][Elisp-Mode (Built-In)]]
-    - [[#emacs-lock-built-in][Emacs-Lock (Built-In)]]
-    - [[#epa-built-in][Epa (Built-In)]]
-    - [[#epg-built-in][Epg (Built-In)]]
-    - [[#ert-built-in][Ert (Built-In)]]
-    - [[#eshell-built-in][Eshell (Built-In)]]
-    - [[#eww-built-in][Eww (Built-In)]]
-    - [[#face-remap-built-in][Face-Remap (Built-In)]]
-    - [[#files-built-in][Files (Built-In)]]
-    - [[#flyspell-built-in][Flyspell (Built-In)]]
-    - [[#frame-built-in][Frame (Built-In)]]
-    - [[#gnutls-built-in][Gnutls (Built-In)]]
-    - [[#help-built-in][Help (Built-In)]]
-    - [[#hideshow-built-in][Hideshow (Built-In)]]
-    - [[#image-built-in][Image (Built-In)]]
-    - [[#imenu-built-in][iMenu (Built-In)]]
-    - [[#ispell-built-in][iSpell (Built-In)]]
-    - [[#ls-lisp-built-in][LS-Lisp (Built-In)]]
-    - [[#make-mode-built-in][Make-Mode (Built-In)]]
-    - [[#minibuffer-built-in][Minibuffer (Built-In)]]
-    - [[#ns-win-built-in][NS-Win (Built-In)]]
-    - [[#pixel-scroll-built-in][Pixel-Scroll (Built-In)]]
-    - [[#prog-mode-built-in][Prog-Mode (Built-In)]]
-    - [[#recentf-built-in][Recentf (Built-In)]]
-    - [[#savehist-built-in][Savehist (Built-In)]]
-    - [[#saveplace-built-in][Saveplace (Built-In)]]
-    - [[#select-built-in][Select (Built-In)]]
-    - [[#shell-built-in][Shell (Built-In)]]
-    - [[#simple-built-in][Simple (Built-In)]]
-    - [[#smerge-built-in][Smerge (Built-In)]]
-    - [[#time-built-in][Time (Built-In)]]
-    - [[#uniquify-built-in][Uniquify (Built-In)]]
-    - [[#vc-hooks-built-in][VC-Hooks (Built-In)]]
-    - [[#view-built-in][View (Built-In)]]
-    - [[#winner-built-in][Winner (Built-In)]]
   - [[#user-files][User Files]]
-    - [[#custom-file][Custom File]]
-    - [[#secret-file][Secret File]]
   - [[#themes--aesthetics][Themes & Aesthetics]]
-    - [[#all-the-icons][All-The-Icons]]
-    - [[#cancelled-emojify][CANCELLED Emojify]]
-    - [[#gruvbox-theme][Gruvbox Theme]]
-    - [[#poet-theme][Poet-Theme]]
-    - [[#cancelled-darktooth-theme][CANCELLED Darktooth Theme]]
-    - [[#cancelled-unicode-fonts][CANCELLED Unicode-Fonts]]
-    - [[#cancelled-dimmer-mode][CANCELLED Dimmer-Mode]]
-    - [[#highlight-todo][Highlight-Todo]]
-    - [[#perfect-margin][Perfect-Margin]]
-    - [[#smart-mode-line][Smart-Mode-Line]]
-    - [[#cancelled-doom-modeline][CANCELLED Doom-Modeline]]
-    - [[#hide-mode-line-mode][Hide-Mode-Line-Mode]]
-    - [[#default-text-scale][Default-Text-Scale]]
-    - [[#olivetti-mode][Olivetti-Mode]]
-    - [[#page-break-lines][Page-Break-Lines]]
-    - [[#persistent-scratch][Persistent-Scratch]]
-    - [[#rainbow-mode][Rainbow-Mode]]
-    - [[#sublimity][Sublimity]]
   - [[#meta][Meta]]
-    - [[#restart-emacs][Restart-Emacs]]
-    - [[#memory-usage][Memory-Usage]]
-    - [[#gcmh][GCMH]]
   - [[#system][System]]
-    - [[#osx-trash][OSX-Trash]]
-    - [[#hold-pdf-tools][HOLD PDF-Tools]]
   - [[#shells][Shells]]
-    - [[#aweshell][Aweshell]]
-    - [[#eshell-prompt-extras][Eshell-Prompt-Extras]]
-    - [[#eshell-up][Eshell-Up]]
-    - [[#eshell-z][Eshell-Z]]
-    - [[#vterm][Vterm]]
-    - [[#multi-libvterm][Multi-Libvterm]]
-    - [[#vterm-toggle][Vterm-Toggle]]
-    - [[#term-keys][Term-Keys]]
   - [[#project-management][Project Management]]
-    - [[#projectile][Projectile]]
-    - [[#direnv][Direnv]]
-    - [[#taskrunner][Taskrunner]]
   - [[#frameworks][Frameworks]]
-    - [[#amx][AMX]]
-    - [[#prescient][Prescient]]
-    - [[#hold-posframe][HOLD Posframe]]
-    - [[#flx][FLX]]
-    - [[#ivy][Ivy]]
-    - [[#hold-ivy-posframe][HOLD Ivy-Posframe]]
-    - [[#ivy-dired-history][Ivy-Dired-History]]
-    - [[#counsel][Counsel]]
-    - [[#swiper][Swiper]]
-    - [[#hold-selectrum][HOLD Selectrum]]
-    - [[#snails][Snails]]
   - [[#autocompletion][Autocompletion]]
-    - [[#company][Company]]
-    - [[#company-box][Company-Box]]
-    - [[#company-prescient][Company-Prescient]]
-    - [[#company-flx][Company-FLX]]
-    - [[#company-shell][Company-Shell]]
-    - [[#company-emoji][Company-Emoji]]
-    - [[#company-tabnine][Company-Tabnine]]
-    - [[#yasnippet][Yasnippet]]
   - [[#documentation][Documentation]]
-    - [[#helpful][Helpful]]
-    - [[#which-key][Which-Key]]
-    - [[#discover-my-major][Discover-My-Major]]
   - [[#editing-tools][Editing Tools]]
-    - [[#anzu][Anzu]]
-    - [[#deadgrep][Deadgrep]]
-    - [[#crux][Crux]]
-    - [[#emacs-format-all-the-code][Emacs-Format-All-The-Code]]
-    - [[#expand-region][Expand-Region]]
-    - [[#hold-interactive-align][HOLD Interactive-Align]]
-    - [[#multiple-cursors][Multiple-Cursors]]
-    - [[#popup-kill-ring][Popup-Kill-Ring]]
-    - [[#string-inflection][String-Inflection]]
-    - [[#sudo-edit][Sudo-Edit]]
-    - [[#tiny][Tiny]]
-    - [[#visual-regexp][Visual-Regexp]]
-    - [[#visual-regexp-steroids][Visual-Regexp-Steroids]]
-    - [[#wgrep][Wgrep]]
-    - [[#zop-to-char][Zop-To-Char]]
   - [[#writing][Writing]]
-    - [[#flyspell-correct-ivy][Flyspell-Correct-Ivy]]
-    - [[#flyspell-correct][Flyspell-Correct]]
-    - [[#typo][Typo]]
-    - [[#writegood][Writegood]]
   - [[#minor-modes][Minor Modes]]
-    - [[#aggressive-indent][Aggressive-Indent]]
-    - [[#csv-mode][CSV-Mode]]
-    - [[#editorconfig][EditorConfig]]
-    - [[#highlight-indent-guides][Highlight-Indent-Guides]]
-    - [[#hungry-delete][Hungry-Delete]]
-    - [[#rainbow-delimiters][Rainbow-Delimiters]]
-    - [[#undo-tree][Undo-Tree]]
-    - [[#wc-mode][WC-Mode]]
-    - [[#whitespace-cleanup][Whitespace-Cleanup]]
-    - [[#ws-butler][WS-Butler]]
   - [[#file-explorer][File Explorer]]
-    - [[#dired-built-in][Dired (Built-In)]]
-    - [[#cancelled-dired][CANCELLED Dired+]]
-    - [[#wdired-built-in][WDired (Built-In)]]
-    - [[#dired-x-built-in][Dired-X (Built-In)]]
-    - [[#all-the-icons-dired][All-The-Icons-Dired]]
-    - [[#dired-atool][Dired-ATool]]
-    - [[#cancelled-dired-du][CANCELLED Dired-Du]]
-    - [[#dired-git-info][Dired-Git-Info]]
-    - [[#dired-hacks][Dired-Hacks]]
-    - [[#cancelled-dired-k][CANCELLED Dired-K]]
-    - [[#dired-rsync][Dired-Rsync]]
-    - [[#dired-sidebar][Dired-Sidebar]]
-    - [[#diredfl][Diredfl]]
-    - [[#fd-dired][FD-Dired]]
   - [[#navigation][Navigation]]
-    - [[#ace-window][Ace-Window]]
-    - [[#avy][Avy]]
-    - [[#dumb-jump][Dumb-Jump]]
-    - [[#ibuffer][iBuffer]]
-    - [[#ibuffer-extension][iBuffer-Extension]]
-    - [[#ibuffer-sidebar][iBuffer-Sidebar]]
-    - [[#ibuffer-projectile][iBuffer-Projectile]]
-    - [[#smart-jump][Smart-Jump]]
-    - [[#treemacs][Treemacs]]
-    - [[#windmove][Windmove]]
-    - [[#windower][Windower]]
   - [[#org][Org]]
-    - [[#org-mode][Org-Mode]]
-    - [[#org-agenda][Org-Agenda]]
-    - [[#org-src][Org-Src]]
-    - [[#org-ob][Org-Ob]]
-    - [[#ox-gfm][Ox-GFM]]
-    - [[#org-bullets][Org-Bullets]]
-    - [[#org-scrum][Org-Scrum]]
-    - [[#org-wc][Org-WC]]
-    - [[#toc-org][TOC-Org]]
-    - [[#calfw][Calfw]]
-    - [[#calfw-org][Calfw-Org]]
   - [[#email][Email]]
-    - [[#hold-notmuch][HOLD NotMuch]]
-    - [[#hold-mu4e][HOLD MU4E]]
   - [[#media][Media]]
-    - [[#hold-spotify][HOLD Spotify]]
-    - [[#htmlize][HTMLize]]
   - [[#version-control][Version Control]]
-    - [[#magit][Magit]]
-    - [[#magit-gitflow][Magit-Gitflow]]
-    - [[#transient][Transient]]
-    - [[#git-attribute][Git-Attribute]]
-    - [[#git-config][Git-Config]]
-    - [[#git-ignore][Git-Ignore]]
-    - [[#git-link][Git-Link]]
-    - [[#git-commit][Git-Commit]]
-    - [[#forge][Forge]]
-    - [[#git-gutter][Git-Gutter]]
-    - [[#git-time-machine][Git-Time-Machine]]
-    - [[#with-editor][With-Editor]]
-    - [[#emacs-vdiff][Emacs-VDiff]]
-    - [[#vdiff-magit][Vdiff-Magit]]
-    - [[#cancelled-magit-todos][CANCELLED Magit-Todos]]
   - [[#language-server-support][Language Server Support]]
-    - [[#lsp-mode][LSP-Mode]]
   - [[#syntax--linting][Syntax & Linting]]
-    - [[#apheleia][Apheleia]]
-    - [[#flycheck][Flycheck]]
-    - [[#flycheck-posframe][Flycheck-Posframe]]
-    - [[#flycheck-popup-tip][Flycheck-Popup-Tip]]
-    - [[#flycheck-pos-tip][Flycheck-Pos-Tip]]
-    - [[#flycheck-pycheckers][Flycheck-Pycheckers]]
-    - [[#polymode][Polymode]]
   - [[#languages][Languages]]
-    - [[#emacs-lisp][Emacs-Lisp]]
-    - [[#markdown][Markdown]]
-    - [[#yaml][YAML]]
-    - [[#latex][LaTeX]]
-    - [[#go][Go]]
-    - [[#ess][ESS]]
-    - [[#julia][Julia]]
-    - [[#python][Python]]
-    - [[#rust][Rust]]
   - [[#miscellaneous][Miscellaneous]]
-    - [[#speedtype][SpeedType]]
-    - [[#hold-ledger][HOLD Ledger]]
-    - [[#2048-game][2048-Game]]
   - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
@@ -782,6 +546,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook ('emacs-startup-hook #'global-auto-revert-mode)
     :config
     (general-setq auto-revert-verbose nil
+                  auto-revert-check-vc-info t
                   global-auto-revert-non-file-buffers t
                   auto-revert-interval 1
                   revert-without-query '(".*")
@@ -890,6 +655,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                           cursor-type 'bar
                           delete-by-moving-to-trash t
                           disabled-command-function nil
+                          display-line-numbers-width 3
+                          display-line-numbers-widen t
                           default-directory "~"
                           echo-keystrokes 0.02
                           electric-pair-mode 1
@@ -978,7 +745,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:type built-in)
     :config
     (general-setq-default electric-indent-chars '(?\n ?\^?)))
-
 #+end_src
 *** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
@@ -1092,7 +858,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (global-so-long-mode +1)
       (global-subword-mode +1)
       (unless (display-graphic-p)
-        (menu-bar-mode -1))))
+        (menu-bar-mode -1)))
+    :config
+    (general-setq window-divider-default-places t
+                  window-divider-default-bottom-width 1
+                  window-divider-default-right-width 1))
 #+end_src
 
 *** Gnutls (Built-In)
@@ -1109,6 +879,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                 "openssl s_client -connect %h:%p -no_ssl2 -no_ssl3 -ign_eof")))
 #+end_src
 
+*** Goto-Addr (Built-In)
+#+name: init-goto-addr-block
+#+begin_src emacs-lisp
+  (use-package goto-addr
+    :ghook ('text-mode-hook #'goto-address-mode)
+    :ghook ('prog-mode-hook #'goto-address-prog-mode))
+#+end_src
 *** Help (Built-In)
 #+name: init-help-block
 #+begin_src emacs-lisp
@@ -1236,6 +1013,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
          (ns-auto-titlebar-mode +1)))
 #+end_src
 
+*** Paren (Built-In)
+#+name: init-paren-block
+#+begin_src emacs-lisp
+  (use-package paren
+    :straight (:type built-in)
+    :config
+    (general-setq show-paren-delay 0)
+    (show-paren-mode +1))
+#+end_src
 *** Pixel-Scroll (Built-In)
 #+name: init-pixel-scroll-block
 #+begin_src emacs-lisp
@@ -1316,13 +1102,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
            ("\\.[a-zA-Z]+rc'" . sh-mode))
     :config
     (general-setq sh-indentation 2
-                  sh-basic-offset 2))
+                  sh-basic-offset 2
+                  sh-indent-after-continuation 'always))
 #+end_src
 *** Simple (Built-In)
 #+name: init-simple-block
 #+begin_src emacs-lisp
   (use-package simple
     :straight (:type built-in)
+    :general
+    ("C-x p" #'pop-to-mark-command)
     :config
     (general-setq blink-matching-paren t
                   column-number-mode nil
@@ -1410,6 +1199,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                           "*Ibuffer*")))
 #+end_src
 
+*** XRef (Built-In)
+#+name: init-xref-block
+#+begin_src emacs-lisp
+  (use-package xref
+    :straight (:type built-in))
+#+end_src
 ** User Files
 *** Custom File
 #+name: init-custom-load-block
@@ -1446,38 +1241,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                all-the-icons-faicon))
 #+end_src
 
-*** CANCELLED [[https://github.com/iqbalansari/emacs-emojify][Emojify]]
-CLOSED: [2019-12-09 Mon 15:35]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-09 Mon 15:35] \\
-  I don't really like the non-apple emojis.
-:END:
-#+name: init-emojify-block
-#+begin_src emacs-lisp :tangle no
-  (use-package emojify
-    :straight t
-    :ghook ('after-init-hook #'global-emojify-mode))
-#+end_src
-
-*** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
-#+name: init-gruvbox-theme-block
-#+begin_src emacs-lisp
-  (use-package gruvbox-theme
-    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
-    :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
-    :preface
-    (defun djm/load-gruvbox-theme ()
-      (load-theme 'gruvbox-dark-hard t)
-      (djm/config-fonts)))
-#+end_src
-
-*** [[https://github.com/kunalb/poet][Poet-Theme]]
-#+name: init-poet-theme-block
-#+begin_src emacs-lisp
-  (use-package poet-theme
-    :straight t)
-#+end_src
-
 *** CANCELLED [[https://github.com/emacsfodder/emacs-theme-darktooth][Darktooth Theme]]
 CLOSED: [2019-12-11 Wed 12:58]
 :LOGBOOK:
@@ -1495,17 +1258,16 @@ CLOSED: [2019-12-11 Wed 12:58]
       (djm/config-fonts)))
 #+end_src
 
-*** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
-CLOSED: [2019-12-09 Mon 12:23]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-09 Mon 12:23] \\
-  Not really sure I want to use this package.
-:END:
-#+name: init-unicode-fonts-block
-#+begin_src emacs-lisp :tangle no
-  (use-package unicode-fonts
+*** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
+#+name: init-default-text-scale-block
+#+begin_src emacs-lisp
+  (use-package default-text-scale
     :straight t
-    :ghook ('emacs-startup-hook #'unicode-fonts-setup))
+    :general
+    ("<C-s-up>" #'default-text-scale-increase
+     "<C-s-down>" #'default-text-scale-decrease
+     "<C-M-s-down>" #'default-text-scale-reset)
+    :config (general-setq default-text-scale-amount 20))
 #+end_src
 
 *** CANCELLED [[https://github.com/gonewest818/dimmer.el][Dimmer-Mode]]
@@ -1532,11 +1294,107 @@ CLOSED: [2019-12-09 Mon 12:23]
     (add-hook 'minibuffer-exit-hook 'djm/dimmer-enable))
 #+end_src
 
+*** CANCELLED [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-13 Fri 21:47] \\
+  I can't seem to enjoy this package
+:END:
+#+name: init-doom-mode-line-block
+#+begin_src emacs-lisp :tangle no
+  (use-package doom-modeline
+    :straight t
+    :ghook 'emacs-startup-hook)
+#+end_src
+*** [[https://github.com/davidshepherd7/electric-operator][Electric-Operators]]
+#+name: init-electric-operators
+#+begin_src emacs-lisp
+  (use-package electric-operator
+    :straight t
+    :ghook 'prog-mode-hook)
+#+end_src
+*** CANCELLED [[https://github.com/iqbalansari/emacs-emojify][Emojify]]
+CLOSED: [2019-12-09 Mon 15:35]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-09 Mon 15:35] \\
+  I don't really like the non-apple emojis.
+:END:
+#+name: init-emojify-block
+#+begin_src emacs-lisp :tangle no
+  (use-package emojify
+    :straight t
+    :ghook ('after-init-hook #'global-emojify-mode))
+#+end_src
+
+*** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
+#+name: init-gruvbox-theme-block
+#+begin_src emacs-lisp
+  (use-package gruvbox-theme
+    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
+    :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
+    :preface
+    (defun djm/load-gruvbox-theme ()
+      (load-theme 'gruvbox-dark-hard t)
+      (djm/config-fonts)))
+#+end_src
+
+*** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
+#+name: init-hide-mode-line-block
+#+begin_src emacs-lisp
+  (use-package hide-mode-line
+    :straight t
+    :commands (hide-mode-line-mode))
+#+end_src
+
+*** [[https://github.com/dgutov/highlight-escape-sequences][Highlight-Escape-Sequences]]
+#+name: init-highlight-escape-sequences-block
+#+begin_src emacs-lisp
+  (use-package highlight-escape-sequences
+    :straight t
+    :ghook ('prog-mode-hook #'hes-mode))
+#+end_src
+*** [[https://github.com/Fanael/highlight-numbers][Highlight-Numbers]]
+#+name: init-highlight-numbers-block
+#+begin_src emacs-lisp
+  (use-package highlight-numbers
+    :straight t
+    :ghook 'prog-mode-hook
+    :config
+    (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
+#+end_src
+*** Highlight-Operators
+#+name: init-highlight-operators-block
+#+begin_src emacs-lisp
+  (use-package highlight-operators
+    :straight t)
+#+end_src
 *** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
 #+name: init-highlight-todo-block
 #+begin_src emacs-lisp
   (use-package hl-todo
     :straight t)
+#+end_src
+
+*** [[https://github.com/rnkn/olivetti][Olivetti-Mode]]
+#+name: init-olivetti-block
+#+begin_src emacs-lisp
+  (use-package olivetti
+    :straight t)
+#+end_src
+
+*** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
+#+name: init-page-break-lines-block
+#+begin_src emacs-lisp
+  (use-package page-break-lines
+    :blackout t :straight t
+    :ghook djm--page-break-line-hooks
+    :preface
+    (defconst djm--page-break-line-hooks
+      '(ibuffer-mode-hook
+        text-mode-hook
+        comint-mode-hook
+        compilation-mode-hook
+        help-mode-hook
+        org-agenda-mode-hook)))
 #+end_src
 
 *** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
@@ -1547,6 +1405,32 @@ CLOSED: [2019-12-09 Mon 12:23]
     :straight t)
 #+end_src
 
+*** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
+#+name: init-persistent-scratch-block
+#+begin_src emacs-lisp
+  (use-package persistent-scratch
+    :straight t
+    :init
+    (general-setq persistent-scratch-autosave-interval 60)
+    (run-with-idle-timer 3 nil
+                         (lambda ()
+                           (persistent-scratch-setup-default))))
+#+end_src
+
+*** [[https://github.com/kunalb/poet][Poet-Theme]]
+#+name: init-poet-theme-block
+#+begin_src emacs-lisp
+  (use-package poet-theme
+    :straight t)
+#+end_src
+
+*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
+#+name: init-rainbow-mode-block
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :blackout t :straight t
+    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
+#+end_src
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
 CLOSED: [2019-12-13 Fri 21:48]
 :LOGBOOK:
@@ -1573,86 +1457,36 @@ CLOSED: [2019-12-13 Fri 21:48]
     (mode-line-inactive ((t (:box (:line-width 5 :color "#1d2021"))))))
 #+end_src
 
-*** CANCELLED [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+*** CANCELLED [[https://github.com/zk-phi/sublimity][Sublimity]]
 :LOGBOOK:
-- State "CANCELLED"  from              [2019-12-13 Fri 21:47] \\
-  I can't seem to enjoy this package
+- State "CANCELLED"  from              [2019-12-24 Tue 21:01] \\
+  Slows down emacs too much.
 :END:
-#+name: init-doom-mode-line-block
-#+begin_src emacs-lisp :tangle no
-  (use-package doom-modeline
-    :straight t
-    :ghook 'emacs-startup-hook)
-#+end_src
-*** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
-#+name: init-hide-mode-line-block
-#+begin_src emacs-lisp
-  (use-package hide-mode-line
-    :straight t
-    :commands (hide-mode-line-mode))
-#+end_src
-
-*** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
-#+name: init-default-text-scale-block
-#+begin_src emacs-lisp
-  (use-package default-text-scale
-    :straight t
-    :general
-    ("<C-s-up>" #'default-text-scale-increase
-     "<C-s-down>" #'default-text-scale-decrease
-     "<C-M-s-down>" #'default-text-scale-reset)
-    :config (general-setq default-text-scale-amount 20))
-#+end_src
-
-*** [[https://github.com/rnkn/olivetti][Olivetti-Mode]]
-#+name: init-olivetti-block
-#+begin_src emacs-lisp
-  (use-package olivetti
-    :straight t)
-#+end_src
-
-*** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
-#+name: init-page-break-lines-block
-#+begin_src emacs-lisp
-  (use-package page-break-lines
-    :blackout t :straight t
-    :ghook djm--page-break-line-hooks
-    :preface
-    (defconst djm--page-break-line-hooks
-      '(ibuffer-mode-hook
-        text-mode-hook
-        comint-mode-hook
-        compilation-mode-hook
-        help-mode-hook
-        org-agenda-mode-hook)))
-#+end_src
-
-*** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
-#+name: init-persistent-scratch-block
-#+begin_src emacs-lisp
-  (use-package persistent-scratch
-    :straight t
-    :init
-    (general-setq persistent-scratch-autosave-interval 60)
-    (run-with-idle-timer 3 nil
-                         (lambda ()
-                           (persistent-scratch-setup-default))))
-#+end_src
-
-*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
-#+name: init-rainbow-mode-block
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :blackout t :straight t
-    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
-#+end_src
-*** [[https://github.com/zk-phi/sublimity][Sublimity]]
 #+name: init-subliminity-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package sublimity
     :straight t)
 #+end_src
 
+*** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
+CLOSED: [2019-12-09 Mon 12:23]
+:LOGBOOK:
+- State "CANCELLED"  from              [2019-12-09 Mon 12:23] \\
+  Not really sure I want to use this package.
+:END:
+#+name: init-unicode-fonts-block
+#+begin_src emacs-lisp :tangle no
+  (use-package unicode-fonts
+    :straight t
+    :ghook ('emacs-startup-hook #'unicode-fonts-setup))
+#+end_src
+
+*** [[https://github.com/k-talo/volatile-highlights.el][Volatile-Highlights]]
+#+name: init-volatile-highlights-block
+#+begin_src emacs-lisp
+  (use-package volatile-highlights
+    :straight t)
+#+end_src
 ** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 #+name: init-restart-emacs-block
@@ -2104,11 +1938,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
   (use-package company-shell
-    :straight t
-    :ghook ('sh-mode-hook #'djm/company-shell-config)
-    :preface
-    (defun djm/company-shell-config ()
-      (general-pushnew '(company-shell company-shell-env company-fish-shell) company-backends)))
+    :straight t :after sh-script
+    :config
+    (general-pushnew '(company-shell
+                       company-shell-env
+                       company-fish-shell
+                       company-files) company-backends))
 #+end_src
 *** [[https://github.com/dunn/company-emoji][Company-Emoji]]
 #+name: init-company-emoji-block
@@ -2240,6 +2075,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-=" #'er/expand-region))
 #+end_src
 
+*** GnuPlot
+#+name: init-gnu-plot
+#+begin_src emacs-lisp
+  (use-package gnuplot
+    :straight t)
+
+  (use-package gnuplot-mode
+    :straight t :after gnuplot)
+#+end_src
 *** HOLD [[https://github.com/mkcms/interactive-align][Interactive-Align]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-19 Thu 14:46] \\
@@ -2251,6 +2095,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t)
 #+end_src
 
+*** [[https://github.com/emacsfodder/move-text][Move-Text]]
+#+name: init-move-text-block
+#+begin_src emacs-lisp
+  (use-package move-text
+    :straight t)
+
+#+end_src
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -3125,11 +2976,23 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq org-bullets-bullet-list '("⯄" "❂" "⦾" "✤")))
 #+end_src
 
+*** [[https://github.com/Kungsgeten/org-brain][Org-Brain]]
+#+name: init-org-brain-block
+#+begin_src emacs-lisp
+  (use-package org-brain
+    :straight t)
+#+end_src
 *** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]
 #+name: init-org-scrum-block
 #+begin_src emacs-lisp
   (use-package org-scrum
     :straight (:host github :repo "ianxm/emacs-scrum"))
+#+end_src
+*** [[https://github.com/bastibe/org-journal][Org-Journal]]
+#+name: init-org-journal-block
+#+begin_src emacs-lisp
+  (use-package org-journal
+    :straight t)
 #+end_src
 *** [[https://github.com/tesujimath/org-wc][Org-WC]]
 #+name: init-org-src-block
@@ -3472,13 +3335,24 @@ CLOSED: [2019-12-11 Wed 13:56]
     :straight t :after ess)
 #+end_src
 ** Languages
+*** Fish
+#+name: init-fish-block
+#+begin_src emacs-lisp
+  (use-package fish-mode
+    :straight t)
+#+end_src
 *** Emacs-Lisp
 **** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
   (use-package elisp-mode
     :straight (:type built-in)
-    :mode ("\\.Cask\\'" . emacs-lisp-mode))
+    :mode ("\\.Cask\\'" . emacs-lisp-mode)
+    :gfhook
+    #'outline-minor-mode
+    #'highlight-quoted-mode
+    :config
+    (general-setq lisp-indent-offset t))
 #+end_src
 **** Fix Identation
 #+name: init-elisp-identation-block
@@ -3606,9 +3480,12 @@ CLOSED: [2019-12-11 Wed 13:56]
     :config
     (general-setq markdown-fontify-code-blocks-natively t
                   markdown-enable-wiki-links t
-                  markdown-enable-math t
-                  mardown-indent-nenter 'indent-and-new-item
-                  markdown-asymmetric-header t))
+                  markdown-italic-underscore t
+                  markdown-asymmetric-header t
+                  markdown-gfm-uppercase-checkbox t
+                  markdown-gfm-additional-languages '("sh")
+                  markdown-make-gfm-checkboxes-buttons t
+                  mardown-indent-nenter 'indent-and-new-item))
 #+end_src
 
 **** [[https://github.com/milkypostman/markdown-mode-plus][Markdown-Mode-Plus]]
@@ -3675,6 +3552,7 @@ CLOSED: [2019-12-11 Wed 13:56]
                   ess-indent-with-fancy-comments nil
                   ess-nuke-trailing-whitespace t
                   ess-offset-arguments 'prev-line
+                  ess-offset-continued 'straight
                   ess-roxy-fontify-examples t
                   ess-use-auto-complete nil
                   ess-use-company t

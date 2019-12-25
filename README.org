@@ -62,3 +62,5 @@ Dotbot will then launch the =bootstrap-tools= script and walk you through the in
 ** Zsh
 - Extremly fast and configurable package manager - [[https://github.com/zdharma/zplugin][Zplugin]].
 ** Emacs
+** Better-Touch-Tool
+** Karabiner

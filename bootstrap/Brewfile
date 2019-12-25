@@ -146,15 +146,13 @@ brew "vim"
 brew "w3m"
 brew "watchexec"
 brew "wget"
-brew "wine"
-brew "winetricks"
 brew "xsv"
 brew "yarn"
 brew "youtube-dl"
 brew "z"
 brew "zsh", args: ["HEAD"]
 brew "caryll/tap/otfcc-mac64"
-brew "daviderestivo/emacs-head/emacs-head", args: ["HEAD", "with-cocoa", "with-dbus", "with-imagemagick", "with-jansson", "with-mailutils", "with-modern-icon-black-variant", "with-no-frame-refocus", "with-pdumper", "with-xwidgets"]
+brew "daviderestivo/emacs-head/emacs-head", args: ["HEAD", "with-cocoa", "with-dbus", "with-jansson", "with-mailutils", "with-modern-icon-black-variant", "with-no-frame-refocus", "with-pdumper", "with-xwidgets"]
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
 cask "adoptopenjdk"
 cask "alacritty"
@@ -169,7 +167,6 @@ cask "font-firacode-nerd-font"
 cask "font-iosevka-nerd-font"
 cask "font-iosevka-nerd-font-mono"
 cask "font-noto-sans-display"
-cask "font-symbola"
 cask "font-vollkorn"
 cask "font-xits"
 cask "gimp"
@@ -187,10 +184,3 @@ cask "sourcetree"
 cask "spectacle"
 cask "spotify"
 cask "vimr"
-mas "1Password 7", id: 1333542190
-mas "AdGuard for Safari", id: 1440147259
-mas "Elmedia Player", id: 937759555
-mas "Fantastical", id: 975937182
-mas "NordVPN IKE", id: 1116599239
-mas "Spark", id: 1176895641
-mas "Xcode", id: 497799835

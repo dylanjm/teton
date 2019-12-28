@@ -103,11 +103,11 @@ select opt in "Yes" "No"; do
 done
 
 if [ $opt = "Yes" ]; then
-  brew bundle --file="$(pwd)/bootstrap/Brewfile"
+  brew bundle --file="$(pwd)/bootstrap/Brewfile" > /dev/null
 fi
 
 printf "%b\r" "$marker Checking font installations - $status"
-if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l) 2>/dev/null" -lt 200 ]]; then
+if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l 2>/dev/null)" -lt 200 ]]; then
     printf "%b\n" "$marker Checking font installations - $status_bad"
 
     # shellcheck source=bootstrap-fonts.sh

@@ -21,7 +21,7 @@
     ~/.zshenv: shells/zsh/zshenv.zsh
     ~/.bashrc: shells/bash/bashrc.sh
     ~/.bash_profile: shells/bash/bash_profile.sh
-    ~/.emacs.d: editors/emacs.d
+    ~/.config/emacs: editors/emacs.d
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore
     ~/.config/starship.toml: shells/bash/themes/starship.toml

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2019-12-24 22:01:42
+/last updated/: 2019-12-28 14:21:42
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -731,7 +731,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
-    :blackout t :straight (:type built-in)
+    :blackout t
+    :straight (:type built-in)
     :ghook ('emacs-lisp-mode-hook #'turn-on-eldoc-mode)
     :config
     (general-setq eldoc-idle-delay .2
@@ -1360,12 +1361,6 @@ CLOSED: [2019-12-09 Mon 15:35]
     :ghook 'prog-mode-hook
     :config
     (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
-#+end_src
-*** Highlight-Operators
-#+name: init-highlight-operators-block
-#+begin_src emacs-lisp
-  (use-package highlight-operators
-    :straight t)
 #+end_src
 *** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
 #+name: init-highlight-todo-block
@@ -1998,16 +1993,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     ([remap describe-function] #'helpful-callable
      [remap describe-command]  #'helpful-command
      [remap describe-variable] #'helpful-variable
-     [remap describe-key]      #'helpful-key)
-    :config
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*helpful ")
-                   (display-buffer-reuse-window
-                    display-buffer-pop-up-window)
-                   (reusable-frames . visible)
-                   (side            . right)
-                   (slot            . 1)
-                   (window-width    . 0.5))))
+     [remap describe-key]      #'helpful-key))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
@@ -2075,7 +2061,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-=" #'er/expand-region))
 #+end_src
 
-*** GnuPlot
+*** [[https://github.com/emacsorphanage/gnuplot][GnuPlot]]
 #+name: init-gnu-plot
 #+begin_src emacs-lisp
   (use-package gnuplot
@@ -2257,6 +2243,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package rainbow-delimiters
     :blackout t :straight t
     :ghook 'prog-mode-hook)
+#+end_src
+*** [[https://gitlab.com/ideasman42/emacs-undo-fu][Undo-Fu]]
+#+name: init-undo-fu-block
+#+begin_src emacs-lisp
+  (use-package undo-fu
+    :straight t)
 #+end_src
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
 #+name: init-undo-tree-block

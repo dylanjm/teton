@@ -884,7 +884,7 @@
           }
         },
         "options": {
-          "link": false
+          "link": true
         }
       },
       "fasd": {
@@ -1661,7 +1661,7 @@
           }
         },
         "options": {
-          "link": false
+          "link": true
         }
       },
       "khard": {

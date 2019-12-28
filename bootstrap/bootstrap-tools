@@ -13,105 +13,41 @@ status="…"
 status_good="${GREEN}✔${NORMAL}"
 status_bad="${RED}✘${NORMAL}"
 
-# Check for xcode-CLT
-printf "%b\r" "$marker Checking for Command Line Tools - $status"
-if [ "$(xcode-select -p 2>/dev/null; echo $?)" = "2" ]; then
-    printf "%b\n" "$marker Checking for Command Line Tools - $status_bad"
-    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    PROD=$(softwareupdate -l |
-               grep "\*.*Command Line" |
-               head -n 1 |
-               awk -F"*" '{print $2}' |
-               sed -e 's/^ *//' |
-               tr -d '\n')
-    softwareupdate -i "$PROD" --verbose
-    rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-else
-    printf "%b\n" "$marker Checking for Command Line Tools - $status_good"
-fi
+# shellcheck source=bootstrap-xcode-clt
+source ./bootstrap/bootstrap-xcode-clt
 
-# Check for Homebrew
-printf "%b\r" "$marker Checking for Homebrew installation - $status"
-if [[ ! -e "$(command -v brew)" ]]; then
-    printf "%b\n" "$marker Checking for Homebrew installation - $status_bad"
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-else
-    printf "%b\n" "$marker Checking for Homebrew installation - $status_good"
-    brew upgrade > /dev/null
-fi
+# shellcheck source=bootstrap-homebrew
+source ./bootstrap/bootstrap-homebrew
 
-printf "\n%s\n" "Please select a default shell:"
-PS3="> "
-options=("zsh" "bash" "fish" "skip shell config")
-
-select opt in "${options[@]}"; do
-    case "$REPLY" in
-      1) printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-         break;;
-      2) printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-         break;;
-      3) printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-         break;;
-      4) printf "\n%s\n" "Skipping Shell Config..."
-         break;;
-      *) echo "Invalid option. Try another one."
-         continue;;
-    esac
-done
-
-if [ "$REPLY" != "4" ]; then
-
-    printf "%b\r" "$marker Checking for $opt installation - $status"
-    if test ! -e "/usr/local/bin/$opt"; then
-        printf "%b\n" "$marker Checking for $opt installation - $status_bad"
-        printf "%s\n\n" "Installing latest version of $opt from homebrew"
-        brew install "$opt"
-    else
-        printf "%b\n" "$marker Checking for $opt installation - $status_good"
-    fi
-
-    printf "%b\r" "$marker Checking /etc/shells - $status"
-    if ! grep -Fxq "/usr/local/bin/$opt" /etc/shells; then
-        printf "%b\n" "$marker Checking /etc/shells - $status_bad"
-        printf "Adding /usr/local/bin/%s to /etc/shells\n" "$opt"
-        echo "/usr/local/bin/$opt" | sudo tee -a /etc/shells
-    else
-        printf "%b\n" "$marker Checking /etc/shells $status_good"
-    fi
-
-    printf "%b\r" "$marker Checking \$SHELL - $status"
-    if [ "$SHELL" != "/usr/local/bin/$opt" ]; then
-        printf "%b\n" "$marker Checking \$SHELL - $status_bad"
-        sudo chsh -s "/usr/local/bin/$opt" "$USER"
-        printf "%s is now your default shell. Please restart your terminal once this script has finished" "$opt"
-    else
-        printf "%b\n" "$marker Checking \$SHELL - $status_good"
-    fi
-fi
+# shellcheck source=bootstrap-shell
+source ./bootstrap/bootstrap-shell
 
 printf "\n%s\n" "Would you like to upgrade/install dependencies from Brewfile?"
 PS3="> "
 select opt in "Yes" "No"; do
     case "$REPLY" in
-      1) printf "%b\n" "Installing Brewfile $status"
-         break;;
-      2) printf "%b\n\n" "Skipping Brewfile install $status"
-         break;;
-      *) printf "%s\n" "Invalid option! 1 for Yes, 2 for No"
-         continue;;
+    1)
+        printf "%b\n" "Installing Brewfile $status"
+        brew bundle --file="$(pwd)/bootstrap/Brewfile"
+        break
+        ;;
+    2)
+        printf "%b\n\n" "Skipping Brewfile install $status"
+        break
+        ;;
+    *)
+        printf "%s\n" "Invalid option! 1 for Yes, 2 for No"
+        continue
+        ;;
     esac
 done
-
-if [ $opt = "Yes" ]; then
-  brew bundle --file="$(pwd)/bootstrap/Brewfile" > /dev/null
-fi
 
 printf "%b\r" "$marker Checking font installations - $status"
 if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l 2>/dev/null)" -lt 200 ]]; then
     printf "%b\n" "$marker Checking font installations - $status_bad"
 
-    # shellcheck source=bootstrap-fonts.sh
-    source ./bootstrap/bootstrap-fonts.sh
+    # shellcheck source=bootstrap-fonts
+    source ./bootstrap/bootstrap-fonts
 else
     printf "%b\n" "$marker Checking font installations - $status_good"
 fi

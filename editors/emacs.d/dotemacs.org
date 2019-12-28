@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2019-12-28 14:21:42
+/last updated/: 2019-12-28 14:39:47
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -58,7 +58,7 @@ This document is my current emacs config which contains the code for my =early-i
 
 | Hardware             |      OS | Emacs Version |
 |----------------------+---------+---------------|
-| 15" 2019 MacBook Pro | 10.14.6 |       27.0.50 |
+| 15" 2019 MacBook Pro | 10.14.6 |       28.0.50 |
 | 15" 2019 MacBook Pro |         |       27.0.50 |
 
 -------------------------------------------------------------------
@@ -1306,9 +1306,13 @@ CLOSED: [2019-12-11 Wed 12:58]
     :straight t
     :ghook 'emacs-startup-hook)
 #+end_src
-*** [[https://github.com/davidshepherd7/electric-operator][Electric-Operators]]
+*** HOLD [[https://github.com/davidshepherd7/electric-operator][Electric-Operators]]
+:LOGBOOK:
+- State "HOLD"       from              [2019-12-28 Sat 14:27] \\
+  Determine when I want to use this
+:END:
 #+name: init-electric-operators
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package electric-operator
     :straight t
     :ghook 'prog-mode-hook)
@@ -1886,7 +1890,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   company-dabbrev-downcase nil
                   company-dabbrev-other-buffers t
                   company-dabbrev-code-other-buffers 'code
-                  company-idle-delay .15
+                  company-idle-delay 0
                   company-minimum-prefix-length 2
                   company-show-numbers t
                   company-require-match 'never
@@ -1898,6 +1902,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-setq company-frontends '(company-pseudo-tooltip-frontend
                                       company-echo-metadata-frontend)))
+
+
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]

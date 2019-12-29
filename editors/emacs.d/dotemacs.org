@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2019-12-28 14:39:47
+/last updated/: 2019-12-28 20:00:28
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -90,26 +90,27 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
   (defvar default-gc-cons-threshold 67108864) ;; 64 mb
 
   (setq-default auto-window-vscroll nil
-        bidi-display-reordering 'left-to-right
-        bidi-paragraph-direction 'left-to-right
-        command-line-ns-option-alist nil
-        frame-inhibit-implied-resize t
-        inhibit-default-init t
-        site-run-file nil
-        load-prefer-newer t)
+                bidi-display-reordering 'left-to-right
+                bidi-paragraph-direction 'left-to-right
+                command-line-ns-option-alist nil
+                frame-inhibit-implied-resize t
+                inhibit-default-init t
+                site-run-file nil
+                load-prefer-newer t)
 
   (setq file-name-handler-alist nil
-    gc-cons-threshold extended-gc-cons-threshold
-    package-enable-at-startup nil)
+        gc-cons-threshold extended-gc-cons-threshold
+        package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
     (setq file-name-handler-alist default-file-name-handler-alist
-      gc-cons-percentage 0.1))
+          gc-cons-percentage 0.1
+          load-prefer-newer nil))
 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
   (run-with-idle-timer 5 nil (lambda ()
-                   (setq-default gc-cons-threshold default-gc-cons-threshold)
-                   (garbage-collect)))
+                               (setq-default gc-cons-threshold default-gc-cons-threshold)
+                               (garbage-collect)))
 #+end_src
 
 *** Pre-Gui Optimization
@@ -293,7 +294,8 @@ You'll see a similar configuration in other dotfiles online. By default, Emac's 
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
-  (straight-use-package 'org-plus-contrib)
+  (straight-use-package
+   '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
 #+end_src
 
 *** [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
@@ -492,6 +494,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Built-In Defaults
+*** Abbrev (Built-In)
+#+name: init-abbrev-block
+#+begin_src emacs-lisp
+  (use-package abbrev
+    :straight (:type built-in))
+#+end_src
 *** Advice (Built-In)
 #+name: init-advice-block
 #+begin_src emacs-lisp
@@ -598,6 +606,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   calendar-holiday-marker t))
 #+end_src
 
+*** Checkdoc (Built-In)
+#+name: init-checkdoc-block
+#+begin_src emacs-lisp
+  (use-package checkdoc
+    :straight (:type built-in)
+    :init
+    (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
+#+end_src
 *** CL-Lib (Built-In)
 #+name: init-cl-lib-block
 #+begin_src emacs-lisp
@@ -857,7 +873,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (tooltip-mode -1)
       (mouse-wheel-mode -1)
       (global-so-long-mode +1)
-      (global-subword-mode +1)
       (unless (display-graphic-p)
         (menu-bar-mode -1)))
     :config
@@ -919,6 +934,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:type built-in))
 #+end_src
 
+*** iSearch (Built-In)
+#+name: init-isearch-block
+#+begin_src emacs-lisp
+  (use-package isearch
+    :straight (:type built-in)
+    :config
+    (general-setq lazy-highlight-initial-delay 0))
+#+end_src
 *** iSpell (Built-In)
 #+name: init-ispell-block
 #+begin_src emacs-lisp
@@ -992,6 +1015,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 #+end_src
 
+*** New-Comment (Built-In)
+#+name: init-new-comment-block
+#+begin_src emacs-lisp
+  (use-package newcomment
+    :straight (:type built-in))
+#+end_src
 *** NS-Win (Built-In)
 #+name: init-ns-win-block
 #+begin_src emacs-lisp
@@ -1014,6 +1043,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
          (ns-auto-titlebar-mode +1)))
 #+end_src
 
+*** Outline (Built-In)
+#+name: init-outline-block
+#+begin_src emacs-lisp
+  (use-package outline
+    :straight (:type built-in))
+#+end_src
 *** Paren (Built-In)
 #+name: init-paren-block
 #+begin_src emacs-lisp
@@ -1140,6 +1175,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:type built-in)
     :commands (smerge-mode))
 #+end_src
+*** Subword (Built-In)
+#+name: init-subword-block
+#+begin_src emacs-lisp
+  (use-package subword
+    :straight (:type built-in)
+    :config
+    (global-subword-mode +1))
+#+end_src
 *** Time (Built-In)
 #+name: init-time-block
 #+begin_src emacs-lisp
@@ -1182,6 +1225,18 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq view-inhibit-help-message t))
 #+end_src
 
+*** Warnings (Built-In)
+#+name: init-warnings-block
+#+begin_src emacs-lisp
+  (use-package warnings
+    :straight (:type built-in))
+#+end_src
+*** Whitespace (Built-In)
+#+name: init-whitespace-block
+#+begin_src emacs-lisp
+  (use-package whitespace
+    :straight (:type built-in))
+#+end_src
 *** Winner (Built-In)
 #+name: init-winner-block
 #+begin_src emacs-lisp
@@ -1912,12 +1967,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package company-box
     :blackout t :straight t :after company
     :ghook 'company-mode-hook
-    :config/el-patch
+    :config
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                  company-box-enable-icon t
-                  company-box-show-single-candidate t
-                  company-box-backends-colors nil
-                  company-box-max-candidates 50))
+                  company-box-enable-icon t))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -1956,7 +2008,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-tabnine-block
 #+begin_src emacs-lisp
   (use-package company-tabnine
-    :straight t
+    :straight t :after company
     :ghook ('company-mode-hook #'arco/configure-tabnine)
     :preface
     (defun arco/configure-tabnine ()
@@ -2029,8 +2081,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook ('emacs-startup-hook #'global-anzu-mode)
     :general
-    ([remap query-replace] #'anzu-query-replace
-     [remap query-replace-regexp] #'anzu-query-replace-regexp))
+    ([remap query-replace] #'anzu-query-replace-regexp
+     [remap query-replace-regexp] #'anzu-query-replace))
 #+end_src
 
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
@@ -2243,6 +2295,18 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
+*** [[https://github.com/Fuco1/smartparens][SmartParens]]
+#+name: init-smartparens-block
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :straight t)
+#+end_src
+*** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
+#+name: init-ssh-config-block
+#+begin_src emacs-lisp
+  (use-package ssh-config-mode
+    :blackout "SSH-Config" :straight t)
+#+end_src
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
 #+name: init-rainbow-delimiters-block
 #+begin_src emacs-lisp
@@ -2274,7 +2338,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (global-undo-tree-mode +1))
 #+end_src
 
-*** [[https://github.com/bnbeckwith/wc-mode][WC-Mode]]
+*** [[https://github.com/bnbeckwith/wc-mode][WordCount-Mode]]
 #+name: init-wc-mode-block
 #+begin_src emacs-lisp
   (use-package wc-mode
@@ -2679,7 +2743,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package ibuf-ext
     :straight (:type built-in)
     :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
-    :config (setq ibuffer-show-empty-filter-groups nil))
+    :config (general-setq ibuffer-show-empty-filter-groups nil))
 #+end_src
 *** [[https://github.com/jojojames/ibuffer-sidebar][iBuffer-Sidebar]]
 #+name: init-ibuffer-sidebar
@@ -2745,7 +2809,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host gitlab :repo "ambrevar/emacs-windower")
     :general
     ("C-c w o" #'windower-switch-to-last-buffer
-     "C-c w t" #'windower-toggle-split))
+     "C-c w t" #'windower-toggle-split
+     "C-c w s" #'windower-swap
+     "C-c w m" #'windower-move-border
+     "C-c w a" #'windower-toggle-single))
 #+end_src
 
 ** Org
@@ -3099,7 +3166,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-x g"   #'magit-status
               "C-x M-g" #'magit-dispatch)
     :config
-    (general-setq magit-view-git-manual-method 'man
+    (general-setq magit-view-git-manual-method 'woman
                   transient-default-level 5
                   magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                   magit-diff-refine-hunk t
@@ -3120,7 +3187,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-transient-block
 #+begin_src emacs-lisp
   (use-package transient
-    :straight (:type built-in)
+    :straight nil
     :config (transient-bind-q-to-quit))
 #+end_src
 
@@ -3128,7 +3195,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-git-attribute-block
 #+begin_src emacs-lisp
   (use-package gitattributes-mode
-    :straight t)
+    :straight git-modes)
 #+end_src
 *** [[https://github.com/magit/git-modes][Git-Config]]
 #+name: init-git-config-block
@@ -3148,7 +3215,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-git-link-block
 #+begin_src emacs-lisp
   (use-package git-link
-    :straight t)
+    :straight git-modes)
 #+end_src
 
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
@@ -3175,7 +3242,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package git-gutter
     :blackout t :straight t
     :if (display-graphic-p)
-    :ghook ('after-init-hook #'global-git-gutter-mode))
+    :ghook ('after-find-file #'global-git-gutter-mode))
 #+end_src
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
@@ -3262,7 +3329,9 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+name: init-apheleia-block
 #+begin_src emacs-lisp
   (use-package apheleia
-    :straight (:host github :repo "raxod502/apheleia"))
+    :blackout t :straight (:host github :repo "raxod502/apheleia")
+    :init
+    (apheleia-global-mode +1))
 #+end_src
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
@@ -3344,7 +3413,7 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
   (use-package elisp-mode
-    :straight (:type built-in)
+    :defer 5 :straight (:type built-in)
     :mode ("\\.Cask\\'" . emacs-lisp-mode)
     :gfhook
     #'outline-minor-mode
@@ -3511,6 +3580,14 @@ CLOSED: [2019-12-11 Wed 13:56]
     :mode ("\\.yaml'" "\\.yml'"))
 #+end_src
 
+*** TOML
+**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
+#+name: init-toml-mode-block
+#+begin_src emacs-lisp
+  (use-package toml-mode
+    :blackout "TOML" :straight t
+    :mode "Pipfile\\'")
+#+end_src
 *** LaTeX
 **** AuCTeX
 #+name: init-auctex-block

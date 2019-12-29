@@ -79,7 +79,6 @@ brew "libomp"
 brew "ispell"
 brew "isync"
 brew "jags"
-brew "node"
 brew "pandoc"
 brew "jupyterlab", link: true
 brew "khard"
@@ -152,7 +151,6 @@ brew "youtube-dl"
 brew "z"
 brew "zsh", args: ["HEAD"]
 brew "caryll/tap/otfcc-mac64"
-brew "daviderestivo/emacs-head/emacs-head", args: ["HEAD", "with-cocoa", "with-dbus", "with-jansson", "with-mailutils", "with-modern-icon-black-variant", "with-no-frame-refocus", "with-pdumper", "with-xwidgets"]
 brew "koekeishiya/formulae/yabai", args: ["HEAD"]
 cask "adoptopenjdk"
 cask "alacritty"
@@ -167,7 +165,6 @@ cask "font-noto-sans-display"
 cask "font-vollkorn"
 cask "font-xits"
 cask "gimp"
-cask "google-chrome"
 cask "iterm2"
 cask "java"
 cask "julia"

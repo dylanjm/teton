@@ -80,7 +80,7 @@ brew "ispell"
 brew "isync"
 brew "jags"
 brew "pandoc"
-brew "jupyterlab", link: true
+brew "jupyterlab"
 brew "khard"
 brew "ledger"
 brew "less"

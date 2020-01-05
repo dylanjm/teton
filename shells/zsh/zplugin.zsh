@@ -15,7 +15,6 @@ autoload -Uz _zplugin
 
 ### Check if zmodule is installed and built.
 zmodload zdharma/zplugin 2>/dev/null || zpl module build
-#zmodload -i zsh/complist
 
 ### Zplugin is hard-coded to create this directory.
 ### See: https://github.com/zdharma/zplugin/issues/197
@@ -36,8 +35,12 @@ zplugin light-mode for \
     zplugin/z-a-rust \
     zplugin/z-a-man
 
-zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
-zplugin $load sindresorhus/pure
+zplugin ice pick'spacezsh.zsh' \
+  compile'{presets/^(*.zwc),lib/**/^(*.zwc),sections/^(*.zwc)}'
+zplugin $load laggardkernel/spacezsh-prompt
+
+# zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
+# zplugin $load sindresorhus/pure
 
 zplugin ice wait'1' lucid
 zplugin $load hlissner/zsh-autopair
@@ -45,7 +48,7 @@ zplugin $load hlissner/zsh-autopair
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate snazzy)"
+export LS_COLORS="$(vivid generate molokai)"
 export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
 zplugin ice wait'1' lucid blockf
@@ -69,10 +72,10 @@ zplugin $load rupa/z
 zplugin ice wait'1b' lucid blockf
 zplugin $load changyuheng/fz
 
-zplugin ice wait'2c' atinit"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay"
+zplugin ice wait'2b' atinit"ZPLGM[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting
 
-zplugin ice wait'2b' atload"!_zsh_autosuggest_start"
+zplugin ice wait'2c' atload"!_zsh_autosuggest_start" lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)

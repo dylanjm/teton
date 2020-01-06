@@ -21,6 +21,7 @@ export LANG="en_US.UTF-8"
 export EDITOR='emacsclient -a "" -c'
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
+export ORG_FILES="$HOME/Documents/org-files"
 
 ###
 ### History

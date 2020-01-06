@@ -35,12 +35,16 @@ zplugin light-mode for \
     zplugin/z-a-rust \
     zplugin/z-a-man
 
+zplugin ice
+zplugin $load romkatv/powerlevel10k
+
 # zplugin ice pick'spacezsh.zsh' \
 #   compile'{presets/^(*.zwc),lib/**/^(*.zwc),sections/^(*.zwc)}'
 # zplugin $load laggardkernel/spacezsh-prompt
 
-zplugin ice lucid atinit'fpath+=($PWD/functions.zwc $PWD/functions $PWD/modules.zwc $PWD/modules)'
-zplugin light mjrafferty/apollo-zsh-theme
+# zplugin ice lucid atinit'fpath+=($PWD/functions.zwc $PWD/functions $PWD/modules.zwc $PWD/modules)' \
+#   atload'source $DOTFILES/shells/zsh/themes/apollo.zsh'
+# zplugin light mjrafferty/apollo-zsh-theme
 
 # zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
 # zplugin $load sindresorhus/pure
@@ -51,7 +55,7 @@ zplugin $load hlissner/zsh-autopair
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate gruvbox)"
+export LS_COLORS="$(vivid generate gruvbox-dark)"
 export EXA_COLORS="da=38;5;4:uu=38;5;2:sn=38;5;124;lp=38;5;5;b0=37;41;1"
 
 zplugin ice wait'1' lucid blockf

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-05 18:50:15
+/last updated/: 2020-01-06 13:21:13
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -126,7 +126,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                       (tool-bar-lines . 0)
                       (ns-appearance . dark)
                       (vertical-scroll-bars)
-                      (font . "Iosevka SS09-16:weight=ultra-light")))
+                      (font . "Iosevka SS09-18:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -205,19 +205,6 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 ** Initial Demands
 This section is for packages I need immediately upon launching emacs. My goal is to slim this section down a lot to try to further improve startup-times.
-*** CANCELLED [[https://github.com/dholm/benchmark-init-el][Benchmark-Init]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-14 Sat 12:54] \\
-  Only enable this when I'm benchmarking my init
-:END:
-#+name: early-init-no-littering-block
-#+begin_src emacs-lisp :tangle no
-  (use-package benchmark-init
-    :demand t :straight t
-    :init (benchmark-init/activate))
-    ;;(add-hook 'pre-command-hook #'benchmark-init/deactivate))
-#+end_src
-
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
 Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
 #+name: init-environment-block
@@ -252,14 +239,6 @@ Great package by the same author of Straight.el. It's similar to adding advice t
     (require 'el-patch))
 #+end_src
 
-*** [[https://github.com/noctuid/annalist.el][Annalist]]
-Not quite sure what this package does except for the fact that it works in unison with General.el
-#+name: init-annalist-block
-#+begin_src emacs-lisp
-  (use-package annalist
-    :straight (:host github :repo "noctuid/annalist.el"))
-#+end_src
-
 *** [[https://github.com/noctuid/general.el][General]]
 Great package for managing key-bindings and other customizations.
 #+name: init-general-block
@@ -274,18 +253,6 @@ Similar to packages like minions, diminish, or delight. You can alter how your m
   (use-package blackout
     :demand t
     :straight (:host github :repo "raxod502/blackout"))
-#+end_src
-
-*** HOLD [[https://github.com/Foltik/use-package-company][Use-Package-Company]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-14 Sat 13:13] \\
-  I keep getting an error when using this package.
-:END:
-#+name: init-use-package-company-block
-#+begin_src emacs-lisp :tangle no
-  (use-package use-package-company
-    :straight (:host github :repo "Foltik/use-package-company")
-    :defines (company-backends))
 #+end_src
 
 *** [[https://github.com/magnars/dash.el][Dash]]
@@ -330,7 +297,7 @@ Here are some of my personal variables that I will need to refer to at some poin
   (defvar djm--straight-directory  (concat user-emacs-directory "straight/"))
   (defvar djm--yasnippet-directory (concat user-emacs-directory "snippets/"))
 
-  (defvar djm--org-agenda-directory "~/org/")
+  (defvar djm--org-agenda-directory (getenv "ORG_FILES"))
 
   (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
   (defvar djm--secret-file (no-littering-expand-etc-file-name "secret.el"))
@@ -348,7 +315,7 @@ This function is a great way to conditional run functions at different intervals
 Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]].
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
-  (defmacro djm/run-at-active-interval (interval idle-interval &rest body)
+  (defmacro arco/run-at-active-interval (interval idle-interval &rest body)
     "Every INTERVAL seconds, unless idle for > IDLE-INTERVAL seconds, run BODY.
   Also, after IDLE-INTERVAL seconds of idle time, run BODY. This allows using an
   idle timer to quickly run BODY when Emacs becomes idle but also ensures that
@@ -373,7 +340,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+begin_src emacs-lisp
   (defvar *protected-buffers* '("*scratch*" "*Messages*"))
 
-  (defun djm/protected-buffers ()
+  (defun arco/protected-buffers ()
     "Protects some buffers from being killed."
     (dolist (buffer *protected-buffers*)
       (if (get-buffer buffer)
@@ -383,7 +350,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
         (with-current-buffer buffer
           (emacs-lock-mode 'kill)))))
 
-  (general-add-hook 'emacs-startup-hook #'djm/protected-buffers)
+  (general-add-hook 'emacs-startup-hook #'arco/protected-buffers)
 #+end_src
 
 **** Async Tangle
@@ -436,7 +403,7 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 Sometimes I need a different scratch buffer to do some work on.
 #+name: init-temp-buffers-block
 #+begin_src emacs-lisp
-  (defun djm/new-scratch ()
+  (defun arco/new-scratch ()
     "open up a guaranteed new scratch buffer"
     (interactive)
     (switch-to-buffer (cl-loop for num from 0
@@ -1101,10 +1068,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package prog-mode
     :straight (:type built-in)
-    :gfhook
-    #'display-fill-column-indicator-mode
-    #'show-paren-mode
-    #'prettify-symbols-mode
+    :gfhook #'display-fill-column-indicator-mode #'show-paren-mode #'prettify-symbols-mode
     :config
     (general-setq prettify-symbols-unprettify-at-point 'right)
     (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
@@ -1119,7 +1083,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-setq recentf-max-saved-items 2000
                   recentf-max-menu-items 100
                   recentf-auto-cleanup 'never)
-    (djm/run-at-active-interval (* 5 60) 10
+    (arco/run-at-active-interval (* 5 60) 10
       (let ((inhibit-message t))
         (recentf-save-list))))
 #+end_src
@@ -1261,12 +1225,14 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package warnings
     :straight (:type built-in))
 #+end_src
+
 *** Whitespace (Built-In)
 #+name: init-whitespace-block
 #+begin_src emacs-lisp
   (use-package whitespace
     :straight (:type built-in))
 #+end_src
+
 *** Winner (Built-In)
 #+name: init-winner-block
 #+begin_src emacs-lisp
@@ -1280,7 +1246,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                                           "*Fuzzy Completions*"
                                           "*Apropos*"
                                           "*Help*"
-                                          "*cvs*"
                                           "*Buffer List*"
                                           "*Ibuffer*")))
 #+end_src
@@ -1291,6 +1256,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package xref
     :straight (:type built-in))
 #+end_src
+
 ** User Files
 *** Custom File
 #+name: init-custom-load-block
@@ -1327,23 +1293,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                all-the-icons-faicon))
 #+end_src
 
-*** CANCELLED [[https://github.com/emacsfodder/emacs-theme-darktooth][Darktooth Theme]]
-CLOSED: [2019-12-11 Wed 12:58]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-11 Wed 12:58] \\
-  I'll try modifying this later.
-:END:
-#+name: init-darktooth-block
-#+begin_src emacs-lisp :tangle no
-  (use-package darktooth-theme
-    :straight t
-    :ghook ('emacs-startup-hook #'djm/load-darktooth-theme)
-    :preface
-    (defun djm/load-darktooth-theme ()
-      (load-theme 'darktooth t)
-      (djm/config-fonts)))
-#+end_src
-
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
 #+name: init-default-text-scale-block
 #+begin_src emacs-lisp
@@ -1354,65 +1303,6 @@ CLOSED: [2019-12-11 Wed 12:58]
      "<C-s-down>" #'default-text-scale-decrease
      "<C-M-s-down>" #'default-text-scale-reset)
     :config (general-setq default-text-scale-amount 20))
-#+end_src
-
-*** CANCELLED [[https://github.com/gonewest818/dimmer.el][Dimmer-Mode]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-12 Thu 19:24] \\
-  Needs a ton of configuration.
-:END:
-#+name: init-dimmer-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dimmer
-    :straight t
-    :ghook 'after-init-hook
-    :config
-    (defun djm/dimmer-process-all--fake ())
-
-    (defun djm/dimmer-disable ()
-      (advice-add 'dimmer-process-all :override
-                  'djm/dimmer-process-all--fake))
-
-    (defun djm/dimmer-enable ()
-      (advice-remove 'dimmer-process-all 'djm/dimmer-process-all--fake))
-
-    (add-hook 'minibuffer-setup-hook 'djm/dimmer-disable)
-    (add-hook 'minibuffer-exit-hook 'djm/dimmer-enable))
-#+end_src
-
-*** CANCELLED [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-13 Fri 21:47] \\
-  I can't seem to enjoy this package
-:END:
-#+name: init-doom-mode-line-block
-#+begin_src emacs-lisp :tangle no
-  (use-package doom-modeline
-    :straight t
-    :ghook 'emacs-startup-hook)
-#+end_src
-*** HOLD [[https://github.com/davidshepherd7/electric-operator][Electric-Operators]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-28 Sat 14:27] \\
-  Determine when I want to use this
-:END:
-#+name: init-electric-operators
-#+begin_src emacs-lisp :tangle no
-  (use-package electric-operator
-    :straight t
-    :ghook 'prog-mode-hook)
-#+end_src
-*** CANCELLED [[https://github.com/iqbalansari/emacs-emojify][Emojify]]
-CLOSED: [2019-12-09 Mon 15:35]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-09 Mon 15:35] \\
-  I don't really like the non-apple emojis.
-:END:
-#+name: init-emojify-block
-#+begin_src emacs-lisp :tangle no
-  (use-package emojify
-    :straight t
-    :ghook ('after-init-hook #'global-emojify-mode))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -1458,13 +1348,6 @@ CLOSED: [2019-12-09 Mon 15:35]
     :straight t)
 #+end_src
 
-*** [[https://github.com/rnkn/olivetti][Olivetti-Mode]]
-#+name: init-olivetti-block
-#+begin_src emacs-lisp
-  (use-package olivetti
-    :straight t)
-#+end_src
-
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
 This package is great, but can be a little annoying. It can sometimes slow-down emacs a ton.
 #+name: init-page-break-lines-block
@@ -1483,7 +1366,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 #+end_src
 
 *** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
-
 #+name: init-perfect-margin-block
 #+begin_src emacs-lisp
   (use-package perfect-margin
@@ -1500,13 +1382,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
     (run-with-idle-timer 3 nil
                          (lambda ()
                            (persistent-scratch-setup-default))))
-#+end_src
-
-*** [[https://github.com/kunalb/poet][Poet-Theme]]
-#+name: init-poet-theme-block
-#+begin_src emacs-lisp
-  (use-package poet-theme
-    :straight t)
 #+end_src
 
 *** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
@@ -1531,7 +1406,7 @@ CLOSED: [2019-12-13 Fri 21:48]
     :preface
     (defun djm/config-smart-mode-line ()
       (general-setq mode-line-format (delq 'mode-line-position mode-line-format)
-                    display-time-format " %a %B %d %I:%M %p"
+                    display-time-format "%a %B %d %I:%M %p"
                     sml/theme nil
                     sml/use-projectile-p t
                     sml/no-confirm-load-theme t)
@@ -1542,35 +1417,12 @@ CLOSED: [2019-12-13 Fri 21:48]
     (mode-line-inactive ((t (:box (:line-width 5 :color "#1d2021"))))))
 #+end_src
 
-*** CANCELLED [[https://github.com/zk-phi/sublimity][Sublimity]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-24 Tue 21:01] \\
-  Slows down emacs too much.
-:END:
-#+name: init-subliminity-block
-#+begin_src emacs-lisp :tangle no
-  (use-package sublimity
-    :straight t)
-#+end_src
-
-*** CANCELLED [[https://github.com/rolandwalker/unicode-fonts][Unicode-Fonts]]
-CLOSED: [2019-12-09 Mon 12:23]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-09 Mon 12:23] \\
-  Not really sure I want to use this package.
-:END:
-#+name: init-unicode-fonts-block
-#+begin_src emacs-lisp :tangle no
-  (use-package unicode-fonts
-    :straight t
-    :ghook ('emacs-startup-hook #'unicode-fonts-setup))
-#+end_src
-
 *** [[https://github.com/k-talo/volatile-highlights.el][Volatile-Highlights]]
 #+name: init-volatile-highlights-block
 #+begin_src emacs-lisp
   (use-package volatile-highlights
-    :straight t)
+    :blackout t :straight t
+    :ghook 'emacs-startup-hook)
 #+end_src
 ** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
@@ -1863,20 +1715,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
           #'ivy-format-function-line))
 #+end_src
 
-*** HOLD [[https://github.com/tumashu/ivy-posframe][Ivy-Posframe]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-12 Thu 19:20] \\
-  Requires too much configuration.
-:END:
-#+name: init-ivy-posframe-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ivy-posframe
-    :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :config
-    (general-setq ivy-posframe-style 'frame-center
-                  ivy-posframe-hide-minibuffer t))
-#+end_src
 *** [[https://github.com/jixiuf/ivy-dired-history][Ivy-Dired-History]]
 #+name: init-ivy-dired-history-block
 #+begin_src emacs-lisp
@@ -1939,22 +1777,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   swiper-action-recenter t))
 #+end_src
 
-*** HOLD [[https://github.com/raxod502/selectrum][Selectrum]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-24 Tue 11:00] \\
-  This eventually might be a replacement for ivy soon.
-:END:
-#+name: init-selectrum-block
-#+begin_src emacs-lisp :tangle no
-  (use-package selectrum
-    :straight (:host github :repo "raxod502/selectrum"))
-#+end_src
-*** [[https://github.com/manateelazycat/snails][Snails]]
-#+name: init-snails-block
-#+begin_src emacs-lisp
-  (use-package snails
-    :straight (:host github :repo "manateelazycat/snails"))
-#+end_src
 ** Autocompletion
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
@@ -1977,11 +1799,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   company-dabbrev-downcase nil
                   company-dabbrev-other-buffers t
                   company-dabbrev-code-other-buffers 'code
-                  company-idle-delay 0
+                  company-idle-delay .15
                   company-minimum-prefix-length 2
                   company-show-numbers t
                   company-require-match 'never
-                  company-tooltip-limit 14
+                  company-tooltip-limit 15
                   company-tooltip-align-annotations t)
 
     (general-setq company-global-modes
@@ -2036,20 +1858,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package company-emoji
     :straight t)
 #+end_src
-*** HOLD [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]]
-:LOGBOOK:
-- State "HOLD"       from              [2020-01-05 Sun 18:50] \\
-  This is kind of clunky to use.
-:END:
-#+name: init-company-tabnine-block
-#+begin_src emacs-lisp :tangle no
-  (use-package company-tabnine
-    :straight t :after company
-    :ghook ('company-mode-hook #'arco/configure-tabnine)
-    :preface
-    (defun arco/configure-tabnine ()
-      (add-to-list 'company-backends #'company-tabnine)))
-#+end_src
+
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2141,13 +1950,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      [remap move-beginning-of-line] #'crux-move-beginning-of-line
      [remap kill-line] #'crux-smart-kill-line))
 #+end_src
+
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
 #+begin_src emacs-lisp
   (use-package format-all
     :straight t)
 #+end_src
+
 *** [[https://github.com/magnars/expand-region.el][Expand-Region]]
+
 #+name: init-expand-region-block
 #+begin_src emacs-lisp
   (use-package expand-region
@@ -2164,17 +1976,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package gnuplot-mode
     :straight t :after gnuplot)
 #+end_src
-*** HOLD [[https://github.com/mkcms/interactive-align][Interactive-Align]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-19 Thu 14:46] \\
-  I don't really use this package yet.
-:END:
-#+name: init-interactive-align-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ialign
-    :straight t)
-#+end_src
-
 *** [[https://github.com/emacsfodder/move-text][Move-Text]]
 #+name: init-move-text-block
 #+begin_src emacs-lisp
@@ -2192,12 +1993,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
-*** [[https://github.com/waymondo/popup-kill-ring][Popup-Kill-Ring]]
-#+name: init-popup-kill-ring-block
-#+begin_src emacs-lisp
-  (use-package popup-kill-ring
-    :straight t)
-#+end_src
 *** [[https://github.com/akicho8/string-inflection][String-Inflection]]
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
@@ -2223,35 +2018,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package sudo-edit
     :straight t
     :commands (sudo-edit))
-#+end_src
-*** [[https://github.com/abo-abo/tiny][Tiny]]
-#+name: init-tiny-block
-#+begin_src emacs-lisp
-  (use-package tiny
-    :straight t
-    :general ("C-:" #'tiny-expand))
-#+end_src
-*** [[https://github.com/benma/visual-regexp.el][Visual-Regexp]]
-#+name: init-visual-regexp-block
-#+begin_src emacs-lisp
-  (use-package visual-regexp
-    :straight t)
-#+end_src
-
-*** [[https://github.com/benma/visual-regexp-steroids.el][Visual-Regexp-Steroids]]
-#+name: init-visual-regexp-steroids-block
-#+begin_src emacs-lisp
-  (use-package visual-regexp-steroids
-    :straight t
-    :config
-    (general-setq vr/engine 'python))
-#+end_src
-
-*** [[https://github.com/mhayashi1120/Emacs-wgrep][Wgrep]]
-#+name: init-wgrep-block
-#+begin_src emacs-lisp
-  (use-package wgrep
-    :straight t)
 #+end_src
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
 #+name: init-zop-to-char-block
@@ -2301,12 +2067,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
   (use-package csv-mode
-    :straight t
-    :mode "\\.csv\\'"
-    :preface
-    (defun config-langs--suppress-final-newline ()
-      (setq-local require-final-newline nil))
-    :config (add-hook 'csv-mode-hook #'config-langs--suppress-final-newline))
+    :straight t :mode "\\.csv\\'")
 #+end_src
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
@@ -2452,20 +2213,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
 
-*** CANCELLED [[https://www.emacswiki.org/emacs/dired+.el][Dired+]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-12 Thu 19:08] \\
-  This changes the way dired works too much.
-:END:
-#+name: init-dired-plus-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dired+
-    :straight dired-plus
-    :init
-    (general-setq diredp-hide-details-initially-flag nil
-                  diredp-hide-details-propagate-flag t
-                  diredp-wrap-around-flag nil))
-#+end_src
 *** WDired (Built-In)
 #+name: init-wdired-block
 #+begin_src emacs-lisp
@@ -2512,17 +2259,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t)
 #+end_src
 
-*** CANCELLED [[https://github.com/calancha/dired-du][Dired-Du]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-15 Sun 18:32] \\
-  This has a lot of overhead for directories.
-:END:
-#+name: init-dired-du-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dired-du
-    :straight t
-    :ghook ('dired-mode-hook #'dired-du-mode))
-#+end_src
 *** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
 #+name: init-dired-git-info-block
 #+begin_src emacs-lisp
@@ -2592,20 +2328,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      'dired-mode-map
      "<tab>"     #'dired-subtree-toggle
      "<backtab>" #'dired-subtree-cycle))
-#+end_src
-
-*** CANCELLED [[https://github.com/syohex/emacs-dired-k][Dired-K]]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-24 Tue 11:01] \\
-  I don't like the dired-k styling
-:END:
-#+name: init-dired-k-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dired-k
-    :straight t
-    :ghook
-    ('dired-initial-position-hook #'dired-k)
-    ('dired-after-readin-hook #'dired-k-no-revert))
 #+end_src
 
 *** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
@@ -2856,164 +2578,93 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-org-block
 #+begin_src emacs-lisp
   (use-package org
-    :straight t
-    :ghook ('org-mode-hook #'djm/config-org-mode)
-    :gfhook 'variable-pitch-mode 'visual-line-mode 'prettify-symbols-mode
+    :straight nil
+    :gfhook 'variable-pitch-mode 'visual-line-mode
     :general
     ("C-c a" #'org-agenda
      "C-c c" #'org-capture
-     "C-c p" #'org-pomodoro
-     "C-c s" #'org-search-view
-     "C-c t" #'org-todo-list
-     "C-c /" #'org-tags-view)
-    (:keymaps
-     'org-mode-map
-     "C-c v g" #'org-babel-goto-named-src-block)
-    :preface
-    (defun djm/config-org-mode ()
-      (push '("TODO"       . ?▲)  prettify-symbols-alist)
-      (push '("NEXT"       . ?→)  prettify-symbols-alist)
-      (push '("DONE"       . ?✓)  prettify-symbols-alist)
-      (push '("CANCELLED"  . ?✘)  prettify-symbols-alist)
-      (push '("HOLD"       . ?🤚) prettify-symbols-alist)
-      (push '("WAITING"    . ?𝌗) prettify-symbols-alist)
-      (push '("QUESTION"   . ??)  prettify-symbols-alist)
-      (push '("SCHEDULED"  . ?🗓) prettify-symbols-alist)
-      (push '("CLOSED"     . ?🏁) prettify-symbols-alist)
-      (push '("DEADLINE"   . ?❗) prettify-symbols-alist)
-      (push '("CLOCK"      . ?⏰) prettify-symbols-alist)
-      (blackout 'org-indent-mode))
-
-
+     :keymaps 'org-mode-map
+     "M-n" #'outline-next-visible-heading
+     "M-p" #'outline-previous-visible-heading)
     :config
-    (progn
-      ;; Make bullets prettier.
-      (font-lock-add-keywords 'org-mode
-                              `((,(rx bol (* space) (group "-") (+ space))
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-                                (,(rx bol (* space) (group "#+begin_src") symbol-end)
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-                                (,(rx bol (* space) (group "#+end_src") symbol-end)
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋯"))))
-                                (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-                                (,(rx bol (* space) (group "#+end_quote") symbol-end)
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”")))))))
-
     (general-setq org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
-                  org-default-notes-file "~/org/inbox.org"
-                  org-directory "~/org/"
                   org-ellipsis "…"
                   org-enforce-todo-dependencies t
-                  org-expiry-inactive-timestamps t
                   org-export-coding-system 'utf-8
-                  org-file-apps '((auto-mode . emacs)
-                                  ("\\.x?html?\\'" . "open %s")
-                                  ("\\.pdf\\'" . "open %s"))
                   org-fontify-done-headline t
                   org-fontify-whole-heading-line t
                   org-fontity-quote-and-verse-blocks t
-                  org-goto-max-level 10
                   org-hide-emphasis-markers t
-                  org-highlight-sparse-tree-matches nil
-                  org-image-actual-width nil
-                  org-imenu-depth 4
-                  org-indirect-buffer-display 'current-window
                   org-insert-heading-respect-content t
-                  org-lowest-priority ?C
-                  org-modules '(org-agenda
-                                org-src
-                                org-timer
-                                org-habit
-                                org-info
-                                org-tempo
-                                org-archive)
-                  org-outline-path-complete-in-steps nil
                   org-pretty-entities t
-                  org-return-follows-link nil
-                  org-show-notification-handler 'message
                   org-special-ctrl-a/e t
                   org-special-ctrl-k t
                   org-startup-folded 'content
-                  org-startup-indented t
                   org-startup-with-inline-images t
-                  org-structure-template-alist '(("a" . "export ascii")
-                                                 ("c" . "center")
-                                                 ("C" . "comment")
-                                                 ("e" . "example")
-                                                 ("E" . "export")
-                                                 ("h" . "export html")
-                                                 ("l" . "export latex")
-                                                 ("q" . "quote")
-                                                 ("s" . "src")
-                                                 ("el" . "src emacs-lisp")
-                                                 ("d" . "definition")
-                                                 ("t" . "theorem"))
-                  org-tags-column 0
+                  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
                   org-use-fast-todo-selection t
                   org-use-speed-commands t
                   org-yank-adjusted-subtrees t))
 #+end_src
 
+*** Org-Capture
+#+name: init-org-capture-block
+#+begin_src emacs-lisp
+  (use-package org-capture
+    :straight nil :after org)
+#+end_src
+
+*** Org-Clock
+#+name: init-org-clock-block
+#+begin_src emacs-lisp
+  (use-package org-clock
+    :straight nil
+    :config
+    (general-setq org-clock-history-length 20
+                  org-clock-in-resume t
+                  org-clock-out-remove-zero-time-clocks t
+                  org-clock-persist t))
+#+end_src
 *** Org-Agenda
 #+name: init-org-agenda-block
 #+begin_src emacs-lisp
   (use-package org-agenda
-    :straight (:type built-in) :after (org)
+    :straight nil
     :config
-    (general-setq org-agenda-compact-blocks t
-                  org-agenda-dim-blocked-tasks nil
-                  org-agenda-files '("~/org/inbox.org"
-                                     "~/org/work.org"
-                                     "~/org/personal.org"
-                                     "~/org/school.org")
-                  org-agenda-inhibit-startup t
+    (general-setq org-agenda-dim-blocked-tasks 'invisible
+                  org-agenda-inhibit-startup nil
+                  org-agenda-show-all-dates nil
                   org-agenda-show-all-dates t
-                  org-agenda-show-future-repeats nil
-                  org-agenda-skip-deadline-if-done t
                   org-agenda-skip-scheduled-if-done t
-                  org-agenda-skip-timestamp-if-done t
-                  org-agenda-start-on-weekday nil
-                  org-agenda-todo-ignore-with-date nil
-                  org-agenda-window-setup 'current-window
-                  org-log-done 'time
-                  org-log-into-drawer t
-                  org-log-state-notes-insert-after-drawers nil
-                  org-refile-allow-creating-parent-nodes 'confirm
-                  org-refile-targets '((nil :maxlevel . 9)
-                                       (org-agenda-files :maxlevel . 9))
-                  org-refile-use-outline-path 'file
-                  org-tag-alist '(("@errand" . ?e)
-                                   ("@office" . ?o)
-                                   ("@home" . ?h)
-                                   ("@school" . ?s)
-                                   (:newline)
-                                   ("WAITING" . ?w)
-                                   ("QUESTION" . ?Q)
-                                   ("HOLD" . ?H)
-                                   ("CANCELLED" . ?c)
-                                   ("REFILE" . ?r))
-                  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)"  "QUESTION(h@/!)" "CANCELLED(c@/!)" "|" "PHONE" "MEETING")))
-
-    (general-setq org-capture-templates '(("t" "todo [inbox]" entry (file "~/org/inbox.org")
-                                           "* TODO %?\n%U\n" :clock-in t :clock-resume t)
-                                          ("n" "note [inbox]" entry (file "~/org/inbox.org")
-                                           "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
-                                          ("m" "meeting [inbox]" entry (file "~/org/inbox.org")
-                                           "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                                          ("p" "phone call [inbox]" entry (file "~/org/inbox.org")
-                                           "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
+                  org-agenda-spand 'day
+                  org-agenda-use-time-grid nil
+                  org-agenda-window-setup 'only-window))
 
   (use-package org-super-agenda
     :straight t)
+#+end_src
+
+*** Org-Indent
+#+name: init-org-indent-block
+#+begin_src emacs-lisp
+  (use-package org-indent
+    :blackout t :straight nil
+    :ghook 'org-mode-hook)
+#+end_src
+
+*** Org-Habit
+#+name: init-org-habit-block
+#+begin_src emacs-lisp
+  (use-package org-habit
+    :straight nil)
 #+end_src
 *** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-src
-    :blackout " [src] " :straight (:type built-in) :after (org)
+    :blackout " [src] " :straight nil
     :preface
     (defun djm/org-src-supress-final-newline ()
       (setq-local require-final-newline nil))
@@ -3032,34 +2683,27 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-src-fontify-natively t
                   org-src-tab-acts-natively t)
 
-    (add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
-    (add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-    (advice-add 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
+    (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
+    (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
+    (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
 *** Org-Ob
 #+name: init-org-ob-block
 #+begin_src emacs-lisp
   (use-package ob
-    :straight nil :after org
+    :straight nil
     :config
-    (general-setq org-babel-load-languages  '((emacs-lisp . t)
-                                              (java . t)
-                                              (shell . t)
-                                              (python . t)
-                                              (sqlite . t))
-                  org-confirm-babel-evaluate nil))
+    (general-setq org-babel-load-languages '((emacs-lisp . t) (shell . t) (python . t) (dot . t)))
+    (general-setq org-confirm-babel-evaluate nil))
 
   (use-package ob-shell
-    :straight (:type built-in))
+    :straight nil)
 
   (use-package ob-python
-    :straight (:type built-in))
+    :straight nil)
 
   (use-package ob-emacs-lisp
-    :straight (:type built-in))
-
-  (use-package ob-sqlite
-    :straight (:type built-in))
+    :straight nil)
 #+end_src
 *** Ox-GFM
 #+name: init-ox-gfm-block
@@ -3094,6 +2738,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package org-journal
     :straight t)
+#+end_src
+*** [[https://github.com/marcinkoziej/org-pomodoro][Org-Pomodoro]]
+#+name: init-org-pomodoro-block
+#+begin_src emacs-lisp
+  (use-package org-pomodoro
+    :blackout t :straight t :after org
+    :config
+    (general-setq org-pomodoro-format "%s"))
+
 #+end_src
 *** [[https://github.com/tesujimath/org-wc][Org-WC]]
 #+name: init-org-src-block
@@ -3366,8 +3019,7 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+begin_src emacs-lisp
   (use-package apheleia
     :blackout t :straight (:host github :repo "raxod502/apheleia")
-    :init
-    (apheleia-global-mode +1))
+    :ghook ('prog-mode-hook #'apheleia-global-mode))
 #+end_src
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
@@ -3449,13 +3101,9 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
   (use-package elisp-mode
-    :defer 5 :straight (:type built-in)
-    :mode ("\\.Cask\\'" . emacs-lisp-mode)
-    :gfhook
-    #'outline-minor-mode
-    #'highlight-quoted-mode
-    :config
-    (general-setq lisp-indent-offset t))
+    :straight (:type built-in)
+    :gfhook #'outline-minor-mode #'highlight-quoted-mode
+    :config (general-setq lisp-indent-offset t))
 #+end_src
 **** Fix Identation
 #+name: init-elisp-identation-block
@@ -3552,7 +3200,9 @@ CLOSED: [2019-12-11 Wed 13:56]
     :straight (:host gitlab :repo "ideasman42/emacs-elisp-autofmt")
     :ghook ('emacs-lisp-mode-hook #'elisp-autofmt-save-hook-for-this-buffer))
 #+end_src
+
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
+This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
 #+name: init-firestarter-block
 #+begin_src emacs-lisp
   (use-package firestarter
@@ -3565,7 +3215,7 @@ CLOSED: [2019-12-11 Wed 13:56]
   (use-package async
     :straight t
     :ghook ('dired-mode-hook #'dired-async-mode)
-    :blackout (dired-async-mode . " "))
+    :blackout (dired-async-mode . ""))
 #+end_src
 
 **** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
@@ -3822,16 +3472,6 @@ CLOSED: [2019-12-11 Wed 13:56]
 #+end_src
 
 
-*** HOLD [[https://github.com/ledger/ledger-mode][Ledger]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-12 Thu 19:22] \\
-  Need to setup ledger first.
-:END:
-#+name: init-ledger-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ledger-mode
-    :straight t)
-#+end_src
 *** [[https://github.com/emacsmirror/2048-game][2048-Game]]
 #+name: init-2048-block
 #+begin_src emacs-lisp

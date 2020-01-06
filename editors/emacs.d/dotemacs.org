@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-05 18:24:17
+/last updated/: 2020-01-05 18:50:15
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -204,6 +204,7 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 #+end_src
 
 ** Initial Demands
+This section is for packages I need immediately upon launching emacs. My goal is to slim this section down a lot to try to further improve startup-times.
 *** CANCELLED [[https://github.com/dholm/benchmark-init-el][Benchmark-Init]]
 :LOGBOOK:
 - State "CANCELLED"  from              [2019-12-14 Sat 12:54] \\
@@ -518,12 +519,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 ** Built-In Defaults
 *** Abbrev (Built-In)
+I might set-up some abbreviations in the future. This is more a placeholder block until then.
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
   (use-package abbrev
     :straight (:type built-in))
 #+end_src
 *** Advice (Built-In)
+Ignore those warnings from the old advice system.
 #+name: init-advice-block
 #+begin_src emacs-lisp
   (use-package advice
@@ -543,6 +546,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** Ansi-Color (Built-In)
+Here we can setup proper coloring for compile buffers.
 #+name: init-ansi-color-block
 #+begin_src emacs-lisp
   (use-package ansi-color
@@ -601,6 +605,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq browse-urls-browser-function "firefox"))
 #+end_src
 *** Calculator (Built-In)
+Let's add a few helpful units to the calculator.
 #+name: init-calc-block
 #+begin_src emacs-lisp
   (use-package calc
@@ -634,7 +639,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package checkdoc
     :straight (:type built-in)
-    :init
+    :config
     (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
 #+end_src
 *** CL-Lib (Built-In)
@@ -648,7 +653,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-comint-block
 #+begin_src emacs-lisp
   (use-package comint
-    :straight (:type built-in) :no-require t
+    :straight (:type built-in)
     :config
     (general-setq comint-prompt-read-only t
                   comint-move-point-for-output t
@@ -679,6 +684,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** Cus-Start (Built-In)
+I bassically use this block to load all settings that don't have a loaded emacs library.
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -1077,9 +1083,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package paren
     :straight (:type built-in)
+    :ghook ('emacs-startup-hook #'show-paren-mode)
     :config
-    (general-setq show-paren-delay 0)
-    (show-paren-mode +1))
+    (general-setq show-paren-delay 0))
+
 #+end_src
 *** Pixel-Scroll (Built-In)
 #+name: init-pixel-scroll-block
@@ -1203,8 +1210,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package subword
     :straight (:type built-in)
-    :config
-    (global-subword-mode +1))
+    :ghook ('emacs-startup-hook #'global-subword-mode))
+
 #+end_src
 *** Time (Built-In)
 #+name: init-time-block
@@ -1459,6 +1466,7 @@ CLOSED: [2019-12-09 Mon 15:35]
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
+This package is great, but can be a little annoying. It can sometimes slow-down emacs a ton.
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
   (use-package page-break-lines
@@ -1566,6 +1574,7 @@ CLOSED: [2019-12-09 Mon 12:23]
 #+end_src
 ** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
+A nice way to restart emacs on the fly if you need to.
 #+name: init-restart-emacs-block
 #+begin_src emacs-lisp
   (use-package restart-emacs
@@ -2027,9 +2036,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package company-emoji
     :straight t)
 #+end_src
-*** [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]]
+*** HOLD [[https://github.com/TommyX12/company-tabnine][Company-Tabnine]]
+:LOGBOOK:
+- State "HOLD"       from              [2020-01-05 Sun 18:50] \\
+  This is kind of clunky to use.
+:END:
 #+name: init-company-tabnine-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-tabnine
     :straight t :after company
     :ghook ('company-mode-hook #'arco/configure-tabnine)

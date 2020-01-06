@@ -35,9 +35,12 @@ zplugin light-mode for \
     zplugin/z-a-rust \
     zplugin/z-a-man
 
-zplugin ice pick'spacezsh.zsh' \
-  compile'{presets/^(*.zwc),lib/**/^(*.zwc),sections/^(*.zwc)}'
-zplugin $load laggardkernel/spacezsh-prompt
+# zplugin ice pick'spacezsh.zsh' \
+#   compile'{presets/^(*.zwc),lib/**/^(*.zwc),sections/^(*.zwc)}'
+# zplugin $load laggardkernel/spacezsh-prompt
+
+zplugin ice lucid atinit'fpath+=($PWD/functions.zwc $PWD/functions $PWD/modules.zwc $PWD/modules)'
+zplugin light mjrafferty/apollo-zsh-theme
 
 # zplugin ice wait'!' pick"/dev/null" multisrc"{async,pure}.zsh" atload'!prompt_pure_precmd' nocd
 # zplugin $load sindresorhus/pure

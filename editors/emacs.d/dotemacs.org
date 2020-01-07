@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-06 13:21:13
+/last updated/: 2020-01-06 16:49:54
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -214,7 +214,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME")
+                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME" "ORG_FILES")
                   exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -2582,38 +2582,64 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :gfhook 'variable-pitch-mode 'visual-line-mode
     :general
     ("C-c a" #'org-agenda
-     "C-c c" #'org-capture
-     :keymaps 'org-mode-map
+     "C-c c" #'org-capture)
+    (:keymaps 'org-mode-map
      "M-n" #'outline-next-visible-heading
      "M-p" #'outline-previous-visible-heading)
     :config
-    (general-setq org-catch-invisible-edits 'smart
+    (general-setq org-archive-location "~/Documents/org-files/archive.org::"
+                  org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
                   org-ellipsis "…"
                   org-enforce-todo-dependencies t
+                  org-enforce-todo-checkbox-dependencies t
                   org-export-coding-system 'utf-8
                   org-fontify-done-headline t
                   org-fontify-whole-heading-line t
                   org-fontity-quote-and-verse-blocks t
                   org-hide-emphasis-markers t
                   org-insert-heading-respect-content t
+                  org-log-done 'time
+                  org-log-into-drawer t
+                  org-log-state-notes-insert-after-drawers nil
+                  org-outline-path-complete-in-steps nil
                   org-pretty-entities t
+                  org-refile-allow-creating-parent-nodes 'confirm
+                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3))
+                  org-refile-use-outline-path 'file
                   org-special-ctrl-a/e t
                   org-special-ctrl-k t
                   org-startup-folded 'content
                   org-startup-with-inline-images t
+                  org-tags-column 0
                   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
                   org-use-fast-todo-selection t
                   org-use-speed-commands t
-                  org-yank-adjusted-subtrees t))
+                  org-yank-adjusted-subtrees t)
+
+    (general-setq org-tag-alist (quote (("@home" .   ?h)
+                                        ("@work" .   ?w)
+                                        ("@school" . ?s)
+                                        ("@church" . ?c)
+                                        (:newline)
+                                        ("PROJECT" . ?p)
+                                        ("AD-HOC" . ?A))))
+
+    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
 *** Org-Capture
 #+name: init-org-capture-block
 #+begin_src emacs-lisp
   (use-package org-capture
-    :straight nil :after org)
+    :straight nil :after org
+    :config
+    (general-setq org-capture-templates '(("i" "inbox" entry
+                                           (file+headline "~/Documents/org-files/inbox.org" "Tasks")
+                                           "* TODO %i%?"))))
+
+
 #+end_src
 
 *** Org-Clock
@@ -2633,13 +2659,19 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package org-agenda
     :straight nil
     :config
-    (general-setq org-agenda-dim-blocked-tasks 'invisible
+    (general-setq org-agenda-block-separator nil
+                  org-agenda-dim-blocked-tasks 'invisible
+                  org-agenda-files '("~/Documents/org-files/inbox.org"
+                                     "~/Documents/org-files/projects.org")
                   org-agenda-inhibit-startup nil
-                  org-agenda-show-all-dates nil
                   org-agenda-show-all-dates t
+                  org-agenda-skip-deadline-if-done t
                   org-agenda-skip-scheduled-if-done t
-                  org-agenda-spand 'day
-                  org-agenda-use-time-grid nil
+                  org-agenda-span 'day
+                  org-agenda-start-on-weekday nil
+                  org-agenda-start-with-log-mode nil
+                  org-agenda-tags-column -100
+                  org-agenda-use-time-grid t
                   org-agenda-window-setup 'only-window))
 
   (use-package org-super-agenda
@@ -2962,21 +2994,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package vdiff-magit
     :straight t)
-#+end_src
-
-*** CANCELLED [[https://github.com/alphapapa/magit-todos][Magit-Todos]]
-CLOSED: [2019-12-11 Wed 13:56]
-:LOGBOOK:
-- State "CANCELLED"  from              [2019-12-11 Wed 13:56] \\
-  Causing errors from python when using during magit. Will come back to this later.
-
-  =Warning (magit-todos): File has lines too long for Emacs to search.  Consider excluding it from scans: ./framework/doc/content/contrib/plotly/plotly.min.js=
-:END:
-#+name: init-magit-todo-block
-#+begin_src emacs-lisp :tangle no
-  (use-package magit-todos
-    :demand t :straight t :after magit
-    :config (magit-todos-mode))
 #+end_src
 
 ** Language Server Support

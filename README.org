@@ -1,6 +1,6 @@
 #+title: Teton
 
-[[https://github.com/dylanjm/teton/actions][file:https://img.shields.io/github/workflow/status/dylanjm/teton/CI/badge.svg]]
+[[https://github.com/dylanjm/teton/actions][file:https://raster.shields.io/github/workflow/status/dylanjm/teton/CI.png]]
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
 
 * Summary

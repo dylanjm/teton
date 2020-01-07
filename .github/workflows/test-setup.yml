@@ -10,5 +10,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: Bootstrap Tools
         run: |
-          rm /usr/bin/node
+          rm /usr/local/bin/node@12
           bash ./install < test/bootstrap-tools.txt

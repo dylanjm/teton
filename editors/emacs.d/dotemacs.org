@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-06 16:49:54
+/last updated/: 2020-01-06 17:09:05
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2676,6 +2676,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (use-package org-super-agenda
     :straight t)
+
+(defun org-archive-done-tasks ()
+  (interactive)
+  (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
 *** Org-Indent
@@ -2815,7 +2819,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-calfw-org-block
 #+begin_src emacs-lisp
   (use-package calfw-org
-    :straight calfw
+    :straight t
     :commands (cfw:open-org-calendar
                cfw:org-create-source
                cfw:open-org-calendar-withkevin

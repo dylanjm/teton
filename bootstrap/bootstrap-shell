@@ -58,14 +58,17 @@ select opt in "${options[@]}"; do
     case "$REPLY" in
     1)
         printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
+        bootstrap_shell "$opt"
         break
         ;;
     2)
         printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
+        bootstrap_shell "$opt"
         break
         ;;
     3)
         printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
+        bootstrap_shell "$opt"
         break
         ;;
     4)
@@ -78,5 +81,3 @@ select opt in "${options[@]}"; do
         ;;
     esac
 done
-
-[[ "$REPLY" != "4" ]] && bootstrap_shell "$opt"

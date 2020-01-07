@@ -15,7 +15,7 @@ My design phillosphy is that a personal  configuration should remain relatively 
 
 #+begin_src bash :results output :exports results
    echo "Directory structure:"
-   mapfile -t dirs < <(tree -d -L 1 ~/dotz)
+   mapfile -t dirs < <(tree -d -L 1 ~/teton)
    comments=(
      ""
      "# Config files for apps like: BTT, iTerm, Python, Julia, etc."
@@ -24,7 +24,6 @@ My design phillosphy is that a personal  configuration should remain relatively 
      "# Git submodule that manages installation and symlinking dotfiles to proper locations."
      "# Editor configurations for Emacs, Vim, etc."
      "# Global git config and ignore files."
-     "# Temporary location for random files."
      "# Environment and shell configuration files for zsh, bash, and fish."
      ""
    )
@@ -34,15 +33,15 @@ My design phillosphy is that a personal  configuration should remain relatively 
 #+RESULTS:
 #+begin_example
 Directory structure:
-/Users/djm/dotz
+/Users/mcdodj/teton
 ├── apps        # Config files for apps like: BTT, iTerm, Python, Julia, etc.
 ├── bin         # Personal scripts that I've added to my path.
 ├── bootstrap   # Bootstraping files to install fonts, homebrew, command-line-tools, etc.
 ├── dotbot      # Git submodule that manages installation and symlinking dotfiles to proper locations.
 ├── editors     # Editor configurations for Emacs, Vim, etc.
 ├── git         # Global git config and ignore files.
-├── misc        # Temporary location for random files.
-└── shells      # Environment and shell configuration files for zsh, bash, and fish.
+├── shells      # Environment and shell configuration files for zsh, bash, and fish.
+└── test
 
 8 directories
 #+end_example

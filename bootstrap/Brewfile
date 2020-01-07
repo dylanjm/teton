@@ -79,7 +79,7 @@ brew "ispell"
 brew "isync"
 brew "jags"
 brew "jansson"
-brew "node", link: false
+brew "node", args: ['--force']
 brew "pandoc"
 brew "jupyterlab"
 brew "khard"

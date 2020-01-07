@@ -9,6 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Bootstrap Tools
-        run: |
-          rm /usr/local/bin/node
-          bash ./install < test/bootstrap-tools.txt
+        run: ./install < test/bootstrap-tools.txt

@@ -3,24 +3,14 @@
 sudo true
 set -eo pipefail
 
-NORMAL='\033[0m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
+# shellcheck source=setup-xcode-clt.sh
+source ./bootstrap/setup-xcode-clt.sh
 
-marker="${BLUE}==>${NORMAL}"
-status="…"
-status_good="${GREEN}✔${NORMAL}"
-status_bad="${RED}✘${NORMAL}"
+# shellcheck source=setup-homebrew.sh
+source ./bootstrap/setup-homebrew.sh
 
-# shellcheck source=bootstrap-xcode-clt
-source ./bootstrap/bootstrap-xcode-clt
+# shellcheck source=setup-shell.sh
+source ./bootstrap/setup-shell.sh
 
-# shellcheck source=bootstrap-homebrew
-source ./bootstrap/bootstrap-homebrew
-
-# shellcheck source=bootstrap-shell
-source ./bootstrap/bootstrap-shell
-
-# shellcheck source=bootstrap-fonts
-source ./bootstrap/bootstrap-fonts
+# shellcheck source=setup-fonts.sh
+source ./bootstrap/setup-fonts.sh

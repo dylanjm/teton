@@ -1,6 +1,5 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
-zstyle cache-path "$XDG_CACHE_HOME/zsh/zcompdump"
 typeset -aU path cdpath fpath manpath module_path
 typeset -A ZPLGM
 
@@ -47,7 +46,7 @@ export ZPLGM[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
 ###
 ### Less
 ###
-export LESS="-g -i -M -R -S -w -z-4"
+export LESS="-g -i -M -R -F -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="$XDG_DATA_HOME/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'             # begin blinking
@@ -77,14 +76,6 @@ export _FASD_DATA="$XDG_CACHE_HOME/fasd"
 ### FZF
 ###
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
-
-###
-### Enhancd
-###
-export ENHANCD_DIR="$XDG_CACHE_HOME/zsh/enhancd"
-export ENHANCD_FILTER=fzf:fzy:peco
-export ENHANCD_COMPLETION_BEHAVIOR=history
-export ENHANCD_DISABLE_HOME=1
 
 ###
 ### Java
@@ -130,9 +121,9 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 ### Paths
 ###
 fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
-       /usr/local/share/zsh/site-functions
-       $XDG_CACHE_HOME/zsh/zplugin/completions
-       $ZSH/functions)
+        /usr/local/share/zsh/site-functions
+        $XDG_CACHE_HOME/zsh/zplugin/completions
+        $ZSH/functions)
 
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 

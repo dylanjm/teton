@@ -79,7 +79,7 @@ brew "ispell"
 brew "isync"
 brew "jags"
 brew "jansson"
-brew "node", args: ['--force']
+brew "node" unless system "/usr/local/bin/node@12 --failfast"
 brew "pandoc"
 brew "jupyterlab"
 brew "khard"

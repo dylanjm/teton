@@ -4,10 +4,12 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: [macos-latest]
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Bootstrap Tools
-      run: bash ./install < test/bootstrap-tools.txt
+      - uses: actions/checkout@v1
+      - name: Bootstrap Tools
+        run: |
+          brew install node
+          brew link --overwrite node
+          bash ./install < test/bootstrap-tools.txt

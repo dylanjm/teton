@@ -1,0 +1,128 @@
+colors:
+  # Based on the dark mode of `Gruvbox`
+  # (https://ethanschoonover.com/solarized/)
+  #
+  # The assignment of colors to file types roughly follows `dircolors`
+
+  bg: "282828"
+  bg_h: "1d2021"
+  bg1: "3c3836"
+  bg2: "504945"
+  bg3: "665c54"
+  bg4: "7c6f64"
+
+  fg: "ebdbb2"
+  fg1: "ebdbb2"
+  fg2: "d5c4a1"
+  fg3: "bdae93"
+  fg4: "a89984"
+
+  blue: "458588"
+  cyan: "689d6a"
+  gray: "928374"
+  green: "98971a"
+  magenta: "b16286"
+  orange: "d65d0e"
+  red: "cc241d"
+  violet: "d3869b"
+  yellow: "d79921"
+
+  bright_blue: "83a59a"
+  bright_red: "fb4934"
+  bright_green: "b8bb26"
+  bright_yellow: "fabd2f"
+  bright_magenta: "d3869b"
+  bright_cyan: "8ec07c"
+  bright_orange: "fe8019"
+  bright_gray: "928374"
+
+core:
+  regular_file:
+    foreground: fg
+
+  directory:
+    foreground: blue
+
+  executable_file:
+    foreground: orange
+    font-style: bold
+
+  symlink:
+    foreground: magenta
+
+  broken_symlink:
+    foreground: red
+    background: bg_h
+    font-style: bold
+
+  fifo:
+    foreground: yellow
+    background: bg
+
+  socket:
+    foreground: magenta
+    background: bg
+    font-style: bold
+
+  character_device:
+    foreground: yellow
+    background: bg
+    font-style: bold
+
+  block_device:
+    foreground: yellow
+    background: bg
+    font-style: bold
+
+  normal_text:
+    foreground: fg
+
+text:
+  special:
+    foreground: magenta
+
+  todo:
+    foreground: cyan
+    font-style: bold
+
+  licenses:
+    foreground: bright_blue
+
+  configuration:
+    foreground: fg
+
+  other:
+    foreground: fg
+
+markup:
+  foreground: bright_yellow
+
+programming:
+  foreground: bright_green
+
+media:
+  image:
+    foreground: bright_magenta
+
+  audio:
+    foreground: bright_blue
+
+  video:
+    foreground: magenta
+    font-style: bold
+
+  fonts:
+    foreground: violet
+
+office:
+  foreground: bright_orange
+
+archives:
+  foreground: red
+  font-style: bold
+
+executable:
+  foreground: orange
+
+unimportant:
+  foreground: bg3

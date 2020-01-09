@@ -24,7 +24,7 @@ function bootstrap-xcode-clt () {
              sed -e 's/^ *//' |
              tr -d '\n')
 
-    softwareupdate -i "$PROD" --verbose
+    sudo softwareupdate -i "$PROD" --verbose
 
     rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 

@@ -6,14 +6,12 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 
 marker="${BLUE}==>${NORMAL}"
-status="…"
 status_good="${GREEN}✔${NORMAL}"
 status_bad="${RED}✘${NORMAL}"
 
 function bootstrap-xcode-clt () {
   # Check for xcode-CLT
-  printf "%b\r" "$marker Checking for Command Line Tools - $status"
-  if [ "$(xcode-select -p 2>/dev/null; echo $?)" = "2" ]; then
+  if [[ ! -d "$(xcode-select -p)" ]]; then
 
     printf "%b\n" "$marker Checking for Command Line Tools - $status_bad"
 

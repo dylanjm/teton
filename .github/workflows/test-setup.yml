@@ -9,5 +9,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Remove CLT
+        run: test -d "$(xcode-select -p)" && sudo rm -rf "$(xcode-select -p)"
+      - name: Remove Homebrew
+        run: /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
       - name: Setup
         run: ./install < test/bootstrap-tools.txt

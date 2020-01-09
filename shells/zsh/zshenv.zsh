@@ -58,6 +58,11 @@ export LESS_TERMCAP_ue=$'\E[0m'                 # end underline
 export LESS_TERMCAP_us=$'\E[01;32m'             # begin underline
 
 ###
+### Exa
+###
+export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:sn=38;5;6:sb=38;5;14:df=38;5;6:ds=38;5;14:uu=38;5;10:un=38;5;8:gu=38;5;11:gn=38;5;8:lc=38;5;202:lm=38;5;211:ga=38;5;112:gm=38;5;11:gd=38;5;9:gv=38;5;91:gt=38;5;202:xx=38;5;102:da=38;5;12:in=38;5;5:bl=38;5;6:hd=38;5;250:lp=38;5;7:cc=38;5;208:b0=37;41;1:"
+
+###
 ### Z
 ###
 export _Z_DATA="$XDG_CACHE_HOME/zsh/z"

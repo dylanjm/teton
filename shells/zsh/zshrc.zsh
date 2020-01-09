@@ -11,17 +11,17 @@ zflai-msg() { mylogs+=( "$1" ); }
 zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
 
 source $ZSH/zplugin.zsh
-#eval "$(direnv hook zsh)"
+eval "$(direnv hook zsh)"
 
 zflai-msg "[zshrc] Finishing, loaded custom modules: ${(j:, :@)${(k)modules[@]}:#zsh/*}"
 
-# vterm_prompt_end() {
-#     printf "\e]51;A$(whoami)@$(hostname):$(pwd)\e\\";
-# }
+vterm_prompt_end() {
+    printf "\e]51;A$(whoami)@$(hostname):$(pwd)\e\\";
+}
 
-# if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-#   PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
-# fi
+if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
+  PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh

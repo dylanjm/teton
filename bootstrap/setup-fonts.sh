@@ -22,7 +22,7 @@ declare -a arr=("https://github.com/be5invis/Iosevka/releases/download/v2.3.3/01
                )
 
 printf "%b\r" "$marker Checking font installations - $status"
-if [[ "$(find ~/Library/Fonts/* -name "iosevka-*" -type f | wc -l 2>/dev/null)" -lt 200 ]]; then
+if [[ "$(test -d $HOME/Library/Fonts && find $HOME/Library/Fonts/* -name "iosevka-*" -type f | wc -l 2>/dev/null)" -lt 200 ]]; then
   printf "%b\n" "$marker Checking font installations - $status_bad"
 
   for i in "${arr[@]}"; do

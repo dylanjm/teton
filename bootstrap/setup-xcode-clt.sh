@@ -14,18 +14,26 @@ function bootstrap-xcode-clt () {
   # Check for xcode-CLT
   printf "%b\r" "$marker Checking for Command Line Tools - $status"
   if [ "$(xcode-select -p 2>/dev/null; echo $?)" = "2" ]; then
+
     printf "%b\n" "$marker Checking for Command Line Tools - $status_bad"
+
     touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+
     PROD=$(softwareupdate -l |
              grep "\*.*Command Line" |
              head -n 1 |
              awk -F"*" '{print $2}' |
              sed -e 's/^ *//' |
              tr -d '\n')
+
     softwareupdate -i "$PROD" --verbose
+
     rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+
   else
+
     printf "%b\n" "$marker Checking for Command Line Tools - $status_good"
+
   fi
 }
 

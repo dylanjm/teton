@@ -27,7 +27,7 @@ function allowed_shells() {
     if ! grep -Fxq "/usr/local/bin/$1" /etc/shells; then
         printf "%b\n" "$marker Checking /etc/shells - $status_bad"
         printf "Adding /usr/local/bin/%s to /etc/shells\n" "$1"
-        echo "/usr/local/bin/$1" | sudo tee -a /etc/shells
+        echo "/usr/local/bin/$1" | sudo tee -a /etc/shells 1>/dev/null
     else
         printf "%b\n" "$marker Checking /etc/shells - $status_good"
     fi

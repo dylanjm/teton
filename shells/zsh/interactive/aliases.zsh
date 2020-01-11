@@ -69,6 +69,7 @@ alias gcob='git checkout -b'
 ###
 alias omscs="cd ~/Documents/College/OMSCS"
 alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
+alias kbai="cs ~/Documents/College/OMSCS/cs7637-kbai"
 alias rl="cd ~/Documents/College/OMSCS/cs_7642"
 [[ "$USER" == "djm" ]] && alias code="cd ~/Documents/Code/Github"
 

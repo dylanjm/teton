@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+tmpFile=$(mktemp)
+python submit.py --provider gt --assignment error-check > "$tmpFile";
+
+sed '/{/,$d' "$tmpFile" | column -t -s,
+sed -n '/{/,$p' "$tmpFile" |
+  jq -r '["Set","Incorrect","Skipped","Correct"], (.[] | [.Set,.Incorrect,.Skipped,.Correct]) | @tsv'
+ rm "$tmpFile"

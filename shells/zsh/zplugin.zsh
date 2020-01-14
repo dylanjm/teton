@@ -26,8 +26,9 @@ test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
 # Change to load=load for debugging.
 load=light
 
-zplugin ice
 zplugin $load romkatv/powerlevel10k
+
+zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid
 zplugin $load hlissner/zsh-autopair
@@ -35,13 +36,8 @@ zplugin $load hlissner/zsh-autopair
 zplugin ice wait'1' lucid
 zplugin $load laggardkernel/zsh-thefuck
 
-export LS_COLORS="$(vivid generate gruvbox-dark)"
-
 zplugin ice wait'1' lucid blockf
 zplugin $load zsh-users/zsh-completions
-
-zplugin ice wait'1' lucid
-zplugin $load unixorn/git-extra-commands
 
 zplugin ice wait'1' atinit'zstyle ":history-search-multi-word" page-size "15"' lucid
 zplugin $load zdharma/history-search-multi-word

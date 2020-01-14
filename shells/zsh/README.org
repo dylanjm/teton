@@ -1,0 +1,14 @@
+#+title: Appaloosa ZSH
+
+
+** Startup-Time
+
+#+begin_src shell :results output :exports results
+hyperfine -- '$SHELL -i -c exit'
+#+end_src
+
+#+RESULTS:
+: Benchmark #1: $SHELL -i -c exit
+:   Time (mean ± σ):      57.2 ms ±   1.9 ms    [User: 35.4 ms, System: 25.5 ms]
+:   Range (min … max):    54.9 ms …  63.2 ms    46 runs
+:

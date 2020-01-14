@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-13 17:19:52
+/last updated/: 2020-01-14 13:22:32
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2582,6 +2582,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "M-n" #'outline-next-visible-heading
      "M-p" #'outline-previous-visible-heading)
     :config
+    (require 'ox-jdf-report nil t)
+    (require 'org-ref nil t)
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
                   org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
@@ -2747,9 +2749,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-ox-jdf-block
 #+begin_src emacs-lisp
   (use-package ox-jdf-report
-    :straight (:host github :repo "dylanjm/ox-jdf")
-    :init
-    (general-setq bibtex-dialect 'biblatex))
+    :straight (:host github :repo "dylanjm/ox-jdf"))
 #+end_src
 
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
@@ -2794,6 +2794,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package org-ref
     :straight t
+    :commands (org-ref-insert-link)
     :config
     (general-setq org-ref-completion-library 'org-ref-ivy-cite))
 

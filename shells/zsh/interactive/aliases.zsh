@@ -69,14 +69,15 @@ alias gcob='git checkout -b'
 ###
 alias omscs="cd ~/Documents/College/OMSCS"
 alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
-alias kbai="cs ~/Documents/College/OMSCS/cs7637-kbai"
 alias rl="cd ~/Documents/College/OMSCS/cs_7642"
+[[ "$USER" == "djm" ]] && alias kbai="cd ~/Documents/College/OMSCS/cs7637-kbai"
 [[ "$USER" == "djm" ]] && alias code="cd ~/Documents/Code/Github"
 
 ###
 ### Work Aliases
 ###
 [[ "$USER" == "mcdodj" ]] && alias code="cd ~/Documents/forked_github"
+[[ "$USER" == "mcdodj" ]] && alias kbai="cd ~/Documents/forked_github/cs7637-kbai"
 alias proj='cd ~/Documents/projects'
 alias bis='cd ~/Documents/projects/bison'
 alias bisd='cd ~/Documents/projects/bison_data'

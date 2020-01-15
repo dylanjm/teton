@@ -11,3 +11,11 @@ hyperfine -- '$SHELL -i -c exit'
 : Benchmark #1: $SHELL -i -c exit
 :   Time (mean ± σ):      57.2 ms ±   1.9 ms    [User: 35.4 ms, System: 25.5 ms]
 :   Range (min … max):    54.9 ms …  63.2 ms    46 runs
+
+** Startup Profiling
+
+#+begin_src shell
+  emulate zsh -c 'zpmod source-study -l
+#+end_src
+
+#+RESULTS:

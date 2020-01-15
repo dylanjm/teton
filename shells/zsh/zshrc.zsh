@@ -15,16 +15,17 @@ eval "$(direnv hook zsh)"
 
 zflai-msg "[zshrc] Finishing, loaded custom modules: ${(j:, :@)${(k)modules[@]}:#zsh/*}"
 
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+
 vterm_prompt_end() {
-    printf "\e]51;A$(whoami)@$(hostname):$(pwd)\e\\";
+    printf "\e]51;A$(whoami)@$(hostname):$(pwd)\e\\"
 }
 
 if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
   PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
 fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
 
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

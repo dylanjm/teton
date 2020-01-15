@@ -54,7 +54,7 @@ zplugin $load $ZSH/interactive
 zplugin ice wait'2b' atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" lucid
 zplugin $load zdharma/fast-syntax-highlighting
 
-zplugin ice wait'2c' atload"!_zsh_autosuggest_start" lucid
+zplugin ice wait'2c' atload"_zsh_autosuggest_start" lucid
 zplugin $load zsh-users/zsh-autosuggestions
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)

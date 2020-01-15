@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: jdf
+# key: jdf
+# --
+#+MACRO: NEWLINE @@latex:\\@@ @@html:<br>@@
+#+TITLE: $0
+#+AUTHOR: Dylan McDowell
+#+EMAIL: dmcdowell33@gatech.edu
+#+STARTUP: showeverything
+#+OPTIONS: toc:nil H:4
+#+LATEX_CLASS: jdf
+#+LATEX_HEADER: \addbibresource{references.bib}

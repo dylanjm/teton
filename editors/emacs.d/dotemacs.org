@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-15 15:44:38
+/last updated/: 2020-01-15 21:30:27
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2630,6 +2630,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-fontity-quote-and-verse-blocks t
                   org-hide-emphasis-markers t
                   org-insert-heading-respect-content t
+                  org-latex-logfiles-extensions '("lof" "lot" "tex"
+                                                  "aux" "idx" "log"
+                                                  "out" "toc" "nav"
+                                                  "snm" "vrb" "dvi"
+                                                  "fdb_latexmk" "blg" "brf"
+                                                  "fls" "entoc" "ps" "spl"
+                                                  "bbl" "bcf" "run.xml")
                   org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
                   org-log-done 'time
                   org-log-into-drawer t
@@ -2793,7 +2800,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :ghook 'org-mode-hook
     :config
-    (general-setq org-bullets-bullet-list '("⯄" "❂" "⦾" "✤")))
+    (general-setq org-bullets-bullet-list '("⦿" "❂" "⦾" "✤")))
 #+end_src
 
 *** [[https://github.com/Kungsgeten/org-brain][Org-Brain]]

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-14 18:08:37
+/last updated/: 2020-01-15 15:44:38
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -119,14 +119,14 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
-                      (window-bottom-divider-width . 20)))
+                                      (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-                      (alpha . (100 100))
-                      (tool-bar-lines . 0)
-                      (ns-appearance . dark)
-                      (vertical-scroll-bars)
-                      (font . "Iosevka SS09-18:weight=ultra-light")))
+                                      (alpha . (100 100))
+                                      (tool-bar-lines . 0)
+                                      (ns-appearance . dark)
+                                      (vertical-scroll-bars)
+                                      (font . "Iosevka TermLig SS09-18:weight=ultra-light")))
 
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
@@ -416,8 +416,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()
-    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Vollkorn" :weight 'regular)
-    (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka SS09" :weight 'ultra-light)
+    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'regular)
+    (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka TermLig SS09" :weight 'ultra-light)
 
     ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
     (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)
@@ -1365,6 +1365,40 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         org-agenda-mode-hook)))
 #+end_src
 
+*** HOLD [[https://github.com/emacsmirror/per-buffer-theme][Per-Buffer-Theme]]
+:LOGBOOK:
+- State "HOLD"       from              [2020-01-15 Wed 13:41] \\
+  Doesn't do what I want
+:END:
+#+name: init-per-buffer-theme-block
+#+begin_src emacs-lisp  :tangle no
+  (use-package per-buffer-theme
+    :straight t
+    :config
+    (general-setq per-buffer-theme/use-timer t
+                  per-buffer-theme/timer-idle-delay 0.1
+                  per-buffer-theme/default-theme 'gruvbox-dark-hard)
+    (general-setq per-buffer-theme/themes-alist
+                  '(((:theme . gruvbox-light-hard)
+                     (:buffernames nil)
+                     (:modes vterm-mode))))
+
+    (general-setq per-buffer-theme/ignored-buffernames-regex
+                  (append '("*anaconda-mode*"
+                            "*Backtrace*"
+                            "*Buffer List*"
+                            "*compilation*"
+                            "*Compile-Log*"
+                            "*Completions*"
+                            "*ESS*"
+                            "*Flymake log*"
+                            "*Help*"
+                            "*Ibuffer"
+                            "*info*"
+                            "*Messages*"
+                            "*Warnings*")
+                          per-buffer-theme/ignored-buffernames-regex)))
+#+end_src
 *** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
 #+name: init-perfect-margin-block
 #+begin_src emacs-lisp
@@ -1533,27 +1567,25 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package eshell-z
     :straight t :after eshell)
 #+end_src
-*** [[https://github.com/akermu/emacs-libvterm][Vterm]]
-#+name: init-vterm-block
-#+begin_src emacs-lisp
-  (use-package vterm
-    :straight t
-    :preface
-    (general-setq vterm-install t)
-    :config
-    (general-setq vterm-install t
-                  cursor-type 'bar
-                  confirm-kill-processes nil)
-    (defun djm/vterm-kill-buffer-on-quit (buffer event)
-      (if buffer (kill-buffer buffer)))
-
-    (general-add-hook 'vterm-exit-functions #' djm/vterm-kill-buffer-on-quit))
-#+end_src
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
   (use-package multi-libvterm
     :straight (:host github :repo "suonlight/multi-libvterm"))
+#+end_src
+*** [[https://github.com/akermu/emacs-libvterm][Vterm]]
+#+name: init-vterm-block
+#+begin_src emacs-lisp
+  (use-package vterm
+    :straight t
+    :config
+    (general-setq vterm-install t
+                  confirm-kill-processes nil)
+
+    (defun arco/vterm-kill-buffer-on-quit (buffer event)
+      (if buffer (kill-buffer buffer)))
+
+    (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit))
 #+end_src
 *** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
 #+name: init-vterm-toggle-block
@@ -1565,14 +1597,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-c x v" #'vterm-toggle)
     :config
-    (general-setq vterm-toggle-fullscreen-p nil)
+    (general-setq vterm-toggle-fullscreen-p nil
+                  vterm-toggle-use-dedicated-buffer t
+                  vterm-toggle-reset-window-configration-after-exit t)
     (add-to-list 'display-buffer-alist
                  '("^v?term.*"
                    (display-buffer-reuse-window display-buffer-at-bottom)
                    (display-buffer-reuse-window display-buffer-in-direction)
                    (dedicated . t)
                    (reusable-frames . visible)
-                   (window-height . 0.3))))
+                   (window-height . 0.35))))
 #+end_src
 *** [[https://github.com/CyberShadow/term-keys][Term-Keys]]
 #+name: init-term-keys-block

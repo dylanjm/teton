@@ -154,9 +154,14 @@ path=(/usr/local/opt/llvm/bin
       /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 
-export PATH
+cdpath=($HOME/Documents/projects
+        $HOME/Documents/forked_github)
+
+
 export FPATH
 export MODULE_PATH
+export PATH
+export CDPATH
 
 ###
 ### Personal Functions

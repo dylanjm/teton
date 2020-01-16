@@ -2,7 +2,7 @@
 
 function time-shell(){
   if [[ -e "$(command -v hyperfine)" ]]; then
-    hyperfine $SHELL -i -c exit
+    hyperfine -- '$SHELL -i -c exit'
   else
     for i in $(seq 1 10); do
       /usr/bin/time $SHELL -i -c exit

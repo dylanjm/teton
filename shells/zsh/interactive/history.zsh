@@ -1,6 +1,11 @@
 # Authors:
 #   Robby Russell <robby@planetargon.com>
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
+
+###
+### Options
+###
+
 setopt bang_hist                 # Treat the '!' character specially during expansion.
 setopt extended_history          # Write the history file in the ':start:elapsed;command' format.
 setopt share_history             # Share history between all sessions.

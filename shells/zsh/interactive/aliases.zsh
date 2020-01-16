@@ -1,6 +1,21 @@
 ###
-### ZSH
+### Suffix
 ###
+alias -s org='emacs'
+alias -s py='emacs'
+alias -s sh='emacs'
+alias -s zsh='emacs'
+
+###
+### Global
+###
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../../'
+alias -g G='| grep'
+alias -g WC='| wc -l'
+alias -g TF='| tail -f'
+alias -g DN='/dev/null'
 
 ###
 ### Emacs
@@ -13,7 +28,6 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='printf "\e]51;Evterm-clear-scrollback\e\\";tput clear'
 fi
 
-# TODO
 
 ###
 ### Navigation

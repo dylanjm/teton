@@ -11,9 +11,9 @@ if [[ "$TERM" == 'dumb' ]]; then
   return 1
 fi
 
-#
-# Options
-#
+###
+### Options
+###
 
 setopt COMPLETE_IN_WORD    # Complete from both ends of a word.
 setopt ALWAYS_TO_END       # Move cursor to the end of a completed word.
@@ -22,16 +22,18 @@ setopt AUTO_MENU           # Show completion menu on a successive tab press.
 setopt AUTO_LIST           # Automatically list choices on ambiguous completion.
 setopt AUTO_PARAM_SLASH    # If completed parameter is a directory, add a trailing slash.
 setopt EXTENDED_GLOB       # Needed for file modification glob modifiers with compinit
+
 unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
 unsetopt list_beep
-#
-# Styles
-#
+
+###
+### Styles
+###
 
 # Use caching to make completion for commands such as dpkg and apt usable.
 zstyle ':completion::complete:*' use-cache on
-zstyle cache-path "$XDG_CACHE_HOME/zsh/zcompdump"
+zstyle cache-path "$XDG_CACHE_HOME/zsh"
 
 # Case-insensitive (all), partial-word, and then substring completion.
 if zstyle -t ':prezto:module:completion:*' case-sensitive; then
@@ -44,17 +46,25 @@ fi
 
 # Group matches and describe.
 zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion:*:matches' group 'yes'
+
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:corrections' format ' %B%F{green}-- %d (errors: %e) --%f%B'
-zstyle ':completion:*:descriptions' format ' %B%F{yellow}-- %d --%f%b'
-zstyle ':completion:*:messages' format ' %B%F{purple} -- %d --%f%b'
-zstyle ':completion:*:warnings' format ' %B%F{red}-- no matches found --%f%b'
 zstyle ':completion:*:default' list-prompt '%S%M matches%s'
-zstyle ':completion:*' format ' %B%F{yellow}-- %d --%f%b'
+
 zstyle ':completion:*' group-name ''
+zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*' verbose yes
+
+zstyle ':completion:*'              format ' %B%F{yellow}-- %d --%f%b'
+zstyle ':completion:*:corrections'  format ' %B%F{green}-- %d (errors: %e) --%f%B'
+zstyle ':completion:*:warnings'     format ' %B%F{red}-- no matches found --%f%b'
+
+zstyle ':completion:*:descriptions' format ' %B%F{yellow}-- %d --%f%b'
+zstyle ':completion:*:messages'     format ' %B%F{purple} -- %d --%f%b'
+
+
+# Show completions in cdpath
+zstyle ':completion:*:complete:(cd|pushd):*' tag-order 'local-direcories named-directories'
 
 # Fuzzy match mistyped completions.
 zstyle ':completion:*' completer _complete _match _approximate _correct
@@ -130,12 +140,6 @@ zstyle ':completion:*:*:mpg123:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):di
 zstyle ':completion:*:*:mpg321:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):directories'
 zstyle ':completion:*:*:ogg123:*' file-patterns '*.(ogg|OGG|flac):ogg\ files *(-/):directories'
 zstyle ':completion:*:*:mocp:*' file-patterns '*.(wav|WAV|mp3|MP3|ogg|OGG|flac):ogg\ files *(-/):directories'
-
-# Mutt
-if [[ -s "$HOME/.mutt/aliases" ]]; then
-  zstyle ':completion:*:*:mutt:*' menu yes select
-  zstyle ':completion:*:mutt:*' users ${${${(f)"$(<"$HOME/.mutt/aliases")"}#alias[[:space:]]}%%[[:space:]]*}
-fi
 
 # SSH/SCP/RSYNC
 zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'

@@ -111,7 +111,7 @@ export R_LIBS_USER="$HOME/Library/R/3.6/library"
 ### Rust/Cargo
 ###
 export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
-export RUSTUP_HOME="XDG_DATA_HOME/rustup"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 
 ###
 ### Python
@@ -119,7 +119,9 @@ export RUSTUP_HOME="XDG_DATA_HOME/rustup"
 export PYENV_ROOT="$XDG_CONFIG_HOME/pyenv"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
-export PYLINTHOME="XDG_CACHE_HOME/pylint.d"
+export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
+export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
+
 
 ###
 ### Gnupg
@@ -137,8 +139,7 @@ fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
 
 module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
 
-path=(/usr/local/opt/llvm/bin
-      $XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
+path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZPLGM[HOME_DIR]/polaris/bin  # Zplugin Installed Programs

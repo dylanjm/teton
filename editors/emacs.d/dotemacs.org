@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-15 21:30:27
+/last updated/: 2020-01-16 17:44:42
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -52,6 +52,7 @@
 [[file:assets/config-preview.png]]
 
 ** Literate Programming in Org
+
 This document is my current emacs config which contains the code for my =early-init.el= file and =init.el= file. You may be wondering how one file can contain code for two different configuration files. Through the power of =org-babel-tangle=, I am able to configure and document my entire emacs experience in a single Org file. There are several reasons to organize one's configuration this way. I hope these reasons become obvious as you browse through, but personally I find it much easier to document my choices using a markup language. This way I can store links and reference back to forum threads and other places when updating. I can also include pictures throughout and organize code-blocks with specific names to make navigation quick and painless. If you're interested in creating a similar setup, take a look at the raw-version of this file. There is important information contained in the header and throughout the file to make this work. Once you have a proper the proper settings, start adding src-blocks and then run =M-x org-babel-tangle <RET>=. Your config files will then be generated and Emacs will use those files when starting up. I have also written a hook that tangles this file everytime I save.
 
 ** System Requirements
@@ -60,8 +61,6 @@ This document is my current emacs config which contains the code for my =early-i
 |----------------------+---------+---------------|
 | 15" 2019 MacBook Pro | 10.14.6 |       28.0.50 |
 | 15" 2019 MacBook Pro |         |       27.0.50 |
-
--------------------------------------------------------------------
 
 * Early-Init
 :properties:
@@ -83,6 +82,7 @@ This document is my current emacs config which contains the code for my =early-i
 ** Preliminary Configuration
 You'll see a similar configuration in other dotfiles online. By default, Emac's runs it garbage collector when the
 *** Garbage Collection
+
 You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion. The FLX README suggest we do this to keep emacs running nice and smooth.
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
@@ -115,6 +115,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+end_src
 
 *** Pre-Gui Optimization
+
 Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=, and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
@@ -146,8 +147,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
   (provide 'early-init)
   ;;; early-init.el ends here
 #+end_src
-
--------------------------------------------------------------------
 * Init
 ** Header
 #+name: init-header-block
@@ -207,14 +206,14 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 This section is for packages I need immediately upon launching emacs. My goal is to slim this section down a lot to try to further improve startup-times.
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
 Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
-#+name: init-environment-block
+#+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
     :demand t :straight t
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME" "ORG_FILES")
+                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME" "ORG_FILES" "PYLINTHOME" "PYENV_ROOT" "IPYTHONDIR" "PYTHONSTARTUP")
                   exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -1079,6 +1078,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package recentf
     :straight (:type built-in)
+    :ghook 'emacs-startup-hook
+    :general
+    ("C-x C-r" #'crux-recentf-find-file)
     :config
     (general-setq recentf-max-saved-items 2000
                   recentf-max-menu-items 100
@@ -1365,40 +1367,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         org-agenda-mode-hook)))
 #+end_src
 
-*** HOLD [[https://github.com/emacsmirror/per-buffer-theme][Per-Buffer-Theme]]
-:LOGBOOK:
-- State "HOLD"       from              [2020-01-15 Wed 13:41] \\
-  Doesn't do what I want
-:END:
-#+name: init-per-buffer-theme-block
-#+begin_src emacs-lisp  :tangle no
-  (use-package per-buffer-theme
-    :straight t
-    :config
-    (general-setq per-buffer-theme/use-timer t
-                  per-buffer-theme/timer-idle-delay 0.1
-                  per-buffer-theme/default-theme 'gruvbox-dark-hard)
-    (general-setq per-buffer-theme/themes-alist
-                  '(((:theme . gruvbox-light-hard)
-                     (:buffernames nil)
-                     (:modes vterm-mode))))
-
-    (general-setq per-buffer-theme/ignored-buffernames-regex
-                  (append '("*anaconda-mode*"
-                            "*Backtrace*"
-                            "*Buffer List*"
-                            "*compilation*"
-                            "*Compile-Log*"
-                            "*Completions*"
-                            "*ESS*"
-                            "*Flymake log*"
-                            "*Help*"
-                            "*Ibuffer"
-                            "*info*"
-                            "*Messages*"
-                            "*Warnings*")
-                          per-buffer-theme/ignored-buffernames-regex)))
-#+end_src
 *** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
 #+name: init-perfect-margin-block
 #+begin_src emacs-lisp
@@ -1468,12 +1436,6 @@ A nice way to restart emacs on the fly if you need to.
     :init (defalias 're #'restart-emacs))
 #+end_src
 
-*** [[https://github.com/emacsmirror/memory-usage][Memory-Usage]]
-#+name: init-memory-usage-block
-#+begin_src emacs-lisp
-  (use-package memory-usage
-    :straight t)
-#+end_src
 *** [[https://gitlab.com/koral/gcmh][GCMH]]
 Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I haven't seen any problems so far.
 #+name: init-gchm-block
@@ -1608,12 +1570,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                    (reusable-frames . visible)
                    (window-height . 0.35))))
 #+end_src
-*** [[https://github.com/CyberShadow/term-keys][Term-Keys]]
-#+name: init-term-keys-block
-#+begin_src emacs-lisp
-  (use-package term-keys
-    :straight (:host github :repo "CyberShadow/term-keys"))
-#+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
@@ -1622,7 +1578,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook 'after-init-hook
     :general
-    (:prefix "M-p"
+    (:prefix "C-c p"
              "s" #'projectile-switch-project
              "c" #'projectile-compile-project
              "f" #'projectile-find-file)
@@ -1647,24 +1603,10 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                         shell-mode
                         compilation-mode))
       (general-pushnew nf-modes direnv-non-file-modes))
-    (add-hook 'compilation-mode-hook #'direnv-update-environment))
+    (general-add-hook 'compilation-mode-hook #'direnv-update-environment))
 #+end_src
 
-*** [[https://github.com/emacs-taskrunner/emacs-taskrunner][Taskrunner]]
-#+name: init-taskrunner-block
-#+begin_src emacs-lisp
-  (use-package taskrunner
-    :straight (:host github :repo "emacs-taskrunner/emacs-taskrunner"))
-#+end_src
 ** Frameworks
-*** [[https://github.com/DarwinAwardWinner/amx][AMX]]
-#+name: init-amx-block
-#+begin_src emacs-lisp
-  (use-package amx
-    :straight t
-    :ghook 'ivy-mode-hook)
-
-#+end_src
 *** [[https://github.com/raxod502/prescient.el][Prescient]]
 #+name: init-prescient-block
 #+begin_src emacs-lisp
@@ -1682,28 +1624,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                         (org-starter-swiper-config-files . nil)
                         (counsel-minibuffer-history . nil)
                         (counsel-mark-ring . nil))))
-
-  (use-package selectrum-prescient
-    :disabled t :straight (:host github :repo "raxod502/prescient.el"
-                        :files ("selectrum-prescient.el")))
 #+end_src
 
-*** HOLD [[https://github.com/tumashu/posframe][Posframe]]
-:LOGBOOK:
-- State "HOLD"       from "CANCELLED"          [2019-12-12 Thu 19:20] \\
-  This is too much configuration right now.
-:END:
-#+name: init-posframe-block
-#+begin_src emacs-lisp :tangle no
-  (use-package posframe
-    :straight t
-    :custom
-    (posframe-arghandler #'hemacs-posframe-arghandler)
-    :config
-    (defun hemacs-posframe-arghandler (posframe-buffer arg-name value)
-      (let ((info '(:internal-border-width 12 :min-width 80)))
-        (or (plist-get info arg-name) value))))
-#+end_src
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
 #+begin_src emacs-lisp
@@ -1712,7 +1634,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/abo-abo/swiper][Ivy]]
 #+name: init-ivy-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ivy
     :blackout t :straight t
     :ghook 'after-init-hook
@@ -1720,6 +1642,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     ("C-x b"   #'ivy-switch-buffer
      "C-x B"   #'ivy-switch-buffer-other-window
      "C-c C-r" #'ivy-resume
+     "C-w"     #'ivy-yank-word
      "M-w"     #'ivy-kill-ring-save)
     (:keymaps
      'ivy-minibuffer-map
@@ -1738,7 +1661,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   ivy-height 17
                   ivy-wrap t
                   ivy-fixed-height-minibuffer t
-                  ivy-magic-slash-non-match-action nil
+                  ivy-magic-slash-non-match-action 'ivy-magic-slash-non-match-create
                   ivy-on-del-error-function #'ignore
                   ivy-virtual-abbreviate 'name
                   ivy-count-format "(%d/%d) "
@@ -1759,22 +1682,22 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 *** [[https://github.com/abo-abo/swiper][Counsel]]
 #+name: init-counsel-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package counsel
     :blackout t :straight t
     :ghook 'ivy-mode-hook
     :general
     ([remap dired]                    #'counsel-dired
-     [remap execute-extended-command] #'counsel-M-x
+     [remap execute-extended-command] #'counsel-m-x
      [remap find-file]                #'counsel-find-file
-     "C-x C-r"                        #'counsel-recentf
-     "C-x C-l"                        #'counsel-find-library
-     "C-x C-u"                        #'counsel-unicode-char
-     "C-x C-v"                        #'counsel-set-variable
-     "C-c k"                          #'counsel-rg
-     "C-h F"                          #'counsel-describe-face
-     "C-h f"                          #'counsel-describe-function
-     "C-h v"                          #'counsel-describe-variable)
+     "c-x c-r"                        #'counsel-recentf
+     "c-x c-l"                        #'counsel-find-library
+     "c-x c-u"                        #'counsel-unicode-char
+     "c-x c-v"                        #'counsel-set-variable
+     "c-c k"                          #'counsel-rg
+     "c-h f"                          #'counsel-describe-face
+     "c-h f"                          #'counsel-describe-function
+     "c-h v"                          #'counsel-describe-variable)
     :config
     (general-setq counsel-describe-function-function #'helpful-callable
                   counsel-describe-variable-function #'helpful-variable
@@ -1801,7 +1724,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
 #+name: init-swiper-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package swiper
     :straight t
     :general ("C-s" #'swiper
@@ -1811,6 +1734,32 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   swiper-action-recenter t))
 #+end_src
 
+*** [[https://github.com/raxod502/selectrum][Selectrum]]
+#+name: init-selectrum-block
+#+begin_src emacs-lisp
+  (use-package selectrum
+    :straight (:host github :repo "raxod502/selectrum")
+    :ghook 'emacs-startup-hook
+    :config
+    (general-setq selectrum-minibuffer-bindings '(([remap keyboard-quit]       . abort-recursive-edit)
+                                                  ([remap previous-line]       . selectrum-previous-candidate)
+                                                  ([remap next-line]           . selectrum-next-candidate)
+                                                  ([remap newline-and-indent]  . selectrum-select-current-candidate)
+                                                  ([remap scroll-down-command] . selectrum-previous-page)
+                                                  ([remap scroll-up-command]   . selectrum-next-page)
+                                                  ([remap beginning-of-buffer] . selectrum-goto-beginning)
+                                                  ([remap end-of-buffer]       . selectrum-goto-end)
+                                                  ("C-j"                       . selectrum-submit-exact-input)
+                                                  ("TAB"                       . selectrum-insert-current-candidate))))
+
+  (use-package selectrum-prescient
+    :demand t
+    :straight (:host github
+               :repo "raxod502/prescient.el"
+               :files ("selectrum-prescient.el"))
+    :after (selectrum)
+    :config (selectrum-prescient-mode +1))
+#+end_src
 ** Autocompletion
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
@@ -3080,14 +3029,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'lsp-mode-hook
     :general ("C-c f" #'lsp-ui-sideline-apply-code-actions)
     :config
-    (general-setq lsp-ui-doc-max-height 8
-                  lsp-uid-doc-max-width 35
-                  lsp-ui-sideline-ignore-duplicate t
-                  lsp-ui-sideline-show-hover nil
+    (general-setq lsp-ui-sideline-ignore-duplicate t
+                  lsp-ui-sideline-show-hover t
                   lsp-eldoc-enable-hover nil)
 
     (use-package lsp-ui-doc
-      :demand t :straight (:type built-in)))
+      :demand t :straight (:type built-in)
+      :config
+      (general-setq lsp-ui-doc-max-height 80
+                    lsp-uid-doc-max-width 80)))
 #+end_src
 
 ** Syntax & Linting
@@ -3095,8 +3045,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-apheleia-block
 #+begin_src emacs-lisp
   (use-package apheleia
-    :blackout t :straight (:host github :repo "raxod502/apheleia")
-    :ghook ('prog-mode-hook #'apheleia-global-mode))
+    :blackout t :straight (:host github :repo "raxod502/apheleia"))
 #+end_src
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block

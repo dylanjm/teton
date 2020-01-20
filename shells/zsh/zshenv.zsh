@@ -169,4 +169,4 @@ export CDPATH
 ###
 autoload -Uz time-shell nuke convert-to-md \
          colorlist open-apps iterm-config _zpcompinit_fast \
-         bundle-name
+         bundle-name pyenv

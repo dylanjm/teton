@@ -4,45 +4,45 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-16 17:44:42
+/last updated/: 2020-01-17 22:06:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
-  - [[#literate-programming-in-org][Literate Programming in Org]]
-  - [[#system-requirements][System Requirements]]
+    - [[#literate-programming-in-org][Literate Programming in Org]]
+    - [[#system-requirements][System Requirements]]
 - [[#early-init][Early-Init]]
-  - [[#header][Header]]
-  - [[#preliminary-configuration][Preliminary Configuration]]
-  - [[#footer][Footer]]
+    - [[#header][Header]]
+    - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#footer][Footer]]
 - [[#init][Init]]
-  - [[#header-1][Header]]
-  - [[#package-management][Package Management]]
-  - [[#initial-demands][Initial Demands]]
-  - [[#personal-configuration][Personal Configuration]]
-  - [[#built-in-defaults][Built-In Defaults]]
-  - [[#user-files][User Files]]
-  - [[#themes--aesthetics][Themes & Aesthetics]]
-  - [[#meta][Meta]]
-  - [[#system][System]]
-  - [[#shells][Shells]]
-  - [[#project-management][Project Management]]
-  - [[#frameworks][Frameworks]]
-  - [[#autocompletion][Autocompletion]]
-  - [[#documentation][Documentation]]
-  - [[#editing-tools][Editing Tools]]
-  - [[#writing][Writing]]
-  - [[#minor-modes][Minor Modes]]
-  - [[#file-explorer][File Explorer]]
-  - [[#navigation][Navigation]]
-  - [[#org][Org]]
-  - [[#email][Email]]
-  - [[#media][Media]]
-  - [[#version-control][Version Control]]
-  - [[#language-server-support][Language Server Support]]
-  - [[#syntax--linting][Syntax & Linting]]
-  - [[#languages][Languages]]
-  - [[#miscellaneous][Miscellaneous]]
-  - [[#footer-1][Footer]]
+    - [[#header-1][Header]]
+    - [[#package-management][Package Management]]
+    - [[#initial-demands][Initial Demands]]
+    - [[#personal-configuration][Personal Configuration]]
+    - [[#built-in-defaults][Built-In Defaults]]
+    - [[#user-files][User Files]]
+    - [[#themes--aesthetics][Themes & Aesthetics]]
+    - [[#meta][Meta]]
+    - [[#system][System]]
+    - [[#shells][Shells]]
+    - [[#project-management][Project Management]]
+    - [[#frameworks][Frameworks]]
+    - [[#autocompletion][Autocompletion]]
+    - [[#documentation][Documentation]]
+    - [[#editing-tools][Editing Tools]]
+    - [[#writing][Writing]]
+    - [[#minor-modes][Minor Modes]]
+    - [[#file-explorer][File Explorer]]
+    - [[#navigation][Navigation]]
+    - [[#org][Org]]
+    - [[#email][Email]]
+    - [[#media][Media]]
+    - [[#version-control][Version Control]]
+    - [[#language-server-support][Language Server Support]]
+    - [[#syntax--linting][Syntax & Linting]]
+    - [[#languages][Languages]]
+    - [[#miscellaneous][Miscellaneous]]
+    - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
 
@@ -105,7 +105,6 @@ You'll see this modification in many config files around the internet. The idea 
 
   (defun djm/return-vars-to-normal ()
     (setq file-name-handler-alist default-file-name-handler-alist
-          gc-cons-percentage 0.1
           load-prefer-newer nil))
 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
@@ -117,6 +116,7 @@ You'll see this modification in many config files around the internet. The idea 
 *** Pre-Gui Optimization
 
 Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=, and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
+
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
@@ -129,6 +129,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                                       (vertical-scroll-bars)
                                       (font . "Iosevka TermLig SS09-18:weight=ultra-light")))
 
+  ;; Not sure if this is really needed anymore
   (prefer-coding-system 'utf-8-unix)
   (set-language-environment "UTF-8")
   (set-keyboard-coding-system 'utf-8)
@@ -163,7 +164,9 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 ** Package Management
 *** [[https://github.com/raxod502/straight.el][Straight]]
+
 Straight.el is my package manager of choice. It is extremely powerful in it's design and ensures you have a functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup much more to anything I've tried.
+
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
   (eval-and-compile
@@ -176,7 +179,6 @@ Straight.el is my package manager of choice. It is extremely powerful in it's de
                 straight-recipe-overrides nil
                 straight-repository-branch "develop"
                 straight-use-package-by-default t
-                straight-enable-use-package-integration t
                 straight-check-for-modifications '(check-on-save find-when-checking))
 
   (unless (file-exists-p bootstrap-file)
@@ -191,13 +193,15 @@ Straight.el is my package manager of choice. It is extremely powerful in it's de
 #+end_src
 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
+
 Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend the time on learning how to leverage the package strengths, it's almost impossible to think of doing your config any other way. There are some people who choose not to use this package. They believe that it abstracts too much away from the user. I think they have a point. There may be a day I can move past relying on Use-Package. Until then, it's a great way to organize and setup a config.
+
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
   (setq-default use-package-verbose t
                 use-package-always-defer t
-                use-package-compute-statistics t
-                use-package-enable-imenu-support t)
+                use-package-compute-statistics nil
+                use-package-enable-imenu-support nil)
 
   (straight-use-package 'use-package)
 #+end_src
@@ -205,48 +209,75 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 ** Initial Demands
 This section is for packages I need immediately upon launching emacs. My goal is to slim this section down a lot to try to further improve startup-times.
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
+
 Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
+
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :demand t :straight t
+    :demand t
+    :straight t
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-                  exec-path-from-shell-variables '("PATH" "MANPATH" "DOTFILES" "XDG_CACHE_HOME" "GPG_TTY" "XDG_CONFIG_HOME" "ORG_FILES" "PYLINTHOME" "PYENV_ROOT" "IPYTHONDIR" "PYTHONSTARTUP")
-                  exec-path-from-shell-arguments '("-l" "-i"))
+          exec-path-from-shell-variables '("PATH"
+                                           "MANPATH"
+                                           "DOTFILES"
+                                           "XDG_CACHE_HOME"
+                                           "GPG_TTY"
+                                           "XDG_CONFIG_HOME"
+                                           "ORG_FILES"
+                                           "PYLINTHOME"
+                                           "PYENV_ROOT"
+                                           "IPYTHONDIR"
+                                           "PYTHONSTARTUP")
+          exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
 
+#+RESULTS: init-exec-path-from-shell-block
+: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (24098 18012 322180 0) :init (24098 18012 322174 0) :config (24098 18012 321970 0) :config-secs (0 0 7 0) :init-secs (0 0 87786 0) :use-package-secs (0 0 110648 0)))
+
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
+
 Not super stoked on using this package, as I might replace it later with my own setup, but until then it's a good way to keep your emacs directory clean.
+
 #+name: early-init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
-    :demand t :straight t
+    :demand t
+    :straight t
     :init
     (setq no-littering-etc-directory "~/.cache/emacs/etc/"
           no-littering-var-directory "~/.cache/emacs/var/"))
 #+end_src
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
+
 Great package by the same author of Straight.el. It's similar to adding advice to functions but with a twist. Helpful if you need to future proof your emacs or need to alter a function from a package.
+
 #+name: init-el-patch-block
 #+begin_src emacs-lisp
-  (use-package el-patch :straight t)
-  (eval-when-compile
-    (require 'el-patch))
+  (use-package el-patch
+    :demand t
+    :straight t)
 #+end_src
 
 *** [[https://github.com/noctuid/general.el][General]]
+
 Great package for managing key-bindings and other customizations.
+
 #+name: init-general-block
 #+begin_src emacs-lisp
-  (use-package general :demand t :straight t)
+  (use-package general
+    :demand t
+    :straight t)
 #+end_src
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
+
 Similar to packages like minions, diminish, or delight. You can alter how your minor and major modes show up in the mode-line.
+
 #+name: init-blackout-block
 #+begin_src emacs-lisp
   (use-package blackout
@@ -255,40 +286,57 @@ Similar to packages like minions, diminish, or delight. You can alter how your m
 #+end_src
 
 *** [[https://github.com/magnars/dash.el][Dash]]
+
 Great Elisp library that I use throughout my config.
+
 #+name: init-dash-block
 #+begin_src emacs-lisp
   (use-package dash
-    :demand t :straight t)
+    :demand t
+    :straight t)
 #+end_src
 
 *** [[https://github.com/rejeep/f.el][F]]
+
 Great Elisp library used throughout my config
+
 #+name: init-f-block
 #+begin_src emacs-lisp
   (use-package f
-    :demand t :straight t)
+    :demand t
+    :straight t)
 #+end_src
 
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
+
 We need to intercept the built-in org-version that ships with emacs. For some reason we have to do this early. I'm not really sure why though.
+
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
   (straight-use-package
    '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
 #+end_src
 
-*** [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
+*** HOLD [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
+:LOGBOOK:
+- State "HOLD"       from              [2020-01-17 Fri 16:44] \\
+  Not currently needed.
+:END:
+
 Experimental package that lets you define functions to be repeated with keystrokes. It seems very interesting that I might use in the future.
+
 #+name: init-defrepeater-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package defrepeater
-    :demand t :straight t)
+    :demand t
+    :straight t)
 #+end_src
 
 ** Personal Configuration
 *** Variables
+
 Here are some of my personal variables that I will need to refer to at some point.
+
 #+name: init-variables-block
 #+begin_src emacs-lisp
   (defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
@@ -303,15 +351,15 @@ Here are some of my personal variables that I will need to refer to at some poin
 
   (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
 
-  (defconst EMACS27+ (> emacs-major-version 26))
+  (defconst EMACS28+ (> emacs-major-version 27))
   (defconst IS-MAC (eq system-type 'darwin))
 #+end_src
 
 *** Functions
 **** Active-Intervals
-This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config.
 
-Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]].
+This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config. Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
+
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
   (defmacro arco/run-at-active-interval (interval idle-interval &rest body)
@@ -331,10 +379,11 @@ Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d
                           ,@body))))
        (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
-**** Protect Buffers
-There are certain buffers I don't want to delete on accident.
 
-Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
+**** Protect Buffers
+
+There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
+
 #+name: init-protected-buffers-func-block
 #+begin_src emacs-lisp
   (defvar *protected-buffers* '("*scratch*" "*Messages*"))
@@ -353,9 +402,9 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+end_src
 
 **** Async Tangle
-This saves me tons of time tangling this config file.
 
-Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
+This saves me tons of time tangling this config file. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
+
 #+name: init-async-tangle-func-block
 #+begin_src emacs-lisp
   (defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
@@ -399,7 +448,9 @@ Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org
 #+end_src
 
 **** Temp Buffers
+
 Sometimes I need a different scratch buffer to do some work on.
+
 #+name: init-temp-buffers-block
 #+begin_src emacs-lisp
   (defun arco/new-scratch ()
@@ -410,8 +461,11 @@ Sometimes I need a different scratch buffer to do some work on.
                                while (get-buffer name)
                                finally return name)))
 #+end_src
+
 **** Font-Config
+
 Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on setting this up perfectly but I do set up Apple-Emoji Support.
+
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()
@@ -437,8 +491,11 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
     ;; Fallbacks for math and generic symbols
     (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
+
 **** Clean-Up Yanked Text
-Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]]
+
+Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]].
+
 #+name: init-yank-ws-cleanup-block
 #+begin_src emacs-lisp
   (defun djm/yank-ws-cleanup (&rest _)
@@ -447,32 +504,22 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (general-add-advice #'insert-for-yank :after #'djm/yank-ws-cleanup)
 #+end_src
+
 *** Hooks & Advice
+
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (general-add-hook 'write-file-functions 'time-stamp)
 #+end_src
 
 *** Keybindings
+
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
   (general-define-key
-   "RET"                    #'newline-and-indent
-   "C-j"                    #'newline-and-indent
-   "C-z"                    nil
-   "<wheel-right>"          #'ignore
-   "<double-wheel-right>"   #'ignore
-   "<triple-wheel-right>"   #'ignore
-   "<C-triple-wheel-right>" #'ignore
-   "<wheel-down>"           #'ignore
-   "<double-wheel-down>"    #'ignore
-   "<triple-wheel-down>"    #'ignore
-   "<wheel-up>"             #'ignore
-   "<double-wheel-up>"      #'ignore
-   "<triple-wheel-up>"      #'ignore
-   "<wheel-left>"           #'ignore
-   "<double-wheel-left>"    #'ignore
-   "<triple-wheel-left>"    #'ignore)
+   "RET" #'newline-and-indent
+   "C-j" #'newline-and-indent
+   "C-z" nil)
 #+end_src
 
 #+name: init-aliases-block
@@ -485,14 +532,19 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 ** Built-In Defaults
 *** Abbrev (Built-In)
+
 I might set-up some abbreviations in the future. This is more a placeholder block until then.
+
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
   (use-package abbrev
     :straight (:type built-in))
 #+end_src
+
 *** Advice (Built-In)
+
 Ignore those warnings from the old advice system.
+
 #+name: init-advice-block
 #+begin_src emacs-lisp
   (use-package advice
@@ -502,6 +554,7 @@ Ignore those warnings from the old advice system.
 #+end_src
 
 *** Align (Built-In)
+
 #+name: init-align-block
 #+begin_src emacs-lisp
   (use-package align
@@ -512,7 +565,9 @@ Ignore those warnings from the old advice system.
 #+end_src
 
 *** Ansi-Color (Built-In)
+
 Here we can setup proper coloring for compile buffers.
+
 #+name: init-ansi-color-block
 #+begin_src emacs-lisp
   (use-package ansi-color
@@ -529,6 +584,7 @@ Here we can setup proper coloring for compile buffers.
 #+end_src
 
 *** Auth-Source (Built-In)
+
 #+name: init-auth-source-block
 #+begin_src emacs-lisp
   (use-package auth-source
@@ -540,6 +596,7 @@ Here we can setup proper coloring for compile buffers.
 #+end_src
 
 *** Autorevert (Built-In)
+
 #+name: init-autorevert-block
 #+begin_src emacs-lisp
   (use-package autorevert
@@ -555,14 +612,17 @@ Here we can setup proper coloring for compile buffers.
 #+end_src
 
 *** Bookmark (Built-In)
+
 #+name: init-bookmark-block
 #+begin_src emacs-lisp
   (use-package bookmark
     :straight (:type built-in)
-    :config (general-setq bookmark-save-flag +1))
+    :config
+    (general-setq bookmark-save-flag +1))
 #+end_src
 
 *** Browse-Url (Built-In)
+
 #+name: init-browse-url-block
 #+begin_src emacs-lisp
   (use-package browse-url
@@ -570,8 +630,11 @@ Here we can setup proper coloring for compile buffers.
     :config
     (general-setq browse-urls-browser-function "firefox"))
 #+end_src
+
 *** Calculator (Built-In)
+
 Let's add a few helpful units to the calculator.
+
 #+name: init-calc-block
 #+begin_src emacs-lisp
   (use-package calc
@@ -587,7 +650,9 @@ Let's add a few helpful units to the calculator.
                     (Kib "1024 * b" "Kilo Bit")
                     (b "B / 8" "Bit"))))
 #+end_src
+
 *** Calendar (Built-In)
+
 #+name: init-calendar-block
 #+begin_src emacs-lisp
   (use-package calendar
@@ -601,6 +666,7 @@ Let's add a few helpful units to the calculator.
 #+end_src
 
 *** Checkdoc (Built-In)
+
 #+name: init-checkdoc-block
 #+begin_src emacs-lisp
   (use-package checkdoc
@@ -608,7 +674,9 @@ Let's add a few helpful units to the calculator.
     :config
     (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
 #+end_src
+
 *** CL-Lib (Built-In)
+
 #+name: init-cl-lib-block
 #+begin_src emacs-lisp
   (use-package cl-lib
@@ -616,6 +684,7 @@ Let's add a few helpful units to the calculator.
 #+end_src
 
 *** Comint (Built-In)
+
 #+name: init-comint-block
 #+begin_src emacs-lisp
   (use-package comint
@@ -629,19 +698,21 @@ Let's add a few helpful units to the calculator.
 #+end_src
 
 *** Compile (Built-In)
+
 #+name: init-compile-block
 #+begin_src emacs-lisp
   (use-package compile
-    :straight (:type built-in) :no-require t
+    :straight (:type built-in)
     :config
     (general-setq compilation-message-face 'compilation-base-face
-                  compilation-environment '("TERM=screen-256color")
+                  compilation-environment '("TERM=xterm-256color")
                   compilation-always-kill t
                   compilation-ask-about-save nil
                   compilation-scroll-output 'first-error))
 #+end_src
 
 *** Conf-Mode (Built-In)
+
 #+name: init-conf-mode-block
 #+begin_src emacs-lisp
   (use-package conf-mode
@@ -650,7 +721,9 @@ Let's add a few helpful units to the calculator.
 #+end_src
 
 *** Cus-Start (Built-In)
+
 I bassically use this block to load all settings that don't have a loaded emacs library.
+
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
   (use-package cus-start
@@ -713,6 +786,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Delsel (Built-In)
+
 #+name: init-delsel-block
 #+begin_src emacs-lisp
   (use-package delsel
@@ -721,6 +795,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Doc-View (Built-In)
+
 #+name: init-doc-view-block
 #+begin_src emacs-lisp
   (use-package doc-view
@@ -728,7 +803,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq doc-view-continuous t))
 #+end_src
+
 *** Ediff (Built-In)
+
 #+name: init-ediff-block
 #+begin_src emacs-lisp
   (use-package ediff
@@ -738,7 +815,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   ediff-diff-options "-w"
                   ediff-split-window-function #'split-window-horizontally))
 #+end_src
+
 *** Eldoc (Built-In)
+
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
@@ -751,6 +830,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Electric (Built-In)
+
 #+name: init-electric-block
 #+begin_src emacs-lisp
   (use-package electric
@@ -758,51 +838,67 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq-default electric-indent-chars '(?\n ?\^?)))
 #+end_src
+
 *** Elisp-Mode (Built-In)
+
 #+name: init-elisp-mode-block
 #+begin_src emacs-lisp
   (use-package elisp-mode
-    :blackout (emacs-lisp-mode . "Elisp") :straight (:type built-in)
+    :blackout (emacs-lisp-mode . "Elisp")
+    :straight (:type built-in)
     :config
     (general-setq emacs-lisp-docstring-fill-column 80))
 #+end_src
 
 *** Emacs-Lock (Built-In)
+
 #+name: init-emacs-lock-block
 #+begin_src emacs-lisp
   (use-package emacs-lock
-    :blackout " 🔐 " :straight (:type built-in))
+    :blackout " 🔐 "
+    :straight (:type built-in))
 #+end_src
 
 *** Epa (Built-In)
+
 #+name: init-epa-block
 #+begin_src emacs-lisp
   (use-package epa
-    :straight (:type built-in) :no-require t
-    :config (general-setq epa-replace-original-text t))
+    :straight (:type built-in)
+    :no-require t
+    :config
+    (general-setq epa-replace-original-text t))
 #+end_src
 
 *** Epg (Built-In)
+
 #+name: init-epg-block
 #+begin_src emacs-lisp
   (use-package epg
-    :straight (:type built-in) :no-require t
-    :config (general-setq epg-pinentry-mode 'loopback))
+    :straight (:type built-in)
+    :no-require t
+    :config
+    (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
 *** Ert (Built-In)
+
 #+name: init-ert-block
 #+begin_src emacs-lisp
   (use-package ert
     :straight (:type built-in))
 #+end_src
+
 *** Eshell (Built-In)
+
 #+name: init-eshell-block
 #+begin_src emacs-lisp
   (use-package eshell
     :straight (:type built-in))
 #+end_src
+
 *** Eww (Built-In)
+
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
   (use-package eww
@@ -810,6 +906,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Face-Remap (Built-In)
+
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
   (use-package face-remap
@@ -819,7 +916,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (blackout 'visual-line-mode)
     (blackout 'variable-pitch-mode))
 #+end_src
+
 *** Files (Built-In)
+
 #+name: init-files-block
 #+begin_src emacs-lisp
   (use-package files
@@ -846,6 +945,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Flyspell (Built-In)
+
 #+name: init-flyspell-block
 #+begin_src emacs-lisp
   (use-package flyspell
@@ -856,7 +956,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   flyspell-issue-welcome-flag nil
                   flyspell-issue-message-flag nil))
 #+end_src
+
 *** Frame (Built-In)
+
 #+name: init-frame-block
 #+begin_src emacs-lisp
   (use-package frame
@@ -891,30 +993,37 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Goto-Addr (Built-In)
+
 #+name: init-goto-addr-block
 #+begin_src emacs-lisp
   (use-package goto-addr
     :ghook ('text-mode-hook #'goto-address-mode)
     :ghook ('prog-mode-hook #'goto-address-prog-mode))
 #+end_src
+
 *** Help (Built-In)
+
 #+name: init-help-block
 #+begin_src emacs-lisp
   (use-package help
     :straight (:type built-in)
     :config
-    (general-setq help-window-select t)
+    (general-setq help-window-select 'always)
     (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
 
 *** Hideshow (Built-In)
+
 #+name: init-hideshow-block
 #+begin_src emacs-lisp
   (use-package hideshow
-    :blackout (hs-minor-mode . "") :straight (:type built-in)
+    :blackout (hs-minor-mode . "")
+    :straight (:type built-in)
     :ghook ('prog-mode-hook #'hs-minor-mode))
 #+end_src
+
 *** Image (Built-In)
+
 #+name: init-image-block
 #+begin_src emacs-lisp
   (use-package image
@@ -922,7 +1031,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (imagemagick-register-types))
 #+end_src
+
 *** iMenu (Built-In)
+
 #+name: init-imenu-block
 #+begin_src emacs-lisp
   (use-package imenu
@@ -930,6 +1041,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** iSearch (Built-In)
+
 #+name: init-isearch-block
 #+begin_src emacs-lisp
   (use-package isearch
@@ -937,7 +1049,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq lazy-highlight-initial-delay 0))
 #+end_src
+
 *** iSpell (Built-In)
+
 #+name: init-ispell-block
 #+begin_src emacs-lisp
   (use-package ispell
@@ -952,18 +1066,22 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   ispell-program-name (executable-find "hunspell")
                   ispell-really-hunspell t
                   ispell-silently-savep t)
-    (general-pushnew '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
+    (dolist (regions '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
                        ("#\\+BEGIN_SRC" . "#\\+END_SRC")
-                       ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")) ispell-skip-region-alist))
+                       ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")))
+      (general-pushnew regions ispell-skip-region-alist)))
 #+end_src
 
 *** LS-Lisp (Built-In)
+
 #+name: init-ls-lisp-block
 #+begin_src emacs-lisp
   (use-package ls-lisp
     :straight (:type built-in) :after (dired))
 #+end_src
+
 *** Make-Mode (Built-In)
+
 #+name: init-makefile-block
 #+begin_src emacs-lisp
   (use-package make-mode
@@ -974,7 +1092,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                (makefile-bsdmake-mode . "Makefile")
                (makefile-imake-mode . "Makefile")))
 #+end_src
+
 *** Minibuffer (Built-In)
+
 #+name: init-mini-buffer-block
 #+begin_src emacs-lisp
   (use-package minibuffer
@@ -982,7 +1102,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :general
     ("C-g" #'minibuffer-keyboard-quit)
     :config
-    (general-setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+    (general-setq minibuffer-prompt-properties
+                  '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
 
     (defun djm/minibuffer-setup-hook ()
       "With modern packages like Ivy/Counsel, let's extend the gc-threshold while
@@ -993,20 +1114,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
       "Upon exiting the minibuffer, we'll set everything back to normal"
       (setq gc-cons-threshold default-gc-cons-threshold))
 
-    (defun djm/not-in-minibuffer-p (&rest _args)
-      (not (minibuffer-window-active-p (selected-window))))
-
-    (general-add-advice 'run-window-configuration-change-hook
-                        :before-while
-                        #'djm/not-in-minibuffer-p)
-
-    (general-advice-add 'frame-purpose--buffer-list-update-hook
-                        :before-while
-                        #'optimize-minibuf/not-in-minibuf-p)
-
     (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
     (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
-    (general-add-hook 'minibuffer-setup-hook #'minibuffer-depth-indicate-mode)
     (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 #+end_src
 
@@ -1017,6 +1126,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in))
 #+end_src
 *** NS-Win (Built-In)
+
 #+name: init-ns-win-block
 #+begin_src emacs-lisp
   (use-package ns-win
@@ -1039,12 +1149,15 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Outline (Built-In)
+
 #+name: init-outline-block
 #+begin_src emacs-lisp
   (use-package outline
     :straight (:type built-in))
 #+end_src
+
 *** Paren (Built-In)
+
 #+name: init-paren-block
 #+begin_src emacs-lisp
   (use-package paren
@@ -1052,9 +1165,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :ghook ('emacs-startup-hook #'show-paren-mode)
     :config
     (general-setq show-paren-delay 0))
-
 #+end_src
+
 *** Pixel-Scroll (Built-In)
+
 #+name: init-pixel-scroll-block
 #+begin_src emacs-lisp
   (use-package pixel-scroll
@@ -1063,17 +1177,22 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Prog-Mode (Built-In)
+
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
   (use-package prog-mode
     :straight (:type built-in)
-    :gfhook #'display-fill-column-indicator-mode #'show-paren-mode #'prettify-symbols-mode
+    :gfhook
+    #'display-fill-column-indicator-mode
+    #'show-paren-mode
+    #'prettify-symbols-mode
     :config
     (general-setq prettify-symbols-unprettify-at-point 'right)
     (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
 *** Recentf (Built-In)
+
 #+name: init-recentf-block
 #+begin_src emacs-lisp
   (use-package recentf
@@ -1091,6 +1210,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Savehist (Built-In)
+
 #+name: init-savehist-block
 #+begin_src emacs-lisp
   (use-package savehist
@@ -1108,6 +1228,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Saveplace (Built-In)
+
 #+name: init-saveplace-block
 #+begin_src emacs-lisp
   (use-package saveplace
@@ -1116,6 +1237,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Select (Built-In)
+
 #+name: init-select-block
 #+begin_src emacs-lisp
   (use-package select
@@ -1130,14 +1252,15 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package sh-script
     :straight (:type built-in)
-    :mode (("\\.zshenv'" . sh-mode)
-           ("\\.[a-zA-Z]+rc'" . sh-mode))
+    :mode (("\\.[a-zA-Z]+rc'" . sh-mode))
     :config
     (general-setq sh-indentation 2
                   sh-basic-offset 2
                   sh-indent-after-continuation 'always))
 #+end_src
+
 *** Simple (Built-In)
+
 #+name: init-simple-block
 #+begin_src emacs-lisp
   (use-package simple
@@ -1148,7 +1271,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-setq blink-matching-paren t
                   column-number-mode nil
                   delete-trailing-lines nil
-                  display-time-mode t
                   eval-expression-print-length nil
                   eval-expression-print-level nil
                   idle-update-delay 1
@@ -1165,21 +1287,25 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Smerge (Built-In)
+
 #+name: init-smerge-block
 #+begin_src emacs-lisp
   (use-package smerge-mode
     :straight (:type built-in)
     :commands (smerge-mode))
 #+end_src
+
 *** Subword (Built-In)
+
 #+name: init-subword-block
 #+begin_src emacs-lisp
   (use-package subword
     :straight (:type built-in)
     :ghook ('emacs-startup-hook #'global-subword-mode))
-
 #+end_src
+
 *** Time (Built-In)
+
 #+name: init-time-block
 #+begin_src emacs-lisp
   (use-package time
@@ -1192,6 +1318,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Uniquify (Built-In)
+
 #+name: init-uniquify-block
 #+begin_src emacs-lisp
   (use-package uniquify
@@ -1203,6 +1330,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** VC-Hooks (Built-In)
+
 #+name: init-vc-hooks-block
 #+begin_src emacs-lisp
   (use-package vc-hooks
@@ -1213,6 +1341,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** View (Built-In)
+
 #+name: init-view-block
 #+begin_src emacs-lisp
   (use-package view
@@ -1222,6 +1351,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Warnings (Built-In)
+
 #+name: init-warnings-block
 #+begin_src emacs-lisp
   (use-package warnings
@@ -1229,6 +1359,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Whitespace (Built-In)
+
 #+name: init-whitespace-block
 #+begin_src emacs-lisp
   (use-package whitespace
@@ -1240,7 +1371,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package winner
     :straight (:type built-in)
-    :ghook 'after-init-hook
+    :ghook 'emacs-startup-hook
     :config
     (general-setq winner-boring-buffers '("*Completions*"
                                           "*Compile-Log*"
@@ -1253,6 +1384,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** XRef (Built-In)
+
 #+name: init-xref-block
 #+begin_src emacs-lisp
   (use-package xref
@@ -1261,6 +1393,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 ** User Files
 *** Custom File
+
 #+name: init-custom-load-block
 #+begin_src emacs-lisp
   (use-package cus-edit
@@ -1272,6 +1405,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Secret File
+
 #+name: init-secret-load-block
 #+begin_src emacs-lisp
   (when (file-exists-p djm--secret-file)
@@ -1296,6 +1430,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
+
 #+name: init-default-text-scale-block
 #+begin_src emacs-lisp
   (use-package default-text-scale
@@ -1304,10 +1439,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     ("<C-s-up>" #'default-text-scale-increase
      "<C-s-down>" #'default-text-scale-decrease
      "<C-M-s-down>" #'default-text-scale-reset)
-    :config (general-setq default-text-scale-amount 20))
+    :config
+    (general-setq default-text-scale-amount 20))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
+
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
   (use-package gruvbox-theme
@@ -1320,6 +1457,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
+
 #+name: init-hide-mode-line-block
 #+begin_src emacs-lisp
   (use-package hide-mode-line
@@ -1334,6 +1472,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight t
     :ghook ('prog-mode-hook #'hes-mode))
 #+end_src
+
 *** [[https://github.com/Fanael/highlight-numbers][Highlight-Numbers]]
 #+name: init-highlight-numbers-block
 #+begin_src emacs-lisp
@@ -2578,6 +2717,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-fontify-whole-heading-line t
                   org-fontity-quote-and-verse-blocks t
                   org-hide-emphasis-markers t
+                  org-list-indent-offset 2
                   org-insert-heading-respect-content t
                   org-latex-logfiles-extensions '("lof" "lot" "tex"
                                                   "aux" "idx" "log"
@@ -2711,14 +2851,26 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
     (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
 #+end_src
+
 *** Org-Ob
 #+name: init-org-ob-block
 #+begin_src emacs-lisp
   (use-package ob
     :straight nil
+    :preface
+    (defun arco/org-redisplay-inline-images ()
+      (interactive)
+      (when org-inline-image-overlays
+        (org-redisplay-inline-images)))
     :config
-    (general-setq org-babel-load-languages '((emacs-lisp . t) (shell . t) (python . t) (dot . t)))
-    (general-setq org-confirm-babel-evaluate nil))
+    (general-setq org-babel-load-languages '((emacs-lisp . t)
+                                             (shell . t)
+                                             (python . t)
+                                             (ditaa . t)
+                                             (dot . t)
+                                             (plantuml . t)))
+    (general-setq org-confirm-babel-evaluate nil)
+    (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images))
 
   (use-package ob-shell
     :straight nil)
@@ -2728,12 +2880,24 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (use-package ob-emacs-lisp
     :straight nil)
-#+end_src
-*** Ox-GFM
-#+name: init-ox-gfm-block
-#+begin_src emacs-lisp
+
+  (use-package ob-ditaa
+    :straight nil
+    :config
+    (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
+                  "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar"))
+
   (use-package ox-gfm
     :straight nil)
+#+end_src
+
+*** [[https://github.com/rexim/org-cliplink][Org-Cliplink]]
+#+name: init-org-cliplink-block
+#+begin_src emacs-lisp
+  (use-package org-cliplink
+    :straight t
+    :general
+    ("C-c p i" #'org-cliplink))
 #+end_src
 *** [[https://github.com/dylanjm/ox-jdf][Ox-JDF]]
 #+name: init-ox-jdf-block
@@ -3221,7 +3385,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 **** [[https://gitlab.com/ideasman42/emacs-elisp-autofmt][Elisp-Autoformat]]
 #+name: init-elisp-autoformat-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package elisp-autofmt
     :straight (:host gitlab :repo "ideasman42/emacs-elisp-autofmt")
     :ghook ('emacs-lisp-mode-hook #'elisp-autofmt-save-hook-for-this-buffer))

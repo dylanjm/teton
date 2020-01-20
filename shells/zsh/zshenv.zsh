@@ -121,6 +121,7 @@ export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
 export ZSH_PYENV_LAZY_VIRTUALENV=true
 export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
+export MPLCONFIGDIR="$XDG_CONFIG_HOME/python/matplotlib"
 
 
 ###
@@ -169,4 +170,4 @@ export CDPATH
 ###
 autoload -Uz time-shell nuke convert-to-md \
          colorlist open-apps iterm-config _zpcompinit_fast \
-         bundle-name
+         bundle-name prettycsv

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-16 17:44:42
+/last updated/: 2020-01-20 14:46:18
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -916,7 +916,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 *** Image (Built-In)
 #+name: init-image-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package image
     :straight (:type built-in)
     :config
@@ -1741,6 +1741,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host github :repo "raxod502/selectrum")
     :ghook 'emacs-startup-hook
     :config
+    (general-setq selectrum-num-candidates-displayed 15)
     (general-setq selectrum-minibuffer-bindings '(([remap keyboard-quit]       . abort-recursive-edit)
                                                   ([remap previous-line]       . selectrum-previous-candidate)
                                                   ([remap next-line]           . selectrum-next-candidate)
@@ -3116,12 +3117,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t :after ess)
 #+end_src
 ** Languages
-*** Fish
-#+name: init-fish-block
-#+begin_src emacs-lisp
-  (use-package fish-mode
-    :straight t)
-#+end_src
 *** Emacs-Lisp
 **** Elisp-Mode (Built-In)
 #+name: init-elisp-mode-block
@@ -3219,14 +3214,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   (current-column)))
                (t $else))))))))
 #+end_src
-**** [[https://gitlab.com/ideasman42/emacs-elisp-autofmt][Elisp-Autoformat]]
-#+name: init-elisp-autoformat-block
-#+begin_src emacs-lisp
-  (use-package elisp-autofmt
-    :straight (:host gitlab :repo "ideasman42/emacs-elisp-autofmt")
-    :ghook ('emacs-lisp-mode-hook #'elisp-autofmt-save-hook-for-this-buffer))
-#+end_src
-
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
 This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
 #+name: init-firestarter-block
@@ -3315,7 +3302,8 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** Go
-#+name: init-go-block
+**** Go-Mode
+#+name: init-go-mode-block
 #+begin_src emacs-lisp
   (use-package go-mode
     :mode "\\.go\\'"
@@ -3471,7 +3459,8 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** Rust
-#+name: init-rust-block
+**** Rustc
+#+name: init-rust-rustc-block
 #+begin_src emacs-lisp
   (use-package rustic
     :straight t
@@ -3482,13 +3471,18 @@ This is a nifty package that allows me to define functions as local variables in
                   rustic-flycheck-setup-mode-line-p nil
                   rustic-format-trigger nil
                   rustic-lsp-client nil))
+#+end_src
 
+**** Racer
+#+name: init-rust-racer-block
+#+begin_src emacs-lisp
   (use-package racer
     :straight t :after rustic
     :ghook 'rustic-mode-hook
     :config
     (general-setq auto-mode-alist (delete '("\\.rs\\'" . rust-mode) auto-mode-alist)))
 #+end_src
+
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block

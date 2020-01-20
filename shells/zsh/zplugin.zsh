@@ -28,7 +28,7 @@ load=light
 
 zplugin $load romkatv/powerlevel10k
 
-zplugin $load davidparsson/zsh-pyenv-lazy
+# zplugin $load davidparsson/zsh-pyenv-lazy
 
 zplugin ice wait'1' lucid
 zplugin $load hlissner/zsh-autopair

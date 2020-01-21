@@ -4,45 +4,45 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-20 14:58:23
+/last updated/: 2020-01-20 17:55:53
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
-  - [[#literate-programming-in-org][Literate Programming in Org]]
-  - [[#system-requirements][System Requirements]]
+    - [[#literate-programming-in-org][Literate Programming in Org]]
+    - [[#system-requirements][System Requirements]]
 - [[#early-init][Early-Init]]
-  - [[#header][Header]]
-  - [[#preliminary-configuration][Preliminary Configuration]]
-  - [[#footer][Footer]]
+    - [[#header][Header]]
+    - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#footer][Footer]]
 - [[#init][Init]]
-  - [[#header-1][Header]]
-  - [[#package-management][Package Management]]
-  - [[#initial-demands][Initial Demands]]
-  - [[#personal-configuration][Personal Configuration]]
-  - [[#built-in-defaults][Built-In Defaults]]
-  - [[#user-files][User Files]]
-  - [[#themes--aesthetics][Themes & Aesthetics]]
-  - [[#meta][Meta]]
-  - [[#system][System]]
-  - [[#shells][Shells]]
-  - [[#project-management][Project Management]]
-  - [[#frameworks][Frameworks]]
-  - [[#autocompletion][Autocompletion]]
-  - [[#documentation][Documentation]]
-  - [[#editing-tools][Editing Tools]]
-  - [[#writing][Writing]]
-  - [[#minor-modes][Minor Modes]]
-  - [[#file-explorer][File Explorer]]
-  - [[#navigation][Navigation]]
-  - [[#org][Org]]
-  - [[#email][Email]]
-  - [[#media][Media]]
-  - [[#version-control][Version Control]]
-  - [[#language-server-support][Language Server Support]]
-  - [[#syntax--linting][Syntax & Linting]]
-  - [[#languages][Languages]]
-  - [[#miscellaneous][Miscellaneous]]
-  - [[#footer-1][Footer]]
+    - [[#header-1][Header]]
+    - [[#package-management][Package Management]]
+    - [[#initial-demands][Initial Demands]]
+    - [[#personal-configuration][Personal Configuration]]
+    - [[#built-in-defaults][Built-In Defaults]]
+    - [[#user-files][User Files]]
+    - [[#themes--aesthetics][Themes & Aesthetics]]
+    - [[#meta][Meta]]
+    - [[#system][System]]
+    - [[#shells][Shells]]
+    - [[#project-management][Project Management]]
+    - [[#frameworks][Frameworks]]
+    - [[#autocompletion][Autocompletion]]
+    - [[#documentation][Documentation]]
+    - [[#editing-tools][Editing Tools]]
+    - [[#writing][Writing]]
+    - [[#minor-modes][Minor Modes]]
+    - [[#file-explorer][File Explorer]]
+    - [[#navigation][Navigation]]
+    - [[#org][Org]]
+    - [[#email][Email]]
+    - [[#media][Media]]
+    - [[#version-control][Version Control]]
+    - [[#language-server-support][Language Server Support]]
+    - [[#syntax--linting][Syntax & Linting]]
+    - [[#languages][Languages]]
+    - [[#miscellaneous][Miscellaneous]]
+    - [[#footer-1][Footer]]
 - [[#conclusion][Conclusion]]
 - [[#citations][Citations]]
 
@@ -223,9 +223,10 @@ Application launching on MacOS isn't handled by a specific system. This makes it
           exec-path-from-shell-variables '("PATH"
                                            "MANPATH"
                                            "DOTFILES"
-                                           "XDG_CACHE_HOME"
                                            "GPG_TTY"
+                                           "XDG_CACHE_HOME"
                                            "XDG_CONFIG_HOME"
+                                           "XDG_DATA_HOME"
                                            "ORG_FILES"
                                            "PYLINTHOME"
                                            "PYENV_ROOT"
@@ -1413,6 +1414,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 ** Themes & Aesthetics
+*** Adaptive Wrap Prefix Mode
+#+name: init-adaptive-wrap-prefix-mode-block
+#+begin_src emacs-lisp
+  (use-package adaptive-wrap
+    :straight t)
+#+end_src
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
@@ -2696,7 +2703,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package org
     :straight nil
-    :gfhook 'variable-pitch-mode 'visual-line-mode
+    :gfhook 'variable-pitch-mode 'visual-line-mode 'adaptive-wrap-prefix-mode
     :mode ("\\.org'" . org-mode)
     :general
     ("C-c a" #'org-agenda
@@ -2707,44 +2714,81 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (require 'ox-jdf-report nil t)
     (require 'org-ref nil t)
+
+    ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
-                  org-catch-invisible-edits 'smart
+                  org-default-notes-file "~/Documents/org-files/inbox.org"
+                  org-directory "~/Documents/org-files")
+
+    ;; Export Settings
+    (general-setq org-export-coding-system 'utf-8
+                  org-export-headline-levels 5
+                  org-export-with-author t
+                  org-export-with-drawers t
+                  org-export-with-email t
+                  org-export-with-footnotes t
+                  org-export-with-latex t
+                  org-export-with-properties t
+                  org-export-with-section-numbers nil
+                  org-export-with-smart-quotes t
+                  org-export-with-toc nil)
+
+    ;; LaTeX Settings
+    (general-setq org-latex-logfiles-extensions '("lof" "lot" "tex" "aux" "idx"
+                                                  "log" "out" "toc" "nav" "snm"
+                                                  "vrb" "dvi" "fdb_latexmk" "blg"
+                                                  "brf" "fls" "entoc" "ps" "spl"
+                                                  "bbl" "bcf" "run.xml")
+                  org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f"))
+
+    ;; Startup Settings
+    (general-setq org-startup-folded 'content
+                  org-startup-with-inline-images t
+                  org-startup-indented t)
+
+    ;; Fontify Settings
+    (general-setq org-fontify-whole-heading-line t
+                  org-fontify-quote-and-verse-blocks t
+                  org-fontify-done-headline t
+                  org-fontify-todo-headline t)
+
+    ;; Refile Settings
+    (general-setq org-refile-allow-creating-parent-nodes 'confirm
+                  org-refile-use-outline-path 'file
+                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+
+    ;; Log Settings
+    (general-setq org-log-done 'time
+                  org-log-into-drawer t
+                  org-log-state-notes-insert-after-drawers nil)
+
+    ;; Usage Settings
+    (general-setq org-use-fast-todo-selection t
+                  org-use-fast-tag-selection t
+                  org-use-speed-commands t
+                  org-use-tag-inheritance t)
+
+    ;; Aesthetic Settings
+    (general-setq org-pretty-entities t
+                  org-hide-emphasis-markers t
+                  org-hide-leading-stars t
+                  org-ellipsis "…")
+
+    ;; List Settings
+    (general-setq org-list-indent-offset 2)
+
+
+    (general-setq org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
-                  org-ellipsis "…"
                   org-enforce-todo-dependencies t
                   org-enforce-todo-checkbox-dependencies t
-                  org-export-coding-system 'utf-8
-                  org-fontify-done-headline t
-                  org-fontify-whole-heading-line t
-                  org-fontity-quote-and-verse-blocks t
-                  org-hide-emphasis-markers t
-                  org-list-indent-offset 2
                   org-insert-heading-respect-content t
-                  org-latex-logfiles-extensions '("lof" "lot" "tex"
-                                                  "aux" "idx" "log"
-                                                  "out" "toc" "nav"
-                                                  "snm" "vrb" "dvi"
-                                                  "fdb_latexmk" "blg" "brf"
-                                                  "fls" "entoc" "ps" "spl"
-                                                  "bbl" "bcf" "run.xml")
-                  org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-                  org-log-done 'time
-                  org-log-into-drawer t
-                  org-log-state-notes-insert-after-drawers nil
                   org-outline-path-complete-in-steps nil
-                  org-pretty-entities t
-                  org-refile-allow-creating-parent-nodes 'confirm
-                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3))
-                  org-refile-use-outline-path 'file
                   org-special-ctrl-a/e t
                   org-special-ctrl-k t
-                  org-startup-folded 'content
-                  org-startup-with-inline-images t
                   org-tags-column 0
                   org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
                                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-                  org-use-fast-todo-selection t
-                  org-use-speed-commands t
                   org-yank-adjusted-subtrees t)
 
     (general-setq org-tag-alist (quote (("@home" .   ?h)
@@ -2764,11 +2808,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package org-capture
     :straight nil :after org
     :config
-    (general-setq org-capture-templates '(("i" "inbox" entry
-                                           (file+headline "~/Documents/org-files/inbox.org" "Tasks")
-                                           "* TODO %i%?"))))
-
-
+    (general-setq org-capture-templates '(("t" "Tasks")
+                                          ("tt" "TODO    (t) Todo" entry (file "inbox.org")
+                                           "* TODO %?
+  :PROPERTIES:
+  :Via:
+  :Note:
+  :END:
+   :LOGBOOK:
+  - State \"TODO\"       from \"\"           %U
+  :END:" :empty-lines 1))))
 #+end_src
 
 *** Org-Clock
@@ -2789,6 +2838,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight nil
     :config
     (general-setq org-agenda-block-separator nil
+                  org-agenda-diary-file "~/Documents/org-files/diary.org"
                   org-agenda-dim-blocked-tasks 'invisible
                   org-agenda-files '("~/Documents/org-files/inbox.org"
                                      "~/Documents/org-files/projects.org")
@@ -2803,12 +2853,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-agenda-use-time-grid t
                   org-agenda-window-setup 'only-window))
 
-  (use-package org-super-agenda
-    :straight t)
+    (use-package org-super-agenda
+      :straight t)
 
-(defun org-archive-done-tasks ()
-  (interactive)
-  (org-map-entries 'org-archive-subtree "/DONE" 'file))
+  (defun org-archive-done-tasks ()
+    (interactive)
+    (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
 *** Org-Indent
@@ -2884,10 +2934,21 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (use-package ob-ditaa
     :straight nil
+    :commands (org-babel-execute:ditaa)
     :config
     (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
                   "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar"))
 
+  (use-package ob-plantuml
+    :straight nil
+    :commands (org-babel-execute:plantuml)
+    :config
+    (general-setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"))
+#+end_src
+
+*** Org-Ox
+#+name: init-org-ox-block
+#+begin_src emacs-lisp
   (use-package ox-gfm
     :straight nil)
 #+end_src
@@ -3576,7 +3637,7 @@ This is a nifty package that allows me to define functions as local variables in
         (setq-local lsp-python-executable executable)))
 
     (general-setq python-fill-docstring-style 'django
-                  python-shell-interpreter "python"
+                  python-shell-interpreter "ipython"
                   python-indent-guess-indent-offset-verbose nil))
 #+end_src
 

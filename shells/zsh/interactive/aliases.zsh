@@ -1,9 +1,9 @@
 ###
 ### Suffix
 ###
-alias -s org='emacs'
+#alias -s org='emacs'
 alias -s py='emacs'
-alias -s sh='emacs'
+#alias -s sh='emacs'
 alias -s zsh='emacs'
 
 ###

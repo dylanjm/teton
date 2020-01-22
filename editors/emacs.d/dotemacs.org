@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-20 18:01:10
+/last updated/: 2020-01-21 17:36:01
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -88,7 +88,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 67108864) ;; 64 mb
+  (defvar default-gc-cons-threshold 20000000)
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
@@ -148,6 +148,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
   (provide 'early-init)
   ;;; early-init.el ends here
 #+end_src
+
 * Init
 ** Header
 #+name: init-header-block
@@ -220,18 +221,35 @@ Application launching on MacOS isn't handled by a specific system. This makes it
     :if (eq system-type 'darwin)
     :init
     (setq exec-path-from-shell-check-startup-files t
-          exec-path-from-shell-variables '("PATH"
-                                           "MANPATH"
-                                           "DOTFILES"
-                                           "GPG_TTY"
-                                           "XDG_CACHE_HOME"
+          exec-path-from-shell-variables '("XDG_CACHE_HOME"
                                            "XDG_CONFIG_HOME"
                                            "XDG_DATA_HOME"
+                                           "XDG_BIN_HOME"
+                                           "LS_COLORS"
+                                           "LC_ALL"
+                                           "LANG"
+                                           "EDITOR"
+                                           "BROWSER"
+                                           "DOTFILES"
                                            "ORG_FILES"
+                                           "HISTFILE"
+                                           "ZSH"
+                                           "EXA_COLORS"
+                                           "CCACHE_DIR"
+                                           "JAVA_HOME"
+                                           "JULIA_NUM_THREADS"
+                                           "JULIA_DEPOT_PATH"
+                                           "R_ENVIRON_USER"
+                                           "PATH"
+                                           "FPATH"
+                                           "CDPATH"
+                                           "MANPATH"
+                                           "GPG_TTY"
                                            "PYLINTHOME"
                                            "PYENV_ROOT"
                                            "IPYTHONDIR"
-                                           "PYTHONSTARTUP")
+                                           "PYTHONSTARTUP"
+                                           "MPLCONFIGDIR")
           exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
@@ -470,23 +488,21 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()
-    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'regular)
+    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'book)
     (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka TermLig SS09" :weight 'ultra-light)
 
     ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-    (set-fontset-font t nil (font-spec :family "Iosevka Term") nil nil)
+    (set-fontset-font t nil (font-spec :family "Iosevka TermLig SS09") nil nil)
     (dolist (script '(symbol mathematical))
       (set-fontset-font t script (font-spec :family "XITS Math" :weight 'normal) nil nil))
 
     ;; Define a font set stack for symbols, greek and math characters
     (dolist (script '(symbol greek))
       (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
-      (set-fontset-font t script (font-spec :family "Arial Unicode MS") nil 'append)
-      (set-fontset-font t script (font-spec :family "DejaVu Sans Mono") nil 'prepend))
+      (set-fontset-font t script (font-spec :family "Menlo") nil 'append))
 
     ;; Colored Emoji on OS X, prefer over everything else!
     (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
-    (set-fontset-font t 'unicode (font-spec :family "DejaVuSansMono Nerd Font") nil 'prepend)
     (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
 
     ;; Fallbacks for math and generic symbols
@@ -1126,6 +1142,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package newcomment
     :straight (:type built-in))
 #+end_src
+
 *** NS-Win (Built-In)
 
 #+name: init-ns-win-block
@@ -1420,11 +1437,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package adaptive-wrap
     :straight t)
 #+end_src
+
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons
-    :straight t
+    :demand t :straight t
     :commands (all-the-icons-insert
                all-the-icons-insert-wicon
                all-the-icons-insert-faicon
@@ -1433,7 +1451,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                all-the-icons-insert-fileicon
                all-the-icons-insert-alltheicon
                all-the-icons-insert-icons-for
-               all-the-icons-faicon))
+               all-the-icons-faicon)
+    :config
+    (general-setq all-the-icons-scale-factor 1.3))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -1448,6 +1468,32 @@ I bassically use this block to load all settings that don't have a loaded emacs 
      "<C-M-s-down>" #'default-text-scale-reset)
     :config
     (general-setq default-text-scale-amount 20))
+#+end_src
+
+*** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+#+name: init-doom-modeline-block
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :ghook 'after-init-hook
+    :config
+    (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
+                  doom-modeline-icon (display-graphic-p)
+                  doom-modeline-buffer-encoding nil
+                  doom-modeline-bar-width 3
+                  doom-modeline-height 10
+                  doom-modeline-project-detection 'projectile
+                  doom-modeline-env-python-executable "python"))
+#+end_src
+
+*** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
+#+name: init-doom-themes-block
+#+begin_src emacs-lisp :tangle no
+  (use-package doom-themes
+    :demand t :straight t
+    :config
+    (general-setq doom-themes-enable-bold t
+                  doom-themes-enable-italic t)
+    (load-theme 'doom-gruvbox t))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -1481,6 +1527,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/Fanael/highlight-numbers][Highlight-Numbers]]
+
 #+name: init-highlight-numbers-block
 #+begin_src emacs-lisp
   (use-package highlight-numbers
@@ -1489,6 +1536,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
 #+end_src
+
 *** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
 #+name: init-highlight-todo-block
 #+begin_src emacs-lisp
@@ -1539,7 +1587,9 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
     :blackout t :straight t
     :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
 #+end_src
+
 *** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
+
 CLOSED: [2019-12-13 Fri 21:48]
 :LOGBOOK:
 - State "DONE"       from "HOLD"         [2019-12-13 Fri 21:48]
@@ -1547,7 +1597,7 @@ CLOSED: [2019-12-13 Fri 21:48]
   Testing out doom-modeline package
 :END:
 #+name: init-smart-mode-line-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package smart-mode-line
     :straight t
     :ghook ('after-init-hook #'djm/config-smart-mode-line)
@@ -1572,6 +1622,7 @@ CLOSED: [2019-12-13 Fri 21:48]
     :blackout t :straight t
     :ghook 'emacs-startup-hook)
 #+end_src
+
 ** Meta
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 A nice way to restart emacs on the fly if you need to.
@@ -1759,17 +1810,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package prescient
     :straight t
     :config (prescient-persist-mode +1))
-
-  (use-package ivy-prescient
-    :straight t :after (counsel)
-    :ghook 'counsel-mode-hook
-    :config
-    (general-add-hook 'ivy-sort-functions-alist
-                      '((ivy-omni-org . nil)
-                        (swiper . nil)
-                        (org-starter-swiper-config-files . nil)
-                        (counsel-minibuffer-history . nil)
-                        (counsel-mark-ring . nil))))
 #+end_src
 
 *** [[https://github.com/lewang/flx][FLX]]
@@ -1870,7 +1910,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
 #+name: init-swiper-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package swiper
     :straight t
     :general ("C-s" #'swiper
@@ -1887,17 +1927,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host github :repo "raxod502/selectrum")
     :ghook 'emacs-startup-hook
     :config
-    (general-setq selectrum-num-candidates-displayed 15)
-    (general-setq selectrum-minibuffer-bindings '(([remap keyboard-quit]       . abort-recursive-edit)
-                                                  ([remap previous-line]       . selectrum-previous-candidate)
-                                                  ([remap next-line]           . selectrum-next-candidate)
-                                                  ([remap newline-and-indent]  . selectrum-select-current-candidate)
-                                                  ([remap scroll-down-command] . selectrum-previous-page)
-                                                  ([remap scroll-up-command]   . selectrum-next-page)
-                                                  ([remap beginning-of-buffer] . selectrum-goto-beginning)
-                                                  ([remap end-of-buffer]       . selectrum-goto-end)
-                                                  ("C-j"                       . selectrum-submit-exact-input)
-                                                  ("TAB"                       . selectrum-insert-current-candidate))))
+    (general-setq selectrum-num-candidates-displayed 20)
+    (add-to-list 'selectrum-minibuffer-bindings '([remap newline-and-indent] . selectrum-select-current-candidate))
+    (add-to-list 'selectrum-minibuffer-bindings '("ESC" . abort-recursive-edit)))
 
   (use-package selectrum-prescient
     :demand t
@@ -2010,10 +2042,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
   (use-package auto-yasnippet
     :straight t)
-
-  (use-package ivy-yasnippet
-    :straight t
-    :commands (ivy-yasnippet))
 #+end_src
 
 ** Documentation
@@ -3237,8 +3265,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :straight t
-    :ghook ('python-mode-hook #'lsp-deferred)
-    :ghook ('c-mode-hook      #'lsp-deferred)
+    :ghook ('python-mode-hook #'lsp)
+    :ghook ('c-mode-hook      #'lsp)
     :config
     (general-setq lsp-prefer-flymake nil
                   lsp-enable-snippet nil
@@ -3256,7 +3284,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-c f" #'lsp-ui-sideline-apply-code-actions)
     :config
     (general-setq lsp-ui-sideline-ignore-duplicate t
-                  lsp-ui-sideline-show-hover t
+                  lsp-ui-sideline-show-hover nil
                   lsp-eldoc-enable-hover nil)
 
     (use-package lsp-ui-doc
@@ -3326,7 +3354,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/msherry/flycheck-pycheckers][Flycheck-Pycheckers]]
 #+name: init-flycheck-pycheckers-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package flycheck-pycheckers
     :straight t
     :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup))
@@ -3619,10 +3647,12 @@ This is a nifty package that allows me to define functions as local variables in
   (use-package python
     :straight nil
     :mode ("\\.py\\'" . python-mode)
-    :gfhook 'djm/python-no-reindent-on-colon
+    :gfhook
+    #'djm/python-no-reindent-on-colon
+    #'djm/python-use-correct-executables
     :config
     (defun djm/python-no-reindent-on-colon ()
-      (setq electric-indent-chars (delq ?: electric-indent-chars)))
+      (general-setq electric-indent-chars (delq ?: electric-indent-chars)))
 
     (defun djm/python-use-correct-executables ()
       (let ((executable python-shell-interpreter))
@@ -3638,6 +3668,7 @@ This is a nifty package that allows me to define functions as local variables in
 
     (general-setq python-fill-docstring-style 'django
                   python-shell-interpreter "ipython"
+                  python-shell-interpreter-args "--simple-prompt"
                   python-indent-guess-indent-offset-verbose nil))
 #+end_src
 

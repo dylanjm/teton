@@ -3,21 +3,17 @@
 ###
 ### Check for zplugin install
 ###
-[[ ! -f $ZPLGM[HOME_DIR]/bin/zplugin.zsh ]] && {
-    command mkdir -p $ZPLGM[HOME_DIR]
-    command git clone https://github.com/psprint/zplugin $ZPLGM[HOME_DIR]/bin
+[[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
+    command mkdir -p $ZINIT[HOME_DIR]
+    git clone https://github.com/zdharma/zinit.git $ZINIT[BIN_DIR]
 }
 
-source $ZPLGM[HOME_DIR]/bin/zplugin.zsh
-autoload -Uz _zplugin
-(( ${+_comps} )) && _comps[zplugin]=_zplugin
+source $ZINIT[BIN_DIR]/zinit.zsh
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
 ### Check if zmodule is installed and built.
-zmodload zdharma/zplugin 2>/dev/null || zpl module build
-
-### Zplugin is hard-coded to create this directory.
-### See: https://github.com/zdharma/zplugin/issues/197
-test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
+#zmodload zdharma/zplugin 2>/dev/null || zinit module build
 
 ###
 ### Load Zsh Plugins
@@ -26,37 +22,36 @@ test -d $XDG_CACHE_HOME/zplugin && { rm -rf $XDG_CACHE_HOME/zplugin }
 # Change to load=load for debugging.
 load=light
 
-zplugin $load romkatv/powerlevel10k
+zinit $load romkatv/powerlevel10k
 
-# zplugin $load davidparsson/zsh-pyenv-lazy
+zinit ice wait multisrc"*.zsh" lucid
+zinit $load $ZSH/interactive
 
-zplugin ice wait'1' lucid
-zplugin $load hlissner/zsh-autopair
+# zinit ice as"program" make'!' \
+#   atclone'./direnv hook zsh > zhook.zsh' \
+#   atpull'%atclone' src'zhook.zsh'
+# zinit $load direnv/direnv
 
-zplugin ice wait'1' lucid
-zplugin $load laggardkernel/zsh-thefuck
+zinit ice wait lucid
+zinit $load hlissner/zsh-autopair
 
-zplugin ice wait'1' lucid blockf
-zplugin $load zsh-users/zsh-completions
+zinit ice wait'1' lucid
+zinit $load laggardkernel/zsh-thefuck
 
-zplugin ice wait'1' atinit'zstyle ":history-search-multi-word" page-size "15"' lucid
-zplugin $load zdharma/history-search-multi-word
+zinit ice wait'1' atpull'zinit creinstall -q .' blockf lucid
+zinit $load zsh-users/zsh-completions
 
-zplugin ice wait'1a' lucid blockf
-zplugin $load rupa/z
+zinit ice wait'1' lucid
+zinit $load zdharma/history-search-multi-word
 
-zplugin ice wait'1b' lucid blockf
-zplugin $load changyuheng/fz
+zinit ice wait'1a' lucid blockf
+zinit $load rupa/z
 
-zplugin ice wait'1c' multisrc"*.zsh" lucid
-zplugin $load $ZSH/interactive
+zinit ice wait'1b' lucid blockf
+zinit $load changyuheng/fz
 
-zplugin ice wait'2b' atinit"ZPLGM[COMPINIT_OPTS]=-C; _zpcompinit_fast; zpcdreplay" lucid
-zplugin $load zdharma/fast-syntax-highlighting
+zinit ice wait'2' atinit'_zpcompinit_fast; zpcdreplay' lucid
+zinit $load zdharma/fast-syntax-highlighting
 
-zplugin ice wait'2c' atload"_zsh_autosuggest_start" lucid
-zplugin $load zsh-users/zsh-autosuggestions
-
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-ZSH_AUTOSUGGEST_MANUAL_REBIND=true
+zinit ice wait'2b' atload"!_zsh_autosuggest_start" lucid
+zinit $load zsh-users/zsh-autosuggestions

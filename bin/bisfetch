@@ -13,79 +13,79 @@ lookback=1
 folder=""
 BISON=${BISON_DIR:-$HOME/Documents/projects/bison}
 
-yellow  () { echo "${YELLOW}$*${NORMAL}";  }
-green   () { echo "${GREEN}$*${NORMAL}";   }
-blue    () { echo "${BLUE}$*${NORMAL}";    }
-red     () { echo "${RED}$*${NORMAL}";     }
-magenta () { echo "${MAGENTA}$*${NORMAL}"; }
-bold    () { echo "${BOLD}$*${NORMAL}";    }
+yellow() { echo "${YELLOW}$*${NORMAL}"; }
+green() { echo "${GREEN}$*${NORMAL}"; }
+blue() { echo "${BLUE}$*${NORMAL}"; }
+red() { echo "${RED}$*${NORMAL}"; }
+magenta() { echo "${MAGENTA}$*${NORMAL}"; }
+bold() { echo "${BOLD}$*${NORMAL}"; }
 
 function foldernames() {
 
-    (
-        printf "IFA_677 RE_Ginna_Rodlets LOCA_ORNL_cladding_burst_tests IFA_519\n"
-        printf "OSIRIS_H09 Riso_II5 IFA_535 IFA_636\n"
-        printf "RIA_NSRR_FK IFA_432 LOCA_IFA_650 LOCA_MT4_MT6A\n"
-        printf "Riso_II3 Calvert_Cliffs-1_PROTOTYPE IFA_534 LOCA_Hardy_cladding_test\n"
-        printf "IFA_562 LOCA_REBEKA_cladding_burst_tests HBEP OSIRIS_J12\n"
-        printf "LOCA_PUZRY_cladding_burst_tests	FUMEXII_Regate Riso_AN3 IFA_515_RodA1\n"
-        printf "Riso_GEm_STR013 Riso_GE7_ZX115 Riso_AN4 IFA_431\n"
-        printf "LOCA_ANL_cladding_burst_tests RIA_CABRI_REP_Na4 HbepR1 RIA_CABRI_REP_Na\n"
-        printf "Tribulation LOCA_cladding_creep_tests IFA_597_3 US_PWR_16_x_16\n"
-        printf "Riso_AN8 Riso_AN2 Super_Ramp\n"
-    ) |
-        column -t
+  (
+    printf "IFA_677 RE_Ginna_Rodlets LOCA_ORNL_cladding_burst_tests IFA_519\n"
+    printf "OSIRIS_H09 Riso_II5 IFA_535 IFA_636\n"
+    printf "RIA_NSRR_FK IFA_432 LOCA_IFA_650 LOCA_MT4_MT6A\n"
+    printf "Riso_II3 Calvert_Cliffs-1_PROTOTYPE IFA_534 LOCA_Hardy_cladding_test\n"
+    printf "IFA_562 LOCA_REBEKA_cladding_burst_tests HBEP OSIRIS_J12\n"
+    printf "LOCA_PUZRY_cladding_burst_tests	FUMEXII_Regate Riso_AN3 IFA_515_RodA1\n"
+    printf "Riso_GEm_STR013 Riso_GE7_ZX115 Riso_AN4 IFA_431\n"
+    printf "LOCA_ANL_cladding_burst_tests RIA_CABRI_REP_Na4 HbepR1 RIA_CABRI_REP_Na\n"
+    printf "Tribulation LOCA_cladding_creep_tests IFA_597_3 US_PWR_16_x_16\n"
+    printf "Riso_AN8 Riso_AN2 Super_Ramp\n"
+  ) |
+    column -t
 }
 
 function usage() {
-    printf "%b\n" "$(yellow USAGE):"
-    printf "  %s\n\n" "bisfetch [-h] [-n] [-l num] [-f folder] [<folder> ...]"
+  printf "%b\n" "$(yellow USAGE):"
+  printf "  %s\n\n" "bisfetch [-h] [-n] [-l num] [-f folder] [<folder> ...]"
 
-    printf "%b\n" "$(yellow FLAGS):"
-    printf "  %s  %s\n" "-h" "- show this message"
-    printf "  %s  %s\n" "-n" "- perform a dry-run"
-    printf "  %s  %s\n" "-l" "- Look back a previous run; Defaults to 1 (most-recent)"
-    printf "  %s  %s\n\n" "-f" "- Folder of interest; The flag is optional but a folder is required."
+  printf "%b\n" "$(yellow FLAGS):"
+  printf "  %s  %s\n" "-h" "- show this message"
+  printf "  %s  %s\n" "-n" "- perform a dry-run"
+  printf "  %s  %s\n" "-l" "- Look back a previous run; Defaults to 1 (most-recent)"
+  printf "  %s  %s\n\n" "-f" "- Folder of interest; The flag is optional but a folder is required."
 
-    printf "%b\n" "$(yellow ARGS):"
-    printf "  %s %s\n\n" "<folder>" "- Folder of interest from remote machine. To fetch all folders specify '*'"
-    printf "%b\n" "$(green Possible folder names include):"
-    foldernames
-    exit 1
+  printf "%b\n" "$(yellow ARGS):"
+  printf "  %s %s\n\n" "<folder>" "- Folder of interest from remote machine. To fetch all folders specify '*'"
+  printf "%b\n" "$(green Possible folder names include):"
+  foldernames
+  exit 1
 }
 
 while getopts ":hnl:f:" flag; do
-    case "$flag" in
-    n)
-        dry_run=1
-        ;;
-    l)
-        lookback=${OPTARG}
-        ;;
-    h)
-        usage
-        ;;
-    f)
-        folder="${OPTARG}"
-        ;;
-    :)
-        echo "Invalid options: $OPTARG requires an argurment" 1>&2
-        exit 1
-        ;;
-    \?)
-        echo "Usage: bisfetch [-h] [-n] [-l num] [-f folder] [folder(s) ...]"
-        exit 1
-        ;;
-    esac
+  case "$flag" in
+  n)
+    dry_run=1
+    ;;
+  l)
+    lookback=${OPTARG}
+    ;;
+  h)
+    usage
+    ;;
+  f)
+    folder="${OPTARG}"
+    ;;
+  :)
+    echo "Invalid options: $OPTARG requires an argurment" 1>&2
+    exit 1
+    ;;
+  \?)
+    echo "Usage: bisfetch [-h] [-n] [-l num] [-f folder] [folder(s) ...]"
+    exit 1
+    ;;
+  esac
 done
 
 shift $((OPTIND - 1))
 
 # Check to ensure folder is specified
 if [ -z "$folder" ] && [ -z "$1" ]; then
-    printf "%b\n\n" "$(red "You must specify a folder of interest"):"
-    foldernames
-    exit 1
+  printf "%b\n\n" "$(red "You must specify a folder of interest"):"
+  foldernames
+  exit 1
 fi
 
 # If no -f flag then assign folder to first ARG
@@ -97,42 +97,42 @@ fi
 # We then want to find all the *_out.csv files inside the folder specified at the
 # command-line within the 'bison_XXXXXXXX' folder.
 mapfile -t files < <(ssh falcon1 -qn 'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
-    'sort -t\t -r -nk1,5 | ' \
-    'sed -n '"$lookback"'p | ' \
-    'cut -f2-); ' \
-    'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -perm 660 -not -path "*/doc/*" -printf "%p\n" 2>/dev/null')
+  'sort -t\t -r -nk1,5 | ' \
+  'sed -n '"$lookback"'p | ' \
+  'cut -f2-); ' \
+  'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -perm 660 -not -path "*/doc/*" -printf "%p\n" 2>/dev/null')
 
 # Modify remote paths to fit for local paths
 mapfile -t local_paths < <(for i in "${files[@]}"; do
-    echo "$i" |
-        sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
+  echo "$i" |
+    sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
 done)
 
 # If ssh returned no results then error out.
 if [[ -z "${files[0]}" ]]; then
   printf "%b\n\n" "$(red "ERROR: Folder '$folder' Not Found!")"
   printf "%b\n\n" "$(green "NOTE"): Try using the lookback flag (-l) to fetch a previous nightly run."
-    printf "%b\n" "$(yellow Possible Folder Names Include):"
-    foldernames
-    exit 1
+  printf "%b\n" "$(yellow Possible Folder Names Include):"
+  foldernames
+  exit 1
 else
-    printf "\n\t📁 %b:\n" \
-        "$(bold "Inspecting Nightly Folder") $(magenta "${files[0]:20:14}") $(bold "for Assessment") $(magenta "$folder")"
+  printf "\n\t📁 %b:\n" \
+    "$(bold "Inspecting Nightly Folder") $(magenta "${files[0]:20:14}") $(bold "for Assessment") $(magenta "$folder")"
 fi
 
 for ((i = 0; i < ${#files[@]}; i++)); do
-    if [[ $dry_run == 0 ]]; then
-        printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-        printf "\t├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
-        printf "\t╰─ Fetching Remote File...\r"
+  if [[ $dry_run == 0 ]]; then
+    printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+    printf "\t├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+    printf "\t╰─ Fetching Remote File...\r"
 
-        if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
-            printf "\t%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
-        else
-            printf "\t%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
-        fi
+    if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
+      printf "\t%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
     else
-        printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-        printf "\t╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+      printf "\t%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
     fi
+  else
+    printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+    printf "\t╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+  fi
 done

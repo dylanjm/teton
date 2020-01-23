@@ -1,7 +1,7 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
 typeset -aU path cdpath fpath manpath module_path
-typeset -A ZPLGM
+typeset -A ZINIT
 
 ###
 ### XDG-Configuration
@@ -22,7 +22,7 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 ###
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
-export EDITOR='emacsclient -a "" -c'
+export EDITOR='emacsclient -a emacs -c'
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
 export ORG_FILES="$HOME/Documents/org-files/2020"
@@ -30,7 +30,7 @@ export ORG_FILES="$HOME/Documents/org-files/2020"
 ###
 ### History
 ###
-export HISTFILE="$XDG_CACHE_HOME/zsh/zsh_history"
+export HISTFILE="$XDG_DATA_HOME/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=120000
 export SAVEHIST=100000
@@ -44,9 +44,18 @@ export _cache_dir="$XDG_CACHE_HOME/zsh/zcompdump"
 ###
 ### Zplugin
 ###
-export ZPLGM[HOME_DIR]="$XDG_CACHE_HOME/zsh/zplugin"
-export ZPLGM[BIN_DIR]="$ZPLGM[HOME_DIR]/bin"
-export ZPLGM[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
+export ZINIT[HOME_DIR]="$XDG_CACHE_HOME/zsh/zinit"
+export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
+export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
+export ZINIT[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
+export ZINIT[COMPINIT_OPTS]="-C"
+
+###
+### ZSH-Auto-Suggestions
+###
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+export ZSH_AUTOSUGGEST_USE_ASYNC=true
+export ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 
 ###
 ### Less
@@ -70,7 +79,7 @@ export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:
 ###
 ### Z
 ###
-export _Z_DATA="$XDG_CACHE_HOME/zsh/z"
+export _Z_DATA="$XDG_DATA_HOME/z"
 
 ###
 ### CCACHE
@@ -135,16 +144,17 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 ###
 fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
         /usr/local/share/zsh/site-functions
-        $XDG_CACHE_HOME/zsh/zplugin/completions
+        $ZINIT[HOME_DIR]/completions
         $ZSH/functions)
 
-module_path+=($HOME/.cache/zsh/zplugin/bin/zmodules/Src)
+module_path+=($HOME/.cache/zsh/zinit/bin/zmodules/Src)
 
 path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
-      $ZPLGM[HOME_DIR]/polaris/bin  # Zplugin Installed Programs
+      $ZINIT[HOME_DIR]/polaris/bin  # Zplugin Installed Programs
       $DOTFILES/bin                 # Personal CLT Tools
+      #$ZINIT[PLUGINS_DIR]/direnv---direnv  # Lazy Direnv Setup
       /usr/local/opt/fzf/bin        # FZF Completions
       /usr/local/bin                # Homebrew Installations
       /usr/bin
@@ -157,8 +167,8 @@ path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       /opt/X11/bin)
 
 cdpath=($HOME/Documents/projects
-        $HOME/Documents/forked_github)
-
+        $HOME/Documents/forked_github
+        $XDG_CACHE_HOME)
 
 export FPATH
 export MODULE_PATH

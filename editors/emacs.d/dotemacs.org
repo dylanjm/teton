@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-21 17:36:01
+/last updated/: 2020-01-23 09:59:26
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3600,7 +3600,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package julia-mode
     :straight t
-    :interpreter "julia"
+    :interpreter "/usr/local/bin/julia"
     :config
     ;; Borrow matlab.el's fontification of math operators
     ;; From <https://ogbe.net/emacsconfig.html>
@@ -3633,13 +3633,14 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t
     :ghook 'julia-mode-hook)
 #+end_src
+
 **** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
 #+name: init-lsp-julia-block
 #+begin_src emacs-lisp
   (use-package lsp-julia
-    :straight (:host github :repo "non-Jedi/lsp-julia"))
+    :straight t
+    :ghook ('julia-mode-hook #'lsp-mode))
 #+end_src
-
 *** Python
 **** Python (Built-In)
 #+name: init-python-block

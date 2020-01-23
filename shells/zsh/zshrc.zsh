@@ -6,14 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/p10k-instant-prompt-${(%):-%n}.zsh
   source "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-typeset -ga mylogs
-zflai-msg() { mylogs+=( "$1" ); }
-zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
-
 source $ZSH/zplugin.zsh
-eval "$(direnv hook zsh)"
-
-zflai-msg "[zshrc] Finishing, loaded custom modules: ${(j:, :@)${(k)modules[@]}:#zsh/*}"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
@@ -25,7 +18,6 @@ vterm_prompt_end() {
 if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
   PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
 fi
-
 
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

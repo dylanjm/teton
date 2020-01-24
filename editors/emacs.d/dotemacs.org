@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-23 09:59:26
+/last updated/: 2020-01-23 17:46:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1453,7 +1453,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                all-the-icons-insert-icons-for
                all-the-icons-faicon)
     :config
-    (general-setq all-the-icons-scale-factor 1.3))
+    (general-setq all-the-icons-scale-factor 1.0))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -3151,55 +3151,31 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
               "C-x M-g" #'magit-dispatch)
     :config
     (general-setq magit-view-git-manual-method 'woman
-                  transient-default-level 5
                   magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                   magit-diff-refine-hunk t
-                  magit-save-repository-buffers nil
-                  transient-display-buffer-action '(display-buffer-below-selected))
-    (general-add-hook 'magit-popup-mode-hook #'hide-mode-line-mode))
+                  magit-save-repository-buffers nil)
+    (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode))
 
 #+end_src
 
 *** [[https://github.com/jtatarik/magit-gitflow][Magit-Gitflow]]
+
 #+name: init-magit-gitflow-block
 #+begin_src emacs-lisp
   (use-package magit-gitflow
     :straight t
     :ghook ('magit-mode-hook #'turn-on-magit-gitflow))
 #+end_src
+
 *** [[https://github.com/magit/transient][Transient]]
 #+name: init-transient-block
 #+begin_src emacs-lisp
   (use-package transient
     :straight nil
-    :config (transient-bind-q-to-quit))
-#+end_src
-
-*** [[https://github.com/magit/git-modes][Git-Attribute]]
-#+name: init-git-attribute-block
-#+begin_src emacs-lisp
-  (use-package gitattributes-mode
-    :straight git-modes)
-#+end_src
-*** [[https://github.com/magit/git-modes][Git-Config]]
-#+name: init-git-config-block
-#+begin_src emacs-lisp
-  (use-package gitconfig-mode
-    :straight git-modes)
-#+end_src
-
-*** [[https://github.com/magit/git-modes][Git-Ignore]]
-#+name: init-git-ignore-block
-#+begin_src emacs-lisp
-  (use-package gitignore-mode
-    :straight git-modes)
-#+end_src
-
-*** [[https://github.com/sshaw/git-link][Git-Link]]
-#+name: init-git-link-block
-#+begin_src emacs-lisp
-  (use-package git-link
-    :straight git-modes)
+    :config
+    (general-setq transient-default-level 5
+                  transient-display-buffer-action '(display-buffer-below-selected))
+    (transient-bind-q-to-quit))
 #+end_src
 
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
@@ -3214,6 +3190,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/magit/forge][Forge]]
+
 #+name: init-forge-block
 #+begin_src emacs-lisp
   (use-package forge
@@ -3221,15 +3198,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/syohex/emacs-git-gutter][Git-Gutter]]
+
 #+name: init-git-gutter-block
 #+begin_src emacs-lisp
   (use-package git-gutter
     :blackout t :straight t
     :if (display-graphic-p)
-    :ghook ('after-find-file #'global-git-gutter-mode))
+    :ghook ('emacs-startup-hook #'global-git-gutter-mode))
 #+end_src
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
+
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
   (use-package git-timemachine
@@ -3239,10 +3218,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
+
 #+name: init-with-editor-block
 #+begin_src emacs-lisp
   (use-package with-editor
-    :straight t)
+    :straight t
+    :preface
+    (general-add-hook 'shell-mode-hook 'with-editor-export-editor)
+    (general-add-hook 'vterm-mode-hook 'with-editor-export-editor))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
@@ -3256,7 +3239,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-vdiff-magit-block
 #+begin_src emacs-lisp
   (use-package vdiff-magit
-    :straight t)
+    :straight t
+    :general
+    (:keymaps 'magit-mode-map
+     "e" #'vdiff-magit-dwim
+     "E" #'vdiff-magit)
+    :config
+    (transient-suffix-put 'magit-dispatch "e" :description "vdiff (dwim)")
+    (transient-suffix-put 'magit-dispatch "e" :command #'vdiff-magit-dwim)
+    (transient-suffix-put 'magit-dispatch "E" :description "vdiff")
+    (transient-suffix-put 'magit-dispatch "E" :command #'vdiff-magit))
+
 #+end_src
 
 ** Language Server Support

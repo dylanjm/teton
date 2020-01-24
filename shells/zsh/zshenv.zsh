@@ -22,7 +22,7 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 ###
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
-export EDITOR='emacsclient -a emacs -c'
+export EDITOR="emacsclient -a 'emacs -nw' -c"
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
 export ORG_FILES="$HOME/Documents/org-files/2020"

@@ -9,7 +9,8 @@ hyperfine -- '$SHELL -i -c exit'
 
 #+RESULTS:
 : Benchmark #1: $SHELL -i -c exit
-:   Time (mean ± σ):      64.1 ms ±   1.0 ms    [User: 39.6 ms, System: 28.3 ms]
-:   Range (min … max):    62.8 ms …  67.0 ms    45 runs
+:   Time (mean ± σ):      41.6 ms ±   1.7 ms    [User: 25.7 ms, System: 13.8 ms]
+:   Range (min … max):    40.1 ms …  48.2 ms    62 runs
+:
 
 ** Startup Profiling

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-23 17:46:58
+/last updated/: 2020-01-23 20:14:10
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3083,6 +3083,22 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                cfw:org-create-source
                cfw:open-org-calendar-withkevin
                my-open-calendar))
+#+end_src
+*** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
+#+name: init-plantuml-mode-block
+#+begin_src emacs-lisp
+  (use-package plantuml-mode
+    :straight t
+    :config
+    (general-setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"
+                  plantuml-default-exec-mode 'jar))
+
+#+end_src
+*** Graph.el
+#+name: init-graph-block
+#+begin_src emacs-lisp
+  (use-package graph
+    :demand t :straight (:host github :repo "storax/graph.el"))
 #+end_src
 ** Email
 *** HOLD [[https://notmuchmail.org/][NotMuch]]

@@ -28,7 +28,6 @@ if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
     alias clear='printf "\e]51;Evterm-clear-scrollback\e\\";tput clear'
 fi
 
-
 ###
 ### Navigation
 ###

@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+function knitit() {
+  emacs --batch -l org "$DOTFILES/editors/emacs.d/dotemacs.org" -f org-babel-tangle
+}

@@ -132,6 +132,11 @@ export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 export MPLCONFIGDIR="$XDG_CONFIG_HOME/python/matplotlib"
 
+###
+### Terminfo
+###
+export TERMINFO="$XDG_CONFIG_HOME/terminfo"
+
 
 ###
 ### Gnupg
@@ -145,7 +150,9 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
         /usr/local/share/zsh/site-functions
         $ZINIT[HOME_DIR]/completions
-        $ZSH/functions)
+        $ZSH/functions
+        $ZINIT[PLUGINS_DIR]/zdharma---history-search-multi-word
+        $ZINIT[PLUGINS_DIR]/zdharma---fast-syntax-highlighting)
 
 module_path+=($HOME/.cache/zsh/zinit/bin/zmodules/Src)
 

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-23 20:14:10
+/last updated/: 2020-01-24 17:07:45
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -47,9 +47,10 @@
 - [[#citations][Citations]]
 
 * About
-#+ATTR_HTML: :width 1000px
-#+ATTR_ORG: :width 1000
+#+ATTR_HTML: :width 500px
+#+ATTR_ORG: :width 500px
 [[file:assets/config-preview.png]]
+
 
 ** Literate Programming in Org
 
@@ -80,10 +81,13 @@ This document is my current emacs config which contains the code for my =early-i
 #+end_src
 
 ** Preliminary Configuration
+
 You'll see a similar configuration in other dotfiles online. By default, Emac's runs it garbage collector when the
+
 *** Garbage Collection
 
 You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion. The FLX README suggest we do this to keep emacs running nice and smooth.
+
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -143,6 +147,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+end_src
 
 ** Footer
+
 #+name: early-init-footer-block
 #+begin_src emacs-lisp
   (provide 'early-init)
@@ -151,6 +156,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 * Init
 ** Header
+
 #+name: init-header-block
 #+begin_src emacs-lisp
   ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t-*-
@@ -208,7 +214,9 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 #+end_src
 
 ** Initial Demands
+
 This section is for packages I need immediately upon launching emacs. My goal is to slim this section down a lot to try to further improve startup-times.
+
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
 
 Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
@@ -248,20 +256,18 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "PYLINTHOME"
                                            "PYENV_ROOT"
                                            "IPYTHONDIR"
+                                           "TERMINFO"
                                            "PYTHONSTARTUP"
                                            "MPLCONFIGDIR")
-          exec-path-from-shell-arguments '("-l" "-i"))
+          exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
-
-#+RESULTS: init-exec-path-from-shell-block
-: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (24098 18012 322180 0) :init (24098 18012 322174 0) :config (24098 18012 321970 0) :config-secs (0 0 7 0) :init-secs (0 0 87786 0) :use-package-secs (0 0 110648 0)))
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
 
 Not super stoked on using this package, as I might replace it later with my own setup, but until then it's a good way to keep your emacs directory clean.
 
-#+name: early-init-no-littering-block
+#+name: init-no-littering-block
 #+begin_src emacs-lisp
   (use-package no-littering
     :demand t
@@ -1027,6 +1033,13 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq help-window-select 'always)
     (general-add-advice 'help-window-display-message :override #'ignore))
+    ;; (add-to-list 'display-buffer-alist
+    ;;              '("\\*[Hh]elp\\(?:ful\\)?"
+    ;;                (display-buffer-reuse-mode-window
+    ;;                 display-buffer-in-side-window)
+    ;;                (reusable-frames . visible)
+    ;;                (side . right)
+    ;;                (window-width . 0.45))))
 #+end_src
 
 *** Hideshow (Built-In)
@@ -1537,11 +1550,21 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
 #+end_src
 
-*** [[https://github.com/tarsius/hl-todo][Highlight-Todo]]
+*** [[https://github.com/tarsius/hl-todo][Highlight-TODO]]
 #+name: init-highlight-todo-block
 #+begin_src emacs-lisp
   (use-package hl-todo
     :straight t)
+#+end_src
+
+*** [[https://github.com/ubolonton/info-colors][Info-Colors]]
+
+#+name: init-info-colors-block
+#+begin_src emacs-lisp
+  (use-package info-colors
+    :straight (:host github :repo "ubolonton/info-colors")
+    :init
+    (general-add-hook 'Info-selection-hook #'info-colors-fontify-mode))
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
@@ -1558,6 +1581,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         comint-mode-hook
         compilation-mode-hook
         help-mode-hook
+        helpful-mode-hook
         org-agenda-mode-hook)))
 #+end_src
 
@@ -1746,6 +1770,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit))
 #+end_src
+
 *** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
 #+name: init-vterm-toggle-block
 #+begin_src emacs-lisp
@@ -1766,6 +1791,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                    (dedicated . t)
                    (reusable-frames . visible)
                    (window-height . 0.35))))
+#+end_src
+
+*** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
+#+name: init-eterm-256color-block
+#+begin_src emacs-lisp
+  (use-package eterm-256color
+    :straight t
+    :init
+    (general-add-hook 'term-mode-hook #'eterm-256color-mode))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
@@ -3033,9 +3067,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq org-pomodoro-format "%s"))
 
 #+end_src
-*** [[https://github.com/jkitchin/org-ref][Org-Ref]]
+*** HOLD [[https://github.com/jkitchin/org-ref][Org-Ref]]
+:LOGBOOK:
+- State "HOLD"       from              [2020-01-24 Fri 14:08] \\
+  I don't like having to install/load helm.
+:END:
 #+name: init-org-ref-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package org-ref
     :straight t
     :commands (org-ref-insert-link)
@@ -3571,6 +3609,12 @@ This is a nifty package that allows me to define functions as local variables in
     :mode "\\.go\\'"
     :ghook ('before-save-hook #'gofmt-before-save))
 #+end_src
+*** Jupyter
+#+name: init-jupyter-block
+#+begin_src emacs-lisp
+  (use-package jupyter
+    :straight t)
+#+end_src
 *** ESS
 #+name: init-ess-block
 #+begin_src emacs-lisp
@@ -3640,7 +3684,11 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package julia-repl
     :straight t
-    :ghook 'julia-mode-hook)
+    :ghook 'julia-mode-hook
+    :config
+    (defun arco/set-julia-repl-env ()
+      (setenv "TERM" "xterm-256color"))
+    (general-add-hook 'inferior-julia-mode-hook #'arco/set-julia-repl-env))
 #+end_src
 
 **** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
@@ -3765,16 +3813,14 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t)
 #+end_src
 ** Footer
+
 #+name: init-footer-block
 #+begin_src emacs-lisp
   (provide 'init)
   ;;; init.el ends here
 #+end_src
 
-
--------------------------------------------------------------------
 * Conclusion
--------------------------------------------------------------------
 * Citations
 
 * COMMENT Local Variables

@@ -3,7 +3,7 @@
 # key: dotsrc
 # --
 
-#+name: $0
+#+name: init-`(downcase (replace-regexp-in-string "\\(\\[\\[.*\\]\\[\\)\\(.*\\)\\]\\]" "\\2" (nth 4 (org-heading-components))))`-block
 #+begin_src emacs-lisp
-
+$0
 #+end_src

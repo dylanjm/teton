@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-24 17:07:45
+/last updated/: 2020-01-27 03:07:15
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -405,6 +405,24 @@ This function is a great way to conditional run functions at different intervals
        (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
 
+**** Screen-Capture
+#+name: init-screen-capture-block
+#+begin_src emacs-lisp
+  (defun emacs-screen-capture (arg &optional name dir)
+    (interactive "P")
+    (let* ((name (or name (read-string "Name of Screenshot: " nil)))
+           (dir (or dir (read-directory-name (format "Save %s to: " name))))
+           (fp (concat dir name))
+           (abb-fp (concat "file:" (file-relative-name fp))))
+      (set-process-sentinel
+       (start-process-shell-command
+        "imagecapture" nil (format "screencapture -i %s" fp))
+       `(lambda (process msg)
+          (when (memq (process-status process) '(exit signal))
+            (message (concat (process-name process) " - " msg))
+            (when (equal #',current-prefix-arg '(4))
+              (org-insert-link nil ,abb-fp nil)))))))
+#+end_src
 **** Protect Buffers
 
 There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
@@ -494,25 +512,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun djm/config-fonts ()
-    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'book)
-    (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka TermLig SS09" :weight 'ultra-light)
+    nil)
 
-    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-    (set-fontset-font t nil (font-spec :family "Iosevka TermLig SS09") nil nil)
-    (dolist (script '(symbol mathematical))
-      (set-fontset-font t script (font-spec :family "XITS Math" :weight 'normal) nil nil))
-
-    ;; Define a font set stack for symbols, greek and math characters
-    (dolist (script '(symbol greek))
-      (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
-      (set-fontset-font t script (font-spec :family "Menlo") nil 'append))
-
-    ;; Colored Emoji on OS X, prefer over everything else!
-    (set-fontset-font t 'unicode (font-spec :family "Symbola") nil nil)
-    (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
-
-    ;; Fallbacks for math and generic symbols
-    (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 
 **** Clean-Up Yanked Text
@@ -1754,7 +1755,18 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
   (use-package multi-libvterm
-    :straight (:host github :repo "suonlight/multi-libvterm"))
+    :straight (:host github :repo "suonlight/multi-libvterm")
+    :general
+    ("C-c x v" #'multi-libvterm-dedicated-toggle)
+    :config
+    (general-setq multi-libvterm-dedicated-window-height 25)
+    (add-to-list 'display-buffer-alist
+                 '("^v?term.*"
+                   (display-buffer-reuse-window display-buffer-at-bottom)
+                   (display-buffer-reuse-window display-buffer-in-direction)
+                   (dedicated . t)
+                   (reusable-frames . visible)
+                   (window-height . 0.35))))
 #+end_src
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
 #+name: init-vterm-block
@@ -1762,18 +1774,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package vterm
     :straight t
     :config
-    (general-setq vterm-install t
-                  confirm-kill-processes nil)
-
     (defun arco/vterm-kill-buffer-on-quit (buffer event)
       (if buffer (kill-buffer buffer)))
+    (general-setq vterm-term-environment-variable "eterm-256color")
 
     (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit))
 #+end_src
 
 *** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
 #+name: init-vterm-toggle-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package vterm-toggle
     :straight t
     :commands (vterm-toggle
@@ -1799,7 +1809,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package eterm-256color
     :straight t
     :init
-    (general-add-hook 'term-mode-hook #'eterm-256color-mode))
+    (general-add-hook 'term-mode-hook #'eterm-256color-mode)
+    (general-add-hook 'vterm-mode-hook #'eterm-256color-mode))
 #+end_src
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
@@ -3046,6 +3057,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package org-brain
     :straight t)
 #+end_src
+*** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
+#+name: init-org-emms-block
+#+begin_src emacs-lisp
+  (use-package org-emms
+    :straight t)
+#+end_src
 *** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]
 #+name: init-org-scrum-block
 #+begin_src emacs-lisp
@@ -3073,7 +3090,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   I don't like having to install/load helm.
 :END:
 #+name: init-org-ref-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package org-ref
     :straight t
     :commands (org-ref-insert-link)
@@ -3164,6 +3181,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Media
+*** EMMS
+#+name: init-emms-block
+#+begin_src emacs-lisp
+  (use-package emms
+    :straight t
+    :init
+    (emms-all)
+    (emms-default-players))
+#+end_src
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-24 Tue 11:01] \\
@@ -3278,8 +3304,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package with-editor
     :straight t
     :preface
-    (general-add-hook 'shell-mode-hook 'with-editor-export-editor)
-    (general-add-hook 'vterm-mode-hook 'with-editor-export-editor))
+    (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
@@ -3611,7 +3636,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 *** Jupyter
 #+name: init-jupyter-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package jupyter
     :straight t)
 #+end_src
@@ -3811,6 +3836,20 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package 2048-game
     :straight t)
+#+end_src
+*** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
+#+name: init-subtitle-mode-block
+#+begin_src emacs-lisp
+  (use-package subed
+    :straight (:files ("subed/*.el") :host github :repo "dylanjm/subed" :branch "fix_syntax_highlighting")
+    :mode ("\\.srt\\'" . subed-mode)
+    :config
+    ;; Disable automatic movement of point by default
+    ;;(general-add-hook 'subed-mode-hook 'subed-disable-sync-point-to-player)
+    ;; Break lines automatically while typing
+    (general-add-hook 'subed-mode-hook 'turn-on-auto-fill)
+    ;; Break lines at 40 characters
+    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
 #+end_src
 ** Footer
 

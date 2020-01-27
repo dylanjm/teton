@@ -65,6 +65,10 @@ alias refresh='source $HOME/.zshrc; echo "Reloaded .zshrc."'
 alias reload='exec $SHELL -l -i'
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
 alias bubu='brew update && brew upgrade && brew cleanup'
+alias padd="rename -e 's/\d+/sprintf(\"%02d\",$&)/e' --"
+alias rws="rename 's/ /_/g' --"
+alias modname="rename 's/_-_lang_en_vs[0-9]+//g' --"
+alias punc="rename -e 's/\&/and/g' -e 's/[^0-9A-Za-z_.-]//g' --"
 
 ###
 ### Git aliases

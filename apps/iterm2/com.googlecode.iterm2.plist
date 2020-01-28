@@ -53272,8 +53272,10 @@
 	<string>3326 269 228 280 0 0 3840 2137 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>1610 1308 620 392 0 0 3840 2137 </string>
+	<key>NSWindow Frame UKCrashReporter</key>
+	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1924 0 1912 2137 0 0 3840 2137 </string>
+	<string>1039 2137 1762 330 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>3841 0 1918 2137 3840 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -53601,7 +53603,7 @@
 			<key>Guid</key>
 			<string>8D060D77-2ADA-4BA8-A681-F6233CE586FC</string>
 			<key>Has Hotkey</key>
-			<true/>
+			<false/>
 			<key>Hide After Opening</key>
 			<true/>
 			<key>Horizontal Spacing</key>
@@ -54097,7 +54099,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Iosevka-SS05-Medium 19</string>
+			<string>Menlo-Regular 11</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Place Prompt at First Column</key>
@@ -58800,7 +58802,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>732</integer>
+	<integer>783</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -59595,7 +59597,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-01-21T16:23:33Z</date>
+	<date>2020-01-27T16:31:20Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -59616,6 +59618,8 @@
 	<integer>0</integer>
 	<key>TabsHaveCloseButton</key>
 	<true/>
+	<key>UKCrashReporterLastCrashReportDate</key>
+	<real>1579714560</real>
 	<key>URLHandlersByGuid</key>
 	<dict/>
 	<key>UseBorder</key>

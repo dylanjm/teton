@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-27 03:07:15
+/last updated/: 2020-01-27 18:37:39
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -237,6 +237,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "LC_ALL"
                                            "LANG"
                                            "EDITOR"
+                                           "EA_PATH"
+                                           "EA_EDITOR"
                                            "BROWSER"
                                            "DOTFILES"
                                            "ORG_FILES"
@@ -406,6 +408,7 @@ This function is a great way to conditional run functions at different intervals
 #+end_src
 
 **** Screen-Capture
+
 #+name: init-screen-capture-block
 #+begin_src emacs-lisp
   (defun emacs-screen-capture (arg &optional name dir)
@@ -423,6 +426,7 @@ This function is a great way to conditional run functions at different intervals
             (when (equal #',current-prefix-arg '(4))
               (org-insert-link nil ,abb-fp nil)))))))
 #+end_src
+
 **** Protect Buffers
 
 There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
@@ -1449,7 +1453,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-adaptive-wrap-prefix-mode-block
 #+begin_src emacs-lisp
   (use-package adaptive-wrap
-    :straight t)
+    :straight t
+    :config
+    (general-setq adaptive-wrap-extra-indent 2))
 #+end_src
 
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
@@ -1519,8 +1525,26 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
     :preface
     (defun djm/load-gruvbox-theme ()
-      (load-theme 'gruvbox-dark-hard t)
-      (djm/config-fonts)))
+      (load-theme 'gruvbox-dark-hard t))
+
+    (defun djm/config-fonts (frame)
+      (dolist (script '(symbol mathematical))
+        (set-fontset-font "fontset-default" script (font-spec :family "XITS Math" :weight 'normal) nil nil))
+
+      ;; Define a font set stack for symbols, greek and math characters
+      (dolist (script '(symbol greek))
+        (set-fontset-font "fontset-default" script (font-spec :family "Symbola") nil 'append))
+
+      ;; Colored Emoji on OS X, prefer over everything else!
+      (set-fontset-font "fontset-default" 'unicode (font-spec :family "Symbola") nil nil)
+      (set-fontset-font "fontset-default" 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+      (set-fontset-font "fontset-default" nil (font-spec :family "Apple Symbols") nil 'append))
+
+    (when-let (frame (selected-frame))
+      (djm/config-fonts frame))
+
+    (general-add-hook 'after-make-frame-functions #'djm/config-fonts))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -2355,14 +2379,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 *** [[https://github.com/lewang/ws-butler][WS-Butler]]
 #+name: init-ws-butler-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ws-butler
     :blackout t :straight t
     :ghook ('emacs-startup-hook #'ws-butler-global-mode)
     :config
-    (general-pushnew
-     '(special-mode comint-mode term-mode eshell-mode vterm-mode)
-     ws-butler-global-exempt-modes))
+    (dolist (modes '(special-mode comint-mode term-mode eshell-mode vterm-mode))
+      (general-pushnew modes ws-butler-global-exempt-modes)))
 #+end_src
 
 ** File Explorer
@@ -2785,8 +2808,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "M-n" #'outline-next-visible-heading
      "M-p" #'outline-previous-visible-heading)
     :config
-    (require 'ox-jdf-report nil t)
-    (require 'org-ref nil t)
+    ;; (require 'ox-jdf-report nil t)
+    ;; (require 'org-ref nil t)
+
+    (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'light)
+    (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka TermLig SS09" :weight 'ultra-light)
 
     ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
@@ -2794,7 +2820,9 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-directory "~/Documents/org-files")
 
     ;; Export Settings
-    (general-setq org-export-coding-system 'utf-8
+    (general-setq org-export-backends '(ascii html latex slack gfm)
+                  org-export-coding-system 'utf-8
+                  org-export-exclude-tags '("noexport" "no_export" "ignore")
                   org-export-headline-levels 5
                   org-export-with-author t
                   org-export-with-drawers t
@@ -2804,15 +2832,26 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-export-with-properties t
                   org-export-with-section-numbers nil
                   org-export-with-smart-quotes t
-                  org-export-with-toc nil)
+                  org-export-with-toc nil
+                  org-html-html5-fancy t
+                  org-html-postamble nil)
 
     ;; LaTeX Settings
-    (general-setq org-latex-logfiles-extensions '("lof" "lot" "tex" "aux" "idx"
-                                                  "log" "out" "toc" "nav" "snm"
-                                                  "vrb" "dvi" "fdb_latexmk" "blg"
-                                                  "brf" "fls" "entoc" "ps" "spl"
-                                                  "bbl" "bcf" "run.xml")
-                  org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f"))
+    (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
+                  org-latex-remove-logfiles t
+                  org-latex-prefer-user-labels t
+                  bibtex-dialect 'biblatex)
+
+    ;; (dolist (ext '("lof" "lot" "tex"
+    ;;                "aux" "idx" "log"
+    ;;                "out" "toc" "nav"
+    ;;                "snm" "vrb" "dvi"
+    ;;                "fdb_latexmk" "blg"
+    ;;                "brf" "fls" "entoc"
+    ;;                "ps" "spl" "bbl"
+    ;;                "bcf" "run.xml"))
+    ;;   (general-pushnew ext org-latex-logfiles-extensions))
+
 
     ;; Startup Settings
     (general-setq org-startup-folded 'content
@@ -2846,6 +2885,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-hide-emphasis-markers t
                   org-hide-leading-stars t
                   org-ellipsis "…")
+
+    (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     ;; List Settings
     (general-setq org-list-indent-offset 2)
@@ -2894,6 +2935,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** Org-Clock
+
 #+name: init-org-clock-block
 #+begin_src emacs-lisp
   (use-package org-clock
@@ -2904,6 +2946,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   org-clock-out-remove-zero-time-clocks t
                   org-clock-persist t))
 #+end_src
+
 *** Org-Agenda
 #+name: init-org-agenda-block
 #+begin_src emacs-lisp
@@ -3023,7 +3066,21 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-org-ox-block
 #+begin_src emacs-lisp
   (use-package ox-gfm
-    :straight nil)
+    :demand t :straight t)
+
+  (use-package ox-koma-letter
+    :straight nil :after org
+    :config
+    (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
+
+  (use-package ox-slack
+    :demand t :straight t
+    :commands (org-slack-export-to-clipboard-as-slack))
+
+  (use-package ox-jdf-report
+    :demand t :straight (:host github :repo "dylanjm/ox-jdf"))
+#+end_src
+
 #+end_src
 
 *** [[https://github.com/rexim/org-cliplink][Org-Cliplink]]
@@ -3034,13 +3091,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-c p i" #'org-cliplink))
 #+end_src
-*** [[https://github.com/dylanjm/ox-jdf][Ox-JDF]]
-#+name: init-ox-jdf-block
-#+begin_src emacs-lisp
-  (use-package ox-jdf-report
-    :straight (:host github :repo "dylanjm/ox-jdf"))
-#+end_src
-
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
@@ -3841,15 +3891,39 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-subtitle-mode-block
 #+begin_src emacs-lisp
   (use-package subed
-    :straight (:files ("subed/*.el") :host github :repo "dylanjm/subed" :branch "fix_syntax_highlighting")
+    :straight (:host github :repo "rndusr/subed")
     :mode ("\\.srt\\'" . subed-mode)
+    :gfhook 'auto-fill-mode
     :config
-    ;; Disable automatic movement of point by default
-    ;;(general-add-hook 'subed-mode-hook 'subed-disable-sync-point-to-player)
-    ;; Break lines automatically while typing
-    (general-add-hook 'subed-mode-hook 'turn-on-auto-fill)
     ;; Break lines at 40 characters
     (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
+#+end_src
+
+*** [[https://github.com/dylanjm/emacs-anywhere][Emacs-Anywhere]]
+#+name: init-emacs-anywhere-block
+#+begin_src emacs-lisp
+  (use-package emacs_anywhere
+    :straight (:host github :repo "dylanjm/emacs-anywhere")
+    :init
+    (defun github-conversation-p (window-title)
+      (or (string-match-p "Pull Request" window-title)
+          (string-match-p "Issues" window-title)))
+
+    (defun popup-handler (app-name window-title x y w h)
+      (set-frame-position (selected-frame) x (+ y (- h 300)))
+      (unless (zerop w)
+        (set-frame-size (selected-frame) w 400 5))
+
+      (when (equal app-name "iTerm2")
+        ;; Tell Emacs Anywhere not to paste if launched from Terminal
+        (setq ea-paste nil)
+        (shell-script-mode))
+
+      (cond
+       ((github-conversation-p window-title) (gfm-mode))
+       (t (markdown-mode))))
+
+    (general-add-hook 'ea-popup-hook #'popup-handler))
 #+end_src
 ** Footer
 

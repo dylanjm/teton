@@ -132,6 +132,13 @@ export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 export MPLCONFIGDIR="$XDG_CONFIG_HOME/python/matplotlib"
 
+
+###
+### Emacs-Anywhere
+###
+export EA_PATH="$XDG_DATA_HOME/emacs_anywhere"
+export EA_EDITOR='/usr/local/bin/emacsclient -c --alternate-editor="/usr/local/bin/emacs --eval"'
+
 ###
 ### Terminfo
 ###

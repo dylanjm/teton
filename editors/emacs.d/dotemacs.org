@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-27 18:37:39
+/last updated/: 2020-01-27 21:59:44
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -881,7 +881,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Emacs-Lock (Built-In)
 
 #+name: init-emacs-lock-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package emacs-lock
     :blackout " 🔐 "
     :straight (:type built-in))
@@ -938,11 +938,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
   (use-package face-remap
-    :straight (:type built-in)
-    :config
-    (blackout 'buffer-face-mode)
-    (blackout 'visual-line-mode)
-    (blackout 'variable-pitch-mode))
+    :straight (:type built-in))
 #+end_src
 
 *** Files (Built-In)
@@ -1463,17 +1459,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package all-the-icons
     :demand t :straight t
-    :commands (all-the-icons-insert
-               all-the-icons-insert-wicon
-               all-the-icons-insert-faicon
-               all-the-icons-insert-octicon
-               all-the-icons-insert-material
-               all-the-icons-insert-fileicon
-               all-the-icons-insert-alltheicon
-               all-the-icons-insert-icons-for
-               all-the-icons-faicon)
     :config
-    (general-setq all-the-icons-scale-factor 1.0))
+    (general-setq all-the-icons-scale-factor 1.3))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -1497,29 +1484,25 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :ghook 'after-init-hook
     :config
     (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
-                  doom-modeline-icon (display-graphic-p)
-                  doom-modeline-buffer-encoding nil
-                  doom-modeline-bar-width 3
                   doom-modeline-height 10
-                  doom-modeline-project-detection 'projectile
-                  doom-modeline-env-python-executable "python"))
+                  doom-modeline-project-detection 'projectile))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
 #+name: init-doom-themes-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package doom-themes
     :demand t :straight t
     :config
     (general-setq doom-themes-enable-bold t
                   doom-themes-enable-italic t)
-    (load-theme 'doom-gruvbox t))
+    (load-theme 'doom-laserwave t))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
 
 #+name: init-gruvbox-theme-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package gruvbox-theme
     :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
     :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
@@ -1702,6 +1685,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                           gcmh-low-cons-threshold default-gc-cons-threshold
                           gcmh-high-cons-threshold extended-gc-cons-threshold))
 #+end_src
+
 ** System
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
 #+name: init-osx-trash-block
@@ -1757,24 +1741,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq aweshell-use-exec-path-from-shell t
                   aweshell-dedicated-window-height 25))
 #+end_src
-*** [[https://github.com/zwild/eshell-prompt-extras#themes][Eshell-Prompt-Extras]]
-#+name: init-eshell-prompt-extras-block
-#+begin_src emacs-lisp
-  (use-package eshell-prompt-extras
-    :straight t)
-#+end_src
-*** [[https://github.com/peterwvj/eshell-up][Eshell-Up]]
-#+name: init-eshell-up
-#+begin_src emacs-lisp
-  (use-package eshell-up
-    :straight t)
-#+end_src
-*** [[https://github.com/xuchunyang/eshell-z][Eshell-Z]]
-#+name: init-eshell-z-block
-#+begin_src emacs-lisp
-  (use-package eshell-z
-    :straight t :after eshell)
-#+end_src
+
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
@@ -1792,6 +1759,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                    (reusable-frames . visible)
                    (window-height . 0.35))))
 #+end_src
+
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
 #+name: init-vterm-block
 #+begin_src emacs-lisp
@@ -1800,9 +1768,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (defun arco/vterm-kill-buffer-on-quit (buffer event)
       (if buffer (kill-buffer buffer)))
-    (general-setq vterm-term-environment-variable "eterm-256color")
+    (general-setq vterm-term-environment-variable "eterm")
 
-    (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit))
+    (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit)
+    (push (list "find-file-below"
+                (lambda (path)
+                  (if-let* ((buf (find-file-noselect path))
+                            (window (display-buffer-below-selected buf nil)))
+                      (select-window window)
+                    (message "Failed to open file: %s" path))))
+          vterm-eval-cmds))
 #+end_src
 
 *** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
@@ -1836,6 +1811,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-add-hook 'term-mode-hook #'eterm-256color-mode)
     (general-add-hook 'vterm-mode-hook #'eterm-256color-mode))
 #+end_src
+
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
@@ -1927,14 +1903,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
           #'ivy-format-function-line))
 #+end_src
 
-*** [[https://github.com/jixiuf/ivy-dired-history][Ivy-Dired-History]]
-#+name: init-ivy-dired-history-block
-#+begin_src emacs-lisp
-  (use-package ivy-dired-history
-    :straight t :after (ivy dired savehist)
-    :init
-    (general-pushnew 'ivy-dired-history-variable savehist-additional-variables))
-#+end_src
 *** [[https://github.com/abo-abo/swiper][Counsel]]
 #+name: init-counsel-block
 #+begin_src emacs-lisp :tangle no
@@ -1996,9 +1964,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host github :repo "raxod502/selectrum")
     :ghook 'emacs-startup-hook
     :config
-    (general-setq selectrum-num-candidates-displayed 20)
-    (add-to-list 'selectrum-minibuffer-bindings '([remap newline-and-indent] . selectrum-select-current-candidate))
-    (add-to-list 'selectrum-minibuffer-bindings '("ESC" . abort-recursive-edit)))
+    (general-setq selectrum-num-candidates-displayed 10)
+    (add-to-list 'selectrum-minibuffer-bindings '([remap newline-and-indent] . selectrum-select-current-candidate)))
 
   (use-package selectrum-prescient
     :demand t
@@ -2008,6 +1975,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :after (selectrum)
     :config (selectrum-prescient-mode +1))
 #+end_src
+
 ** Autocompletion
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
@@ -2054,7 +2022,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'company-mode-hook
     :config
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                  company-box-enable-icon t))
+                  company-box-enable-icon t)
+    (dolist (fp '((undecorated . nil)
+                  (no-special-glyphs . nil)))
+      (general-pushnew fp company-box-frame-parameters)))
+
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -2072,17 +2044,20 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t :after company
     :ghook 'company-mode-hook)
 #+end_src
+
 *** [[https://github.com/Alexander-Miller/company-shell][Company-Shell]]
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
   (use-package company-shell
     :straight t :after sh-script
     :config
-    (general-pushnew '(company-shell
-                       company-shell-env
-                       company-fish-shell
-                       company-files) company-backends))
+    (dolist (shls '(company-shell
+                    company-shell-env
+                    company-fish-shell
+                    company-files))
+      (general-pushnew shls company-backends)))
 #+end_src
+
 *** [[https://github.com/dunn/company-emoji][Company-Emoji]]
 #+name: init-company-emoji-block
 #+begin_src emacs-lisp
@@ -2137,6 +2112,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   which-key-prefix-prefix "+")
     (which-key-setup-side-window-bottom))
 #+end_src
+
 *** [[https://github.com/jguenther/discover-my-major][Discover-My-Major]]
 #+name: init-discover-my-major-block
 #+begin_src emacs-lisp
@@ -2145,6 +2121,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-h C-m" #'discover-my-major))
 #+end_src
+
 ** Editing Tools
 *** [[https://github.com/syohex/emacs-anzu][Anzu]]
 #+name: init-anzu-block
@@ -2203,13 +2180,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package gnuplot-mode
     :straight t)
 #+end_src
+
 *** [[https://github.com/emacsfodder/move-text][Move-Text]]
 #+name: init-move-text-block
 #+begin_src emacs-lisp
   (use-package move-text
     :straight t)
-
 #+end_src
+
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -2246,6 +2224,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :commands (sudo-edit))
 #+end_src
+
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
 #+name: init-zop-to-char-block
 #+begin_src emacs-lisp
@@ -2257,30 +2236,27 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Writing
-*** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct-Ivy]]
-#+name: init-flyspell-correct-ivy
-#+begin_src emacs-lisp
-  (use-package flyspell-correct-ivy
-    :straight t)
-#+end_src
 *** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]]
 #+name: init-flyspell-correct-block
 #+begin_src emacs-lisp
   (use-package flyspell-correct
     :straight t)
 #+end_src
+
 *** [[https://github.com/jorgenschaefer/typoel][Typo]]
 #+name: init-typo-block
 #+begin_src emacs-lisp
   (use-package typo
     :straight t)
 #+end_src
+
 *** [[https://github.com/bnbeckwith/writegood-mode][Writegood]]
 #+name: init-writegood-block
 #+begin_src emacs-lisp
   (use-package writegood-mode
     :straight t)
 #+end_src
+
 ** Minor Modes
 *** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
 #+name: init-aggressive-indent-block
@@ -2296,6 +2272,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package csv-mode
     :straight t :mode "\\.csv\\'")
 #+end_src
+
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
@@ -2311,6 +2288,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook 'python-mode-hook 'yaml-mode-hook)
 #+end_src
+
 *** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
 #+name: init-hungry-delete-block
 #+begin_src emacs-lisp
@@ -2319,18 +2297,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
-*** [[https://github.com/Fuco1/smartparens][SmartParens]]
-#+name: init-smartparens-block
-#+begin_src emacs-lisp
-  (use-package smartparens
-    :straight t)
-#+end_src
 *** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
 #+begin_src emacs-lisp
   (use-package ssh-config-mode
     :blackout "SSH-Config" :straight t)
 #+end_src
+
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
 #+name: init-rainbow-delimiters-block
 #+begin_src emacs-lisp
@@ -2338,6 +2311,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook 'prog-mode-hook)
 #+end_src
+
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
 #+name: init-undo-tree-block
 #+begin_src emacs-lisp
@@ -2356,12 +2330,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (global-undo-tree-mode +1))
 #+end_src
 
-*** [[https://github.com/bnbeckwith/wc-mode][WordCount-Mode]]
-#+name: init-wc-mode-block
-#+begin_src emacs-lisp
-  (use-package wc-mode
-    :straight t)
-#+end_src
 *** [[https://github.com/purcell/whitespace-cleanup-mode][Whitespace-Cleanup]]
 #+name: init-whitespace-cleanup-block
 #+begin_src emacs-lisp
@@ -2377,6 +2345,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq show-trailing-whitespace t))
 #+end_src
+
 *** [[https://github.com/lewang/ws-butler][WS-Butler]]
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp :tangle no
@@ -2399,7 +2368,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "h" #'dired-up-directory
      "n" #'dired-next-line
      "p" #'dired-previous-line
-     "f" #'counsel-find-file)
+     "f" #'find-file)
     :config
     (general-setq dired-auto-revert-buffer t
                   dired-dwim-target t
@@ -2410,25 +2379,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   dired-recursive-deletes 'always
                   dired-recursive-copies 'always
                   dired-deletion-confirmer '(lambda (x) t)) ;; Don't confirm deleting files
-    ;;;;; File size format
-    (defun djm/ls-lisp-format-file-size (file-size human-readable)
-      (if human-readable
-          (format " %6s" (file-size-human-readable file-size))
-        (format (if (floatp file-size)
-                    ls-lisp-filesize-f-fmt
-                  ls-lisp-filesize-d-fmt)
-                file-size)))
-
-    (advice-add #'ls-lisp-format-file-size :override
-                #'djm/ls-lisp-format-file-size)
-
-  ;;;;; Time format
-    (defun akirak/ls-lisp-format-time (file-attr time-index)
-      (let ((time (nth (or time-index 5) file-attr)))
-        (format-time-string "%F %R" time)))
-
-    (advice-add #'ls-lisp-format-time :override
-                #'djm/ls-lisp-format-time)
 
     (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
@@ -2446,6 +2396,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq wdired-create-parent-directories t
                   wdired-allow-to-change-permissions t))
 #+end_src
+
 *** Dired-X (Built-In)
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
@@ -2465,6 +2416,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                            "\\|\\(?:\\.js\\)?\\.meta\\'"
                                            "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'")))
 #+end_src
+
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
 #+name: init-dired-all-the-icons-block
 #+begin_src emacs-lisp
@@ -2472,6 +2424,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :blackout t :straight t
     :ghook 'dired-mode-hook)
 #+end_src
+
 *** [[https://github.com/HKey/dired-atool][Dired-ATool]]
 #+name: init-dired-atool-block
 #+begin_src emacs-lisp
@@ -2559,32 +2512,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (:keymaps 'dired-mode-map
               "C-c C-r" #'dired-rsync))
 #+end_src
-*** [[https://github.com/jojojames/dired-sidebar][Dired-Sidebar]]
-#+name: init-dired-sidebar-block
-#+begin_src emacs-lisp
-  (use-package dired-sidebar
-    :straight t
-    :commands (dired-sidebar-toggle-sidebar)
-    :general
-    ("C-c w s" #'djm/toggle-sidebar
-     "M-]" #'dired-sidebar-toggle-sidebar)
-    :init
-    (defun djm/toggle-sidebar ()
-      (interactive)
-      (dired-sidebar-toggle-sidebar)
-      (all-the-icons-dired-mode -1)
-      (hide-mode-line-mode +1)
-      (when (require 'ibuffer-sidebar nil 'noerror)
-        (ibuffer-sidebar-toggle-sidebar)
-        (hide-mode-line-mode +1)))
-    :config
-    (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
-    (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
-    (general-setq dired-sidebar-use-term-integration t
-                  dired-sidebar-use-magit-integration t
-                  dired-sidebar-subtree-line-prefix "⎯"
-                  dired-sidebar-use-custom-modeline nil))
-#+end_src
+
 *** [[https://github.com/purcell/diredfl][Diredfl]]
 #+name: init-diredfl-block
 #+begin_src emacs-lisp
@@ -2649,6 +2577,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                                               "*Backtrace*"
                                                               "*new*"
                                                               "*Org*"
+                                                              "*helpful"
                                                               "*Help*"))))
 
     (define-ibuffer-column mode
@@ -2715,6 +2644,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
          name))
       (el-patch-add (insert "\n"))))
 #+end_src
+
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
 #+name: init-ibuffer-ext-block
 #+begin_src emacs-lisp
@@ -2723,17 +2653,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
     :config (general-setq ibuffer-show-empty-filter-groups nil))
 #+end_src
-*** [[https://github.com/jojojames/ibuffer-sidebar][iBuffer-Sidebar]]
-#+name: init-ibuffer-sidebar
-#+begin_src emacs-lisp
-  (use-package ibuffer-sidebar
-    :straight t
-    :commands (ibuffer-sidebar-toggle-sidebar)
-    :general
-    ("M-[" #'ibuffer-sidebar-toggle-sidebar)
-    :config
-    (general-setq ibuffer-sidebar-use-custom-modeline nil))
-#+end_src
+
 *** [[https://github.com/purcell/ibuffer-projectile][iBuffer-Projectile]]
 #+name: init-ibuffer-projectile-block
 #+begin_src emacs-lisp
@@ -2753,6 +2673,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq ibuffer-projectile-prefix ""))
 #+end_src
+
 *** [[https://github.com/jojojames/smart-jump][Smart-Jump]]
 #+name: init-smart-jump-block
 #+begin_src emacs-lisp
@@ -2762,12 +2683,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-pushnew '(elisp-mode lisp-interaction-mode) smart-jump-default-mode-list)
     (smart-jump-setup-default-registers))
 #+end_src
+
 *** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
 #+name: init-treemacs-block
 #+begin_src emacs-lisp
   (use-package treemacs
     :straight t)
 #+end_src
+
 *** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
 #+name: init-windmove-block
 #+begin_src emacs-lisp
@@ -2888,6 +2811,18 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
+    (font-lock-add-keywords 'org-mode
+                            `((,(rx bol (* space) (group "-") (+ space))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                              (,(rx bol (* space) (group "#+end_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+
     ;; List Settings
     (general-setq org-list-indent-offset 2)
 
@@ -2986,11 +2921,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** Org-Habit
+
 #+name: init-org-habit-block
 #+begin_src emacs-lisp
   (use-package org-habit
     :straight nil)
 #+end_src
+
 *** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
@@ -3084,6 +3021,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/rexim/org-cliplink][Org-Cliplink]]
+
 #+name: init-org-cliplink-block
 #+begin_src emacs-lisp
   (use-package org-cliplink
@@ -3091,6 +3029,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-c p i" #'org-cliplink))
 #+end_src
+
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
@@ -3102,30 +3041,39 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/Kungsgeten/org-brain][Org-Brain]]
+
 #+name: init-org-brain-block
 #+begin_src emacs-lisp
   (use-package org-brain
     :straight t)
 #+end_src
+
 *** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
+
 #+name: init-org-emms-block
 #+begin_src emacs-lisp
   (use-package org-emms
     :straight t)
 #+end_src
+
 *** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]
+
 #+name: init-org-scrum-block
 #+begin_src emacs-lisp
   (use-package org-scrum
     :straight (:host github :repo "ianxm/emacs-scrum"))
 #+end_src
+
 *** [[https://github.com/bastibe/org-journal][Org-Journal]]
+
 #+name: init-org-journal-block
 #+begin_src emacs-lisp
   (use-package org-journal
     :straight t)
 #+end_src
+
 *** [[https://github.com/marcinkoziej/org-pomodoro][Org-Pomodoro]]
+
 #+name: init-org-pomodoro-block
 #+begin_src emacs-lisp
   (use-package org-pomodoro
@@ -3134,7 +3082,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq org-pomodoro-format "%s"))
 
 #+end_src
-*** HOLD [[https://github.com/jkitchin/org-ref][Org-Ref]]
+
+*** [[https://github.com/jkitchin/org-ref][Org-Ref]]
 :LOGBOOK:
 - State "HOLD"       from              [2020-01-24 Fri 14:08] \\
   I don't like having to install/load helm.
@@ -3146,14 +3095,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :commands (org-ref-insert-link)
     :config
     (general-setq org-ref-completion-library 'org-ref-ivy-cite))
-
 #+end_src
+
 *** [[https://github.com/tesujimath/org-wc][Org-WC]]
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-wc
     :straight t :after (org))
 #+end_src
+
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
 #+begin_src emacs-lisp
@@ -3179,6 +3129,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   cfw:fchar-top-left-corner ?┏
                   cfw:fchar-top-right-corner ?┓))
 #+end_src
+
 *** [[https://github.com/kiwanami/emacs-calfw][Calfw-Org]]
 #+name: init-calfw-org-block
 #+begin_src emacs-lisp
@@ -3189,6 +3140,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                cfw:open-org-calendar-withkevin
                my-open-calendar))
 #+end_src
+
 *** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
 #+name: init-plantuml-mode-block
 #+begin_src emacs-lisp
@@ -3199,12 +3151,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   plantuml-default-exec-mode 'jar))
 
 #+end_src
+
 *** Graph.el
 #+name: init-graph-block
 #+begin_src emacs-lisp
   (use-package graph
     :demand t :straight (:host github :repo "storax/graph.el"))
 #+end_src
+
 ** Email
 *** HOLD [[https://notmuchmail.org/][NotMuch]]
 :LOGBOOK:
@@ -3240,6 +3194,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (emms-all)
     (emms-default-players))
 #+end_src
+
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-24 Tue 11:01] \\
@@ -3423,6 +3378,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package apheleia
     :blackout t :straight (:host github :repo "raxod502/apheleia"))
 #+end_src
+
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
@@ -3491,6 +3447,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package poly-R
     :straight t :after ess)
 #+end_src
+
 ** Languages
 *** Emacs-Lisp
 **** Elisp-Mode (Built-In)
@@ -3501,6 +3458,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :gfhook #'outline-minor-mode #'highlight-quoted-mode
     :config (general-setq lisp-indent-offset t))
 #+end_src
+
 **** Fix Identation
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
@@ -3589,6 +3547,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   (current-column)))
                (t $else))))))))
 #+end_src
+
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
 This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
 #+name: init-firestarter-block
@@ -3597,6 +3556,7 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t
     :ghook 'before-save-hook)
 #+end_src
+
 **** [[https://github.com/jwiegley/emacs-async][Async]]
 #+name: init-async-block
 #+begin_src emacs-lisp
@@ -3618,6 +3578,7 @@ This is a nifty package that allows me to define functions as local variables in
                   auto-compile-toggle-deletes-nonlib-dest t
                   auto-compile-update-autoloads t))
 #+end_src
+
 *** Markdown
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]
 #+name: init-markdown-block
@@ -3652,6 +3613,7 @@ This is a nifty package that allows me to define functions as local variables in
            ("\\.Rmd'" . poly-markdown+r-mode)
            ("\\.rmd'" . poly-markdown+r-mode)))
 #+end_src
+
 *** YAML
 **** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
 #+name: init-yaml-block
@@ -3669,6 +3631,7 @@ This is a nifty package that allows me to define functions as local variables in
     :blackout "TOML" :straight t
     :mode "Pipfile\\'")
 #+end_src
+
 *** LaTeX
 **** AuCTeX
 #+name: init-auctex-block
@@ -3684,12 +3647,14 @@ This is a nifty package that allows me to define functions as local variables in
     :mode "\\.go\\'"
     :ghook ('before-save-hook #'gofmt-before-save))
 #+end_src
+
 *** Jupyter
 #+name: init-jupyter-block
 #+begin_src emacs-lisp :tangle no
   (use-package jupyter
     :straight t)
 #+end_src
+
 *** ESS
 #+name: init-ess-block
 #+begin_src emacs-lisp
@@ -3722,6 +3687,7 @@ This is a nifty package that allows me to define functions as local variables in
                   inferior-R-args "--no-restore --quiet --no-save"
                   inferior-ess-same-window nil))
 #+end_src
+
 *** Julia
 **** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
 #+name: init-julia-block
@@ -3754,6 +3720,7 @@ This is a nifty package that allows me to define functions as local variables in
                      "\\)"))
           1 font-lock-type-face)))))
 #+end_src
+
 **** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
 #+name: init-julia-repl-block
 #+begin_src emacs-lisp
@@ -3766,6 +3733,7 @@ This is a nifty package that allows me to define functions as local variables in
     (general-add-hook 'inferior-julia-mode-hook #'arco/set-julia-repl-env))
 #+end_src
 
+
 **** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
 #+name: init-lsp-julia-block
 #+begin_src emacs-lisp
@@ -3773,6 +3741,7 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t
     :ghook ('julia-mode-hook #'lsp-mode))
 #+end_src
+
 *** Python
 **** Python (Built-In)
 #+name: init-python-block
@@ -3935,7 +3904,6 @@ This is a nifty package that allows me to define functions as local variables in
 
 * Conclusion
 * Citations
-
 * COMMENT Local Variables
 # Local Variables:
 # time-stamp-line-limit: 2000

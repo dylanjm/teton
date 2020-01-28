@@ -12,12 +12,14 @@ source $ZSH/zplugin.zsh
 [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
 
 vterm_prompt_end() {
-    printf "\e]51;A$(whoami)@$(hostname):$(pwd)\e\\"
+    vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
 }
 
-if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-  PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
-fi
+PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+
+open_file_below() {
+    vterm_cmd find-file-below "$(realpath "$@")"
+}
 
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

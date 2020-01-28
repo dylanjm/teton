@@ -25,7 +25,7 @@ alias econf="$EDITOR $DOTFILES/editors/emacs.d &"
 alias kemc="brew services restart emacs-head"
 alias et="emacsclient -t"
 if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-    alias clear='printf "\e]51;Evterm-clear-scrollback\e\\";tput clear'
+    alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 fi
 
 ###

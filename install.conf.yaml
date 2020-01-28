@@ -26,7 +26,7 @@
     ~/.gitignore: git/gitignore
     ~/.config/starship.toml: shells/bash/themes/starship.toml
     ~/.config/latexmkrc: apps/latexmkrc
-    ~/.config/editorconfig: apps/editorconfig
+    ~/.editorconfig: apps/editorconfig
     ~/.config/alacritty: apps/alacritty
     ~/.config/direnv: apps/direnv
     ~/.config/qutebrowser: apps/qutebrowser

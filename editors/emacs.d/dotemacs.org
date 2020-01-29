@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-28 17:49:46
+/last updated/: 2020-01-28 19:24:11
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -516,9 +516,45 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
-  (defun djm/config-fonts ()
-    nil)
+  (defun setup-main-fonts (default-height variable-pitch-height)
+    "Set up default fonts.
 
+  Use DEFAULT-HEIGHT for default face and VARIABLE-PITCH-HEIGHT
+  for variable-pitch face."
+    (set-face-attribute 'default nil
+                        :family "Iosevka TermLig SS09"
+                        :weight 'ultra-light
+                        :width 'extra-expanded
+                        :height default-height)
+    (set-face-attribute 'variable-pitch nil
+                        :family "Iosevka Aile"
+                        :height variable-pitch-height
+                        :weight 'regular
+                        :width 'extra-expanded)
+    (set-face-attribute 'fixed-pitch nil
+                        :family "Iosevka TermLig SS09"
+                        :height default-height
+                        :weight 'ultra-light
+                        :width 'extra-expanded))
+
+  (when window-system
+    (if (> (x-display-pixel-width) 1800)
+        (setup-main-fonts 180 190)
+      (setup-main-fonts 130 140)))
+
+  (defun configure-fonts ()
+    "Set up fonts for FRAME.
+  Set the default font, and configure various overrides for
+  symbols, emojis, greek letters, as well as fall backs for."
+    ;; Additional fonts for special characters and fallbacks
+    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+    (dolist (script '(symbol mathematical))
+      (set-fontset-font t script (font-spec :family "XITS Math") nil 'prepend))
+
+    (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+    ;; Fallbacks for math and generic symbols
+    (set-fontset-font t 'symbol (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 
 **** Clean-Up Yanked Text
@@ -1501,7 +1537,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   doom-themes-enable-italic t)
     (load-theme 'doom-laserwave t)
     (doom-themes-org-config)
-    (doom-themes-visual-bell-config))
+    (doom-themes-visual-bell-config)
+    (configure-fonts))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -2028,10 +2065,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :ghook 'company-mode-hook
     :config
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                  company-box-enable-icon t)
-    (dolist (fp '((no-special-glyphs . nil)))
-      (general-pushnew fp company-box-frame-parameters)))
-
+                  company-box-enable-icon t))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]

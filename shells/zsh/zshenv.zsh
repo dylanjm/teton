@@ -194,4 +194,5 @@ export CDPATH
 ###
 autoload -Uz time-shell nuke convert-to-md \
          colorlist open-apps iterm-config _zpcompinit_fast \
-         bundle-name prettycsv pyenv knitit vterm_printf vterm_cmd
+         bundle-name prettycsv pyenv knitit vterm_printf vterm_cmd \
+         imgtotxt

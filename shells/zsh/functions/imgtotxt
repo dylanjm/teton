@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+function imgtotxt() {
+    convert "$1" "${1%.png}.pdf"
+    ocrmypdf "${1%.png}.pdf" scanned.pdf
+    pdftotext scanned.pdf "${1%.png}.txt"
+
+    rm scanned.pdf
+    rm "${1%.png}.pdf"
+}

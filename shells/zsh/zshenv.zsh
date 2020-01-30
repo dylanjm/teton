@@ -152,6 +152,12 @@ export GPG_TTY=$(tty)
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 
 ###
+### MPD
+###
+export MPD_HOST="localhost"
+export MPD_PORT="6600"
+
+###
 ### Paths
 ###
 fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
@@ -181,11 +187,12 @@ path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       /opt/X11/bin)
 
 cdpath=($HOME/Documents/projects
-        $HOME/Documents/forked_github
-        $XDG_CACHE_HOME)
+        $HOME/Documents/forked_github)
+
 
 export FPATH
 export MODULE_PATH
+export MANPATH
 export PATH
 export CDPATH
 

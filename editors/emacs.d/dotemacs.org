@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-28 19:24:11
+/last updated/: 2020-01-29 16:31:25
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -244,6 +244,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "DOTFILES"
                                            "ORG_FILES"
                                            "HISTFILE"
+                                           "MPD_HOST"
+                                           "MPD_PORT"
                                            "ZSH"
                                            "EXA_COLORS"
                                            "CCACHE_DIR"
@@ -412,11 +414,12 @@ This function is a great way to conditional run functions at different intervals
 
 #+name: init-screen-capture-block
 #+begin_src emacs-lisp
-  (defun emacs-screen-capture (arg &optional name dir)
+  (defun emacs-screen-capture (arg &optional name dir format)
     (interactive "P")
-    (let* ((name (or name (read-string "Name of Screenshot: " nil)))
-           (dir (or dir (read-directory-name (format "Save %s to: " name))))
-           (fp (concat dir name))
+    (let* ((format (completing-read "Screenshot Format: " '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
+           (name (or name (read-string "Name of Screenshot: " nil)))
+           (dir (or dir (read-directory-name (format "Save %s%s to: " name format))))
+           (fp (concat dir name format))
            (abb-fp (concat "file:" (file-relative-name fp))))
       (set-process-sentinel
        (start-process-shell-command
@@ -1520,6 +1523,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
                   doom-modeline-height 10
+                  doom-modeline-github t
                   doom-modeline-project-detection 'projectile)
     (set-face-attribute 'mode-line nil
                         :background (doom-color 'red)
@@ -3250,9 +3254,50 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :init
     (emms-all)
-    (emms-default-players))
+    (emms-default-players)
+    (require' emms-browser)
+    (require 'emms-player-mpd)
+    (require 'emms-volume)
+    :config
+    (general-pushnew 'emms-info-mpd emms-info-functions)
+    (general-pushnew 'emms-player-mpd emms-player-list)
+    (general-setq emms-seek-seconds 5
+                  emms-info-asynchronously t
+                  emms-volume-change-function 'emms-volume-mpd-change
+                  emms-playlist-buffer-name "*Music*"
+                  emms-player-mpd-music-directory nil
+                  emms-player-mpd-verbose t
+                  emms-player-mpd-server-name "localhost"
+                  emms-player-mpd-server-port "6600"))
+
+  (defun mopidy/start-music-daemon ()
+    (interactive)
+    (shell-command "mopidy")
+    (mpd/update-database)
+    (emms-player-mpd-connect)
+    (emms-cache-set-from-mpd-all)
+    (message "Mopidy Started!"))
+
+  (defun mopidy/kill-music-daemon ()
+    (interactive)
+    (emms-stop)
+    (call-process "killall" nil nil nil "mopidy")
+    (message "Mopidy killed!"))
+
+  (defun mopidy/update-database ()
+    (interactive)
+    (call-process "mpc" nil nil nil "update")
+    (message "MPD Database Updated"))
 #+end_src
 
+*** MPC
+#+name: init-mpc-block
+#+begin_src emacs-lisp
+  (use-package mpcel
+    :straight t
+    :init
+    (general-setq mpc-host "localhost:6600"))
+#+end_src
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-24 Tue 11:01] \\

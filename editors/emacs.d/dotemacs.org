@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-29 16:31:25
+/last updated/: 2020-01-29 23:13:57
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1409,7 +1409,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq vc-follow-symlinks t
-                  vc-handled-backends nil))
+                  vc-handled-backends '(Git)))
 #+end_src
 
 *** View (Built-In)
@@ -1827,28 +1827,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
           vterm-eval-cmds))
 #+end_src
 
-*** [[https://github.com/jixiuf/vterm-toggle][Vterm-Toggle]]
-#+name: init-vterm-toggle-block
-#+begin_src emacs-lisp :tangle no
-  (use-package vterm-toggle
-    :straight t
-    :commands (vterm-toggle
-               vterm-toggle-cd)
-    :general
-    ("C-c x v" #'vterm-toggle)
-    :config
-    (general-setq vterm-toggle-fullscreen-p nil
-                  vterm-toggle-use-dedicated-buffer t
-                  vterm-toggle-reset-window-configration-after-exit t)
-    (add-to-list 'display-buffer-alist
-                 '("^v?term.*"
-                   (display-buffer-reuse-window display-buffer-at-bottom)
-                   (display-buffer-reuse-window display-buffer-in-direction)
-                   (dedicated . t)
-                   (reusable-frames . visible)
-                   (window-height . 0.35))))
-#+end_src
-
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
 #+name: init-eterm-256color-block
 #+begin_src emacs-lisp
@@ -1865,17 +1843,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package projectile
     :blackout t :straight t
-    :ghook 'after-init-hook
+    :ghook 'emacs-startup-hook
     :general
     (:prefix "C-c p"
-             "s" #'projectile-switch-project
-             "c" #'projectile-compile-project
-             "f" #'projectile-find-file)
+     "s" #'projectile-switch-project
+     "c" #'projectile-compile-project
+     "f" #'projectile-find-file)
     :config
-    (general-setq projectile-completion-system 'ivy
-                  projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired
-                  projectile-verbose nil))
+    (general-setq projectile-enable-caching t
+                  projectile-switch-project-action 'projectile-dired))
+
 #+end_src
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
@@ -1883,16 +1860,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package direnv
     :straight t
-    :ghook 'projectile-mode-hook
-    :config
-    (dolist (nf-modes '(comint-mode
-                        term-mode
-                        vterm-mode
-                        eshell-mode
-                        shell-mode
-                        compilation-mode))
-      (general-pushnew nf-modes direnv-non-file-modes))
-    (general-add-hook 'compilation-mode-hook #'direnv-update-environment))
+    :ghook 'projectile-mode-hook)
 #+end_src
 
 ** Frameworks
@@ -2011,16 +1979,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight (:host github :repo "raxod502/selectrum")
     :ghook 'emacs-startup-hook
     :config
-    (general-setq selectrum-num-candidates-displayed 10)
-    (add-to-list 'selectrum-minibuffer-bindings '([remap newline-and-indent] . selectrum-select-current-candidate)))
+    (general-setq selectrum-num-candidates-displayed 15)
+    (add-to-list
+     'selectrum-minibuffer-bindings
+     '([remap newline-and-indent] . selectrum-select-current-candidate)))
 
   (use-package selectrum-prescient
-    :demand t
     :straight (:host github
                :repo "raxod502/prescient.el"
                :files ("selectrum-prescient.el"))
-    :after (selectrum)
-    :config (selectrum-prescient-mode +1))
+    :ghook 'selectrum-mode-hook)
 #+end_src
 
 ** Autocompletion
@@ -2053,7 +2021,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   company-tooltip-align-annotations t)
 
     (general-setq company-global-modes
-                  '(not erc-mode message-mode help-mode gud-mode eshell-mode vterm-mode))
+                  '(not message-mode
+                        help-mode
+                        gud-mode
+                        eshell-mode
+                        vterm-mode
+                        term-mode))
 
     (general-setq company-frontends '(company-pseudo-tooltip-frontend
                                       company-echo-metadata-frontend)))
@@ -2065,7 +2038,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-box-block
 #+begin_src emacs-lisp
   (use-package company-box
-    :blackout t :straight t :after company
+    :blackout t :straight t
     :ghook 'company-mode-hook
     :config
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
@@ -2076,7 +2049,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-prescient-block
 #+begin_src emacs-lisp
   (use-package company-prescient
-    :straight t :after company
+    :straight t
     :ghook 'company-mode-hook)
 #+end_src
 
@@ -2084,7 +2057,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-company-flx-block
 #+begin_src emacs-lisp
   (use-package company-flx
-    :straight t :after company
+    :straight t
     :ghook 'company-mode-hook)
 #+end_src
 
@@ -2726,23 +2699,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq ibuffer-projectile-prefix ""))
 #+end_src
 
-*** [[https://github.com/jojojames/smart-jump][Smart-Jump]]
-#+name: init-smart-jump-block
-#+begin_src emacs-lisp
-  (use-package smart-jump
-    :straight t
-    :config
-    (general-pushnew '(elisp-mode lisp-interaction-mode) smart-jump-default-mode-list)
-    (smart-jump-setup-default-registers))
-#+end_src
-
-*** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
-#+name: init-treemacs-block
-#+begin_src emacs-lisp
-  (use-package treemacs
-    :straight t)
-#+end_src
-
 *** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
 #+name: init-windmove-block
 #+begin_src emacs-lisp
@@ -3065,19 +3021,19 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-org-ox-block
 #+begin_src emacs-lisp
   (use-package ox-gfm
-    :demand t :straight t)
+    :straight t)
 
   (use-package ox-koma-letter
-    :straight nil :after org
+    :straight nil
     :config
     (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
 
   (use-package ox-slack
-    :demand t :straight t
+    :straight t
     :commands (org-slack-export-to-clipboard-as-slack))
 
   (use-package ox-jdf-report
-    :demand t :straight (:host github :repo "dylanjm/ox-jdf"))
+    :straight (:host github :repo "dylanjm/ox-jdf"))
 #+end_src
 
 #+end_src
@@ -3228,11 +3184,16 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
 :END:
 #+name: init-notmuch-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package notmuch
     :straight t
     :config
-    (general-setq notmuch-search-oldest-first nil))
+    (general-setq notmuch-search-oldest-first nil)
+    (general-setq send-mail-function 'sendmail-send-it
+                  sendmail-program "/usr/local/bin/msmtp"
+                  mail-specify-envelope-from t
+                  message-sendmail-envelope-from 'header
+                  mail-envelope-from 'header))
 #+end_src
 
 *** HOLD [[https://github.com/emacsmirror/mu4e][MU4E]]
@@ -3255,9 +3216,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :init
     (emms-all)
     (emms-default-players)
-    (require' emms-browser)
+    (require 'emms-browser)
     (require 'emms-player-mpd)
     (require 'emms-volume)
+    (require 'emms-streams)
+    (require 'emms-stream-info)
     :config
     (general-pushnew 'emms-info-mpd emms-info-functions)
     (general-pushnew 'emms-player-mpd emms-player-list)
@@ -3265,6 +3228,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   emms-info-asynchronously t
                   emms-volume-change-function 'emms-volume-mpd-change
                   emms-playlist-buffer-name "*Music*"
+                  emms-stream-info-backend 'mpv
                   emms-player-mpd-music-directory nil
                   emms-player-mpd-verbose t
                   emms-player-mpd-server-name "localhost"
@@ -3298,6 +3262,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :init
     (general-setq mpc-host "localhost:6600"))
 #+end_src
+
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
 :LOGBOOK:
 - State "HOLD"       from              [2019-12-24 Tue 11:01] \\
@@ -3959,6 +3924,7 @@ This is a nifty package that allows me to define functions as local variables in
   (use-package 2048-game
     :straight t)
 #+end_src
+
 *** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
 #+name: init-subtitle-mode-block
 #+begin_src emacs-lisp
@@ -3997,6 +3963,7 @@ This is a nifty package that allows me to define functions as local variables in
 
     (general-add-hook 'ea-popup-hook #'popup-handler))
 #+end_src
+
 *** [[https://github.com/vermiculus/sx.el][Stack-Exchange]]
 #+name: init-stack-exchange-block
 #+begin_src emacs-lisp

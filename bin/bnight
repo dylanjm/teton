@@ -48,16 +48,16 @@ while read -r line; do ## read line at a time from find output on server
   folder=$(printf "%-35b" "${YELLOW}${line:22:14}${NORMAL}" | tr ' ' '.')
   file=$(printf "%-80b" "${BLUE}$(basename "$line")${NORMAL}" | tr ' ' '.')
 
-  if [[ -e "$HOME/Desktop/performance/$lpath" ]]; then
+  if [[ -e "$(pwd)/$lpath" ]]; then
     status="${RED}skipping${NORMAL}"
     printf "%s%s%b\n" "$folder" "$file" "$status"
     continue
   else
     status="${GREEN}copying${NORMAL}"
     printf "%s%s%b\n" "$folder" "$file" "$status"
-    rsync -aW --inplace --relative falcon1:"$line" "$HOME/Desktop/performance/"
+    rsync -aW --inplace --relative falcon1:"$line" "$(pwd)"
   fi
 
 done < <(ssh -qn falcon1 '$HOME/.config/cargo/bin/fd --type d --max-depth 1 "bison_[0-9]{8}$" /projects/bison/git --changed-within '"$TIME"' -exec printf "%s\n" "{}/assessment" |' \
              'xargs -I{} $HOME/.config/cargo/bin/fd --no-ignore-vcs --type f -a -e csv -E "**/doc/**" -E "**/gold/**" -E "**/SM/**" ".*_metrics" {} |' \
-             'sed -E "s|/projects/bison/git/|/projects/bison/git/./|g"') 
+             'sed -E "s|/projects/bison/git/|/projects/bison/git/./|g"')

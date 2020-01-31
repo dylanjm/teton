@@ -8,18 +8,31 @@ fi
 
 source $ZSH/zplugin.zsh
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
-
 vterm_prompt_end() {
-    vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
+  vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
 }
 
-PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
-
-open_file_below() {
-    vterm_cmd find-file-below "$(realpath "$@")"
+vof () {
+  vterm_cmd find-file "$(realpath "$@")"
 }
+
+vofb() {
+  vterm_cmd find-file-below "$(realpath "$@")"
+}
+
+vofa() {
+  vterm_cmd find-file-above "$(realpath "$@")"
+}
+
+
+if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
+  [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k_vterm.zsh
+  PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+else
+  # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+  [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+fi
+
 
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

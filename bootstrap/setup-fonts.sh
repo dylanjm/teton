@@ -32,6 +32,17 @@ declare -a arr=(
 "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip"  # Great Math Support
 )
 
+
+mapfile -t fonts < <(for i in ${arr[@]}; do
+                       echo "$(basename $i)" |
+                         sed 's/.zip//g' |
+                         sed 's/-3.0.0-alpha.4//g'
+                     done)
+
+
+
+
+
 if [[ "$(test -d "$HOME/Library/Fonts && find $HOME/Library/Fonts/*" -name "iosevka-*" -type f | wc -l 2>/dev/null)" -lt 200 ]]; then
 
   printf "%b\n" "$marker Checking font installations - $status_bad"

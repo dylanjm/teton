@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-29 23:13:57
+/last updated/: 2020-01-30 12:26:31
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -153,7 +153,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
   (provide 'early-init)
   ;;; early-init.el ends here
 #+end_src
-
 
 * Init
 ** Header
@@ -333,6 +332,10 @@ Great Elisp library used throughout my config
 #+name: init-f-block
 #+begin_src emacs-lisp
   (use-package f
+    :demand t
+    :straight t)
+
+  (use-package s
     :demand t
     :straight t)
 #+end_src
@@ -1812,19 +1815,28 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package vterm
     :straight t
+    :preface
+    (defun find-file-below (path)
+      (if-let* ((buf (find-file-noselect path))
+                (window (display-buffer-below-selected buf nil)))
+          (select-window window)
+        (message "Failed to open file: %s" path)))
+
+    (defun find-file-above (path)
+      (if-let* ((buf (find-file-noselect path))
+                (window (display-buffer-reuse-window buf nil)))
+          (select-window window)
+        (message "Failed to open file: %s" path)))
+
     :config
     (defun arco/vterm-kill-buffer-on-quit (buffer event)
       (if buffer (kill-buffer buffer)))
-    (general-setq vterm-term-environment-variable "eterm")
+    (general-setq vterm-term-environment-variable "xterm-256color")
 
     (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit)
-    (push (list "find-file-below"
-                (lambda (path)
-                  (if-let* ((buf (find-file-noselect path))
-                            (window (display-buffer-below-selected buf nil)))
-                      (select-window window)
-                    (message "Failed to open file: %s" path))))
-          vterm-eval-cmds))
+
+    (general-pushnew '("find-file-below" find-file-below) vterm-eval-cmds)
+    (general-pushnew '("find-file-above" find-file-above) vterm-eval-cmds))
 #+end_src
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
@@ -3210,7 +3222,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 ** Media
 *** EMMS
 #+name: init-emms-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package emms
     :straight t
     :init
@@ -3254,13 +3266,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (message "MPD Database Updated"))
 #+end_src
 
-*** MPC
-#+name: init-mpc-block
+*** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
+#+name: init-simple-mpc-block
 #+begin_src emacs-lisp
-  (use-package mpcel
+  (use-package simple-mpc
     :straight t
-    :init
-    (general-setq mpc-host "localhost:6600"))
+    :config
+    (general-setq simple-mpc-playlist-format "%artist%	%album%	%title%	%file%"
+                  simple-mpc-table-separator "	"))
 #+end_src
 
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]

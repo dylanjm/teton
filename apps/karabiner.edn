@@ -4,15 +4,15 @@
             :delay 500
             :alone 500
             :held  500}}
- :main      [{:des "caps to ctrl modifier" :rules [[:##caps_lock    :left_control]]}
-             {:des "ctrl modifier to caps" :rules [[:##left_control :caps_lock]]}
-             {:des "Press left_shift twice to enter double shift mode, press left_shift once to leave it"
-              :rules [[:left_shift ["double-left-shift-mode" 1] ["shift-pressed-once" 1]]
-                      [:left_shift [:left_shift ["shift-pressed-once" 1]] ["double-left-shift-mode" 0] {:delayed {:invoked ["shift-pressed-once" 0] :canceled ["shift-pressed-once" 0]}}]
-                      :double-left-shift-mode
-                      [:left_shift ["double-left-shift-mode" 0]]
-                      [:escape ["double-left-shift-mode" 0]]
-                      [:up_arrow :!TOup_arrow]
-                      [:down_arrow :!TOdown_arrow]
-                      [:right_arrow :!TOright_arrow]
-                      [:left_arrow :!TOleft_arrow]]}]}
+ :simlayers {:super-mode {:key :left_shift}}
+ :main      [{:des "caps to ctrl modifier" :rules [[:##caps_lock    :left_control nil {:alone :escape}]]}
+             {:des "hyper-key" :rules [[:##left_control :!TCOleft_shift]]}
+             {:des "super-shift-mode"
+              :rules [:super-mode
+                      [:down_arrow          :!COdown_arrow          ]
+                      [:up_arrow            :!COup_arrow            ]
+                      [:left_arrow          :!COleft_arrow          ]
+                      [:right_arrow         :!COright_arrow         ]
+                      [:spacebar            :!COspacebar            ]
+                      [:return_or_enter     :!COreturn_or_enter     ]
+                      [:delete_or_backspace :!COdelete_or_backspace ]]}]}

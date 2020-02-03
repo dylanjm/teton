@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-01-30 19:39:14
+/last updated/: 2020-02-02 16:12:24
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -228,8 +228,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
     :straight t
     :if (eq system-type 'darwin)
     :init
-    (setq exec-path-from-shell-check-startup-files t
-          exec-path-from-shell-variables '("XDG_CACHE_HOME"
+    (setq exec-path-from-shell-variables '("XDG_CACHE_HOME"
                                            "XDG_CONFIG_HOME"
                                            "XDG_DATA_HOME"
                                            "XDG_BIN_HOME"
@@ -263,7 +262,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "TERMINFO"
                                            "PYTHONSTARTUP"
                                            "MPLCONFIGDIR")
-          exec-path-from-shell-arguments '("-l"))
+          exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -380,7 +379,7 @@ Here are some of my personal variables that I will need to refer to at some poin
   (defvar djm--org-agenda-directory (getenv "ORG_FILES"))
 
   (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
-  (defvar djm--secret-file (no-littering-expand-etc-file-name "secret.el"))
+  (defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
 
   (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
 
@@ -776,7 +775,6 @@ Let's add a few helpful units to the calculator.
     :straight (:type built-in)
     :config
     (general-setq compilation-message-face 'compilation-base-face
-                  compilation-environment '("TERM=xterm-256color")
                   compilation-always-kill t
                   compilation-ask-about-save nil
                   compilation-scroll-output 'first-error))
@@ -1164,7 +1162,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                (makefile-gmake-mode . "Makefile")
                (makefile-makepp-mode . "Makefile")
                (makefile-bsdmake-mode . "Makefile")
-               (makefile-imake-mode . "Makefile")))
+               (makefile-imake-mode . "Makefile"))
+    :init
+    (general-add-hook 'makefile-mode-hook '(lambda () (setq-local indent-tabs-mode t))))
 #+end_src
 
 *** Minibuffer (Built-In)
@@ -1208,14 +1208,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq mac-command-modifier 'meta
-                  mac-option-modifier 'meta
-                  mac-right-command-modifier 'super
-                  mac-right-option-modifier 'none
-                  mac-function-modifier 'hyper)
+                  mac-option-modifier 'super)
 
-    (general-setq ns-pop-up-frames nil
-                  ns-use-native-fullscreen nil
-                  ns-use-thin-smoothing t)
 
     (and (or (daemonp)
              (display-graphic-p))
@@ -1483,8 +1477,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-secret-load-block
 #+begin_src emacs-lisp
-  (when (file-exists-p djm--secret-file)
-    (load djm--secret-file :noerror))
+  (when (file-exists-p arco--user-secret-file)
+    (load arco--user-secret-file :noerror)
+    (general-setq-default user-mail-address arco--user-email
+                          user-full-name arco--user-name))
 #+end_src
 
 ** Themes & Aesthetics
@@ -1527,6 +1523,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
                   doom-modeline-height 10
                   doom-modeline-github t
+                  doom-modeline-mu4e t
                   doom-modeline-project-detection 'projectile)
     (set-face-attribute 'mode-line nil
                         :background (doom-color 'red)
@@ -1767,7 +1764,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Shells
-*** [[https://github.com/manateelazycat/aweshell][Aweshell]]
+*** [[https://github.com/manateelazycat/aweshell][Awesheppll]]
 #+name: init-aweshell-block
 #+begin_src emacs-lisp
   (use-package aweshell
@@ -1862,10 +1859,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "c" #'projectile-compile-project
      "f" #'projectile-find-file)
     :config
-    (general-setq projectile-enable-caching t
+    (general-setq projectile-completion-system 'selectrum-completing-read
+                  projectile-enable-caching t
                   projectile-switch-project-action 'projectile-dired))
-
 #+end_src
+
+#+RESULTS: init-projectile-block
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
 #+name: init-direnv-block
@@ -2736,6 +2735,35 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-c w a" #'windower-toggle-single))
 #+end_src
 
+*** Eyebrowse
+#+name: init-eyebrowse-block
+#+begin_src emacs-lisp
+  (use-package eyebrowse
+    :straight t
+    :ghook 'emacs-startup-hook
+    :preface
+    (defun arco/create-window-config (name)
+      (interactive
+       (list (let ((current-tags (--map (nth 2 it) (eyebrowse--get 'window-configs)))
+                   input)
+               (while (progn
+                        (setq input (read-string "Workspace name: " (ignore-errors (projectile-project-name))))
+                        (cond ((string-blank-p input)
+                               (message "Input must be non-empty.")
+                               (sit-for 1)
+                               t)
+                              ((-contains-p current-tags input)
+                               (message "Name must be unique")
+                               (sit-for 1)
+                               t))))
+               input)))
+      (eyebrowse-create-window-config)
+      (eyebrowse-rename-window-config (eyebrowse--get 'current-slot) name))
+    :config
+    (general-setq eyebrowse-mode-line-separator " "))
+
+#+end_src
+
 ** Org
 *** Org-Mode
 #+name: init-org-block
@@ -3196,7 +3224,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
 :END:
 #+name: init-notmuch-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle
   (use-package notmuch
     :straight t
     :config
@@ -3208,62 +3236,73 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                   mail-envelope-from 'header))
 #+end_src
 
-*** HOLD [[https://github.com/emacsmirror/mu4e][MU4E]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-09 Mon 15:59] \\
-  I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
-:END:
+*** [[https://github.com/emacsmirror/mu4e][MU4E]]
+
 #+name: init-mu4e-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package mu4e
-    :straight t)
+    :straight t
+    :commands (mu4e)
+    :init
+    (general-setq mue4e-headers-skip-duplicates  t
+                  mu4e-view-show-images t
+                  mu4e-view-show-addresses t
+                  mu4e-compose-format-flowed nil
+                  mu4e-date-format "%y/%m/%d"
+                  mu4e-headers-date-format "%Y/%m/%d"
+                  mu4e-change-filenames-when-moving t
+                  mu4e-attachments-dir "~/Downloads"
+                  mu4e-maildir       "~/Mail"
+                  mu4e-refile-folder "/Archive"
+                  mu4e-sent-folder   "/Sent"
+                  mu4e-drafts-folder "/Drafts"
+                  mu4e-trash-folder  "/Trash"
+                  mu4e-get-mail-command  "mbsync -a")
+    :config/el-patch
+
+    (el-patch-defun mu4e~headers-jump-to-maildir (maildir)
+      "Show the messages in maildir (user is prompted to ask what
+  maildir)."
+      (interactive
+       (let ((maildir (el-patch-swap
+                        (mu4e-ask-maildir "Jump to maildir: ")
+                        (selectrum-completing-read
+                         "Jump to maildir: " (mu4e-get-maildirs)))))
+         (list maildir)))
+      (when maildir
+        (mu4e-mark-handle-when-leaving)
+        (mu4e-headers-search (format "maildir:\"%s\"" maildir))))
+
+    (fset 'my-move-to-trash "mTrash")
+    (general-define-key
+     :keymaps '(mu4e-view-mode-map mu4e-headers-mode-map) "d" 'my-move-to-trash))
+
+  (use-package mu4e-alert
+    :straight t :after mu4e
+    :init
+    (general-setq mu4e-alert-interesting-mail-query "flag:unread maildir:/INBOX ")
+    (mu4e-alert-enable-mode-line-display))
+
+
+  (use-package message
+    :straight (:type built-in)
+    :config
+    (general-setq send-mail-function 'sendmail-send-it
+                  sendmail-program "/usr/local/bin/msmtp"
+                  mail-specify-envelope-from t
+                  message-sendmail-envelope-from 'header
+                  mail-envelope-from 'header))
 #+end_src
 
 ** Media
 *** EMMS
 #+name: init-emms-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package emms
     :straight t
     :init
     (emms-all)
-    (emms-default-players)
-    (require 'emms-browser)
-    (require 'emms-player-mpd)
-    (require 'emms-volume)
-    (require 'emms-streams)
-    (require 'emms-stream-info)
-    :config
-    (general-pushnew 'emms-info-mpd emms-info-functions)
-    (general-pushnew 'emms-player-mpd emms-player-list)
-    (general-setq emms-seek-seconds 5
-                  emms-info-asynchronously t
-                  emms-volume-change-function 'emms-volume-mpd-change
-                  emms-playlist-buffer-name "*Music*"
-                  emms-stream-info-backend 'mpv
-                  emms-player-mpd-music-directory nil
-                  emms-player-mpd-verbose t
-                  emms-player-mpd-server-name "localhost"
-                  emms-player-mpd-server-port "6600"))
-
-  (defun mopidy/start-music-daemon ()
-    (interactive)
-    (shell-command "mopidy")
-    (mpd/update-database)
-    (emms-player-mpd-connect)
-    (emms-cache-set-from-mpd-all)
-    (message "Mopidy Started!"))
-
-  (defun mopidy/kill-music-daemon ()
-    (interactive)
-    (emms-stop)
-    (call-process "killall" nil nil nil "mopidy")
-    (message "Mopidy killed!"))
-
-  (defun mopidy/update-database ()
-    (interactive)
-    (call-process "mpc" nil nil nil "update")
-    (message "MPD Database Updated"))
+    (emms-default-players))
 #+end_src
 
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
@@ -3273,7 +3312,17 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t
     :config
     (general-setq simple-mpc-playlist-format "%artist%	%album%	%title%	%file%"
-                  simple-mpc-table-separator "	"))
+                  simple-mpc-table-separator "	")) ;; These are TAB separators <C-q TAB>
+
+  (defun mopidy/start-music-daemon ()
+    (interactive)
+    (shell-command "nohup mopidy &")
+    (message "Mopidy Started!"))
+
+  (defun mopidy/kill-music-daemon ()
+    (interactive)
+    (call-process "killall" nil nil nil "mopidy")
+    (message "Mopidy killed!"))
 #+end_src
 
 *** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
@@ -3660,6 +3709,15 @@ This is a nifty package that allows me to define functions as local variables in
                   auto-compile-update-autoloads t))
 #+end_src
 
+*** Clojure
+**** [[https://github.com/clojure-emacs/clojure-mode][Clojure-Mode]]
+#+name: init-clojure-mode-block
+#+begin_src emacs-lisp
+  (use-package clojure-mode
+    :straight t
+    :mode ("\\.edn$"))
+#+end_src
+
 *** Markdown
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]
 #+name: init-markdown-block
@@ -3939,11 +3997,13 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
+
 #+name: init-subtitle-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package subed
-    :straight (:host github :repo "rndusr/subed")
-    :mode ("\\.srt\\'" . subed-mode)
+    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
+    :mode ("\\.srt$")
+    :defines subed--init-alist
     :gfhook 'auto-fill-mode
     :config
     ;; Break lines at 40 characters

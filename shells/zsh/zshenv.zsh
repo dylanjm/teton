@@ -152,10 +152,9 @@ export GPG_TTY=$(tty)
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 
 ###
-### MPD
+### Goku
 ###
-export MPD_HOST="localhost"
-export MPD_PORT="6600"
+export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 
 ###
 ### Paths

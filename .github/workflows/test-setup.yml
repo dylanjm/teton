@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup
+      - name: Tmpfile Creation
         run: echo -e "2\n4" > tmpfile
+      - name: Setup
         run: ./install < tmpfile

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-02 16:12:24
+/last updated/: 2020-02-03 22:23:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3300,9 +3300,189 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package emms
     :straight t
+    :commands (emms)
+    :preface
+    (defconst emms-info-atomic-parsley-tag-alist '(("©too" . "info-note")
+                                                   ("©alb" . "info-album")
+                                                   ("©ART" . "info-artist")
+                                                   ("©nam" . "info-title")
+                                                   ("©gen" . "info-genre")
+                                                   ("©day" . "info-year")
+                                                   ("trkn" . "info-tracknumber")))
+
+    (defun emms-info-atomic-parsley (track)
+      (when (and (eq 'file (emms-track-type track))
+                 (string-match "\\.[Mm][Pp]4\\'" (emms-track-name track)))
+        (with-temp-buffer
+          (when (zerop
+                 (apply (if (fboundp 'emms-i18n-call-process-simple)
+                            'emms-i18n-call-process-simple
+                          'call-process)
+                        "AtomicParsley"
+                        nil t nil
+                        (list (emms-track-name track) "-t" "+")))
+            (goto-char (point-min))
+            (while (not (eql (point) (point-max)))
+              (if (re-search-forward "^Atom \"\\(.*\\)\" contains: \\(.*\\)$" nil t)
+                  (progn
+                    (let ((name (match-string 1))
+                          (value (match-string 2)))
+                      (when (> (length value) 0)
+                        (emms-track-set track
+                                        (intern (cdr (assoc name emms-info-atomic-parsley-tag-alist)))
+                                        value))
+                      (forward-line 1)))
+                (forward-line 1)))))))
+
+    (defun emms-mark-add-info-to-tracks ()
+      "Add info to all track in playlist"
+      (interactive)
+      (emms-mark-do-with-marked-track (lambda nil
+                                        (let ((x (emms-playlist-track-at)))
+                                          (emms-info-atomic-parsley x))
+                                        (progn
+                                          (forward-line 1)
+                                          (point)))))
+
+  ;;; Display album in playlist
+    (defun ambrevar/emms-artist-album-track-and-title-format (bdata fmt)
+      (concat
+       "%i"
+       (let ((artist (emms-browser-format-elem fmt "a")))
+         (if (not artist)
+             "%n"                           ; If unknown, display the filename.
+           (concat
+            "%a - "
+            (let ((album (emms-browser-format-elem fmt "A")))
+              (if album "%A - " ""))
+            (let ((disc (emms-browser-format-elem fmt "D")))
+              (if (and disc (not (string= disc ""))) "%D/" ""))
+            (let ((track (emms-browser-format-elem fmt "T")))
+              (if (and track (not (string= track "0")))
+                  "%T. "
+                ""))
+            "%t [%d]")))))
+
+
+    ;; Display disc number in browser
+    (defun ambrevar/emms-browser-track-artist-and-title-format (bdata fmt)
+      (concat
+       "%i"
+       (let ((disc (emms-browser-format-elem fmt "D")))
+         (if (and disc (not (string= disc "")))
+             "%D/"))
+       (let ((track (emms-browser-format-elem fmt "T")))
+         (if (and track (not (string= track "0")))
+             "%T. "
+           ""))
+       "%n"))
+
+
+    (defun ambrevar/emms-time-for-display (track)
+      "Inspired by `emms-playing-time-display'."
+      (let* ((total-playing-time
+              (or (emms-track-get
+                   track
+                   'info-playing-time)
+                  0))
+             (total-min-only (/ total-playing-time 60))
+             (total-sec-only (% total-playing-time 60)))
+        (format "%02d:%02d" total-min-only total-sec-only)))
+
+    (defun ambrevar/emms-track-description-with-album (track)
+      "Simple function to give a user-readable description of a track.
+  If it's a file track, just return the file name.  Otherwise,
+  return the type and the name with a colon in between.
+  Hex-encoded characters in URLs are replaced by the decoded
+  character."
+      (let ((type (emms-track-type track)))
+        (cond ((eq 'file type)
+               (cl-flet ((fmt (string &optional suffix prefix)
+                              (if string
+                                  (concat prefix string suffix)
+                                "")))
+                 (concat
+                  (fmt (emms-track-get track 'info-artist) " - ")
+                  (fmt (emms-track-get track 'info-album) " - ")
+                  (fmt (emms-track-get track 'info-discnumber) "/")
+                  (if (emms-track-get track 'info-tracknumber)
+                      (format "%02d. " (string-to-number (emms-track-get track 'info-tracknumber)))
+                    "")
+                  (emms-track-get track 'info-title)
+                  (fmt (ambrevar/emms-time-for-display track) "]" " ["))))
+              ((eq 'url type)
+               (emms-format-url-track-name (emms-track-name track)))
+              (t (concat (symbol-name type)
+                         ": " (emms-track-name track))))))
+
+
+    (defun ambrevar/emms-tracks-duration (begin end)
+      "Display play time of tracks in region."
+      (interactive "r")
+      (if (not (use-region-p))
+          (message "%s" (emms-browser-track-duration
+                         (car (emms-browser-tracks-at-point))))
+        (let* ((total-time)
+               (first-line (line-number-at-pos begin))
+               (last-line (line-number-at-pos end))
+               (count 0))
+          (setq total-time
+                (save-mark-and-excursion
+                  (cl-loop for line from first-line to last-line
+                           do (goto-line line)
+                           for time = (emms-track-get (car (emms-browser-tracks-at-point))
+                                                      'info-playing-time)
+                           when time
+                           do (cl-incf count)
+                           when time
+                           sum time)))
+          (message "%02d:%02d for %d tracks" (/ total-time 60) (% total-time 60)
+                   count))))
+
     :init
-    (emms-all)
-    (emms-default-players))
+    (progn
+      (require 'emms-setup)
+      (emms-all)
+      (emms-history-load)
+      (require 'emms-player-mpv)
+      (require 'emms-source-playlist)
+      (require 'emms-source-file)
+      (require 'emms-mark)
+      (require 'emms-info)
+      (require 'emms-browser)
+      (general-setq emms-player-list '(emms-player-mpv)))
+
+
+    (general-setq emms-source-file-default-directory (expand-file-name "~/Movies/")
+                  emms-info-asynchronously t
+                  emms-info-auto-update t
+                  emms-show-format "NP: %s"
+                  emms-playlist-buffer-name "*EMMS Playlist*"
+                  emms-browser-default-format "%i%a - %A:	%T	%t [%d]")
+
+
+
+    (general-setq emms-info-functions '(emms-info-atomic-parsley))
+    (general-pushnew "--no-audio-display" emms-player-mpv-parameters)
+    (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
+
+  (use-package emms-player-simple-mpv
+    :straight t :after emms
+    :init
+    (require 'emms-player-simple-mpv-e.g.hydra)
+    (require 'emms-player-simple-mpv-playlist-mode)
+    (require 'emms-player-simple-mpv-control-functions))
+#+end_src
+
+*** HOLD [[https://github.com/kljohann/mpv.el][MPV]]
+:LOGBOOK:
+- State "HOLD"       from              [2020-02-03 Mon 19:37] \\
+  Might add double functionality
+:END:
+#+name: init-mpv-block
+#+begin_src emacs-lisp :tangle no
+  (use-package mpv
+    :straight t)
 #+end_src
 
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]

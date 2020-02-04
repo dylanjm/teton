@@ -2,3 +2,6 @@ straight/
 matplotlib/
 early-init.el
 init.el
+
+apps/assets/complex_modifications/
+karabiner.json

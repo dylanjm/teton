@@ -1,0 +1,26 @@
+{:profiles
+ {:Default {:default true
+            :sim   50
+            :delay 500
+            :alone 500
+            :held  500}}
+ :applications {:vmware ["^com\\.vmware\\.fusion$"]}
+ :simlayers    {:super-shift-mode {:key :left_shift :condi :!vmware}}
+ :main         [
+                {:des "caps to ctrl modifier"
+                 :rules [[:##caps_lock :left_control :!vmware {:alone :escape}]]}
+
+                {:des "hyper-key"
+                 :rules [[:##left_control :!TCOleft_shift :!vmware]]}
+
+                {:des "super-shift-mode"
+                 :rules [:super-shift-mode
+                         [:down_arrow           :!COdown_arrow          ]
+                         [:up_arrow             :!COup_arrow            ]
+                         [:left_arrow           :!COleft_arrow          ]
+                         [:right_arrow          :!COright_arrow         ]
+                         [:spacebar             :!COspacebar            ]
+                         [:return_or_enter      :!COreturn_or_enter     ]
+                         [:delete_or_backspace  :!COdelete_or_backspace ]]}
+
+                ]}

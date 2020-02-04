@@ -13,4 +13,4 @@ source ./bootstrap/setup-homebrew.sh
 source ./bootstrap/setup-shell.sh
 
 # shellcheck source=setup-fonts.sh
-source ./bootstrap/setup-fonts.sh
+# source ./bootstrap/setup-fonts.sh

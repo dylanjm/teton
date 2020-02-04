@@ -10,4 +10,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup
-        run: ./install < test/bootstrap-tools.txt
+        run: echo -e "2\n4" > tmpfile
+        run: ./install < tmpfile

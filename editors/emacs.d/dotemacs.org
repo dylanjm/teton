@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-03 22:23:04
+/last updated/: 2020-02-04 15:08:20
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -587,8 +587,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
   (general-define-key
-   "RET" #'newline-and-indent
-   "C-j" #'newline-and-indent
    "C-z" nil)
 #+end_src
 
@@ -1886,89 +1884,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
 #+begin_src emacs-lisp
-  (use-package flx :straight t)
-#+end_src
-
-*** [[https://github.com/abo-abo/swiper][Ivy]]
-#+name: init-ivy-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ivy
-    :blackout t :straight t
-    :ghook 'after-init-hook
-    :general
-    ("C-x b"   #'ivy-switch-buffer
-     "C-x B"   #'ivy-switch-buffer-other-window
-     "C-c C-r" #'ivy-resume
-     "C-w"     #'ivy-yank-word
-     "M-w"     #'ivy-kill-ring-save)
-    (:keymaps
-     'ivy-minibuffer-map
-     "<tab>" #'ivy-alt-done
-     "C-w"   #'ivy-yank-word
-     "C-o"   #'ivy-occur)
-    (:keymaps
-     'ivy-switch-buffer-map
-     "C-x k" #'ivy-switch-buffer-kill)
-    :config
-    (general-setq ivy-dynamic-exhibit-delay-ms 100
-                  ivy-use-selectable-prompt t
-                  ivy-case-fold-search-default 'auto
-                  ivy-initial-inputs-alist nil
-                  ivy-use-virtual-buffers t
-                  ivy-height 17
-                  ivy-wrap t
-                  ivy-fixed-height-minibuffer t
-                  ivy-magic-slash-non-match-action 'ivy-magic-slash-non-match-create
-                  ivy-on-del-error-function #'ignore
-                  ivy-virtual-abbreviate 'name
-                  ivy-count-format "(%d/%d) "
-                  ivy-flx-limit 4000
-                  ivy-sort-max-size 50000)
-
-    (setf (alist-get 't ivy-format-functions-alist)
-          #'ivy-format-function-line))
-#+end_src
-
-*** [[https://github.com/abo-abo/swiper][Counsel]]
-#+name: init-counsel-block
-#+begin_src emacs-lisp :tangle no
-  (use-package counsel
-    :blackout t :straight t
-    :ghook 'ivy-mode-hook
-    :general
-    ([remap dired]                    #'counsel-dired
-     [remap execute-extended-command] #'counsel-m-x
-     [remap find-file]                #'counsel-find-file
-     "c-x c-r"                        #'counsel-recentf
-     "c-x c-l"                        #'counsel-find-library
-     "c-x c-u"                        #'counsel-unicode-char
-     "c-x c-v"                        #'counsel-set-variable
-     "c-c k"                          #'counsel-rg
-     "c-h f"                          #'counsel-describe-face
-     "c-h f"                          #'counsel-describe-function
-     "c-h v"                          #'counsel-describe-variable)
-    :config
-    (general-setq counsel-describe-function-function #'helpful-callable
-                  counsel-describe-variable-function #'helpful-variable
-                  counsel-find-file-at-point t
-                  counsel-locate-cmd #'counsel-locate-cmd-mdfind)
-
-    (general-setq counsel-rg-base-command
-                  "rg --with-filename --no-heading --line-number --color never %s -z --sort path")
-    (general-setq counsel-grep-base-command
-                  "rg -S --no-heading --line-number --color never '%s' %s")
-
-    (general-setq counsel-fzf-cmd "fd --type f | fzf -f \"%s\"")
-
-    (dolist (builders '((swiper . ivy--regex-plus)
-                        (swiper-isearch . ivy--regex-plus)
-                        (swiper-query-replace . ivy--regex-plus)
-                        (swiper-all . ivy--regex-plus)
-                        (counsel-describe-function . ivy--regex-fuzzy)
-                        (counsel-describe-variable . ivy--regex-fuzzy)
-                        (counsel-describe-face . ivy--regex-fuzzy)
-                        (counsel-find-file . ivy--regex-fuzzy)))
-      (general-pushnew builders ivy-re-builders-alist)))
+  (use-package flx
+    :straight t)
 #+end_src
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
@@ -1987,19 +1904,19 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
   (use-package selectrum
-    :straight (:host github :repo "raxod502/selectrum")
+    :straight (:host github
+               :repo "raxod502/selectrum"
+               :files ("*.el"))
     :ghook 'emacs-startup-hook
     :config
-    (general-setq selectrum-num-candidates-displayed 15)
-    (add-to-list
-     'selectrum-minibuffer-bindings
-     '([remap newline-and-indent] . selectrum-select-current-candidate)))
+    (general-setq selectrum-num-candidates-displayed 15))
 
-  (use-package selectrum-prescient
-    :straight (:host github
-               :repo "raxod502/prescient.el"
-               :files ("selectrum-prescient.el"))
-    :ghook 'selectrum-mode-hook)
+
+    (use-package selectrum-prescient
+      :straight (:host github
+                 :repo "raxod502/prescient.el"
+                 :files ("selectrum-prescient.el"))
+      :ghook 'selectrum-mode-hook)
 #+end_src
 
 ** Autocompletion
@@ -2085,13 +2002,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (general-pushnew shls company-backends)))
 #+end_src
 
-*** [[https://github.com/dunn/company-emoji][Company-Emoji]]
-#+name: init-company-emoji-block
-#+begin_src emacs-lisp
-  (use-package company-emoji
-    :straight t)
-#+end_src
-
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2125,7 +2035,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     ([remap describe-function] #'helpful-callable
      [remap describe-command]  #'helpful-command
      [remap describe-variable] #'helpful-variable
-     [remap describe-key]      #'helpful-key))
+     [remap describe-key]      #'helpful-key
+     "C-h F"                   #'describe-face))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
@@ -2735,7 +2646,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-c w a" #'windower-toggle-single))
 #+end_src
 
-*** Eyebrowse
+*** [[https://github.com/wasamasa/eyebrowse][Eyebrowse]]
 #+name: init-eyebrowse-block
 #+begin_src emacs-lisp
   (use-package eyebrowse

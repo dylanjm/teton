@@ -34,7 +34,7 @@
 
     ~/.config/alacritty: apps/alacritty
     ~/.config/direnv: apps/direnv
-    ~/.config/qutebrowser: apps/qutebrowser
+    ~/.qutebrowser: apps/qutebrowser
     ~/.config/R: apps/R
     ~/.config/vivid: apps/vivid
     ~/.config/python: apps/python

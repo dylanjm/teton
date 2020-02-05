@@ -5,3 +5,5 @@ init.el
 
 apps/assets/complex_modifications/
 karabiner.json
+apps/qutebrowser/bookmarks/
+apps/qutebrowser/quickmarks

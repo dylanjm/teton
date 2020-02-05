@@ -35,6 +35,9 @@ c.completion.height = '25%'
 # Type: Int
 c.completion.min_chars = 2
 
+c.fonts.completion.entry = '14pt monospace'
+c.fonts.completion.category = 'bold 14pt monospace'
+
 # Which unbound keys to forward to the webview in normal mode.
 # Type: String
 # Valid values:
@@ -127,7 +130,10 @@ config.bind('<Ctrl+x>b', 'set-cmd-text -s :buffer')
 config.bind('<Ctrl+x>k', 'tab-close')
 config.bind('<Ctrl+y>', 'insert-text {primary}')
 config.bind('<Meta+f>', 'hint all')
+
+
 config.bind('<Meta+x>', 'set-cmd-text :')
+
 config.bind('d', 'scroll-page 0 0.5')
 config.bind('j', 'scroll down')
 config.bind('k', 'scroll up')
@@ -135,11 +141,12 @@ config.bind('u', 'scroll-page 0 -0.5')
 
 # Bindings for caret mode
 config.bind('<Ctrl+g>', 'leave-mode', mode='caret')
+config.bind('<Ctrl+g>', 'leave-mode', mode='command')
 
 # Bindings for command mode
 config.bind('<Alt+n>', 'command-history-next', mode='command')
 config.bind('<Alt+p>', 'command-history-prev', mode='command')
-config.bind('<Ctrl+g>', 'leave-mode', mode='command')
+
 config.bind('<Ctrl+n>', 'completion-item-focus next', mode='command')
 config.bind('<Ctrl+p>', 'completion-item-focus prev', mode='command')
 config.bind('<Ctrl+r>', 'search-prev', mode='command')

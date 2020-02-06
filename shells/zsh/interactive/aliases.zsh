@@ -71,6 +71,14 @@ alias modname="rename 's/_-_lang_en_vs[0-9]+//g' --"
 alias punc="rename -e 's/\&/and/g' -e 's/[^0-9A-Za-z_.-]//g' --"
 
 ###
+### Ledger
+###
+alias aa='ledger bal Allocation --current --format "\
+  %-17((depth_spacer)+(partial_account))\
+  %10(percent(market(display_total), market(parent.total)))\
+  %16(market(display_total))\n%/"'
+
+###
 ### Git aliases
 ###
 alias gss='git status -s'

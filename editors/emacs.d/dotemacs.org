@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-04 15:08:20
+/last updated/: 2020-02-05 13:26:10
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1495,7 +1495,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package all-the-icons
     :demand t :straight t
     :config
-    (general-setq all-the-icons-scale-factor 1.3))
+    (general-setq all-the-icons-scale-factor 1.3)
+    (general-pushnew '("\\.db$" all-the-icons-faicon "database" :face all-the-icons-blue) all-the-icons-icon-alist))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -3447,6 +3448,13 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t)
 #+end_src
 
+*** [[https://github.com/flexibeast/ebuku][Ebuku]]
+#+name: init-ebuku-block
+#+begin_src emacs-lisp
+  (use-package ebuku
+    :straight t)
+#+end_src
+
 ** Version Control
 *** [[https://github.com/magit/magit][Magit]]
 #+name: init-magit-block
@@ -4084,6 +4092,13 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-2048-block
 #+begin_src emacs-lisp
   (use-package 2048-game
+    :straight t)
+#+end_src
+
+*** [[https://github.com/ledger/ledger-mode][Ledger-Mode]]
+#+name: init-ledger-mode-block
+#+begin_src emacs-lisp
+  (use-package ledger-mode
     :straight t)
 #+end_src
 

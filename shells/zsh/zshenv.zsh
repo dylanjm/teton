@@ -22,7 +22,7 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 ###
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
-export EDITOR="emacsclient -a 'emacs -nw' -c"
+export EDITOR="emacsclient -a 'emacs' -c"
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
 export ORG_FILES="$HOME/Documents/org-files/2020"
@@ -159,7 +159,7 @@ export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 ###
 ### Paths
 ###
-fpath+=(/usr/local/Cellar/zsh/5.7.1/share/zsh/functions
+fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions
         /usr/local/share/zsh/site-functions
         $ZINIT[HOME_DIR]/completions
         $ZSH/functions

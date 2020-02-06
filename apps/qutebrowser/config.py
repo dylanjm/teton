@@ -3,8 +3,11 @@
 #   qute://help/configuring.html
 #   qute://help/settings.html
 
+config = config  # type: ConfigAPI # noqa: F821 pylint: disable=E0602,C0103
+c = c  # type: ConfigContainer # noqa: F821 pylint: disable=E0602,C0103
+
 # Uncomment this to still load settings configured via autoconfig.yml
-# config.load_autoconfig()
+config.load_autoconfig()
 
 # Enable JavaScript.
 # Type: Bool
@@ -61,7 +64,7 @@ c.input.insert_mode.plugins = False
 # Hide the window decoration.  This setting requires a restart on
 # Wayland.
 # Type: Bool
-c.window.hide_decoration = True
+c.window.hide_decoration = False
 
 # Background color of the completion widget for odd rows.
 # Type: QssColor
@@ -93,6 +96,7 @@ c.colors.statusbar.command.private.bg = '#323232'
 
 # Bindings for normal mode
 config.bind(',n', 'config-cycle content.user_stylesheets /Users/mcdodj/Documents/forked_github/solarized-everything-css/css/gruvbox/gruvbox-all-sites.css ""')
+
 config.bind('0', 'fake-key 0')
 config.bind('1', 'fake-key 1')
 config.bind('2', 'fake-key 2')
@@ -103,36 +107,47 @@ config.bind('6', 'fake-key 6')
 config.bind('7', 'fake-key 7')
 config.bind('8', 'fake-key 8')
 config.bind('9', 'fake-key 9')
+
 config.bind('<Alt+Backspace>', 'fake-key <Ctrl-Backspace>')
-config.bind('<Alt+b>', 'fake-key <Ctrl-Left>')
+
 config.bind('<Alt+d>', 'fake-key <Ctrl-Delete>')
-config.bind('<Alt+f>', 'fake-key <Ctrl-Right>')
-config.bind('<Ctrl+a>', 'fake-key <Home>')
-config.bind('<Ctrl+b>', 'fake-key <Left>')
-config.bind('<Ctrl+c>O', 'set-cmd-text -s :open -t')
+
+
+# History Navigation
 config.bind('<Ctrl+c>b', 'back')
 config.bind('<Ctrl+c>f', 'forward')
-config.bind('<Ctrl+c>o', 'set-cmd-text -s :open')
-config.bind('<Ctrl+d>', 'fake-key <Delete>')
-config.bind('<Ctrl+e>', 'fake-key <End>')
-config.bind('<Ctrl+f>', 'fake-key <Right>')
+
+# Text Editing
+config.bind('<Ctrl+d>', 'fake-key <Delete>', mode='insert')
+config.bind('<Ctrl+a>', 'fake-key <Home>', mode='insert')
+config.bind('<Ctrl+e>', 'fake-key <End>', mode='insert')
+config.bind('<Ctrl+f>', 'fake-key <Right>', mode='insert')
+config.bind('<Ctrl+b>', 'fake-key <Left>', mode='insert')
+config.bind('<Ctrl+y>', 'insert-text {primary}', mode='insert')
+
 config.bind('<Ctrl+g>', 'clear-keychain ;; search ;; fullscreen --leave')
-config.bind('<Ctrl+h>', 'set-cmd-text -s :help')
+
 config.bind('<Ctrl+j>', 'tab-prev')
 config.bind('<Ctrl+k>', 'tab-next')
 config.bind('<Ctrl+n>', 'fake-key <Down>')
 config.bind('<Ctrl+p>', 'fake-key <Up>')
-config.bind('<Ctrl+r>', 'set-cmd-text ?')
-config.bind('<Ctrl+s>', 'set-cmd-text /')
 config.bind('<Ctrl+w>', 'fake-key <Ctrl-backspace>')
 config.bind('<Ctrl+x><Ctrl+c>', 'quit')
 config.bind('<Ctrl+x>b', 'set-cmd-text -s :buffer')
 config.bind('<Ctrl+x>k', 'tab-close')
-config.bind('<Ctrl+y>', 'insert-text {primary}')
+
 config.bind('<Meta+f>', 'hint all')
 
+config.bind('<Alt+b>', 'fake-key <Ctrl-Left>')
+config.bind('<Alt+f>', 'fake-key <Ctrl-Right>')
 
 config.bind('<Meta+x>', 'set-cmd-text :')
+config.bind('<Ctrl+c>O', 'set-cmd-text -s :open -t')
+config.bind('<Ctrl+c>o', 'set-cmd-text -s :open')
+config.bind('<Ctrl+h>', 'set-cmd-text -s :help')
+config.bind('<Ctrl+r>', 'set-cmd-text ?')
+config.bind('<Ctrl+s>', 'set-cmd-text /')
+
 
 config.bind('d', 'scroll-page 0 0.5')
 config.bind('j', 'scroll down')
@@ -142,6 +157,8 @@ config.bind('u', 'scroll-page 0 -0.5')
 # Bindings for caret mode
 config.bind('<Ctrl+g>', 'leave-mode', mode='caret')
 config.bind('<Ctrl+g>', 'leave-mode', mode='command')
+config.bind('<Ctrl+g>', 'leave-mode', mode='hint')
+config.bind('<Ctrl+g>', 'leave-mode', mode='insert')
 
 # Bindings for command mode
 config.bind('<Alt+n>', 'command-history-next', mode='command')
@@ -151,6 +168,3 @@ config.bind('<Ctrl+n>', 'completion-item-focus next', mode='command')
 config.bind('<Ctrl+p>', 'completion-item-focus prev', mode='command')
 config.bind('<Ctrl+r>', 'search-prev', mode='command')
 config.bind('<Ctrl+s>', 'search-next', mode='command')
-
-# Bindings for hint mode
-config.bind('<Ctrl+g>', 'leave-mode', mode='hint')

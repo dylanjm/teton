@@ -19,8 +19,5 @@
                          [:up_arrow             :!COup_arrow            ]
                          [:left_arrow           :!COleft_arrow          ]
                          [:right_arrow          :!COright_arrow         ]
-                         [:spacebar             :!COspacebar            ]
-                         [:return_or_enter      :!COreturn_or_enter     ]
-                         [:delete_or_backspace  :!COdelete_or_backspace ]]}
-
+                         [:spacebar             :!COspacebar            ]]}
                 ]}

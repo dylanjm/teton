@@ -22,7 +22,9 @@ autoload -Uz _zinit
 # Change to load=load for debugging.
 load=light
 
-zinit $load romkatv/powerlevel10k
+if [[ "$INSIDE_EMACS" != 'vterm' ]]; then
+  zinit $load romkatv/powerlevel10k
+fi
 
 zinit ice wait multisrc"*.zsh" lucid
 zinit $load $ZSH/interactive

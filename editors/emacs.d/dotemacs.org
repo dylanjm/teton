@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-05 13:26:10
+/last updated/: 2020-02-09 18:51:03
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -124,7 +124,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
   (setq-default initial-frame-alist '((window-right-divider-width . 20)
-                      (window-bottom-divider-width . 20)))
+                                      (window-bottom-divider-width . 20)))
 
   (setq-default default-frame-alist '((ns-transparent-titlebar . t)
                                       (alpha . (100 100))
@@ -205,7 +205,7 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-  (setq-default use-package-verbose t
+  (setq-default use-package-verbose nil
                 use-package-always-defer t
                 use-package-compute-statistics nil
                 use-package-enable-imenu-support nil)
@@ -262,7 +262,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "TERMINFO"
                                            "PYTHONSTARTUP"
                                            "MPLCONFIGDIR")
-          exec-path-from-shell-arguments '("-l" "-i"))
+          exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
 #+end_src
 
@@ -1523,10 +1523,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   doom-modeline-height 10
                   doom-modeline-github t
                   doom-modeline-mu4e t
-                  doom-modeline-project-detection 'projectile)
-    (set-face-attribute 'mode-line nil
-                        :background (doom-color 'red)
-                        :foreground (doom-color 'fg)))
+                  doom-modeline-project-detection 'projectile))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
@@ -1584,14 +1581,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :commands (hide-mode-line-mode))
 #+end_src
 
-*** [[https://github.com/dgutov/highlight-escape-sequences][Highlight-Escape-Sequences]]
-#+name: init-highlight-escape-sequences-block
-#+begin_src emacs-lisp
-  (use-package highlight-escape-sequences
-    :straight t
-    :ghook ('prog-mode-hook #'hes-mode))
-#+end_src
-
 *** [[https://github.com/Fanael/highlight-numbers][Highlight-Numbers]]
 
 #+name: init-highlight-numbers-block
@@ -1601,13 +1590,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :ghook 'prog-mode-hook
     :config
     (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
-#+end_src
-
-*** [[https://github.com/tarsius/hl-todo][Highlight-TODO]]
-#+name: init-highlight-todo-block
-#+begin_src emacs-lisp
-  (use-package hl-todo
-    :straight t)
 #+end_src
 
 *** [[https://github.com/ubolonton/info-colors][Info-Colors]]
@@ -1663,33 +1645,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   (use-package rainbow-mode
     :blackout t :straight t
     :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
-#+end_src
-
-*** [[https://github.com/Malabarba/smart-mode-line][Smart-Mode-Line]]
-
-CLOSED: [2019-12-13 Fri 21:48]
-:LOGBOOK:
-- State "DONE"       from "HOLD"         [2019-12-13 Fri 21:48]
-- State "HOLD"       from              [2019-12-13 Fri 21:18] \\
-  Testing out doom-modeline package
-:END:
-#+name: init-smart-mode-line-block
-#+begin_src emacs-lisp :tangle no
-  (use-package smart-mode-line
-    :straight t
-    :ghook ('after-init-hook #'djm/config-smart-mode-line)
-    :preface
-    (defun djm/config-smart-mode-line ()
-      (general-setq mode-line-format (delq 'mode-line-position mode-line-format)
-                    display-time-format "%a %B %d %I:%M %p"
-                    sml/theme nil
-                    sml/use-projectile-p t
-                    sml/no-confirm-load-theme t)
-      (sml/setup)
-      (general-remove-hook 'display-time-hook 'sml/propertize-time-string))
-    :custom-face
-    (mode-line ((t (:box (:line-width 5 :color "#282828")))))
-    (mode-line-inactive ((t (:box (:line-width 5 :color "#1d2021"))))))
 #+end_src
 
 *** [[https://github.com/k-talo/volatile-highlights.el][Volatile-Highlights]]
@@ -1763,7 +1718,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 ** Shells
-*** [[https://github.com/manateelazycat/aweshell][Awesheppll]]
+*** [[https://github.com/manateelazycat/aweshell][Aweshell]]
 #+name: init-aweshell-block
 #+begin_src emacs-lisp
   (use-package aweshell
@@ -1857,10 +1812,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "s" #'projectile-switch-project
      "c" #'projectile-compile-project
      "f" #'projectile-find-file)
+    :preface
+    (defun projectile-project-find-function (dir)
+      (let* ((root (projectile-project-root dir)))
+        (and root (cons 'transient root))))
     :config
     (general-setq projectile-completion-system 'selectrum-completing-read
                   projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired))
+                  projectile-switch-project-action 'projectile-dired)
+    (general-pushnew 'projectile-project-find-function project-find-functions))
 #+end_src
 
 #+RESULTS: init-projectile-block
@@ -2003,6 +1963,22 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (general-pushnew shls company-backends)))
 #+end_src
 
+*** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
+#+name: init-company-lsp-block
+#+begin_src emacs-lisp
+  (use-package company-lsp
+    :straight t :after (company lsp-mode)
+    :commands (company-lsp)
+    :ghook ('lsp-mode-hook #'config-company-lsp-mode)
+    :preface
+    (defun config-company-lsp-mode ()
+      (general-pushnew 'company-lsp company-backends))
+    :config
+    (general-setq company-lsp-cache-candidates t
+                  company-lsp-async t
+                  company-lsp-enable-recompletion t))
+#+end_src
+
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2073,15 +2049,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      [remap query-replace-regexp] #'anzu-query-replace))
 #+end_src
 
-*** [[https://github.com/browse-kill-ring/browse-kill-ring][Browse-Kill-Ring]]
-#+name: init-browse-kill-ring-block
-#+begin_src emacs-lisp
-  (use-package browse-kill-ring
-    :straight t
-    :general
-    ("C-c b k" #'browse-kill-ring))
-#+end_src
-
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
 #+name: init-deadgrep-block
 #+begin_src emacs-lisp
@@ -2119,23 +2086,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general ("C-=" #'er/expand-region))
 #+end_src
 
-*** [[https://github.com/emacsorphanage/gnuplot][GnuPlot]]
-#+name: init-gnu-plot
-#+begin_src emacs-lisp
-  (use-package gnuplot
-    :straight t)
-
-  (use-package gnuplot-mode
-    :straight t)
-#+end_src
-
-*** [[https://github.com/emacsfodder/move-text][Move-Text]]
-#+name: init-move-text-block
-#+begin_src emacs-lisp
-  (use-package move-text
-    :straight t)
-#+end_src
-
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
@@ -2163,14 +2113,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
      "C-c i j" #'string-inflection-java-style-cycle
      "C-c i r" #'string-inflection-ruby-style-cycle
      "C-c i p" #'string-inflection-python-style-cycle))
-#+end_src
-
-*** [[https://github.com/nflath/sudo-edit][Sudo-Edit]]
-#+name: init-sudo-edit-block
-#+begin_src emacs-lisp
-  (use-package sudo-edit
-    :straight t
-    :commands (sudo-edit))
 #+end_src
 
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
@@ -2212,13 +2154,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package aggressive-indent
     :blackout t :straight t
     :ghook 'emacs-lisp-mode-hook)
-#+end_src
-
-*** [[https://elpa.gnu.org/packages/csv-mode.html][CSV-Mode]]
-#+name: init-csv-mode-block
-#+begin_src emacs-lisp
-  (use-package csv-mode
-    :straight t :mode "\\.csv\\'")
 #+end_src
 
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
@@ -2361,6 +2296,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                                            "\\|^.project\\(?:ile\\)?\\'"
                                            "\\|^.\\(svn\\|git\\)\\'"
                                            "\\|^.ccls-cache\\'"
+                                           "\\|^__pycache__\\'"
                                            "\\|\\(?:\\.js\\)?\\.meta\\'"
                                            "\\|\\.\\(?:elc\\|o\\|pyo\\|swp\\|class\\)\\'")))
 #+end_src
@@ -2990,16 +2926,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 #+end_src
 
-*** [[https://github.com/rexim/org-cliplink][Org-Cliplink]]
-
-#+name: init-org-cliplink-block
-#+begin_src emacs-lisp
-  (use-package org-cliplink
-    :straight t
-    :general
-    ("C-c p i" #'org-cliplink))
-#+end_src
-
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
@@ -3010,14 +2936,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (general-setq org-bullets-bullet-list '("⦿" "❂" "⦾" "✤")))
 #+end_src
 
-*** [[https://github.com/Kungsgeten/org-brain][Org-Brain]]
-
-#+name: init-org-brain-block
-#+begin_src emacs-lisp
-  (use-package org-brain
-    :straight t)
-#+end_src
-
 *** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
 
 #+name: init-org-emms-block
@@ -3026,31 +2944,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :straight t)
 #+end_src
 
-*** [[https://github.com/ianxm/emacs-scrum][Org-Scrum]]
-
-#+name: init-org-scrum-block
-#+begin_src emacs-lisp
-  (use-package org-scrum
-    :straight (:host github :repo "ianxm/emacs-scrum"))
-#+end_src
-
 *** [[https://github.com/bastibe/org-journal][Org-Journal]]
 
 #+name: init-org-journal-block
 #+begin_src emacs-lisp
   (use-package org-journal
     :straight t)
-#+end_src
-
-*** [[https://github.com/marcinkoziej/org-pomodoro][Org-Pomodoro]]
-
-#+name: init-org-pomodoro-block
-#+begin_src emacs-lisp
-  (use-package org-pomodoro
-    :blackout t :straight t :after org
-    :config
-    (general-setq org-pomodoro-format "%s"))
-
 #+end_src
 
 *** [[https://github.com/jkitchin/org-ref][Org-Ref]]
@@ -3122,32 +3021,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 #+end_src
 
-*** Graph.el
-#+name: init-graph-block
-#+begin_src emacs-lisp
-  (use-package graph
-    :demand t :straight (:host github :repo "storax/graph.el"))
-#+end_src
-
 ** Email
-*** HOLD [[https://notmuchmail.org/][NotMuch]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-09 Mon 15:58] \\
-  I'm holding off on implementing email until I can get a few other things configured in my dotfiles.
-:END:
-#+name: init-notmuch-block
-#+begin_src emacs-lisp :tangle
-  (use-package notmuch
-    :straight t
-    :config
-    (general-setq notmuch-search-oldest-first nil)
-    (general-setq send-mail-function 'sendmail-send-it
-                  sendmail-program "/usr/local/bin/msmtp"
-                  mail-specify-envelope-from t
-                  message-sendmail-envelope-from 'header
-                  mail-envelope-from 'header))
-#+end_src
-
 *** [[https://github.com/emacsmirror/mu4e][MU4E]]
 
 #+name: init-mu4e-block
@@ -3386,17 +3260,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (require 'emms-player-simple-mpv-control-functions))
 #+end_src
 
-*** HOLD [[https://github.com/kljohann/mpv.el][MPV]]
-:LOGBOOK:
-- State "HOLD"       from              [2020-02-03 Mon 19:37] \\
-  Might add double functionality
-:END:
-#+name: init-mpv-block
-#+begin_src emacs-lisp :tangle no
-  (use-package mpv
-    :straight t)
-#+end_src
-
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
 #+name: init-simple-mpc-block
 #+begin_src emacs-lisp
@@ -3415,30 +3278,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (interactive)
     (call-process "killall" nil nil nil "mopidy")
     (message "Mopidy killed!"))
-#+end_src
-
-*** HOLD [[https://github.com/danielfm/spotify.el][Spotify]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-24 Tue 11:01] \\
-  I'll come back to this later
-:END:
-#+name: init-spotify-block
-#+begin_src emacs-lisp :tangle no
-  (use-package spotify
-    :disabled t :straight t
-    :general
-    (:keymaps
-     'spotify-mode-map
-     "C-c " #'spotify-command-map)
-    :config
-    (general-setq spotify-transport 'connect
-                  spotify-player-status-truncate-length 20
-                  spotfy-api-search-limit 50)
-    (when-let ((plist (car (auth-source-search :host "spotify.api" :max 1)))
-               (id (plist-get plist :user))
-               (secret (funcall (plist-get plist :secret))))
-      (general-setq spotify-oauth2-client-secret secret)
-      (general-setq spotify-oauth2-client-id id)))
 #+end_src
 
 *** [[https://github.com/hniksic/emacs-htmlize][HTMLize]]
@@ -3475,7 +3314,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 *** [[https://github.com/jtatarik/magit-gitflow][Magit-Gitflow]]
 
 #+name: init-magit-gitflow-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package magit-gitflow
     :straight t
     :ghook ('magit-mode-hook #'turn-on-magit-gitflow))
@@ -3504,17 +3343,15 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/magit/forge][Forge]]
-
 #+name: init-forge-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package forge
     :straight t :after (magit))
 #+end_src
 
 *** [[https://github.com/syohex/emacs-git-gutter][Git-Gutter]]
-
 #+name: init-git-gutter-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package git-gutter
     :blackout t :straight t
     :if (display-graphic-p)
@@ -3522,9 +3359,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
-
 #+name: init-git-timemachine-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package git-timemachine
     :straight t
     :config
@@ -3532,9 +3368,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
-
 #+name: init-with-editor-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package with-editor
     :straight t
     :preface
@@ -3543,14 +3378,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
 #+name: init-vdiff-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package vdiff
     :straight t)
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package vdiff-magit
     :straight t
     :general
@@ -3568,36 +3403,54 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 ** Language Server Support
 *** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
 #+name: init-lsp-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package lsp-mode
     :straight t
+    :commands (lsp)
     :ghook ('python-mode-hook #'lsp)
-    :ghook ('c-mode-hook      #'lsp)
+    :gfhook #'lsp-enable-which-key-integration
     :config
-    (general-setq lsp-prefer-flymake nil
-                  lsp-enable-snippet nil
-                  lsp-restart nil
-                  lsp-auto-guess-root t
-                  lsp-keep-workspace-alive nil)
-
-
+    (general-setq lsp-prefer-flymake nil)
     (use-package lsp-clients
-      :demand t :straight (:type built-in)))
+      :demand t :straight nil)
 
-  (use-package lsp-ui
-    :straight t :after (lsp-mode)
-    :ghook 'lsp-mode-hook
-    :general ("C-c f" #'lsp-ui-sideline-apply-code-actions)
-    :config
-    (general-setq lsp-ui-sideline-ignore-duplicate t
-                  lsp-ui-sideline-show-hover nil
-                  lsp-eldoc-enable-hover nil)
+    (use-package lsp-ui
+      :demand t :straight (:files ("*.el" "*.html")
+                           :host github
+                           :repo "emacs-lsp/lsp-ui")
+      :commands (lsp-ui-mode)
+      :config (lsp-ui-mode))
 
     (use-package lsp-ui-doc
-      :demand t :straight (:type built-in)
-      :config
-      (general-setq lsp-ui-doc-max-height 80
-                    lsp-uid-doc-max-width 80)))
+      :demand t :straight lsp-ui
+      :commands (lsp-ui-doc-focus-frame
+                 lsp-ui-doc-unfocus-frame)
+      :config (lsp-ui-doc-mode)))
+#+end_src
+
+*** [[https://github.com/emacs-lsp/dap-mode][Dap-Mode]]
+#+name: init-dap-mode-block
+#+begin_src emacs-lisp :tangle no
+  (use-package dap-mode
+    :straight t :after (lsp-mode)
+    :ghook 'lsp-mode-hook
+    :gfhook #'dap-ui-mode
+    :config
+    (use-package dap-python
+      :demand t :straight nil))
+#+end_src
+
+*** [[https://github.com/joaotavora/eglot#animated_gifs][Eglot]]
+#+name: init-eglot-block
+#+begin_src emacs-lisp
+  (use-package eglot
+    :straight t
+    :ghook ('python-mode-hook #'eglot-ensure)
+    :ghook ('inferior-python-mode-hook 'eglot-ensure)
+    :config
+    (add-to-list 'eglot-server-programs
+                 `(python-mode . ("pyls" "-v" "--tcp" "--host"
+                                  "localhost" "--port" :autoport))))
 #+end_src
 
 ** Syntax & Linting
@@ -3605,29 +3458,26 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-apheleia-block
 #+begin_src emacs-lisp
   (use-package apheleia
-    :blackout t :straight (:host github :repo "raxod502/apheleia"))
+    :straight (:host github :repo "raxod502/apheleia"))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
   (use-package flycheck
-    :blackout t :straight t
+    :straight t
     :ghook ('prog-mode-hook #'global-flycheck-mode)
     :config
     (general-setq flycheck-sh-shellcheck-executable "shellcheck"
-                  flycheck-shellcheck-follow-sources t
-                  flycheck-emacs-lisp-load-path 'inherit
-                  flycheck-check-syntax-automatically '(save mode-enabled)
-                  flycheck-display-errors-delay 0.25)
+                  flycheck-shellcheck-follow-sources t)
     (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
 *** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
 #+name: init-flycheck-posframe-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package flycheck-posframe
-    :blackout t :straight t :after (flycheck)
+    :straight t :after (flycheck)
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook
     :config
@@ -3640,23 +3490,24 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package flycheck-popup-tip
     :blackout t :straight t :after (flycheck)
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook
     :config
-    (general-setq flycheck-popup-tip-error-prefix "ˣ "))
+    (general-setq flycheck-popup-tip-error-prefix "* "))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-pos-tip][Flycheck-Pos-Tip]]
 #+name: init-flycheck-pos-tip-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package flycheck-pos-tip
-    :blackout t :straight t :after (flycheck)
+    :straight t :after (flycheck)
     :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook)
-
+    :ghook 'flycheck-mode-hook
+    :config
+    (general-setq flycheck-pos-tip-display-errors-tty-function #'flycheck-popup-tip-show-popup))
 #+end_src
 
 *** [[https://github.com/msherry/flycheck-pycheckers][Flycheck-Pycheckers]]
@@ -3664,7 +3515,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp :tangle no
   (use-package flycheck-pycheckers
     :straight t
-    :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup))
+    :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup)
+    :config
+    (general-setq flycheck-pycheckers-multi-thread "true"
+                  flycheck-pycheckers-max-line-length 82
+                  flycheck-pycheckers-venv-root (expand-file-name "~/.config/pyenv/versions/3.8.0/envs")))
 #+end_src
 
 *** [[https://github.com/polymode/polymode][Polymode]]
@@ -3689,92 +3544,94 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 **** Fix Identation
+[[https://stackoverflow.com/questions/22166895/customize-elisp-plist-indentation][Found on StackOverflow by the great @raxod502.]]
+
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
-  (el-patch-feature lisp-mode)
-
-  ;; Improve indentation for plists.
-
-  (with-eval-after-load 'lisp-mode
-    (with-no-warnings
-      (el-patch-defun lisp-indent-function (indent-point state)
-        "This function is the normal value of the variable `lisp-indent-function'.
+  (el-patch-defun lisp-indent-function (indent-point state)
+    "This function is the normal value of the variable `lisp-indent-function'.
   The function `calculate-lisp-indent' calls this to determine
   if the arguments of a Lisp function call should be indented specially.
+
   INDENT-POINT is the position at which the line being indented begins.
   Point is located at the point to indent under (for default indentation);
   STATE is the `parse-partial-sexp' state for that position.
+
   If the current line is in a call to a Lisp function that has a non-nil
   property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
   it specifies how to indent.  The property value can be:
+
   ,* `defun', meaning indent `defun'-style
     (this is also the case if there is no property and the function
     has a name that begins with \"def\", and three or more arguments);
+
   ,* an integer N, meaning indent the first N arguments specially
     (like ordinary function arguments), and then indent any further
     arguments like a body;
+
   ,* a function to call that returns the indentation (or nil).
     `lisp-indent-function' calls this function with the same two arguments
     that it itself received.
+
   This function returns either the indentation to use, or nil if the
   Lisp function does not specify a special indentation."
-        (el-patch-let (($cond (and (elt state 2)
-                                   (el-patch-wrap 1 1
-                                     (or (not (looking-at "\\sw\\|\\s_"))
-                                         (looking-at ":")))))
-                       ($then (progn
-                                (if (not (> (save-excursion (forward-line 1) (point))
-                                            calculate-lisp-indent-last-sexp))
-                                    (progn (goto-char calculate-lisp-indent-last-sexp)
-                                           (beginning-of-line)
-                                           (parse-partial-sexp (point)
-                                                               calculate-lisp-indent-last-sexp 0 t)))
-                                ;; Indent under the list or under the first sexp on the same
-                                ;; line as calculate-lisp-indent-last-sexp.  Note that first
-                                ;; thing on that line has to be complete sexp since we are
-                                ;; inside the innermost containing sexp.
-                                (backward-prefix-chars)
-                                (current-column)))
-                       ($else (let ((function (buffer-substring (point)
-                                                                (progn (forward-sexp 1) (point))))
-                                    method)
-                                (setq method (or (function-get (intern-soft function)
-                                                               'lisp-indent-function)
-                                                 (get (intern-soft function) 'lisp-indent-hook)))
-                                (cond ((or (eq method 'defun)
-                                           (and (null method)
-                                                (> (length function) 3)
-                                                (string-match "\\`def" function)))
-                                       (lisp-indent-defform state indent-point))
-                                      ((integerp method)
-                                       (lisp-indent-specform method state
-                                                             indent-point normal-indent))
-                                      (method
-                                       (funcall method indent-point state))))))
-          (let ((normal-indent (current-column))
-                (el-patch-add
-                  (orig-point (point))))
-            (goto-char (1+ (elt state 1)))
-            (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-            (el-patch-swap
-              (if $cond
-                  ;; car of form doesn't seem to be a symbol
-                  $then
-                $else)
-              (cond
-               ;; car of form doesn't seem to be a symbol, or is a keyword
-               ($cond $then)
-               ((and (save-excursion
-                       (goto-char indent-point)
-                       (skip-syntax-forward " ")
-                       (not (looking-at ":")))
-                     (save-excursion
-                       (goto-char orig-point)
-                       (looking-at ":")))
-                (save-excursion
-                  (goto-char (+ 2 (elt state 1)))
-                  (current-column)))
-               (t $else))))))))
+    (el-patch-let (($cond (and (elt state 2)
+                               (el-patch-wrap 1 1
+                                 (or (not (looking-at "\\sw\\|\\s_"))
+                                     (looking-at ":")))))
+                   ($then (progn
+                            (if (not (> (save-excursion (forward-line 1) (point))
+                                        calculate-lisp-indent-last-sexp))
+                                (progn (goto-char calculate-lisp-indent-last-sexp)
+                                       (beginning-of-line)
+                                       (parse-partial-sexp (point)
+                                                           calculate-lisp-indent-last-sexp 0 t)))
+                            ;; Indent under the list or under the first sexp on the same
+                            ;; line as calculate-lisp-indent-last-sexp.  Note that first
+                            ;; thing on that line has to be complete sexp since we are
+                            ;; inside the innermost containing sexp.
+                            (backward-prefix-chars)
+                            (current-column)))
+                   ($else (let ((function (buffer-substring (point)
+                                                            (progn (forward-sexp 1) (point))))
+                                method)
+                            (setq method (or (function-get (intern-soft function)
+                                                           'lisp-indent-function)
+                                             (get (intern-soft function) 'lisp-indent-hook)))
+                            (cond ((or (eq method 'defun)
+                                       (and (null method)
+                                            (> (length function) 3)
+                                            (string-match "\\`def" function)))
+                                   (lisp-indent-defform state indent-point))
+                                  ((integerp method)
+                                   (lisp-indent-specform method state
+                                                         indent-point normal-indent))
+                                  (method
+                                   (funcall method indent-point state))))))
+      (let ((normal-indent (current-column))
+            (el-patch-add
+              (orig-point (point))))
+        (goto-char (1+ (elt state 1)))
+        (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+        (el-patch-swap
+          (if $cond
+              ;; car of form doesn't seem to be a symbol
+              $then
+            $else)
+          (cond
+           ;; car of form doesn't seem to be a symbol, or is a keyword
+           ($cond $then)
+           ((and (save-excursion
+                   (goto-char indent-point)
+                   (skip-syntax-forward " ")
+                   (not (looking-at ":")))
+                 (save-excursion
+                   (goto-char orig-point)
+                   (looking-at ":")))
+            (save-excursion
+              (goto-char (+ 2 (elt state 1)))
+              (current-column)))
+           (t $else))))))
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -3797,7 +3654,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 #+name: init-auto-compile-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package auto-compile
     :straight t
     :config
@@ -3823,7 +3680,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package markdown-mode
     :straight t
-    :mode ("\\.md\\'")
+    :mode ("\\.md$")
     :config
     (general-setq markdown-fontify-code-blocks-natively t
                   markdown-enable-wiki-links t
@@ -3837,14 +3694,14 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/milkypostman/markdown-mode-plus][Markdown-Mode-Plus]]
 #+name: init-markdown-mode-plus-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package markdown-mode+
     :straight t)
 #+end_src
 
 **** [[https://github.com/polymode/poly-markdown][Poly-Markdown]]
 #+name: init-poly-markdown
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package poly-markdown
     :straight t
     :mode (("\\.md'" . poly-markdown-mode)
@@ -3864,7 +3721,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** TOML
 **** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
 #+name: init-toml-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package toml-mode
     :blackout "TOML" :straight t
     :mode "Pipfile\\'")
@@ -3880,7 +3737,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** Go
 **** Go-Mode
 #+name: init-go-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package go-mode
     :mode "\\.go\\'"
     :ghook ('before-save-hook #'gofmt-before-save))
@@ -3895,7 +3752,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 *** ESS
 #+name: init-ess-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ess
     :straight t
     :general
@@ -3929,7 +3786,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** Julia
 **** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
 #+name: init-julia-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package julia-mode
     :straight t
     :interpreter "/usr/local/bin/julia"
@@ -3961,7 +3818,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
 #+name: init-julia-repl-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package julia-repl
     :straight t
     :ghook 'julia-mode-hook
@@ -3974,7 +3831,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
 #+name: init-lsp-julia-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package lsp-julia
     :straight t
     :ghook ('julia-mode-hook #'lsp-mode))
@@ -3985,42 +3842,35 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-python-block
 #+begin_src emacs-lisp
   (use-package python
-    :straight nil
-    :mode ("\\.py\\'" . python-mode)
-    :gfhook
-    #'djm/python-no-reindent-on-colon
-    #'djm/python-use-correct-executables
+    :straight (:type built-in)
     :config
-    (defun djm/python-no-reindent-on-colon ()
-      (general-setq electric-indent-chars (delq ?: electric-indent-chars)))
+    (use-package python-docstring
+      :demand t :straight t
+      :ghook 'python-mode-hook)
+    (outline-minor-mode t))
 
-    (defun djm/python-use-correct-executables ()
-      (let ((executable python-shell-interpreter))
-        (save-excursion
-          (save-match-data
-            (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
-                      (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
-              (setq executable (substring-no-properties (match-string 1))))))
-        (setq-local flycheck-python-pycompile-executable executable)
-        (setq-local flycheck-python-pylint-executable "pylint")
-        (setq-local flycheck-python-flake8-executable "flake8")
-        (setq-local lsp-python-executable executable)))
 
-    (general-setq python-fill-docstring-style 'django
-                  python-shell-interpreter "ipython"
-                  python-shell-interpreter-args "--simple-prompt"
-                  python-indent-guess-indent-offset-verbose nil))
+
+
+  ;; :config
+  ;; (general-setq python-shell-interpreter "ipython"
+  ;;               python-shell-interpreter-args "--simple-prompt"
+  ;;               python-indent-guess-indent-offset-verbose nil))
 #+end_src
 
 **** [[https://github.com/pythonic-emacs/pyenv-mode][Pyenv]]
 #+name: init-pyenv-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
+  (use-package pyenv-mode-auto
+    :demand t :straight t :after (python-mode))
+
   (use-package pyenv-mode
     :blackout t :straight t
     :ghook 'python-mode-hook
     :ghook ('projectile-switch-project-hook #'projectile-pyenv-mode-set)
     :config
     (defun projectile-pyenv-mode-set ()
+      "Set pyenv version matching project name."
       (let ((project (projectile-project-name)))
         (if (member project (pyenv-mode-versions))
             (pyenv-mode-set project)
@@ -4029,29 +3879,9 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package lsp-python-ms
-    :demand t :straight t :after (:all lsp-clients python)
-    :config
-    (general-setq lsp-python-ms-python-executable-cmd python-shell-interpreter))
-#+end_src
-
-**** [[https://github.com/pythonic-emacs/anaconda-mode][Anaconda-Mode]]
-#+name: init-anaconda-mode-block
-#+begin_src emacs-lisp
-  (use-package anaconda-mode
-    :blackout t :straight t :after (python)
-    :ghook 'python-mode-hook
-    :config
-    (general-setq anaconda-mode-eldoc-as-single-line t))
-#+end_src
-
-**** [[https://github.com/pythonic-emacs/blacken][Blacken]]
-#+name: init-blacken-block
-#+begin_src emacs-lisp
-  (use-package blacken
-    :straight t :after (python)
-    :commands (blacken-buffer))
+    :demand t :straight t :after (:all lsp-clients python))
 #+end_src
 
 *** Rust

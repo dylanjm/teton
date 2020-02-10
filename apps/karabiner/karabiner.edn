@@ -8,7 +8,7 @@
  :simlayers    {:super-shift-mode {:key :left_shift :condi :!vmware}}
  :main         [
                 {:des "caps to ctrl modifier"
-                 :rules [[:##caps_lock :left_control :!vmware {:alone :escape}]]}
+                 :rules [[:##caps_lock :left_control]]}
 
                 {:des "hyper-key"
                  :rules [[:##left_control :!TCOleft_shift :!vmware]]}

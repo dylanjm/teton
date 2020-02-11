@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-09 18:51:03
+/last updated/: 2020-02-10 21:46:21
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -298,8 +298,7 @@ Great package for managing key-bindings and other customizations.
 #+name: init-general-block
 #+begin_src emacs-lisp
   (use-package general
-    :demand t
-    :straight t)
+    :demand t :straight t)
 #+end_src
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
@@ -347,21 +346,6 @@ We need to intercept the built-in org-version that ships with emacs. For some re
 #+begin_src emacs-lisp
   (straight-use-package
    '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
-#+end_src
-
-*** HOLD [[https://github.com/alphapapa/defrepeater.el][Defrepeater]]
-:LOGBOOK:
-- State "HOLD"       from              [2020-01-17 Fri 16:44] \\
-  Not currently needed.
-:END:
-
-Experimental package that lets you define functions to be repeated with keystrokes. It seems very interesting that I might use in the future.
-
-#+name: init-defrepeater-block
-#+begin_src emacs-lisp :tangle no
-  (use-package defrepeater
-    :demand t
-    :straight t)
 #+end_src
 
 ** Personal Configuration
@@ -1529,7 +1513,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
 
 #+name: init-doom-themes-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package doom-themes
     :demand t :straight t
     :config
@@ -1544,7 +1528,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
 
 #+name: init-gruvbox-theme-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package gruvbox-theme
     :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
     :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
@@ -1581,17 +1565,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :commands (hide-mode-line-mode))
 #+end_src
 
-*** [[https://github.com/Fanael/highlight-numbers][Highlight-Numbers]]
-
-#+name: init-highlight-numbers-block
-#+begin_src emacs-lisp
-  (use-package highlight-numbers
-    :straight t
-    :ghook 'prog-mode-hook
-    :config
-    (general-setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
-#+end_src
-
 *** [[https://github.com/ubolonton/info-colors][Info-Colors]]
 
 #+name: init-info-colors-block
@@ -1620,13 +1593,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         org-agenda-mode-hook)))
 #+end_src
 
-*** [[https://github.com/mpwang/perfect-margin][Perfect-Margin]]
-#+name: init-perfect-margin-block
-#+begin_src emacs-lisp
-  (use-package perfect-margin
-    :straight t)
-#+end_src
-
 *** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
 #+name: init-persistent-scratch-block
 #+begin_src emacs-lisp
@@ -1649,7 +1615,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 
 *** [[https://github.com/k-talo/volatile-highlights.el][Volatile-Highlights]]
 #+name: init-volatile-highlights-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package volatile-highlights
     :blackout t :straight t
     :ghook 'emacs-startup-hook)
@@ -1695,45 +1661,15 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook ('after-init-hook #'osx-trash-setup))
 #+end_src
 
-*** HOLD [[https://github.com/politza/pdf-tools][PDF-Tools]]
-:LOGBOOK:
-- State "HOLD"       from              [2019-12-24 Tue 11:34] \\
-  Getting compile errors with this package now
-:END:
-Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-langs.el][chrisbarrett]].
-#+name: init-pdf-tools-block
-#+begin_src emacs-lisp :tangle no
-  (use-package pdf-tools
-    :straight t
-    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-    :general (:states '(motion normal) :keymaps 'pdf-view-mode-map
-              "n" #'pdf-view-next-page
-              "p" #'pdf-view-previous-page)
-    :config
-    (pdf-tools-install)
-    (general-setq pdf-view-display-size 'fit-page
-                  pdf-view-use-scaling t
-                  pdf-view-use-imagemagick nil
-                  pdf-annot-activate-created-annotations t))
-#+end_src
-
 ** Shells
 *** [[https://github.com/manateelazycat/aweshell][Aweshell]]
 #+name: init-aweshell-block
 #+begin_src emacs-lisp
   (use-package aweshell
     :straight (:host github :repo "manateelazycat/aweshell")
-    :commands (aweshell-new
-               aweshell-next
-               aweshell-prev
-               aweshell-clear-buffer
-               aweshell-sudo-toggle
-               aweshell-switch-buffer
-               aweshell-dedicated-toggle
-               aweshell-dedicated-open
-               aweshell-dedicated-close)
     :general
     ("C-c x t" #'aweshell-dedicated-toggle)
+    ("C-d" #'aweshell-dedicated-close)
     :config
     (general-setq eshell-highlight-prompt nil
                   eshell-prompt-function 'epe-theme-lambda)
@@ -1751,14 +1687,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :general
     ("C-c x v" #'multi-libvterm-dedicated-toggle)
     :config
-    (general-setq multi-libvterm-dedicated-window-height 25)
-    (add-to-list 'display-buffer-alist
-                 '("^v?term.*"
-                   (display-buffer-reuse-window display-buffer-at-bottom)
-                   (display-buffer-reuse-window display-buffer-in-direction)
-                   (dedicated . t)
-                   (reusable-frames . visible)
-                   (window-height . 0.35))))
+    (general-setq multi-libvterm-dedicated-window-height 25))
 #+end_src
 
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
@@ -1772,13 +1701,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
                 (window (display-buffer-below-selected buf nil)))
           (select-window window)
         (message "Failed to open file: %s" path)))
-
-    (defun find-file-above (path)
-      (if-let* ((buf (find-file-noselect path))
-                (window (display-buffer-reuse-window buf nil)))
-          (select-window window)
-        (message "Failed to open file: %s" path)))
-
     :config
     (defun arco/vterm-kill-buffer-on-quit (buffer event)
       (if buffer (kill-buffer buffer)))
@@ -1786,8 +1708,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
     (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit)
 
-    (general-pushnew '("find-file-below" find-file-below) vterm-eval-cmds)
-    (general-pushnew '("find-file-above" find-file-above) vterm-eval-cmds))
+    (general-pushnew '("find-file-below" find-file-below) vterm-eval-cmds))
 #+end_src
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
@@ -1851,7 +1772,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
 #+name: init-swiper-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package swiper
     :straight t
     :general ("C-s" #'swiper
@@ -1859,6 +1780,14 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     :config
     (general-setq swiper-goto-start-of-match t
                   swiper-action-recenter t))
+#+end_src
+
+*** [[https://github.com/raxod502/ctrlf][Ctrl-F]]
+#+name: init-ctrl-f-block
+#+begin_src emacs-lisp
+  (use-package ctrlf
+    :straight (:host github :repo "raxod502/ctrlf")
+    :ghook 'emacs-startup-hook)
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
@@ -1963,22 +1892,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
       (general-pushnew shls company-backends)))
 #+end_src
 
-*** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
-#+name: init-company-lsp-block
-#+begin_src emacs-lisp
-  (use-package company-lsp
-    :straight t :after (company lsp-mode)
-    :commands (company-lsp)
-    :ghook ('lsp-mode-hook #'config-company-lsp-mode)
-    :preface
-    (defun config-company-lsp-mode ()
-      (general-pushnew 'company-lsp company-backends))
-    :config
-    (general-setq company-lsp-cache-candidates t
-                  company-lsp-async t
-                  company-lsp-enable-recompletion t))
-#+end_src
-
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -1997,9 +1910,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (use-package yasnippet-snippets
     :straight t
     :ghook ('yas-global-mode-hook #'yas-reload-all))
-
-  (use-package auto-yasnippet
-    :straight t)
 #+end_src
 
 ** Documentation
@@ -2008,12 +1918,20 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+begin_src emacs-lisp
   (use-package helpful
     :straight t
+    :preface
+    (defun helpful-face (symbol)
+      (interactive
+       (list (read-face-name "Describe face" (face-list))))
+      (funcall helpful-switch-buffer-function (helpful--buffer symbol t))
+      (helpful-update))
     :general
     ([remap describe-function] #'helpful-callable
-     [remap describe-command]  #'helpful-command
+     "C-h C"                   #'helpful-command
      [remap describe-variable] #'helpful-variable
      [remap describe-key]      #'helpful-key
-     "C-h F"                   #'describe-face))
+     "C-h F"                   #'helpful-face
+     "C-c C-d"                 #'helpful-at-point
+     "C-h x"                   #'helpful-macro))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
@@ -2937,7 +2855,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
-
 #+name: init-org-emms-block
 #+begin_src emacs-lisp
   (use-package org-emms
@@ -2945,7 +2862,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+end_src
 
 *** [[https://github.com/bastibe/org-journal][Org-Journal]]
-
 #+name: init-org-journal-block
 #+begin_src emacs-lisp
   (use-package org-journal
@@ -3458,7 +3374,8 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 #+name: init-apheleia-block
 #+begin_src emacs-lisp
   (use-package apheleia
-    :straight (:host github :repo "raxod502/apheleia"))
+    :straight (:host github :repo "raxod502/apheleia")
+    :ghook ('emacs-startup-hook #'apheleia-global-mode))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
@@ -3524,7 +3441,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** [[https://github.com/polymode/polymode][Polymode]]
 #+name: init-polymode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package polymode
     :straight t)
 
@@ -3721,7 +3638,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** TOML
 **** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
 #+name: init-toml-mode-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package toml-mode
     :blackout "TOML" :straight t
     :mode "Pipfile\\'")
@@ -3741,13 +3658,6 @@ This is a nifty package that allows me to define functions as local variables in
   (use-package go-mode
     :mode "\\.go\\'"
     :ghook ('before-save-hook #'gofmt-before-save))
-#+end_src
-
-*** Jupyter
-#+name: init-jupyter-block
-#+begin_src emacs-lisp :tangle no
-  (use-package jupyter
-    :straight t)
 #+end_src
 
 *** ESS
@@ -3887,7 +3797,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** Rust
 **** Rustc
 #+name: init-rust-rustc-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package rustic
     :straight t
     :mode ("\\.rs$" . rustic-mode)
@@ -3901,7 +3811,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** Racer
 #+name: init-rust-racer-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package racer
     :straight t :after rustic
     :ghook 'rustic-mode-hook

@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+vofa() {
+  vterm_cmd find-file-above "$(realpath "$@")"
+}

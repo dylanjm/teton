@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
 ###
 ### Check for zplugin install
@@ -28,11 +28,6 @@ fi
 
 zinit ice wait multisrc"*.zsh" lucid
 zinit $load $ZSH/interactive
-
-# zinit ice as"program" make'!' \
-#   atclone'./direnv hook zsh > zhook.zsh' \
-#   atpull'%atclone' src'zhook.zsh'
-# zinit $load direnv/direnv
 
 zinit ice wait lucid
 zinit $load hlissner/zsh-autopair

@@ -22,10 +22,11 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 ###
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
-export EDITOR="emacsclient -a 'emacs' -c"
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
-export ORG_FILES="$HOME/Documents/org-files/2020"
+export ORG_FILES="$HOME/Documents/org-files"
+export EDITOR="$DOTFILES/bin/emc"
+export EMACS="/Appplications/Emacs.app"
 
 ###
 ### History
@@ -113,7 +114,7 @@ export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
 export R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
 export R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
 export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
-export R_HISTFILE="$XDG_CACHE_HOME/Rhistory"
+export R_HISTFILE="$XDG_DATA_HOME/Rhistory"
 export R_LIBS_USER="$HOME/Library/R/3.6/library"
 
 ###
@@ -127,17 +128,16 @@ export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 ###
 export PYENV_ROOT="$XDG_CONFIG_HOME/pyenv"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
-export ZSH_PYENV_LAZY_VIRTUALENV=true
-export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
+export PYLINTHOME="$XDG_DATA_HOME/pylint.d"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
-export MPLCONFIGDIR="$XDG_CONFIG_HOME/python/matplotlib"
+export MPLCONFIGDIR="$XDG_DATA_HOME/matplotlib"
 
 
 ###
 ### Emacs-Anywhere
 ###
 export EA_PATH="$XDG_DATA_HOME/emacs_anywhere"
-export EA_EDITOR='/usr/local/bin/emacsclient -c --alternate-editor="/usr/local/bin/emacs --eval"'
+export EA_EDITOR="em"
 
 ###
 ### Terminfo
@@ -166,15 +166,13 @@ fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions
         $ZINIT[PLUGINS_DIR]/zdharma---history-search-multi-word
         $ZINIT[PLUGINS_DIR]/zdharma---fast-syntax-highlighting)
 
-module_path+=($HOME/.cache/zsh/zinit/bin/zmodules/Src)
+module_path+=($ZINIT[BIN_DIR]/zmodules/Src)
 
 path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZINIT[HOME_DIR]/polaris/bin  # Zplugin Installed Programs
       $DOTFILES/bin                 # Personal CLT Tools
-      #$ZINIT[PLUGINS_DIR]/direnv---direnv  # Lazy Direnv Setup
-      /usr/local/opt/fzf/bin        # FZF Completions
       /usr/local/bin                # Homebrew Installations
       /usr/bin
       /bin
@@ -195,22 +193,10 @@ export MANPATH
 export PATH
 export CDPATH
 
-# export LDFLAGS="${LDFLAGS} -L/usr/local/opt/zlib/lib"
-# export LDFLAGS="${LDFLAGS} -L/usr/local/opt/openssl/lib"
-# export LDFLAGS="${LDFLAGS} -L/usr/local/opt/sqlite/lib"
-
-# export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/zlib/include"
-# export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/openssl/include"
-# export CPPFLAGS="${CPPFLAGS} -I/usr/local/opt/sqlite/include"
-
-# export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/zlib/lib/pkgconfig"
-# export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/sqlite/lib/pkgconfig"
-# export PKG_CONFIG_PATH="${PKG_CONFIG_PATH} /usr/local/opt/openssl/lib/pkgconfig"
-
 ###
 ### Personal Functions
 ###
 autoload -Uz time-shell nuke convert-to-md \
          colorlist open-apps iterm-config _zpcompinit_fast \
          bundle-name prettycsv pyenv knitit vterm_printf vterm_cmd \
-         imgtotxt
+         imgtotxt vofa vofb vof vterm_prompt_end

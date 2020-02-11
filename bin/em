@@ -8,14 +8,14 @@ abspath() {
     python -c "import os, sys; print(os.path.abspath(sys.argv[1]))" "$1"
 }
 
-if ! pgrep -q "Emacs"; then
+if ! pgrep -q "EMACS"; then
     # Use env -i to avoid polluting $PATH and other environment variables
     # passed to Emacs, which causes warnings in extensions such as
     # exec-path-from-shell.
     if [ $# -eq 0 ]; then
-        env -i open -a Emacs
+        env -i open -a EMACS
     else
-        env -i open -a Emacs --args "$(abspath "$1")"
+        env -i open -a EMACS --args "$(abspath "$1")"
     fi
 else
     # The --args flag doesn't seem to work properly when Emacs is already

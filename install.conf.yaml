@@ -39,6 +39,7 @@
     ~/.config/vivid: apps/vivid
     ~/.config/python: apps/python
     ~/.config/karabiner/karabiner.edn: apps/karabiner/karabiner.edn
+    ~/.ledgerrc: apps/ledgerrc
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

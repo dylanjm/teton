@@ -8,3 +8,5 @@ mesg n
 echo
 echo "Have a nice day!"
 echo
+
+export PATH="/Users/mcdodj/.config/cargo/bin:$PATH"

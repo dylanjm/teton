@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-11 12:11:23
+/last updated/: 2020-02-13 11:00:30
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -566,7 +566,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (general-add-hook 'write-file-functions 'time-stamp)
 #+end_src
 
-*** Keybindings
+*** Keybindings & Aliases
 
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
@@ -580,6 +580,12 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (fset 'display-startup-echo-area-message 'ignore)
   (fset 'view-hello-file 'ignore)
   (fset 'custom-safe-themes 't)
+#+end_src
+
+#+name: init-aliases-block
+#+begin_src emacs-lisp
+  (defalias 'qr #'query-replace)
+  (defalias 'qrr #'query-replace-regexp)
 #+end_src
 
 ** Built-In Defaults
@@ -868,7 +874,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Eldoc (Built-In)
-
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
@@ -876,7 +881,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :ghook ('emacs-lisp-mode-hook #'turn-on-eldoc-mode)
     :config
-    (general-setq eldoc-idle-delay .2
+    (general-setq eldoc-idle-delay 0.2
                   eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
@@ -933,7 +938,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Ert (Built-In)
-
 #+name: init-ert-block
 #+begin_src emacs-lisp
   (use-package ert
@@ -1067,11 +1071,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Hideshow (Built-In)
-
 #+name: init-hideshow-block
 #+begin_src emacs-lisp
   (use-package hideshow
-    :blackout (hs-minor-mode . "")
     :straight (:type built-in)
     :ghook ('prog-mode-hook #'hs-minor-mode))
 #+end_src
@@ -1242,6 +1244,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
+*** Project (Built-In)
+#+name: init-project (built-in)-block
+#+begin_src emacs-lisp
+  (use-package project
+    :straight (:type built-in))
+#+end_src
 *** Recentf (Built-In)
 
 #+name: init-recentf-block
@@ -1669,10 +1677,11 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight (:host github :repo "manateelazycat/aweshell")
     :general
     ("C-c x t" #'aweshell-dedicated-toggle)
-    ("C-d" #'aweshell-dedicated-close)
     :config
-    (general-setq eshell-highlight-prompt nil
-                  eshell-prompt-function 'epe-theme-lambda)
+    (general-setq aweshell-complete-selection-key "C-f")
+    (general-setq eshell-highlight-prompt t
+                  eshell-prompt-function 'epe-theme-multiline-with-status
+                  epe-path-style 'fish)
     (general-setq eshell-up-ignore-case nil
                   eshell-up-print-parent-dir t)
     (general-setq aweshell-use-exec-path-from-shell t
@@ -1738,7 +1747,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (let* ((root (projectile-project-root dir)))
         (and root (cons 'transient root))))
     :config
-    (general-setq projectile-completion-system 'selectrum-completing-read
+    (general-setq projectile-completion-system 'default
                   projectile-enable-caching t
                   projectile-switch-project-action 'projectile-dired)
     (general-pushnew 'projectile-project-find-function project-find-functions))
@@ -1890,6 +1899,20 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                     company-fish-shell
                     company-files))
       (general-pushnew shls company-backends)))
+#+end_src
+
+*** [[https://gitlab.com/ambrevar/emacs-fish-completion][Fish-Completion]]
+#+name: init-fish-completion-block
+#+begin_src emacs-lisp
+  (use-package bash-completion
+    :straight t)
+
+
+  (use-package fish-completion
+    :straight t
+    :ghook ('emacs-startup-hook #'global-fish-completion-mode)
+    :config
+    (general-setq fish-completion-fallback-on-bash-p t))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -2086,7 +2109,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-highlight-indent-guides-block
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
-    :blackout t :straight t
+    :straight t
     :ghook 'python-mode-hook 'yaml-mode-hook)
 #+end_src
 
@@ -2117,7 +2140,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-undo-tree-block
 #+begin_src emacs-lisp
   (use-package undo-tree
-    :blackout t :straight t
+    :straight t
     :general
     ("C-/" #'undo-tree-undo
      "C-?" #'undo-tree-redo)
@@ -2135,7 +2158,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-whitespace-cleanup-block
 #+begin_src emacs-lisp
   (use-package whitespace-cleanup-mode
-    :blackout t :straight t
+    :straight t
     :ghook whitespace-modes
     :preface
     (defconst whitespace-modes
@@ -2190,8 +2213,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package wdired
     :straight (:type built-in) :after (dired)
     :general
-    (:keymaps
-     'dired-mode-map
+    (:keymaps 'dired-mode-map
      "C-c C-e" #'wdired-change-to-wdired-mode)
     :config
     (general-setq wdired-create-parent-directories t
@@ -2203,6 +2225,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package dired-x
     :demand t :straight (:type built-in) :after (dired)
+    :ghook ('dired-mode-hook #'dired-omit-mode)
     :config
     (general-setq dired-x-hands-off-my-keys t
                   dired-omit-verbose t
@@ -2223,15 +2246,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-dired-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons-dired
-    :blackout t :straight t
+    :straight t
     :ghook 'dired-mode-hook)
-#+end_src
-
-*** [[https://github.com/HKey/dired-atool][Dired-ATool]]
-#+name: init-dired-atool-block
-#+begin_src emacs-lisp
-  (use-package dired-atool
-    :straight t)
 #+end_src
 
 *** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
@@ -2270,9 +2286,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (:keymaps 'dired-mode-map
               "c" #'dired-collapse-mode))
 
-  (use-package dired-tagsistant
-     :straight dired-hacks)
-
   (use-package dired-open
     :straight dired-hacks
     :config
@@ -2305,29 +2318,12 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
      "<backtab>" #'dired-subtree-cycle))
 #+end_src
 
-*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
-#+name: init-dired-rsync-block
-#+begin_src emacs-lisp
-  (use-package dired-rsync
-    :straight t
-    :general
-    (:keymaps 'dired-mode-map
-              "C-c C-r" #'dired-rsync))
-#+end_src
-
 *** [[https://github.com/purcell/diredfl][Diredfl]]
 #+name: init-diredfl-block
 #+begin_src emacs-lisp
   (use-package diredfl
     :straight t
     :ghook 'dired-mode-hook)
-#+end_src
-
-*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
-#+name: init-fd-dired-block
-#+begin_src emacs-lisp
-  (use-package fd-dired
-    :straight (:host github :repo "yqrashawn/fd-dired"))
 #+end_src
 
 ** Navigation
@@ -2537,28 +2533,22 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package org
     :straight nil
     :gfhook 'variable-pitch-mode 'visual-line-mode 'adaptive-wrap-prefix-mode
-    :mode ("\\.org'" . org-mode)
+    :mode ("\\.org$" . org-mode)
     :general
     ("C-c a" #'org-agenda
      "C-c c" #'org-capture)
     (:keymaps 'org-mode-map
      "M-n" #'outline-next-visible-heading
      "M-p" #'outline-previous-visible-heading)
-    :config
-    ;; (require 'ox-jdf-report nil t)
-    ;; (require 'org-ref nil t)
-
-    ;; (set-face-attribute 'variable-pitch nil :inherit 'default :family "Iosevka Aile" :weight 'light)
-    ;; (set-face-attribute 'fixed-pitch nil :inherit 'default :family "Iosevka TermLig SS09" :weight 'ultra-light)
-
+    :preface
     (defun set-buffer-fixed-pitch ()
       (setq-local line-spacing 3)
       (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
       (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
 
     (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
-
+    :config
     ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
                   org-default-notes-file "~/Documents/org-files/inbox.org"
@@ -2650,7 +2640,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     ;; List Settings
     (general-setq org-list-indent-offset 2)
 
-
+    ;; Other Settings
     (general-setq org-catch-invisible-edits 'smart
                   org-cycle-separator-lines 0
                   org-enforce-todo-dependencies t
@@ -2679,22 +2669,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-org-capture-block
 #+begin_src emacs-lisp
   (use-package org-capture
-    :straight nil :after org
-    :config
-    (general-setq org-capture-templates '(("t" "Tasks")
-                                          ("tt" "TODO    (t) Todo" entry (file "inbox.org")
-                                           "* TODO %?
-  :PROPERTIES:
-  :Via:
-  :Note:
-  :END:
-   :LOGBOOK:
-  - State \"TODO\"       from \"\"           %U
-  :END:" :empty-lines 1))))
+    :straight nil :after org)
 #+end_src
 
 *** Org-Clock
-
 #+name: init-org-clock-block
 #+begin_src emacs-lisp
   (use-package org-clock
@@ -2728,35 +2706,19 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   org-agenda-use-time-grid t
                   org-agenda-window-setup 'only-window))
 
-    (use-package org-super-agenda
-      :straight t)
+  (use-package org-super-agenda
+    :straight t)
 
   (defun org-archive-done-tasks ()
     (interactive)
     (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
-*** Org-Indent
-#+name: init-org-indent-block
-#+begin_src emacs-lisp :tangle no
-  (use-package org-indent
-    :blackout t :straight nil
-    :ghook 'org-mode-hook)
-#+end_src
-
-*** Org-Habit
-
-#+name: init-org-habit-block
-#+begin_src emacs-lisp
-  (use-package org-habit
-    :straight nil)
-#+end_src
-
 *** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
   (use-package org-src
-    :blackout " [src] " :straight nil
+    :straight nil
     :preface
     (defun djm/org-src-supress-final-newline ()
       (setq-local require-final-newline nil))
@@ -2767,17 +2729,17 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (defun djm/disable-flycheck-in-org-src-block ()
       (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
+    (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
+    (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
+    (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space)
+
     :config/el-patch
     (defun org-src--construct-edit-buffer-name (org-buffer-name lang)
       (concat "[" org-buffer-name "]"))
 
     (general-setq org-src-window-setup 'current-window
                   org-src-fontify-natively t
-                  org-src-tab-acts-natively t)
-
-    (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
-    (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-    (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space))
+                  org-src-tab-acts-natively t))
 #+end_src
 
 *** Org-Ob
@@ -2790,6 +2752,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (interactive)
       (when org-inline-image-overlays
         (org-redisplay-inline-images)))
+    (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images)
     :config
     (general-setq org-babel-load-languages '((emacs-lisp . t)
                                              (shell . t)
@@ -2797,17 +2760,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                                              (ditaa . t)
                                              (dot . t)
                                              (plantuml . t)))
-    (general-setq org-confirm-babel-evaluate nil)
-    (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images))
-
-  (use-package ob-shell
-    :straight nil)
-
-  (use-package ob-python
-    :straight nil)
-
-  (use-package ob-emacs-lisp
-    :straight nil)
+    (general-setq org-confirm-babel-evaluate nil))
 
   (use-package ob-ditaa
     :straight nil
@@ -2840,8 +2793,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
   (use-package ox-jdf-report
     :straight (:host github :repo "dylanjm/ox-jdf"))
-#+end_src
-
 #+end_src
 
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
@@ -2877,9 +2828,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package org-ref
     :straight t
-    :commands (org-ref-insert-link)
-    :config
-    (general-setq org-ref-completion-library 'org-ref-ivy-cite))
+    :commands (org-ref-insert-link))
 #+end_src
 
 *** [[https://github.com/tesujimath/org-wc][Org-WC]]
@@ -2924,17 +2873,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                cfw:org-create-source
                cfw:open-org-calendar-withkevin
                my-open-calendar))
-#+end_src
-
-*** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
-#+name: init-plantuml-mode-block
-#+begin_src emacs-lisp
-  (use-package plantuml-mode
-    :straight t
-    :config
-    (general-setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"
-                  plantuml-default-exec-mode 'jar))
-
 #+end_src
 
 ** Email
@@ -2997,7 +2935,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Media
-*** EMMS
+*** [[https://www.gnu.org/software/emms/][EMMS]]
 #+name: init-emms-block
 #+begin_src emacs-lisp
   (use-package emms
@@ -3185,15 +3123,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq simple-mpc-playlist-format "%artist%	%album%	%title%	%file%"
                   simple-mpc-table-separator "	")) ;; These are TAB separators <C-q TAB>
 
-  (defun mopidy/start-music-daemon ()
-    (interactive)
-    (shell-command "nohup mopidy &")
-    (message "Mopidy Started!"))
-
-  (defun mopidy/kill-music-daemon ()
-    (interactive)
-    (call-process "killall" nil nil nil "mopidy")
-    (message "Mopidy killed!"))
 #+end_src
 
 *** [[https://github.com/hniksic/emacs-htmlize][HTMLize]]
@@ -3218,33 +3147,22 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t
     :general ("C-x g"   #'magit-status
               "C-x M-g" #'magit-dispatch)
+    :preface
+    (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode)
     :config
     (general-setq magit-view-git-manual-method 'woman
                   magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                   magit-diff-refine-hunk t
-                  magit-save-repository-buffers nil)
-    (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode))
-
+                  magit-save-repository-buffers nil
+                  magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 #+end_src
 
 *** [[https://github.com/jtatarik/magit-gitflow][Magit-Gitflow]]
-
 #+name: init-magit-gitflow-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package magit-gitflow
     :straight t
     :ghook ('magit-mode-hook #'turn-on-magit-gitflow))
-#+end_src
-
-*** [[https://github.com/magit/transient][Transient]]
-#+name: init-transient-block
-#+begin_src emacs-lisp
-  (use-package transient
-    :straight nil
-    :config
-    (general-setq transient-default-level 5
-                  transient-display-buffer-action '(display-buffer-below-selected))
-    (transient-bind-q-to-quit))
 #+end_src
 
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
@@ -3252,7 +3170,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package git-commit
     :straight nil
-    :ghook ('after-find-file #'global-git-commit-mode)
+    :ghook ('magit-mode-hook #'global-git-commit-mode)
     :config
     (general-setq git-commit-summary-max-length 50
                   git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line)))
@@ -3260,7 +3178,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/magit/forge][Forge]]
 #+name: init-forge-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package forge
     :straight t :after (magit))
 #+end_src
@@ -3276,16 +3194,16 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
 #+name: init-git-timemachine-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package git-timemachine
-    :straight t
+    :straight (:host gitlab :repo "pidu/git-timemachine")
     :config
     (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
 #+name: init-with-editor-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package with-editor
     :straight t
     :preface
@@ -3294,14 +3212,14 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
 #+name: init-vdiff-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package vdiff
     :straight t)
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package vdiff-magit
     :straight t
     :general
@@ -3407,24 +3325,13 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-popup-tip
-    :blackout t :straight t :after (flycheck)
-    :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook
-    :config
-    (general-setq flycheck-popup-tip-error-prefix "* "))
-#+end_src
-
-*** [[https://github.com/flycheck/flycheck-pos-tip][Flycheck-Pos-Tip]]
-#+name: init-flycheck-pos-tip-block
-#+begin_src emacs-lisp :tangle no
-  (use-package flycheck-pos-tip
     :straight t :after (flycheck)
     :if (display-graphic-p)
     :ghook 'flycheck-mode-hook
     :config
-    (general-setq flycheck-pos-tip-display-errors-tty-function #'flycheck-popup-tip-show-popup))
+    (general-setq flycheck-popup-tip-error-prefix "* "))
 #+end_src
 
 *** [[https://github.com/msherry/flycheck-pycheckers][Flycheck-Pycheckers]]
@@ -3441,7 +3348,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/polymode/polymode][Polymode]]
 #+name: init-polymode-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package polymode
     :straight t)
 
@@ -3451,7 +3358,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 ** Languages
 *** Bash
-**** BATS
+**** [[https://github.com/dougm/bats-mode][BATS]]
 #+name: init-bats-block
 #+begin_src emacs-lisp
   (use-package bats-mode
@@ -3635,24 +3542,6 @@ This is a nifty package that allows me to define functions as local variables in
            ("\\.rmd'" . poly-markdown+r-mode)))
 #+end_src
 
-*** YAML
-**** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
-#+name: init-yaml-block
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-    :straight t
-    :mode ("\\.yaml'" "\\.yml'"))
-#+end_src
-
-*** TOML
-**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
-#+name: init-toml-mode-block
-#+begin_src emacs-lisp
-  (use-package toml-mode
-    :blackout "TOML" :straight t
-    :mode "Pipfile\\'")
-#+end_src
-
 *** LaTeX
 **** AuCTeX
 #+name: init-auctex-block
@@ -3661,7 +3550,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** Go
-**** Go-Mode
+**** [[https://github.com/dominikh/go-mode.el][Go-Mode]]
 #+name: init-go-mode-block
 #+begin_src emacs-lisp :tangle no
   (use-package go-mode
@@ -3669,7 +3558,8 @@ This is a nifty package that allows me to define functions as local variables in
     :ghook ('before-save-hook #'gofmt-before-save))
 #+end_src
 
-*** ESS
+*** R
+**** ESS
 #+name: init-ess-block
 #+begin_src emacs-lisp :tangle no
   (use-package ess
@@ -3804,9 +3694,9 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** Rust
-**** Rustc
+**** [[https://github.com/brotzeit/rustic][Rustic]]
 #+name: init-rust-rustc-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package rustic
     :straight t
     :mode ("\\.rs$" . rustic-mode)
@@ -3818,14 +3708,61 @@ This is a nifty package that allows me to define functions as local variables in
                   rustic-lsp-client nil))
 #+end_src
 
-**** Racer
+**** [[https://github.com/racer-rust/emacs-racer][Racer]]
 #+name: init-rust-racer-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package racer
     :straight t :after rustic
     :ghook 'rustic-mode-hook
     :config
     (general-setq auto-mode-alist (delete '("\\.rs\\'" . rust-mode) auto-mode-alist)))
+#+end_src
+
+*** File Modes
+**** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
+#+name: init-plantuml-mode-block
+#+begin_src emacs-lisp
+  (use-package plantuml-mode
+    :straight t
+    :config
+    (general-setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"
+                  plantuml-default-exec-mode 'jar))
+#+end_src
+
+**** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
+#+name: init-yaml-block
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :straight t
+    :mode ("\\.yaml'" "\\.yml'"))
+#+end_src
+
+**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
+#+name: init-toml-mode-block
+#+begin_src emacs-lisp
+  (use-package toml-mode
+    :blackout "TOML" :straight t
+    :mode "Pipfile\\'")
+#+end_src
+
+**** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
+#+name: init-subtitle-mode-block
+#+begin_src emacs-lisp :tangle no
+  (use-package subed
+    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
+    :mode ("\\.srt$")
+    :defines subed--init-alist
+    :gfhook 'auto-fill-mode
+    :config
+    ;; Break lines at 40 characters
+    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
+#+end_src
+
+**** [[https://github.com/ledger/ledger-mode][Ledger-Mode]]
+#+name: init-ledger-mode-block
+#+begin_src emacs-lisp
+  (use-package ledger-mode
+    :straight t)
 #+end_src
 
 ** Miscellaneous
@@ -3842,27 +3779,6 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package 2048-game
     :straight t)
-#+end_src
-
-*** [[https://github.com/ledger/ledger-mode][Ledger-Mode]]
-#+name: init-ledger-mode-block
-#+begin_src emacs-lisp
-  (use-package ledger-mode
-    :straight t)
-#+end_src
-
-*** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
-
-#+name: init-subtitle-mode-block
-#+begin_src emacs-lisp :tangle no
-  (use-package subed
-    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
-    :mode ("\\.srt$")
-    :defines subed--init-alist
-    :gfhook 'auto-fill-mode
-    :config
-    ;; Break lines at 40 characters
-    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-anywhere][Emacs-Anywhere]]

@@ -1,5 +1,0 @@
-(use-package racer
-  :straight t :after rustic
-  :ghook 'rustic-mode-hook
-  :config
-  (general-setq auto-mode-alist (delete '("\\.rs\\'" . rust-mode) auto-mode-alist)))

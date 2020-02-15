@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-13 13:15:53
+/last updated/: 2020-02-15 16:41:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -319,8 +319,7 @@ Great Elisp library that I use throughout my config.
 #+name: init-dash-block
 #+begin_src emacs-lisp
   (use-package dash
-    :demand t
-    :straight t)
+    :demand t :straight t)
 #+end_src
 
 *** [[https://github.com/rejeep/f.el][F]]
@@ -415,6 +414,18 @@ This function is a great way to conditional run functions at different intervals
             (message (concat (process-name process) " - " msg))
             (when (equal #',current-prefix-arg '(4))
               (org-insert-link nil ,abb-fp nil)))))))
+#+end_src
+
+**** WGET-Thing-At-Point
+#+name: init-wget-thing-at-point-block
+#+begin_src emacs-lisp
+  (defun wget-thing-at-point ()
+    (interactive)
+    (let* ((name (read-string "Name of File: " nil))
+           (dir (read-directory-name (format "Save %s to: " name)))
+           (fp (concat dir name))
+           (url (thing-at-point 'url)))
+      (url-copy-file url fp)))
 #+end_src
 
 **** Protect Buffers
@@ -1928,7 +1939,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package bash-completion
     :straight t)
 
-
   (use-package fish-completion
     :straight t
     :ghook ('emacs-startup-hook #'global-fish-completion-mode)
@@ -2407,7 +2417,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
               icon
             " "))))
 
-
     (define-ibuffer-column filename-and-process
       (:name "Filename/Process")
       (let ((proc (get-buffer-process buffer))
@@ -2427,41 +2436,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
         (if (not (seq-position string ?\n))
             string
           (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string)))))
 
-    ;; Change the way groups are rendered.
-    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
-      (add-text-properties
-       (point)
-       (progn
-         (insert (el-patch-remove "[ ")
-                 display-name
-                 (el-patch-remove " ]"))
-         (point))
-       `(ibuffer-filter-group-name
-         ,name
-         font-lock-face ,ibuffer-filter-group-name-face
-         keymap ,ibuffer-mode-filter-group-map
-         mouse-face highlight
-         help-echo ,(let ((echo '(if tooltip-mode
-                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
-                                   "mouse-1: toggle marks  mouse-2: hide/show")))
-                      (if (> (length filter-string) 0)
-                          `(concat ,filter-string
-                                   (if tooltip-mode "\n" " ")
-                                   ,echo)
-                        echo))))
-      (insert "\n")
-      (when bmarklist
-        (put-text-property
-         (point)
-         (progn
-           (dolist (entry bmarklist)
-             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
-           (point))
-         'ibuffer-filter-group
-         name))
-      (el-patch-add (insert "\n"))))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
@@ -2898,7 +2874,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 ** Email
 *** [[https://github.com/emacsmirror/mu4e][MU4E]]
-
 #+name: init-mu4e-block
 #+begin_src emacs-lisp
   (use-package mu4e
@@ -3329,21 +3304,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
-*** [[https://github.com/alexmurray/flycheck-posframe][Flycheck-Posframe]]
-#+name: init-flycheck-posframe-block
-#+begin_src emacs-lisp :tangle no
-  (use-package flycheck-posframe
-    :straight t :after (flycheck)
-    :if (display-graphic-p)
-    :ghook 'flycheck-mode-hook
-    :config
-    (flycheck-posframe-configure-pretty-defaults)
-    (general-setq flycheck-posframe-warning-prefix "⚠ "
-                  flycheck-posframe-info-prefix "… "
-                  flycheck-posframe-error-prefix "🚫 ")
-    (general-add-hook 'flycheck-posframe-inhibit-functions #'company--active-p))
-#+end_src
-
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
 #+begin_src emacs-lisp
@@ -3353,18 +3313,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook 'flycheck-mode-hook
     :config
     (general-setq flycheck-popup-tip-error-prefix "* "))
-#+end_src
-
-*** [[https://github.com/msherry/flycheck-pycheckers][Flycheck-Pycheckers]]
-#+name: init-flycheck-pycheckers-block
-#+begin_src emacs-lisp :tangle no
-  (use-package flycheck-pycheckers
-    :straight t
-    :ghook ('flycheck-mode-hook #'flycheck-pycheckers-setup)
-    :config
-    (general-setq flycheck-pycheckers-multi-thread "true"
-                  flycheck-pycheckers-max-line-length 82
-                  flycheck-pycheckers-venv-root (expand-file-name "~/.config/pyenv/versions/3.8.0/envs")))
 #+end_src
 
 *** [[https://github.com/polymode/polymode][Polymode]]

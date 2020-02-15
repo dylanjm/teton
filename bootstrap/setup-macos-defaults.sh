@@ -66,12 +66,3 @@ killall Dock
 
 defaults write com.apple.finder QuitMenuItem -bool false
 killall Finder
-
-defaults write org.gnu.Emacs Emacs.cursorType bar
-defaults write org.gnu.Emacs Emacs.toolBar -bool false
-defaults write org.gnu.Emacs FontBackend ns
-
-defaults write org.gnu.Emacs TransparentTitleBar DARK
-defaults write org.gnu.Emacs Font "Iosevka Term-18:weight=ultra-light"
-defaults write org.gnu.Emacs ToolBar -string no
-defaults write org.gnu.Emacs ScrollBar -string no

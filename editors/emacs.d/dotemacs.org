@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-17 10:25:08
+/last updated/: 2020-02-18 14:20:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -183,6 +183,7 @@ Straight.el is my package manager of choice. It is extremely powerful in it's de
       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
   (setq-default straight-cache-autoloads t
+                straight-fix-org t
                 straight-recipe-overrides nil
                 straight-repository-branch "develop"
                 straight-use-package-by-default t
@@ -397,6 +398,8 @@ This function is a great way to conditional run functions at different intervals
 
 **** Screen-Capture
 
+A quick work around function to easily snap screenshots of lecture videos while taking notes. Use the prefix command =C-u M-x emacs-screen-capture RET= to insert it automatically as an org link.
+
 #+name: init-screen-capture-block
 #+begin_src emacs-lisp
   (defun emacs-screen-capture (arg &optional name dir format)
@@ -417,6 +420,9 @@ This function is a great way to conditional run functions at different intervals
 #+end_src
 
 **** WGET-Thing-At-Point
+
+I needed this function to download a list of pdfs that were written as links in a textfile. It was pretty useful.
+
 #+name: init-wget-thing-at-point-block
 #+begin_src emacs-lisp
   (defun wget-thing-at-point ()
@@ -572,6 +578,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** Hooks & Advice
 
+This just changes the time-stamp at the top of my config. It's super annoying  to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (general-add-hook 'write-file-functions 'time-stamp)
@@ -624,6 +631,7 @@ Ignore those warnings from the old advice system.
 
 *** Align (Built-In)
 
+Align can be a pretty powerful tool, I just have to learn how to use it better.
 #+name: init-align-block
 #+begin_src emacs-lisp
   (use-package align
@@ -1500,6 +1508,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 ** Themes & Aesthetics
 *** Adaptive Wrap Prefix Mode
+
+This package isn't as reliable as I hoped it would be. It never seems to format my org files automatically.
 #+name: init-adaptive-wrap-prefix-mode-block
 #+begin_src emacs-lisp
   (use-package adaptive-wrap
@@ -1507,6 +1517,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
+
+Sort of a standard package in most emacs-configs these days.
+
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons
@@ -1517,6 +1530,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
+
+- TODO: Figure out how to config my fonts so this changes all font sizes consistently.
 
 #+name: init-default-text-scale-block
 #+begin_src emacs-lisp
@@ -1531,6 +1546,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+
+I hesitated to use doom-modeline for a long time because it always seemed to slow down my emacs. I recently made the switch from smart-mode-line and it's /okay/. I probably need to get in here and add a few more customizations before I'm satisfied.
+
 #+name: init-doom-modeline-block
 #+begin_src emacs-lisp
   (use-package doom-modeline
@@ -1544,6 +1562,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
+
+I really like the functions that doom-themes provides but do not like the gruvbox theme it comes with. I would like to create my own theme that provide similar API commands.
 
 #+name: init-doom-themes-block
 #+begin_src emacs-lisp :tangle no
@@ -1559,6 +1579,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
+
+My own personal fork of the gruvbox-theme. I've mostly added color-modes for missing packages.
 
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
@@ -1627,6 +1649,8 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 #+end_src
 
 *** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
+
+This is a cool package that I never knew I needed until I found out it existed. So many times I write some quick code to a scratch buffer and accidently lose it when closing Emacs. This will save it to a file for you periodically. It is a little finnicky about being consistent though. I probably need to configure it more.
 #+name: init-persistent-scratch-block
 #+begin_src emacs-lisp
   (use-package persistent-scratch
@@ -2056,7 +2080,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 *** [[https://github.com/magnars/expand-region.el][Expand-Region]]
-
 #+name: init-expand-region-block
 #+begin_src emacs-lisp
   (use-package expand-region
@@ -2156,13 +2179,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package hungry-delete
     :blackout t :straight t
     :ghook 'emacs-lisp-mode-hook)
-#+end_src
-
-*** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
-#+name: init-ssh-config-block
-#+begin_src emacs-lisp
-  (use-package ssh-config-mode
-    :blackout "SSH-Config" :straight t)
 #+end_src
 
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
@@ -3669,6 +3685,13 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package ledger-mode
     :straight t)
+#+end_src
+
+**** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
+#+name: init-ssh-config-block
+#+begin_src emacs-lisp
+  (use-package ssh-config-mode
+    :blackout "SSH-Config" :straight t)
 #+end_src
 
 ** Miscellaneous

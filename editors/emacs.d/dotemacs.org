@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-15 16:41:08
+/last updated/: 2020-02-17 10:25:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1308,7 +1308,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Select (Built-In)
-
 #+name: init-select-block
 #+begin_src emacs-lisp
   (use-package select
@@ -2042,6 +2041,13 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
      [remap kill-line] #'crux-smart-kill-line))
 #+end_src
 
+*** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
+#+name: init-vdiff-block
+#+begin_src emacs-lisp
+  (use-package vdiff
+    :straight t)
+#+end_src
+
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
 #+begin_src emacs-lisp
@@ -2546,33 +2552,34 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
     (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
     :config
+    (require 'org-compat)
     ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
-                  org-default-notes-file "~/Documents/org-files/inbox.org"
-                  org-directory "~/Documents/org-files")
+		  org-default-notes-file "~/Documents/org-files/inbox.org"
+		  org-directory "~/Documents/org-files")
 
     ;; Export Settings
     (general-setq org-export-backends '(ascii html latex gfm)
-                  org-export-coding-system 'utf-8
-                  org-export-exclude-tags '("noexport" "no_export" "ignore")
-                  org-export-headline-levels 5
-                  org-export-with-author t
-                  org-export-with-drawers t
-                  org-export-with-email t
-                  org-export-with-footnotes t
-                  org-export-with-latex t
-                  org-export-with-properties t
-                  org-export-with-section-numbers nil
-                  org-export-with-smart-quotes t
-                  org-export-with-toc nil
-                  org-html-html5-fancy t
-                  org-html-postamble nil)
+		  org-export-coding-system 'utf-8
+		  org-export-exclude-tags '("noexport" "no_export" "ignore")
+		  org-export-headline-levels 5
+		  org-export-with-author t
+		  org-export-with-drawers t
+		  org-export-with-email t
+		  org-export-with-footnotes t
+		  org-export-with-latex t
+		  org-export-with-properties t
+		  org-export-with-section-numbers nil
+		  org-export-with-smart-quotes t
+		  org-export-with-toc nil
+		  org-html-html5-fancy t
+		  org-html-postamble nil)
 
     ;; LaTeX Settings
     (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-                  org-latex-remove-logfiles t
-                  org-latex-prefer-user-labels t
-                  bibtex-dialect 'biblatex)
+		  org-latex-remove-logfiles t
+		  org-latex-prefer-user-labels t
+		  bibtex-dialect 'biblatex)
 
     ;; (dolist (ext '("lof" "lot" "tex"
     ;;                "aux" "idx" "log"
@@ -2587,77 +2594,77 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
     ;; Startup Settings
     (general-setq org-startup-folded 'content
-                  org-startup-with-inline-images t
-                  org-startup-indented t
-                  org-indent-mode t)
+		  org-startup-with-inline-images t
+		  org-startup-indented t
+		  org-indent-mode t)
 
     ;; Fontify Settings
     (general-setq org-fontify-whole-heading-line t
-                  org-fontify-quote-and-verse-blocks t
-                  org-fontify-done-headline t
-                  org-fontify-todo-headline t)
+		  org-fontify-quote-and-verse-blocks t
+		  org-fontify-done-headline t
+		  org-fontify-todo-headline t)
 
     ;; Refile Settings
     (general-setq org-refile-allow-creating-parent-nodes 'confirm
-                  org-refile-use-outline-path 'file
-                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+		  org-refile-use-outline-path 'file
+		  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
     ;; Log Settings
     (general-setq org-log-done 'time
-                  org-log-into-drawer t
-                  org-log-state-notes-insert-after-drawers nil)
+		  org-log-into-drawer t
+		  org-log-state-notes-insert-after-drawers nil)
 
     ;; Usage Settings
     (general-setq org-use-fast-todo-selection t
-                  org-use-fast-tag-selection t
-                  org-use-speed-commands t
-                  org-use-tag-inheritance t)
+		  org-use-fast-tag-selection t
+		  org-use-speed-commands t
+		  org-use-tag-inheritance t)
 
     ;; Aesthetic Settings
     (general-setq org-pretty-entities t
-                  org-hide-emphasis-markers t
-                  org-hide-leading-stars t
-                  org-ellipsis "…"
-                  org-image-actual-width nil)
+		  org-hide-emphasis-markers t
+		  org-hide-leading-stars t
+		  org-ellipsis "…"
+		  org-image-actual-width nil)
 
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     (font-lock-add-keywords 'org-mode
-                            `((,(rx bol (* space) (group "-") (+ space))
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-                              (,(rx bol (* space) (group "#+end_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
-                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+			    `((,(rx bol (* space) (group "-") (+ space))
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+			      (,(rx bol (* space) (group "#+begin_src") symbol-end)
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+			      (,(rx bol (* space) (group "#+end_src") symbol-end)
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+			      (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+			      (,(rx bol (* space) (group "#+end_quote") symbol-end)
+			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
     ;; List Settings
     (general-setq org-list-indent-offset 2)
 
     ;; Other Settings
     (general-setq org-catch-invisible-edits 'smart
-                  org-cycle-separator-lines 0
-                  org-enforce-todo-dependencies t
-                  org-enforce-todo-checkbox-dependencies t
-                  org-insert-heading-respect-content t
-                  org-outline-path-complete-in-steps nil
-                  org-special-ctrl-a/e t
-                  org-special-ctrl-k t
-                  org-tags-column 0
-                  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-                  org-yank-adjusted-subtrees t)
+		  org-cycle-separator-lines 0
+		  org-enforce-todo-dependencies t
+		  org-enforce-todo-checkbox-dependencies t
+		  org-insert-heading-respect-content t
+		  org-outline-path-complete-in-steps nil
+		  org-special-ctrl-a/e t
+		  org-special-ctrl-k t
+		  org-tags-column 0
+		  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+				      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+		  org-yank-adjusted-subtrees t)
 
     (general-setq org-tag-alist (quote (("@home" .   ?h)
-                                        ("@work" .   ?w)
-                                        ("@school" . ?s)
-                                        ("@church" . ?c)
-                                        (:newline)
-                                        ("PROJECT" . ?p)
-                                        ("AD-HOC" . ?A))))
+					("@work" .   ?w)
+					("@school" . ?s)
+					("@church" . ?c)
+					(:newline)
+					("PROJECT" . ?p)
+					("AD-HOC" . ?A))))
 
     (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
@@ -3206,13 +3213,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
 #+end_src
 
-*** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
-#+name: init-vdiff-block
-#+begin_src emacs-lisp
-  (use-package vdiff
-    :straight t)
-#+end_src
-
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
 #+begin_src emacs-lisp
@@ -3231,45 +3231,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Language Server Support
-*** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
-#+name: init-lsp-block
-#+begin_src emacs-lisp :tangle no
-  (use-package lsp-mode
-    :straight t
-    :commands (lsp)
-    :ghook ('python-mode-hook #'lsp)
-    :gfhook #'lsp-enable-which-key-integration
-    :config
-    (general-setq lsp-prefer-flymake nil)
-    (use-package lsp-clients
-      :demand t :straight nil)
-
-    (use-package lsp-ui
-      :demand t :straight (:files ("*.el" "*.html")
-                           :host github
-                           :repo "emacs-lsp/lsp-ui")
-      :commands (lsp-ui-mode)
-      :config (lsp-ui-mode))
-
-    (use-package lsp-ui-doc
-      :demand t :straight lsp-ui
-      :commands (lsp-ui-doc-focus-frame
-                 lsp-ui-doc-unfocus-frame)
-      :config (lsp-ui-doc-mode)))
-#+end_src
-
-*** [[https://github.com/emacs-lsp/dap-mode][Dap-Mode]]
-#+name: init-dap-mode-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dap-mode
-    :straight t :after (lsp-mode)
-    :ghook 'lsp-mode-hook
-    :gfhook #'dap-ui-mode
-    :config
-    (use-package dap-python
-      :demand t :straight nil))
-#+end_src
-
 *** [[https://github.com/joaotavora/eglot#animated_gifs][Eglot]]
 #+name: init-eglot-block
 #+begin_src emacs-lisp
@@ -3496,14 +3457,14 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/milkypostman/markdown-mode-plus][Markdown-Mode-Plus]]
 #+name: init-markdown-mode-plus-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package markdown-mode+
     :straight t)
 #+end_src
 
 **** [[https://github.com/polymode/poly-markdown][Poly-Markdown]]
 #+name: init-poly-markdown
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package poly-markdown
     :straight t
     :mode (("\\.md'" . poly-markdown-mode)
@@ -3625,41 +3586,17 @@ This is a nifty package that allows me to define functions as local variables in
     (use-package python-docstring
       :demand t :straight t
       :ghook 'python-mode-hook)
-    (outline-minor-mode t))
-
-
-
-
-  ;; :config
-  ;; (general-setq python-shell-interpreter "ipython"
-  ;;               python-shell-interpreter-args "--simple-prompt"
-  ;;               python-indent-guess-indent-offset-verbose nil))
+    (outline-minor-mode t)
+    (general-setq python-shell-interpreter "ipython"
+                  python-shell-interpreter-args "--simple-prompt"
+                  python-indent-guess-indent-offset-verbose nil))
 #+end_src
 
 **** [[https://github.com/pythonic-emacs/pyenv-mode][Pyenv]]
 #+name: init-pyenv-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package pyenv-mode-auto
     :demand t :straight t :after (python-mode))
-
-  (use-package pyenv-mode
-    :blackout t :straight t
-    :ghook 'python-mode-hook
-    :ghook ('projectile-switch-project-hook #'projectile-pyenv-mode-set)
-    :config
-    (defun projectile-pyenv-mode-set ()
-      "Set pyenv version matching project name."
-      (let ((project (projectile-project-name)))
-        (if (member project (pyenv-mode-versions))
-            (pyenv-mode-set project)
-          (pyenv-mode-unset)))))
-#+end_src
-
-**** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
-#+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp :tangle no
-  (use-package lsp-python-ms
-    :demand t :straight t :after (:all lsp-clients python))
 #+end_src
 
 *** Rust

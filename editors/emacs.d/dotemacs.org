@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-18 14:20:08
+/last updated/: 2020-02-18 15:20:19
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1330,7 +1330,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package sh-script
     :straight (:type built-in)
-    :mode (("\\.[a-zA-Z]+rc'" . sh-mode))
+    :mode (("\\.[a-zA-Z]+rc$" . sh-mode))
     :config
     (general-setq sh-indentation 2
                   sh-basic-offset 2
@@ -1960,7 +1960,10 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-fish-completion-block
 #+begin_src emacs-lisp
   (use-package bash-completion
-    :straight t)
+    :straight t
+    :commands (bash-completion-dynamic-complete)
+    :init
+    (general-add-hook 'shell-dynamic-complete-functions 'bash-completion-dynamic-complete))
 
   (use-package fish-completion
     :straight t
@@ -3202,15 +3205,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t :after (magit))
 #+end_src
 
-*** [[https://github.com/syohex/emacs-git-gutter][Git-Gutter]]
-#+name: init-git-gutter-block
-#+begin_src emacs-lisp :tangle no
-  (use-package git-gutter
-    :blackout t :straight t
-    :if (display-graphic-p)
-    :ghook ('emacs-startup-hook #'global-git-gutter-mode))
-#+end_src
-
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
@@ -3253,7 +3247,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package eglot
     :straight t
     :ghook ('python-mode-hook #'eglot-ensure)
-    :ghook ('inferior-python-mode-hook 'eglot-ensure)
     :config
     (add-to-list 'eglot-server-programs
                  `(python-mode . ("pyls" "-v" "--tcp" "--host"
@@ -3541,7 +3534,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** Julia
 **** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
 #+name: init-julia-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package julia-mode
     :straight t
     :interpreter "/usr/local/bin/julia"
@@ -3573,7 +3566,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
 #+name: init-julia-repl-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package julia-repl
     :straight t
     :ghook 'julia-mode-hook
@@ -3583,14 +3576,6 @@ This is a nifty package that allows me to define functions as local variables in
     (general-add-hook 'inferior-julia-mode-hook #'arco/set-julia-repl-env))
 #+end_src
 
-
-**** [[https://github.com/non-Jedi/lsp-julia][LSP-Julia]]
-#+name: init-lsp-julia-block
-#+begin_src emacs-lisp :tangle no
-  (use-package lsp-julia
-    :straight t
-    :ghook ('julia-mode-hook #'lsp-mode))
-#+end_src
 
 *** Python
 **** Python (Built-In)

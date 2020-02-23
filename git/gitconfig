@@ -1,3 +1,4 @@
+# -*- mode: gitconfig; -*-
 [user]
 	name = Dylan McDowell
 	email = dylanjm@users.noreply.github.com
@@ -6,11 +7,11 @@
 	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
 	excludesfile = ~/.gitignore
 [github]
-    user = dylanjm
+	user = dylanjm
 [rebase]
-    autoSquash = true
+	autoSquash = true
 [push]
-    default = current
+	default = current
 [branch]
 	autoSetupRebase = always
 [color]

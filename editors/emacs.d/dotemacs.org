@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-22 20:47:32
+/last updated/: 2020-02-23 15:00:07
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -554,8 +554,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
   (when window-system
     (if (> (x-display-pixel-width) 1800)
-        (setup-main-fonts 190 180)
-      (setup-main-fonts 140 130)))
+        (setup-main-fonts 190 185)
+      (setup-main-fonts 140 135)))
 
   (defun configure-fonts ()
     "Set up fonts for FRAME.
@@ -587,10 +587,28 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 *** Hooks & Advice
 
-This just changes the time-stamp at the top of my config. It's super annoying  to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
+This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
   (general-add-hook 'write-file-functions 'time-stamp)
+#+end_src
+
+Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
+#+name: init-advice-block
+#+begin_src emacs-lisp
+  (defun arco/always-exit-minibuffer-first ()
+    (if-let ((minibuffer (active-minibuffer-window)))
+        (with-current-buffer (window-buffer minibuffer)
+          (minibuffer-keyboard-quit))
+      (funcall keyboard-quit)))
+
+  (general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
+#+end_src
+
+#+name: init-misc-settings-block
+#+begin_src emacs-lisp
+  (mapc (lambda (c)
+          (set-char-table-range auto-fill-chars c t)) "!-=+]};:'\",.?")
 #+end_src
 
 *** Keybindings & Aliases
@@ -1365,6 +1383,13 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package sh-script
     :straight (:type built-in)
     :mode (("\\.[a-zA-Z]+rc$" . sh-mode))
+    :init
+    (defun arco/sh-script-prettify-mode-line ()
+      (general-setq mode-line-process nil)
+      (when (eq major-mode 'sh-mode)
+        (general-setq mode-name (capitalize (symbol-name sh-shell)))))
+
+    (general-add-hook 'sh-mode-hook #'arco/sh-script-prettify-mode-line)
     :config
     (general-setq sh-indentation 2
                   sh-basic-offset 2
@@ -1844,7 +1869,7 @@ A nice way to restart emacs on the fly if you need to.
     :config
     (general-setq projectile-completion-system 'default
                   projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired)
+                  projectile-switch-project-action 'projectile-commander)
     (general-pushnew 'projectile-project-find-function project-find-functions))
 #+end_src
 
@@ -1922,23 +1947,28 @@ A nice way to restart emacs on the fly if you need to.
     :ghook ('after-init-hook #'global-company-mode)
     :general
     ([remap completion-at-point] #'company-manual-begin
-     [remap complete-symbol] #'company-manual-begin
-     "TAB" #'company-complete)
+     [remap complete-symbol] #'company-manual-begin)
     (:keymaps 'company-active-map
      "TAB"     #'company-complete-selection
-     [tab]     #'company-complete-selection)
+     "<tab>"   #'company-complete-selection)
+    (:keymaps 'company-active-map
+     :predicate '(company-explicit-action-p)
+     "<return>" #'company-complete-selection
+     "RET"      #'company-complete-selection)
     (:keymaps 'comint-mode-map
      [remap indent-for-tab-command] #'company-manual-begin)
     :preface
     (general-unbind :keymaps 'company-active-map "C-w" "C-h")
     :config
     (general-setq company-async-timeout 30
+                  company-dabbrev-other-buffers nil
                   company-dabbrev-ignore-case nil
                   company-dabbrev-downcase nil
                   company-idle-delay .3
                   company-minimum-prefix-length 2
                   company-show-numbers t
-                  company-require-match 'never
+                  company-require-match #'company-explicit-action-p
+                  company-auto-complete-chars nil
                   company-tooltip-limit 15
                   company-tooltip-align-annotations t)
 
@@ -2297,6 +2327,7 @@ A nice way to restart emacs on the fly if you need to.
     :config
     (general-setq undo-tree-save-history t
                   undo-tree-visualizer-timestamps t
+                  undo-tree-enable-undo-in-region nil
                   undo-tree-visualizer-diff t
                   undo-limit 800000
                   undo-strong-limit 1200000
@@ -2796,6 +2827,7 @@ A nice way to restart emacs on the fly if you need to.
       (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
       (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
 
+    ;; Chris Barrett Org Hacks
     (defun org-hacks--fix-org-src-block-edit (fn &rest args)
       (let ((element-type (ignore-errors
                             (org-element-type (org-element-context (org-element-at-point))))))
@@ -2811,7 +2843,7 @@ A nice way to restart emacs on the fly if you need to.
                   org-directory "~/Documents/org-files")
 
     ;; Export Settings
-    (general-setq org-export-backends '(jdf ascii html latex gfm)
+    (general-setq org-export-backends '(jdf-report ascii html latex gfm)
                   org-export-coding-system 'utf-8
                   org-export-exclude-tags '("noexport" "no_export" "ignore")
                   org-export-headline-levels 5
@@ -3558,7 +3590,14 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package apheleia
     :straight (:host github :repo "raxod502/apheleia")
-    :ghook ('emacs-startup-hook #'apheleia-global-mode))
+    :ghook ('emacs-startup-hook #'apheleia-global-mode)
+    :init
+    (defun arco/save-buffer-reformat-maybe (func &optional arg)
+      "Make it so \\[save-buffer] with prefix arg inhibits reformatting."
+      (let ((apheleia-mode (and apheleia-mode (member arg '(nil 1)))))
+        (funcall func)))
+
+    (general-add-advice #'arco/save-buffer-reformat-maybe :around 'save-buffer))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
@@ -3567,6 +3606,13 @@ A nice way to restart emacs on the fly if you need to.
   (use-package flycheck
     :straight t
     :ghook ('prog-mode-hook #'global-flycheck-mode)
+    :init
+    (defun arco/disable-eldoc-on-flycheck (&rest _)
+      "Disable ElDoc when point is on a Flycheck overlay.
+  This prevents ElDoc and Flycheck from fighting over the echo
+  area."
+      (not (flycheck-overlay-errors-at (point))))
+    (general-add-advice #'arco/disable-eldoc-on-flycheck :after-while #'eldoc-display-message-no-interference-p)
     :config
     (general-setq flycheck-sh-shellcheck-executable "shellcheck"
                   flycheck-shellcheck-follow-sources t)
@@ -3895,13 +3941,6 @@ This is a nifty package that allows me to define functions as local variables in
                   python-indent-guess-indent-offset-verbose nil))
 #+end_src
 
-**** [[https://github.com/pythonic-emacs/pyenv-mode][Pyenv]]
-#+name: init-pyenv-block
-#+begin_src emacs-lisp
-  (use-package pyenv-mode-auto
-    :demand t :straight t :after (python-mode))
-#+end_src
-
 *** Rust
 **** [[https://github.com/brotzeit/rustic][Rustic]]
 #+name: init-rust-rustc-block
@@ -3928,6 +3967,35 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** File Modes
+**** [[https://github.com/tequilasunset/apples-mode][Apple-Script]]
+#+name: init-apple-script-block
+#+begin_src emacs-lisp
+  (use-package apples-mode
+    :straight t
+    :mode "\\.\\(applescri\\|sc\\)pt\\'")
+#+end_src
+
+**** Crontab-Mode
+#+name: init-crontab-mode-block
+#+begin_src emacs-lisp
+  (use-package crontab-mode
+    :straight t)
+#+end_src
+
+**** Gitconfig-Mode
+#+name: init-gitconfig-mode-block
+#+begin_src emacs-lisp
+  (use-package gitconfig-mode
+    :straight t)
+#+end_src
+
+**** Gitignore-Mode
+#+name: init-gitignore-mode-block
+#+begin_src emacs-lisp
+  (use-package gitignore-mode
+    :straight t)
+#+end_src
+
 **** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
 #+name: init-plantuml-mode-block
 #+begin_src emacs-lisp
@@ -3952,6 +4020,13 @@ This is a nifty package that allows me to define functions as local variables in
   (use-package toml-mode
     :blackout "TOML" :straight t
     :mode "Pipfile\\'")
+#+end_src
+
+**** JSON-Mode
+#+name: init-json-mode-block
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :straight t)
 #+end_src
 
 **** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]

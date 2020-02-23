@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+
+_PARENT_DIR="${PWD##*/}"
+
+_LESSON_NUM="$(echo "$_PARENT_DIR" | cut -d_ -f1)"
+
+_ARTIST="CS7637 Knowledge-Based AI"
+
+_ALBUM="Lesson ${_PARENT_DIR//_/ }"
+
+_GENRE="Education"
+
+_YEAR="2020"
+
+for i in *.mp4; do
+    __EPISODE_NUM="$(echo "$i" | cut -d_ -f1)"
+    __EPISODE_NAME="$(echo "$i" | cut -d_ -f3- | sed 's/_/ /g' | sed 's/.mp4//g')"
+    __EPISODE_TITLE="L${_LESSON_NUM}E${__EPISODE_NUM} ${__EPISODE_NAME}"
+    AtomicParsley "$i" \
+        --artist "${_ARTIST}" \
+        --album "${_ALBUM}" \
+        --genre "${_GENRE}" \
+        --year "${_YEAR}" \
+        --tracknum "${__EPISODE_NUM}" \
+        --title "${__EPISODE_TITLE}" \
+        --overWrite
+done

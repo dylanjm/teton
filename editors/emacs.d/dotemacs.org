@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-18 15:20:19
+/last updated/: 2020-02-22 20:47:32
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -70,7 +70,7 @@ This document is my current emacs config which contains the code for my =early-i
 ** Header
 #+name: early-init-header-block
 #+begin_src emacs-lisp
-  ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t-*-
+  ;;; early-init.el --- Early initialization. -*- lexical-binding: t; buffer-read-only: t -*-
   ;;;
   ;;; Commentary:
   ;;; Emacs `early-init.el' config by dylanjm
@@ -92,7 +92,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 20000000)
+  (defvar default-gc-cons-threshold (* 512 1024 1024))
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
@@ -105,6 +105,7 @@ You'll see this modification in many config files around the internet. The idea 
 
   (setq file-name-handler-alist nil
         gc-cons-threshold extended-gc-cons-threshold
+        gc-cons-percentage 0.7
         package-enable-at-startup nil)
 
   (defun djm/return-vars-to-normal ()
@@ -112,9 +113,17 @@ You'll see this modification in many config files around the internet. The idea 
           load-prefer-newer nil))
 
   (add-hook 'after-init-hook #'djm/return-vars-to-normal)
-  (run-with-idle-timer 5 nil (lambda ()
+  (run-with-idle-timer 8 nil (lambda ()
                                (setq-default gc-cons-threshold default-gc-cons-threshold)
                                (garbage-collect)))
+
+  (defun djm/gc-on-lose-focus ()
+    "A convienient time to run garbage collect is when Emacs loses focus."
+    (unless (frame-focus-state)
+      (garbage-collect)))
+
+  (if (boundp 'after-focus-change-function)
+      (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
 #+end_src
 
 *** Pre-Gui Optimization
@@ -130,8 +139,9 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                                       (alpha . (100 100))
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
-                                      (vertical-scroll-bars)
                                       (font . "Iosevka TermLig SS09-18:weight=ultra-light:width=expanded")))
+
+  (modify-all-frames-parameters '((vertical-scroll-bars)))
 
   ;; Not sure if this is really needed anymore
   (prefer-coding-system 'utf-8-unix)
@@ -156,7 +166,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 * Init
 ** Header
-
 #+name: init-header-block
 #+begin_src emacs-lisp
   ;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t-*-
@@ -172,7 +181,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 ** Package Management
 *** [[https://github.com/raxod502/straight.el][Straight]]
 
-Straight.el is my package manager of choice. It is extremely powerful in it's design and ensures you have a functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup much more to anything I've tried.
+=Straight.el= is my package manager of choice. It is extremely powerful in it's design and ensures you have a functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup much more to anything I've tried.
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
@@ -206,10 +215,10 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-  (setq-default use-package-verbose nil
+  (setq-default use-package-verbose t
                 use-package-always-defer t
-                use-package-compute-statistics nil
-                use-package-enable-imenu-support nil)
+                use-package-compute-statistics t
+                use-package-enable-imenu-support t)
 
   (straight-use-package 'use-package)
 #+end_src
@@ -545,8 +554,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
   (when window-system
     (if (> (x-display-pixel-width) 1800)
-        (setup-main-fonts 180 190)
-      (setup-main-fonts 130 140)))
+        (setup-main-fonts 190 180)
+      (setup-main-fonts 140 130)))
 
   (defun configure-fonts ()
     "Set up fonts for FRAME.
@@ -636,9 +645,8 @@ Align can be a pretty powerful tool, I just have to learn how to use it better.
 #+begin_src emacs-lisp
   (use-package align
     :straight (:type built-in)
-    :commands align
     :general
-    ("C-c [" #'align-regexp))
+    ("C-x a a" #'align-regexp))
 #+end_src
 
 *** Ansi-Color (Built-In)
@@ -661,7 +669,6 @@ Here we can setup proper coloring for compile buffers.
 #+end_src
 
 *** Auth-Source (Built-In)
-
 #+name: init-auth-source-block
 #+begin_src emacs-lisp
   (use-package auth-source
@@ -694,7 +701,7 @@ Here we can setup proper coloring for compile buffers.
 #+begin_src emacs-lisp
   (use-package bookmark
     :straight (:type built-in)
-    :config
+    :init
     (general-setq bookmark-save-flag +1))
 #+end_src
 
@@ -703,9 +710,7 @@ Here we can setup proper coloring for compile buffers.
 #+name: init-browse-url-block
 #+begin_src emacs-lisp
   (use-package browse-url
-    :straight (:type built-in)
-    :config
-    (general-setq browse-urls-browser-function "firefox"))
+    :straight (:type built-in))
 #+end_src
 
 *** Calculator (Built-In)
@@ -716,7 +721,7 @@ Let's add a few helpful units to the calculator.
 #+begin_src emacs-lisp
   (use-package calc
     :straight (:type built-in)
-    :config
+    :init
     (general-setq math-additional-units
                   '((GiB "1024 * MiB" "Giga Byte")
                     (MiB "1024 * KiB" "Mega Byte")
@@ -748,7 +753,7 @@ Let's add a few helpful units to the calculator.
 #+begin_src emacs-lisp
   (use-package checkdoc
     :straight (:type built-in)
-    :config
+    :init
     (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
 #+end_src
 
@@ -792,8 +797,7 @@ Let's add a few helpful units to the calculator.
 #+name: init-conf-mode-block
 #+begin_src emacs-lisp
   (use-package conf-mode
-    :straight (:type built-in)
-    :mode ("\\.i$" "tests" "test" "post"))
+    :straight (:type built-in))
 #+end_src
 
 *** Cus-Start (Built-In)
@@ -876,7 +880,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package doc-view
     :straight (:type built-in)
-    :config
+    :init
     (general-setq doc-view-continuous t))
 #+end_src
 
@@ -886,7 +890,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package ediff
     :straight (:type built-in)
-    :config
+    :init
     (general-setq ediff-window-setup-function #'ediff-setup-windows-plain
                   ediff-diff-options "-w"
                   ediff-split-window-function #'split-window-horizontally))
@@ -940,7 +944,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package epa
     :straight (:type built-in)
-    :no-require t
     :config
     (general-setq epa-replace-original-text t))
 #+end_src
@@ -951,7 +954,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package epg
     :straight (:type built-in)
-    :no-require t
     :config
     (general-setq epg-pinentry-mode 'loopback))
 #+end_src
@@ -1020,7 +1022,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package flyspell
     :straight (:type built-in)
-    :config
+    :init
     (general-setq flyspell-abbrev-p t
                   flyspell-use-global-abbrev-table-p t
                   flyspell-issue-welcome-flag nil
@@ -1107,6 +1109,33 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (imagemagick-register-types))
 #+end_src
 
+*** iElm (Built-In)
+#+name: init-ielm-block
+#+begin_src emacs-lisp
+  (use-package ielm
+    :straight (:type built-in)
+    :preface
+    (defun arco/pop-to-elisp-buffer ()
+      (interactive)
+      (if-let* ((buf (seq-find (lambda (buf)
+                                 (with-current-buffer buf
+                                   (derived-mode-p 'emacs-lisp-mode)))
+                               (buffer-list))))
+          (pop-to-buffer buf)
+        (user-error "No Emacs Lisp buffers")))
+    :config
+    (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*ielm*" eos)
+                   (display-buffer-reuse-window display-buffer-in-side-window)
+                   (side . right)
+                   (window-width . 80)))
+
+    (general-def 'inferior-emacs-lisp-mode-map
+      "C-c x i" #'arco/pop-to-elisp-buffer))
+#+end_src
+
 *** iMenu (Built-In)
 
 #+name: init-imenu-block
@@ -1147,14 +1176,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
       (general-pushnew regions ispell-skip-region-alist)))
 #+end_src
 
-*** LS-Lisp (Built-In)
-
-#+name: init-ls-lisp-block
-#+begin_src emacs-lisp
-  (use-package ls-lisp
-    :straight (:type built-in) :after (dired))
-#+end_src
-
 *** Make-Mode (Built-In)
 
 #+name: init-makefile-block
@@ -1168,6 +1189,19 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                (makefile-imake-mode . "Makefile"))
     :init
     (general-add-hook 'makefile-mode-hook '(lambda () (setq-local indent-tabs-mode t))))
+#+end_src
+
+*** Message (Built-In)
+#+name: init-message-block
+#+begin_src emacs-lisp
+  (use-package message
+    :straight (:type built-in)
+    :config
+    (general-setq send-mail-function 'sendmail-send-it
+                  sendmail-program "/usr/local/bin/msmtp"
+                  mail-specify-envelope-from t
+                  message-sendmail-envelope-from 'header
+                  mail-envelope-from 'header))
 #+end_src
 
 *** Minibuffer (Built-In)
@@ -1325,7 +1359,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
 
-*** Shell (Built-In)
+*** Shell-Script (Built-In)
 #+name: init-shell-script-block
 #+begin_src emacs-lisp
   (use-package sh-script
@@ -1371,6 +1405,21 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package smerge-mode
     :straight (:type built-in)
     :commands (smerge-mode))
+#+end_src
+
+*** Subr-X (Built-In)
+#+name: init-subr-x-block
+#+begin_src emacs-lisp
+  (use-package subr-x
+    :straight (:type built-in)
+    :init
+    (defun display-buffer-fullframe (buffer alist)
+      (when-let* ((window (or (display-buffer-reuse-window buffer alist)
+                              (display-buffer-same-window buffer alist)
+                              (display-buffer-pop-up-window buffer alist)
+                              (display-buffer-use-some-window buffer alist))))
+        (delete-other-windows window)
+        window)))
 #+end_src
 
 *** Subword (Built-In)
@@ -1429,7 +1478,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq vc-follow-symlinks t
-                  vc-handled-backends '(Git)))
+                  vc-handled-backends nil))
 #+end_src
 
 *** View (Built-In)
@@ -1489,7 +1538,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-custom-load-block
 #+begin_src emacs-lisp
   (use-package cus-edit
-    :demand t :straight (:type built-in)
+    :straight (:type built-in)
     :config
     (general-setq custom-file djm--custom-file)
     (when (file-exists-p custom-file)
@@ -1499,7 +1548,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Secret File
 
 #+name: init-secret-load-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (when (file-exists-p arco--user-secret-file)
     (load arco--user-secret-file :noerror)
     (general-setq-default user-mail-address arco--user-email
@@ -1523,7 +1572,7 @@ Sort of a standard package in most emacs-configs these days.
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons
-    :demand t :straight t
+    :straight t
     :config
     (general-setq all-the-icons-scale-factor 1.3)
     (general-pushnew '("\\.db$" all-the-icons-faicon "database" :face all-the-icons-blue) all-the-icons-icon-alist))
@@ -1569,13 +1618,24 @@ I really like the functions that doom-themes provides but do not like the gruvbo
 #+begin_src emacs-lisp :tangle no
   (use-package doom-themes
     :demand t :straight t
-    :config
+    :config/el-patch
     (general-setq doom-themes-enable-bold t
                   doom-themes-enable-italic t)
     (load-theme 'doom-laserwave t)
     (doom-themes-org-config)
     (doom-themes-visual-bell-config)
-    (configure-fonts))
+    (configure-fonts)
+    ;; Taken from Chris Barrett doom-modeline-hacks.el
+    (el-patch-defun doom-modeline-set-modeline (key &optional default)
+      "Set the modeline format. Does nothing if the modeline KEY doesn't exist.
+  If DEFAULT is non-nil, set the default mode-line for all buffers."
+      (when-let ((modeline (doom-modeline key)))
+        (el-patch-wrap 2
+          (unless (frame-parent)
+            (setf (if default
+                      (default-value (el-patch-swap 'mode-line-format 'header-line-format))
+                    (buffer-local-value (el-patch-swap 'mode-line-format 'header-line-format) (current-buffer)))
+                  (list "%e" modeline)))))))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -1643,6 +1703,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         text-mode-hook
         comint-mode-hook
         compilation-mode-hook
+        ledger-report-mode-hook
         help-mode-hook
         helpful-mode-hook
         org-agenda-mode-hook)))
@@ -1686,27 +1747,6 @@ A nice way to restart emacs on the fly if you need to.
   (use-package restart-emacs
     :straight t
     :init (defalias 're #'restart-emacs))
-#+end_src
-
-*** [[https://gitlab.com/koral/gcmh][GCMH]]
-Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I haven't seen any problems so far.
-#+name: init-gchm-block
-#+begin_src emacs-lisp
-  (use-package gcmh
-    :blackout t :straight t
-    :ghook 'after-init-hook
-    :preface
-    (defun djm/gc-on-lose-focus ()
-      "A convienient time to run garbage collect is when Emacs loses focus."
-      (unless (frame-focus-state)
-        (garbage-collect)))
-
-    (if (boundp 'after-focus-change-function)
-        (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
-
-    :config (general-setq gcmh-verbose nil
-                          gcmh-low-cons-threshold default-gc-cons-threshold
-                          gcmh-high-cons-threshold extended-gc-cons-threshold))
 #+end_src
 
 ** System
@@ -1754,7 +1794,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     (general-setq multi-libvterm-dedicated-window-height 25))
 #+end_src
 
-*** [[https://github.com/akermu/emacs-libvterm][Vterm]]
+*** [[https://github.com/akermu/emacs-libvterm][Vterm
+]]
 #+name: init-vterm-block
 #+begin_src emacs-lisp
   (use-package vterm
@@ -1768,10 +1809,9 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :config
     (defun arco/vterm-kill-buffer-on-quit (buffer event)
       (if buffer (kill-buffer buffer)))
+
     (general-setq vterm-term-environment-variable "xterm-256color")
-
     (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit)
-
     (general-pushnew '("find-file-below" find-file-below) vterm-eval-cmds))
 #+end_src
 
@@ -1878,24 +1918,24 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
-    :blackout t :straight t
+    :straight t
     :ghook ('after-init-hook #'global-company-mode)
     :general
+    ([remap completion-at-point] #'company-manual-begin
+     [remap complete-symbol] #'company-manual-begin
+     "TAB" #'company-complete)
     (:keymaps 'company-active-map
-     "RET"     nil
-     [return]  nil
      "TAB"     #'company-complete-selection
-     [tab]     #'company-complete-selection
-     "C-f"     #'company-complete-common
-     "C-n"     #'company-select-next
-     "C-p"     #'company-select-previous
-     "M-/"     #'company-other-backend)
+     [tab]     #'company-complete-selection)
+    (:keymaps 'comint-mode-map
+     [remap indent-for-tab-command] #'company-manual-begin)
+    :preface
+    (general-unbind :keymaps 'company-active-map "C-w" "C-h")
     :config
     (general-setq company-async-timeout 30
+                  company-dabbrev-ignore-case nil
                   company-dabbrev-downcase nil
-                  company-dabbrev-other-buffers t
-                  company-dabbrev-code-other-buffers 'code
-                  company-idle-delay .15
+                  company-idle-delay .3
                   company-minimum-prefix-length 2
                   company-show-numbers t
                   company-require-match 'never
@@ -1912,8 +1952,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
     (general-setq company-frontends '(company-pseudo-tooltip-frontend
                                       company-echo-metadata-frontend)))
-
-
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
@@ -1922,9 +1960,65 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package company-box
     :blackout t :straight t
     :ghook 'company-mode-hook
-    :config
+    :general
+    (:keymaps '(company-active-map company-search-map company-filter-map)
+     "C-n" #'company-box--next-line
+     "C-p" #'company-box--prev-line)
+    :config/el-patch
     (general-setq company-box-icons-alist 'company-box-icons-all-the-icons
-                  company-box-enable-icon t))
+                  company-box-enable-icon t)
+
+    ;; Fix background colour on theme change.
+    (el-patch-defun company-box--display (string)
+      "Display the completions."
+      (company-box--render-buffer string)
+      (unless (company-box--get-frame)
+        (company-box--set-frame (company-box--make-frame)))
+      (el-patch-add
+        (with-selected-frame (company-box--get-frame)
+          (set-background-color (face-background 'company-box-background nil t))))
+      (company-box--set-frame-position (company-box--get-frame))
+      (unless (frame-visible-p (company-box--get-frame))
+        (make-frame-visible (company-box--get-frame)))
+      (company-box--update-scrollbar (company-box--get-frame) t))
+
+
+    ;; Make sure we don't show a header line in company-box.
+    (el-patch-defun company-box--render-buffer (string)
+      (let ((selection company-selection))
+        (with-current-buffer (company-box--get-buffer)
+          (erase-buffer)
+          (insert string "\n")
+          (setq mode-line-format nil
+                (el-patch-add header-line-format nil)
+                display-line-numbers nil
+                truncate-lines t
+                cursor-in-non-selected-windows nil)
+          (setq-local scroll-step 1)
+          (setq-local scroll-conservatively 10000)
+          (setq-local scroll-margin  0)
+          (setq-local scroll-preserve-screen-position t)
+          (add-hook 'window-configuration-change-hook 'company-box--prevent-changes t t)
+          (company-box--update-line selection))))
+
+    ;; Fix the foreground and background colours of documentation popup frames.
+    (el-patch-defun company-box-doc--show (selection frame)
+      (-when-let* ((valid-state (and (eq (selected-frame) frame)
+                                     (company-box--get-frame)
+                                     (frame-visible-p (company-box--get-frame))))
+                   (candidate (nth selection company-candidates))
+                   (doc (or (company-call-backend 'quickhelp-string candidate)
+                            (company-box-doc--fetch-doc-buffer candidate)))
+                   (doc (company-box-doc--make-buffer doc)))
+        (unless (frame-live-p (frame-parameter nil 'company-box-doc-frame))
+          (set-frame-parameter nil 'company-box-doc-frame (company-box-doc--make-frame doc)))
+        (el-patch-add
+          (with-selected-frame (frame-parameter nil 'company-box-doc-frame)
+            (set-foreground-color (face-foreground 'company-box-candidate nil t))
+            (set-background-color (face-background 'company-box-background nil t))))
+        (company-box-doc--set-frame-position (frame-parameter nil 'company-box-doc-frame))
+        (unless (frame-visible-p (frame-parameter nil 'company-box-doc-frame))
+          (make-frame-visible (frame-parameter nil 'company-box-doc-frame))))))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -1980,8 +2074,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :ghook ('(prog-mode-hook org-mode-hook text-mode-hook) #'yas-global-mode)
     :general ("C-;" #'yas-expand)
     :config
-    (blackout 'yas-global-mode)
-    (blackout 'yas-minor-mode)
     (general-setq yas-verbosity 1
                   yas-wrap-around-region t
                   yas-prompt-functions '(yas-completing-prompt)
@@ -1998,27 +2090,29 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package helpful
     :straight t
-    :preface
-    (defun helpful-face (symbol)
-      (interactive
-       (list (read-face-name "Describe face" (face-list))))
-      (funcall helpful-switch-buffer-function (helpful--buffer symbol t))
-      (helpful-update))
     :general
     ([remap describe-function] #'helpful-callable
      "C-h C"                   #'helpful-command
      [remap describe-variable] #'helpful-variable
      [remap describe-key]      #'helpful-key
-     "C-h F"                   #'helpful-face
      "C-c C-d"                 #'helpful-at-point
-     "C-h x"                   #'helpful-macro))
+     "C-h x"                   #'helpful-macro)
+    :config
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos "*helpful ")
+                   (display-buffer-reuse-window
+                    display-buffer-pop-up-window)
+                   (reusable-frames . visible)
+                   (side . right)
+                   (slot . 1)
+                   (window-width . 0.5))))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
 #+name: init-which-key-block
 #+begin_src emacs-lisp
   (use-package which-key
-    :blackout t :straight t
+    :straight t
     :ghook 'emacs-startup-hook
     :config
     (general-setq which-key-separator " "
@@ -2040,7 +2134,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-anzu-block
 #+begin_src emacs-lisp
   (use-package anzu
-    :blackout t :straight t
+    :straight t
     :ghook ('emacs-startup-hook #'global-anzu-mode)
     :general
     ([remap query-replace] #'anzu-query-replace-regexp
@@ -2164,7 +2258,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :blackout t :straight t
+    :straight t
     :ghook 'emacs-startup-hook)
 #+end_src
 
@@ -2395,7 +2489,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** [[https://github.com/abo-abo/avy][Avy]]
 #+name: init-avy-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package avy
     :straight t
     :config
@@ -2422,17 +2516,24 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :straight t
     :general
     ([remap list-buffers] #'ibuffer)
+    :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
+    :defines (ibuffer-show-empty-filter-groups
+              ibuffer-never-show-predicates)
     :config/el-patch
     (general-setq ibuffer-expert t
                   ibuffer-show-empty-filter-groups nil)
-    (general-setq ibuffer-formats '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+    (general-setq ibuffer-formats
+                  '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
     (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"
                                                               "*git-auto-push*"
                                                               "*Backtrace*"
                                                               "*new*"
                                                               "*Org*"
                                                               "*helpful"
+                                                              "*Flycheck error messages*"
                                                               "*Help*"))))
+
+    (general-add-hook 'ibuffer-mode-hook #'hl-line-mode)
 
     (define-ibuffer-column mode
       (:inline t)
@@ -2442,6 +2543,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
               icon
             " "))))
 
+    ;; Dim directory part of file path.
     (define-ibuffer-column filename-and-process
       (:name "Filename/Process")
       (let ((proc (get-buffer-process buffer))
@@ -2452,7 +2554,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                     (if (> (length filename) 0)
                         (format " %s" filename)
                       ""))
-          (propertize (f-abbrev filename) 'face 'shadow))))
+          (propertize (f-abbrev filename) 'face 'dired-symlink))))
 
     ;; Show buffer name in a consistent way.
     (define-ibuffer-column name
@@ -2461,8 +2563,132 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
         (if (not (seq-position string ?\n))
             string
           (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string)))))
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+    
+    ;; Show a horizontal rule using page-break-lines instead of using dashes.
+    (el-patch-defun ibuffer-update-title-and-summary (format)
+      (ibuffer-assert-ibuffer-mode)
+      ;; Don't do funky font-lock stuff here
+      (let ((inhibit-modification-hooks t))
+        (if (get-text-property (point-min) 'ibuffer-title)
+            (delete-region (point-min)
+                           (next-single-property-change
+                            (point-min) 'ibuffer-title)))
+        (goto-char (point-min))
+        (add-text-properties
+         (point)
+         (progn
+           (let ((opos (point)))
+             ;; Insert the title names.
+             (dolist (element format)
+               (insert
+                (if (stringp element)
+                    element
+                  (pcase-let ((`(,sym ,min ,_max ,align) element))
+                    ;; Ignore a negative min when we're inserting the title
+                    (when (cl-minusp min)
+                      (setq min (- min)))
+                    (let* ((name (or (get sym 'ibuffer-column-name)
+                                     (error "Unknown column %s in ibuffer-formats" sym)))
+                           (len (length name))
+                           (hmap (get sym 'header-mouse-map))
+                           (strname (if (< len min)
+                                        (ibuffer-format-column name
+                                                               (- min len)
+                                                               align)
+                                      name)))
+                      (when hmap
+                        (setq
+                         strname
+                         (propertize strname 'mouse-face 'highlight 'keymap hmap)))
+                      strname)))))
+             (add-text-properties opos (point) '(ibuffer-title-header t))
+             (insert "\n")
+             ;; Add the underlines
 
+             (el-patch-swap (let ((str (save-excursion
+                                         (forward-line -1)
+                                         (beginning-of-line)
+                                         (buffer-substring (point) (line-end-position)))))
+                              (apply #'insert (mapcar
+                                               (lambda (c)
+                                                 (if (not (or (eq c ?\s)
+                                                              (eq c ?\n)))
+                                                     ?-
+                                                   ?\s))
+                                               str)))
+                            (insert ""))
+             (insert "\n"))
+           (point))
+         `(ibuffer-title t font-lock-face ,ibuffer-title-face))
+        ;; Now, insert the summary columns.
+        (goto-char (point-max))
+        (if (get-text-property (1- (point-max)) 'ibuffer-summary)
+            (delete-region (previous-single-property-change
+                            (point-max) 'ibuffer-summary)
+                           (point-max)))
+        (if ibuffer-display-summary
+            (add-text-properties
+             (point)
+             (progn
+               (insert "\n")
+               (dolist (element format)
+                 (insert
+                  (if (stringp element)
+                      (make-string (length element) ?\s)
+                    (pcase-let ((`(,sym ,min ,_max ,align) element))
+                      ;; Ignore a negative min when we're inserting the title.
+                      (when (cl-minusp min)
+                        (setq min (- min)))
+                      (let* ((summary
+                              (if (get sym 'ibuffer-column-summarizer)
+                                  (funcall (get sym 'ibuffer-column-summarizer)
+                                           (get sym 'ibuffer-column-summary))
+                                (make-string
+                                 (length (get sym 'ibuffer-column-name))
+                                 ?\s)))
+                             (len (length summary)))
+                        (if (< len min)
+                            (ibuffer-format-column summary
+                                                   (- min len)
+                                                   align)
+                          summary))))))
+               (point))
+             '(ibuffer-summary t)))))
+
+    ;; Change the way groups are rendered.
+    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+      (add-text-properties
+       (point)
+       (progn
+         (insert (el-patch-remove "[ ")
+                 display-name
+                 (el-patch-remove " ]"))
+         (point))
+       `(ibuffer-filter-group-name
+         ,name
+         font-lock-face ,ibuffer-filter-group-name-face
+         keymap ,ibuffer-mode-filter-group-map
+         mouse-face highlight
+         help-echo ,(let ((echo '(if tooltip-mode
+                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                   "mouse-1: toggle marks  mouse-2: hide/show")))
+                      (if (> (length filter-string) 0)
+                          `(concat ,filter-string
+                                   (if tooltip-mode "\n" " ")
+                                   ,echo)
+                        echo))))
+      (insert "\n")
+      (when bmarklist
+        (put-text-property
+         (point)
+         (progn
+           (dolist (entry bmarklist)
+             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+           (point))
+         'ibuffer-filter-group
+         name))
+      (el-patch-add (insert "\n"))))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
@@ -2479,7 +2705,6 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package ibuffer-projectile
     :straight t
-    :ghook ('ibuffer-hook #'djm/config-ibuffer-projectile)
     :preface
     (defun djm/config-ibuffer-projectile ()
       (ibuffer-projectile-set-filter-groups)
@@ -2490,6 +2715,8 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
       (when (bound-and-true-p page-break-lines-mode)
         (page-break-lines--update-display-tables)))
+    :init
+    (general-add-hook 'ibuffer-hook #'djm/config-ibuffer-projectile)
     :config
     (general-setq ibuffer-projectile-prefix ""))
 #+end_src
@@ -2549,7 +2776,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+end_src
 
 ** Org
-*** Org-Mode
+*** Org
 #+name: init-org-block
 #+begin_src emacs-lisp
   (use-package org
@@ -2569,36 +2796,42 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
       (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
       (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
 
+    (defun org-hacks--fix-org-src-block-edit (fn &rest args)
+      (let ((element-type (ignore-errors
+                            (org-element-type (org-element-context (org-element-at-point))))))
+        (if (equal 'src-block element-type)
+            (org-edit-src-code)
+          (funcall fn args))))
+
     (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
     :config
-    (require 'org-compat)
     ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
-		  org-default-notes-file "~/Documents/org-files/inbox.org"
-		  org-directory "~/Documents/org-files")
+                  org-default-notes-file "~/Documents/org-files/inbox.org"
+                  org-directory "~/Documents/org-files")
 
     ;; Export Settings
-    (general-setq org-export-backends '(ascii html latex gfm)
-		  org-export-coding-system 'utf-8
-		  org-export-exclude-tags '("noexport" "no_export" "ignore")
-		  org-export-headline-levels 5
-		  org-export-with-author t
-		  org-export-with-drawers t
-		  org-export-with-email t
-		  org-export-with-footnotes t
-		  org-export-with-latex t
-		  org-export-with-properties t
-		  org-export-with-section-numbers nil
-		  org-export-with-smart-quotes t
-		  org-export-with-toc nil
-		  org-html-html5-fancy t
-		  org-html-postamble nil)
+    (general-setq org-export-backends '(jdf ascii html latex gfm)
+                  org-export-coding-system 'utf-8
+                  org-export-exclude-tags '("noexport" "no_export" "ignore")
+                  org-export-headline-levels 5
+                  org-export-with-author t
+                  org-export-with-drawers t
+                  org-export-with-email t
+                  org-export-with-footnotes t
+                  org-export-with-latex t
+                  org-export-with-properties t
+                  org-export-with-section-numbers nil
+                  org-export-with-smart-quotes t
+                  org-export-with-toc nil
+                  org-html-html5-fancy t
+                  org-html-postamble nil)
 
     ;; LaTeX Settings
     (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-		  org-latex-remove-logfiles t
-		  org-latex-prefer-user-labels t
-		  bibtex-dialect 'biblatex)
+                  org-latex-remove-logfiles t
+                  org-latex-prefer-user-labels t
+                  bibtex-dialect 'biblatex)
 
     ;; (dolist (ext '("lof" "lot" "tex"
     ;;                "aux" "idx" "log"
@@ -2613,79 +2846,80 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
     ;; Startup Settings
     (general-setq org-startup-folded 'content
-		  org-startup-with-inline-images t
-		  org-startup-indented t
-		  org-indent-mode t)
+                  org-startup-with-inline-images t
+                  org-startup-indented t
+                  org-indent-mode t)
 
     ;; Fontify Settings
     (general-setq org-fontify-whole-heading-line t
-		  org-fontify-quote-and-verse-blocks t
-		  org-fontify-done-headline t
-		  org-fontify-todo-headline t)
+                  org-fontify-quote-and-verse-blocks t
+                  org-fontify-done-headline t
+                  org-fontify-todo-headline t)
 
     ;; Refile Settings
     (general-setq org-refile-allow-creating-parent-nodes 'confirm
-		  org-refile-use-outline-path 'file
-		  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+                  org-refile-use-outline-path 'file
+                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
     ;; Log Settings
     (general-setq org-log-done 'time
-		  org-log-into-drawer t
-		  org-log-state-notes-insert-after-drawers nil)
+                  org-log-into-drawer t
+                  org-log-state-notes-insert-after-drawers nil)
 
     ;; Usage Settings
     (general-setq org-use-fast-todo-selection t
-		  org-use-fast-tag-selection t
-		  org-use-speed-commands t
-		  org-use-tag-inheritance t)
+                  org-use-fast-tag-selection t
+                  org-use-speed-commands t
+                  org-use-tag-inheritance t)
 
     ;; Aesthetic Settings
     (general-setq org-pretty-entities t
-		  org-hide-emphasis-markers t
-		  org-hide-leading-stars t
-		  org-ellipsis "…"
-		  org-image-actual-width nil)
+                  org-hide-emphasis-markers t
+                  org-hide-leading-stars t
+                  org-ellipsis "…"
+                  org-image-actual-width nil)
 
     (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
     (font-lock-add-keywords 'org-mode
-			    `((,(rx bol (* space) (group "-") (+ space))
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-			      (,(rx bol (* space) (group "#+begin_src") symbol-end)
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-			      (,(rx bol (* space) (group "#+end_src") symbol-end)
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
-			      (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-			      (,(rx bol (* space) (group "#+end_quote") symbol-end)
-			       (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+                            `((,(rx bol (* space) (group "-") (+ space))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                              (,(rx bol (* space) (group "#+end_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
     ;; List Settings
     (general-setq org-list-indent-offset 2)
 
     ;; Other Settings
     (general-setq org-catch-invisible-edits 'smart
-		  org-cycle-separator-lines 0
-		  org-enforce-todo-dependencies t
-		  org-enforce-todo-checkbox-dependencies t
-		  org-insert-heading-respect-content t
-		  org-outline-path-complete-in-steps nil
-		  org-special-ctrl-a/e t
-		  org-special-ctrl-k t
-		  org-tags-column 0
-		  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-				      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
-		  org-yank-adjusted-subtrees t)
+                  org-cycle-separator-lines 0
+                  org-enforce-todo-dependencies t
+                  org-enforce-todo-checkbox-dependencies t
+                  org-insert-heading-respect-content t
+                  org-outline-path-complete-in-steps nil
+                  org-special-ctrl-a/e t
+                  org-special-ctrl-k t
+                  org-tags-column 0
+                  org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                                      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))
+                  org-yank-adjusted-subtrees t)
 
     (general-setq org-tag-alist (quote (("@home" .   ?h)
-					("@work" .   ?w)
-					("@school" . ?s)
-					("@church" . ?c)
-					(:newline)
-					("PROJECT" . ?p)
-					("AD-HOC" . ?A))))
+                                        ("@work" .   ?w)
+                                        ("@school" . ?s)
+                                        ("@church" . ?c)
+                                        (:newline)
+                                        ("PROJECT" . ?p)
+                                        ("AD-HOC" . ?A))))
 
-    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
+    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist)
+    (general-add-advice 'org-edit-special :around #'org-hacks--fix-org-src-block-edit))
 #+end_src
 
 *** Org-Capture
@@ -2790,7 +3024,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
     :commands (org-babel-execute:ditaa)
     :config
     (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
-                  "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar"))
+                  "/usr/local/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar"))
 
   (use-package ob-plantuml
     :straight nil
@@ -2803,19 +3037,23 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-org-ox-block
 #+begin_src emacs-lisp
   (use-package ox-gfm
-    :straight t)
+    :demand t :straight t
+    :after (org))
 
   (use-package ox-koma-letter
     :straight nil
+    :after (org)
     :config
     (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
 
   (use-package ox-slack
-    :straight t
+    :demand t :straight t
+    :after (org)
     :commands (org-slack-export-to-clipboard-as-slack))
 
   (use-package ox-jdf-report
-    :straight (:host github :repo "dylanjm/ox-jdf"))
+    :demand t :straight (:host github :repo "dylanjm/ox-jdf")
+    :after (org))
 #+end_src
 
 *** [[https://github.com/sabof/org-bullets][Org-Bullets]]
@@ -2832,7 +3070,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+name: init-org-emms-block
 #+begin_src emacs-lisp
   (use-package org-emms
-    :straight t)
+    :straight t :after (org))
 #+end_src
 
 *** [[https://github.com/bastibe/org-journal][Org-Journal]]
@@ -2904,56 +3142,127 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 #+begin_src emacs-lisp
   (use-package mu4e
     :straight t
-    :commands (mu4e)
-    :init
-    (general-setq mue4e-headers-skip-duplicates  t
+    :commands (mu4e mu4e-compose-new)
+    :preface
+    (defun config-mail--shr-buffer ()
+      (let ((shr-use-fonts nil))
+        (shr-render-region (point-min) (point-max))))
+
+    (defun config-mail--view-in-external-browser-action (msg)
+      "View the current message MSG in the browser."
+      (interactive (list mu4e~view-msg))
+      (let ((browse-url-browser-function #'browse-url-default-browser))
+        (mu4e-action-view-in-browser msg)))
+
+    :config/el-patch
+    (general-add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
+    (general-add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
+    (general-setq mu4e-context-policy 'pick-first
+                  mu4e-compose-context-policy 'ask-if-none
+                  message-kill-buffer-on-exit t
+                  mu4e-view-use-gnus t
+                  mu4e-use-fancy-chars t
+                  mu4e-headers-include-related nil
+                  mu4e-headers-attach-mark '("a" . "A")
+                  mu4e-headers-unread-mark '("u" . "●")
+                  mu4e-headers-seen-mark '(" " . " ")
+                  mu4e-hide-index-messages t
+                  mu4e-headers-skip-duplicates t
+                  mu4e-index-lazy-check t
+                  mu4e-confirm-quit t
+                  mu4e-view-prefer-html t
                   mu4e-view-show-images t
                   mu4e-view-show-addresses t
-                  mu4e-compose-format-flowed nil
-                  mu4e-date-format "%y/%m/%d"
-                  mu4e-headers-date-format "%Y/%m/%d"
-                  mu4e-change-filenames-when-moving t
-                  mu4e-attachments-dir "~/Downloads"
-                  mu4e-maildir       "~/Mail"
-                  mu4e-refile-folder "/Archive"
-                  mu4e-sent-folder   "/Sent"
-                  mu4e-drafts-folder "/Drafts"
-                  mu4e-trash-folder  "/Trash"
-                  mu4e-get-mail-command  "mbsync -a")
+                  mu4e-maildir (f-expand "~/Mail")
+                  mu4e-headers-date-format "%d-%m-%y %k:%M"
+                  mu4e-completing-read-function #'completing-read
+                  sendmail-program "msmtp"
+                  message-send-mail-function #'message-send-mail-with-sendmail
+                  mu4e-compose-format-flowed t
+                  fill-flowed-encode-column 998
+                  mu4e-get-mail-command "mbsync -V -q -a"
+                  mu4e-change-filename-when-moving t
+                  smtpmail-queue-mail nil
+                  smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
+                  mu4e-attachments-dir (f-expand "~/Downloads")
+                  message-forward-before-signature nil
+                  message-citation-line-function #'message-insert-formatted-citation-line
+                  message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
+                  mu4e-update-interval (* 60 5)
+                  sendmail-coding-system 'utf-8
+                  mu4e-html2text-command #'config-mail--shr-buffer)
+
+    ;; View html message in eww. `av` in view to activate
+    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+    ;; View html message in external browser. `a&` in view to activate
+    (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)
+
+    (setf (alist-get 'refile mu4e-marks)
+          '(:char ("r" . "▶")
+            :prompt "refile"
+            :dyn-target (lambda (target msg)
+                          (if (config-mail--message-from-me-p msg)
+                              (mu4e-get-sent-folder msg)
+                            (mu4e-get-refile-folder msg)))
+            :action (lambda (docid msg target)
+                      (unless (config-mail--message-from-me-p msg)
+                        (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N")))))
+
+    (add-to-list 'display-buffer-alist
+                 `(,(rx bos " *mu4e-main*" eos)
+                   (display-buffer-reuse-window
+                    display-buffer-fullframe)
+                   (reusable-frames . visible)))
+
+    ;; Chris Barrett lisp/mu4e-hacks.el
+    ;; https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/mu4e-hacks.el
+    (el-patch-defun mu4e-context-label ()
+      "Propertized string with the current context name, or \"\" if
+    there is none."
+      (if (el-patch-wrap 1 1 (and (mu4e-context-current)
+                                  (derived-mode-p 'mu4e-main-mode 'mu4e-headers-mode
+                                                  'mu4e-view-mode 'mu4e-compose-mode)))
+          (concat "[" (propertize (mu4e~quote-for-modeline
+                                   (mu4e-context-name (mu4e-context-current)))
+                                  'face 'mu4e-context-face) "]")
+        ""))
+
+    (el-patch-defun mu4e~main-view ()
+      "Create the mu4e main-view, and switch to it."
+      (if (eq mu4e-split-view 'single-window)
+          (if (buffer-live-p (mu4e-get-headers-buffer))
+              (switch-to-buffer (mu4e-get-headers-buffer))
+            (mu4e~main-menu))
+        (mu4e~main-view-real nil nil)
+        ((el-patch-swap switch-to-buffer display-buffer) mu4e~main-buffer-name)
+        (goto-char (point-min)))
+      (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
+
+  (use-package messages-are-flowing
+    :straight t
+    :ghook ('message-mode-hook #'messages-are-flowing-use-and-mark-hard-newlines)
     :config/el-patch
-
-    (el-patch-defun mu4e~headers-jump-to-maildir (maildir)
-      "Show the messages in maildir (user is prompted to ask what
-  maildir)."
-      (interactive
-       (let ((maildir (el-patch-swap
-                        (mu4e-ask-maildir "Jump to maildir: ")
-                        (selectrum-completing-read
-                         "Jump to maildir: " (mu4e-get-maildirs)))))
-         (list maildir)))
-      (when maildir
-        (mu4e-mark-handle-when-leaving)
-        (mu4e-headers-search (format "maildir:\"%s\"" maildir))))
-
-    (fset 'my-move-to-trash "mTrash")
-    (general-define-key
-     :keymaps '(mu4e-view-mode-map mu4e-headers-mode-map) "d" 'my-move-to-trash))
+    (el-patch-defun messages-are-flowing-use-and-mark-hard-newlines ()
+      "Turn on `use-hard-newlines', and make hard newlines visible.
+  The main use of this is to send \"flowed\" email messages, where
+  line breaks within paragraphs are adjusted by the recipient's
+  device, such that messages remain readable on narrow displays."
+      (interactive)
+      (use-hard-newlines (el-patch-add +1 t))
+      (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t)))
 
   (use-package mu4e-alert
-    :straight t :after mu4e
-    :init
+    :straight t
+    :after (mu4e)
+    :config
     (general-setq mu4e-alert-interesting-mail-query "flag:unread maildir:/INBOX ")
     (mu4e-alert-enable-mode-line-display))
 
-
-  (use-package message
-    :straight (:type built-in)
-    :config
-    (general-setq send-mail-function 'sendmail-send-it
-                  sendmail-program "/usr/local/bin/msmtp"
-                  mail-specify-envelope-from t
-                  message-sendmail-envelope-from 'header
-                  mail-envelope-from 'header))
+  (use-package org-mu4e
+    :straight nil
+    :after (:any org mu4e))
 #+end_src
 
 ** Media
@@ -2963,7 +3272,7 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
   (use-package emms
     :straight t
     :commands (emms)
-    :preface
+    :init
     (defconst emms-info-atomic-parsley-tag-alist '(("©too" . "info-note")
                                                    ("©alb" . "info-album")
                                                    ("©ART" . "info-artist")
@@ -3101,18 +3410,17 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
           (message "%02d:%02d for %d tracks" (/ total-time 60) (% total-time 60)
                    count))))
 
-    :init
-    (progn
-      (require 'emms-setup)
-      (emms-all)
-      (emms-history-load)
-      (require 'emms-player-mpv)
-      (require 'emms-source-playlist)
-      (require 'emms-source-file)
-      (require 'emms-mark)
-      (require 'emms-info)
-      (require 'emms-browser)
-      (general-setq emms-player-list '(emms-player-mpv)))
+    :config
+    (require 'emms-setup)
+    (emms-all)
+    (emms-history-load)
+    (require 'emms-player-mpv)
+    (require 'emms-source-playlist)
+    (require 'emms-source-file)
+    (require 'emms-mark)
+    (require 'emms-info)
+    (require 'emms-browser)
+    (general-setq emms-player-list '(emms-player-mpv))
 
 
     (general-setq emms-source-file-default-directory (expand-file-name "~/Movies/")
@@ -3122,18 +3430,9 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
                   emms-playlist-buffer-name "*EMMS Playlist*"
                   emms-browser-default-format "%i%a - %A:	%T	%t [%d]")
 
-
-
     (general-setq emms-info-functions '(emms-info-atomic-parsley))
     (general-pushnew "--no-audio-display" emms-player-mpv-parameters)
     (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
-
-  (use-package emms-player-simple-mpv
-    :straight t :after emms
-    :init
-    (require 'emms-player-simple-mpv-e.g.hydra)
-    (require 'emms-player-simple-mpv-playlist-mode)
-    (require 'emms-player-simple-mpv-control-functions))
 #+end_src
 
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
@@ -3307,103 +3606,106 @@ Not sure if I like this more than just using =djm/gc-on-lose-focus= function. I 
 
 *** Emacs-Lisp
 **** Elisp-Mode (Built-In)
-#+name: init-elisp-mode-block
+#+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
-  (use-package elisp-mode
+  (use-package emacs-lisp-mode
     :straight (:type built-in)
-    :gfhook #'outline-minor-mode #'highlight-quoted-mode
+    :mode (("\\.el$" . emacs-lisp-mode)
+           ("^Cask$" . emacs-lisp-mode))
+    :gfhook #'outline-minor-mode
     :config (general-setq lisp-indent-offset t))
 #+end_src
 
 **** Fix Identation
 [[https://stackoverflow.com/questions/22166895/customize-elisp-plist-indentation][Found on StackOverflow by the great @raxod502.]]
+[[https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/lisp-hacks.el][Chris Barrett's very similar fix to the same problem]]
 
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
-  (el-patch-defun lisp-indent-function (indent-point state)
-    "This function is the normal value of the variable `lisp-indent-function'.
+  (el-patch-feature lisp-mode)
+
+  ;; Improve indentation for plists.
+
+  (with-eval-after-load 'lisp-mode
+    (with-no-warnings
+      (el-patch-defun lisp-indent-function (indent-point state)
+        "This function is the normal value of the variable `lisp-indent-function'.
   The function `calculate-lisp-indent' calls this to determine
   if the arguments of a Lisp function call should be indented specially.
-
   INDENT-POINT is the position at which the line being indented begins.
   Point is located at the point to indent under (for default indentation);
   STATE is the `parse-partial-sexp' state for that position.
-
   If the current line is in a call to a Lisp function that has a non-nil
   property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
   it specifies how to indent.  The property value can be:
-
   ,* `defun', meaning indent `defun'-style
     (this is also the case if there is no property and the function
     has a name that begins with \"def\", and three or more arguments);
-
   ,* an integer N, meaning indent the first N arguments specially
     (like ordinary function arguments), and then indent any further
     arguments like a body;
-
   ,* a function to call that returns the indentation (or nil).
     `lisp-indent-function' calls this function with the same two arguments
     that it itself received.
-
   This function returns either the indentation to use, or nil if the
   Lisp function does not specify a special indentation."
-    (el-patch-let (($cond (and (elt state 2)
-                               (el-patch-wrap 1 1
-                                 (or (not (looking-at "\\sw\\|\\s_"))
-                                     (looking-at ":")))))
-                   ($then (progn
-                            (if (not (> (save-excursion (forward-line 1) (point))
-                                        calculate-lisp-indent-last-sexp))
-                                (progn (goto-char calculate-lisp-indent-last-sexp)
-                                       (beginning-of-line)
-                                       (parse-partial-sexp (point)
-                                                           calculate-lisp-indent-last-sexp 0 t)))
-                            ;; Indent under the list or under the first sexp on the same
-                            ;; line as calculate-lisp-indent-last-sexp.  Note that first
-                            ;; thing on that line has to be complete sexp since we are
-                            ;; inside the innermost containing sexp.
-                            (backward-prefix-chars)
-                            (current-column)))
-                   ($else (let ((function (buffer-substring (point)
-                                                            (progn (forward-sexp 1) (point))))
-                                method)
-                            (setq method (or (function-get (intern-soft function)
-                                                           'lisp-indent-function)
-                                             (get (intern-soft function) 'lisp-indent-hook)))
-                            (cond ((or (eq method 'defun)
-                                       (and (null method)
-                                            (> (length function) 3)
-                                            (string-match "\\`def" function)))
-                                   (lisp-indent-defform state indent-point))
-                                  ((integerp method)
-                                   (lisp-indent-specform method state
-                                                         indent-point normal-indent))
-                                  (method
-                                   (funcall method indent-point state))))))
-      (let ((normal-indent (current-column))
-            (el-patch-add
-              (orig-point (point))))
-        (goto-char (1+ (elt state 1)))
-        (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-        (el-patch-swap
-          (if $cond
-              ;; car of form doesn't seem to be a symbol
-              $then
-            $else)
-          (cond
-           ;; car of form doesn't seem to be a symbol, or is a keyword
-           ($cond $then)
-           ((and (save-excursion
-                   (goto-char indent-point)
-                   (skip-syntax-forward " ")
-                   (not (looking-at ":")))
-                 (save-excursion
-                   (goto-char orig-point)
-                   (looking-at ":")))
-            (save-excursion
-              (goto-char (+ 2 (elt state 1)))
-              (current-column)))
-           (t $else))))))
+        (el-patch-let (($cond (and (elt state 2)
+                                   (el-patch-wrap 1 1
+                                     (or (not (looking-at "\\sw\\|\\s_"))
+                                         (looking-at ":")))))
+                       ($then (progn
+                                (if (not (> (save-excursion (forward-line 1) (point))
+                                            calculate-lisp-indent-last-sexp))
+                                    (progn (goto-char calculate-lisp-indent-last-sexp)
+                                           (beginning-of-line)
+                                           (parse-partial-sexp (point)
+                                                               calculate-lisp-indent-last-sexp 0 t)))
+                                ;; Indent under the list or under the first sexp on the same
+                                ;; line as calculate-lisp-indent-last-sexp.  Note that first
+                                ;; thing on that line has to be complete sexp since we are
+                                ;; inside the innermost containing sexp.
+                                (backward-prefix-chars)
+                                (current-column)))
+                       ($else (let ((function (buffer-substring (point)
+                                                                (progn (forward-sexp 1) (point))))
+                                    method)
+                                (setq method (or (function-get (intern-soft function)
+                                                               'lisp-indent-function)
+                                                 (get (intern-soft function) 'lisp-indent-hook)))
+                                (cond ((or (eq method 'defun)
+                                           (and (null method)
+                                                (> (length function) 3)
+                                                (string-match "\\`def" function)))
+                                       (lisp-indent-defform state indent-point))
+                                      ((integerp method)
+                                       (lisp-indent-specform method state
+                                                             indent-point normal-indent))
+                                      (method
+                                       (funcall method indent-point state))))))
+          (let ((normal-indent (current-column))
+                (el-patch-add
+                  (orig-point (point))))
+            (goto-char (1+ (elt state 1)))
+            (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+            (el-patch-swap
+              (if $cond
+                  ;; car of form doesn't seem to be a symbol
+                  $then
+                $else)
+              (cond
+               ;; car of form doesn't seem to be a symbol, or is a keyword
+               ($cond $then)
+               ((and (save-excursion
+                       (goto-char indent-point)
+                       (skip-syntax-forward " ")
+                       (not (looking-at ":")))
+                     (save-excursion
+                       (goto-char orig-point)
+                       (looking-at ":")))
+                (save-excursion
+                  (goto-char (+ 2 (elt state 1)))
+                  (current-column)))
+               (t $else))))))))
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -3669,14 +3971,58 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-ledger-mode-block
 #+begin_src emacs-lisp
   (use-package ledger-mode
-    :straight t)
+    :straight t
+    :config/el-patch
+    (general-setq ledger-report-use-header-line nil
+                  ledger-post-account-alignment-column 2
+                  ledger-fontify-xact-state-overrides nil)
+    ;; Chris Barret Legder Hacks
+    ;; https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/ledger-hacks.el
+    (el-patch-defun ledger-do-report (cmd)
+      "Run a report command line CMD.
+  CMD may contain a (shell-quoted) version of
+  `ledger-report--extra-args-marker', which will be replaced by
+  arguments returned by `ledger-report--compute-extra-args'."
+      (goto-char (point-min))
+      (let* ((inhibit-read-only t)
+             (marker ledger-report--extra-args-marker)
+             (marker-re (concat " *" (regexp-quote marker)))
+             (args (ledger-report--compute-extra-args cmd))
+             (args-str (concat " " (mapconcat #'shell-quote-argument args " ")))
+             (clean-cmd (replace-regexp-in-string marker-re "" cmd t t))
+             (real-cmd (replace-regexp-in-string marker-re args-str cmd t t)))
+        (setq header-line-format
+              (and ledger-report-use-header-line
+                   `(:eval (ledger-report--compute-header-line ,clean-cmd))))
+        (unless ledger-report-use-header-line
+          (insert (format "Report: %s\n" ledger-report-name)
+                  (format "Command: %s\n" clean-cmd)
+
+                  (el-patch-swap (make-string (- (window-width) 1) ?=)
+                                 "")
+                  "\n\n"))
+        (let* ((report (shell-command-to-string real-cmd)))
+          (when ledger-report-use-native-highlighting
+            (setq report (ansi-color-apply report)))
+          (save-excursion
+            (insert report))
+          (when (ledger-report--cmd-needs-links-p cmd)
+            (save-excursion
+              (ledger-report--add-links))))
+
+        (el-patch-add
+          (page-break-lines--update-display-tables)))))
+
+  (use-package flycheck-ledger
+    :straight t
+    :after (:and flycheck ledger-mode))
 #+end_src
 
 **** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
 #+begin_src emacs-lisp
   (use-package ssh-config-mode
-    :blackout "SSH-Config" :straight t)
+    :straight t)
 #+end_src
 
 ** Miscellaneous
@@ -3726,6 +4072,13 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-stack-exchange-block
 #+begin_src emacs-lisp
   (use-package sx
+    :straight t)
+#+end_src
+
+*** [[https://github.com/rnkn/fountain-mode][Fountain-Mode]]
+#+name: init-fountain-mode-block
+#+begin_src emacs-lisp
+  (use-package fountain-mode
     :straight t)
 #+end_src
 

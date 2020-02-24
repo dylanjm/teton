@@ -1,23 +1,24 @@
 {:profiles
  {:Default {:default true
-            :sim   50
+            :sim   75
             :delay 500
             :alone 500
             :held  500}}
- :applications {:vmware ["^com\\.vmware\\.fusion$"]}
+ :applications {:vmware  ["^com\\.vmware\\.fusion$"]
+                :emacs   ["^org\\.gnu\\.Emacs$"]
+                :firefox ["^org\\.mozilla\\.firefox$"]}
  :simlayers    {:super-shift-mode {:key :left_shift :condi :!vmware}}
  :main         [
                 {:des "caps to ctrl modifier"
                  :rules [[:##caps_lock :left_control]]}
 
-                {:des "hyper-key"
-                 :rules [[:##left_control :!TCOleft_shift :!vmware]]}
+                {:des "left ctrl to right ctrl"
+                 :rules [[:##left_control :right_control]]}
 
                 {:des "super-shift-mode"
                  :rules [:super-shift-mode
                          [:down_arrow           :!COdown_arrow          ]
                          [:up_arrow             :!COup_arrow            ]
                          [:left_arrow           :!COleft_arrow          ]
-                         [:right_arrow          :!COright_arrow         ]
-                         [:spacebar             :!COspacebar            ]]}
+                         [:right_arrow          :!COright_arrow         ]]}
                 ]}

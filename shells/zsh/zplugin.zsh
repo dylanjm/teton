@@ -3,17 +3,17 @@
 ###
 ### Check for zplugin install
 ###
-[[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
-    command mkdir -p $ZINIT[HOME_DIR]
-    git clone https://github.com/zdharma/zinit.git $ZINIT[BIN_DIR]
+[[ ! -f "$ZINIT[BIN_DIR]/zinit.zsh" ]] && {
+    command mkdir -p "$ZINIT[HOME_DIR]"
+    git clone https://github.com/zdharma/zinit.git "$ZINIT[BIN_DIR]"
 }
 
-source $ZINIT[BIN_DIR]/zinit.zsh
+source "$ZINIT[BIN_DIR]/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
 ### Check if zmodule is installed and built.
-#zmodload zdharma/zplugin 2>/dev/null || zinit module build
+zmodload zdharma/zplugin 2>/dev/null || zinit module build
 
 ###
 ### Load Zsh Plugins

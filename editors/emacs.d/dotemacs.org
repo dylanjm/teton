@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-23 15:00:07
+/last updated/: 2020-02-24 14:29:38
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -92,7 +92,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold (* 512 1024 1024))
+  (defvar default-gc-cons-threshold 16777216) ;; 16mb
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
@@ -106,24 +106,17 @@ You'll see this modification in many config files around the internet. The idea 
   (setq file-name-handler-alist nil
         gc-cons-threshold extended-gc-cons-threshold
         gc-cons-percentage 0.7
-        package-enable-at-startup nil)
+        package-enable-at-startup nil
+        package--init-file-ensured t)
 
   (defun djm/return-vars-to-normal ()
     (setq file-name-handler-alist default-file-name-handler-alist
-          load-prefer-newer nil))
+          load-prefer-newer nil
+          gc-cons-threshold default-gc-cons-threshold
+          gc-cons-percentage 0.1))
 
-  (add-hook 'after-init-hook #'djm/return-vars-to-normal)
-  (run-with-idle-timer 8 nil (lambda ()
-                               (setq-default gc-cons-threshold default-gc-cons-threshold)
-                               (garbage-collect)))
+  (add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
 
-  (defun djm/gc-on-lose-focus ()
-    "A convienient time to run garbage collect is when Emacs loses focus."
-    (unless (frame-focus-state)
-      (garbage-collect)))
-
-  (if (boundp 'after-focus-change-function)
-      (add-function :after after-focus-change-function #'djm/gc-on-lose-focus))
 #+end_src
 
 *** Pre-Gui Optimization
@@ -234,9 +227,9 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :demand t
     :straight t
     :if (eq system-type 'darwin)
+    :hook ('emacs-startup . #'exec-path-from-shell-initialize)
     :init
     (setq exec-path-from-shell-variables '("XDG_CACHE_HOME"
                                            "XDG_CONFIG_HOME"
@@ -272,8 +265,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "TERMINFO"
                                            "PYTHONSTARTUP"
                                            "MPLCONFIGDIR")
-          exec-path-from-shell-arguments '("-l"))
-    (exec-path-from-shell-initialize))
+          exec-path-from-shell-arguments '("-l")))
+
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
@@ -616,7 +609,8 @@ Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][ra
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
   (general-define-key
-   "C-z" nil)
+   "C-z" nil
+   "s-m" nil)
 #+end_src
 
 #+name: init-aliases-block
@@ -719,7 +713,7 @@ Here we can setup proper coloring for compile buffers.
 #+begin_src emacs-lisp
   (use-package bookmark
     :straight (:type built-in)
-    :init
+    :config
     (general-setq bookmark-save-flag +1))
 #+end_src
 
@@ -739,7 +733,7 @@ Let's add a few helpful units to the calculator.
 #+begin_src emacs-lisp
   (use-package calc
     :straight (:type built-in)
-    :init
+    :config
     (general-setq math-additional-units
                   '((GiB "1024 * MiB" "Giga Byte")
                     (MiB "1024 * KiB" "Mega Byte")
@@ -771,7 +765,7 @@ Let's add a few helpful units to the calculator.
 #+begin_src emacs-lisp
   (use-package checkdoc
     :straight (:type built-in)
-    :init
+    :config
     (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
 #+end_src
 
@@ -898,7 +892,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package doc-view
     :straight (:type built-in)
-    :init
+    :config
     (general-setq doc-view-continuous t))
 #+end_src
 
@@ -908,7 +902,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package ediff
     :straight (:type built-in)
-    :init
+    :config
     (general-setq ediff-window-setup-function #'ediff-setup-windows-plain
                   ediff-diff-options "-w"
                   ediff-split-window-function #'split-window-horizontally))
@@ -934,26 +928,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq-default electric-indent-chars '(?\n ?\^?)))
-#+end_src
-
-*** Elisp-Mode (Built-In)
-
-#+name: init-elisp-mode-block
-#+begin_src emacs-lisp
-  (use-package elisp-mode
-    :blackout (emacs-lisp-mode . "Elisp")
-    :straight (:type built-in)
-    :config
-    (general-setq emacs-lisp-docstring-fill-column 80))
-#+end_src
-
-*** Emacs-Lock (Built-In)
-
-#+name: init-emacs-lock-block
-#+begin_src emacs-lisp :tangle no
-  (use-package emacs-lock
-    :blackout " 🔐 "
-    :straight (:type built-in))
 #+end_src
 
 *** Epa (Built-In)
@@ -1040,7 +1014,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package flyspell
     :straight (:type built-in)
-    :init
+    :config
     (general-setq flyspell-abbrev-p t
                   flyspell-use-global-abbrev-table-p t
                   flyspell-issue-welcome-flag nil
@@ -1087,6 +1061,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-goto-addr-block
 #+begin_src emacs-lisp
   (use-package goto-addr
+    :straight (:type built-in)
     :ghook ('text-mode-hook #'goto-address-mode)
     :ghook ('prog-mode-hook #'goto-address-prog-mode))
 #+end_src
@@ -1100,13 +1075,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq help-window-select 'always)
     (general-add-advice 'help-window-display-message :override #'ignore))
-    ;; (add-to-list 'display-buffer-alist
-    ;;              '("\\*[Hh]elp\\(?:ful\\)?"
-    ;;                (display-buffer-reuse-mode-window
-    ;;                 display-buffer-in-side-window)
-    ;;                (reusable-frames . visible)
-    ;;                (side . right)
-    ;;                (window-width . 0.45))))
 #+end_src
 
 *** Hideshow (Built-In)
@@ -1117,30 +1085,11 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :ghook ('prog-mode-hook #'hs-minor-mode))
 #+end_src
 
-*** Image (Built-In)
-
-#+name: init-image-block
-#+begin_src emacs-lisp :tangle no
-  (use-package image
-    :straight (:type built-in)
-    :config
-    (imagemagick-register-types))
-#+end_src
-
 *** iElm (Built-In)
 #+name: init-ielm-block
 #+begin_src emacs-lisp
   (use-package ielm
     :straight (:type built-in)
-    :preface
-    (defun arco/pop-to-elisp-buffer ()
-      (interactive)
-      (if-let* ((buf (seq-find (lambda (buf)
-                                 (with-current-buffer buf
-                                   (derived-mode-p 'emacs-lisp-mode)))
-                               (buffer-list))))
-          (pop-to-buffer buf)
-        (user-error "No Emacs Lisp buffers")))
     :config
     (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
 
@@ -1148,10 +1097,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                  `(,(rx bos "*ielm*" eos)
                    (display-buffer-reuse-window display-buffer-in-side-window)
                    (side . right)
-                   (window-width . 80)))
-
-    (general-def 'inferior-emacs-lisp-mode-map
-      "C-c x i" #'arco/pop-to-elisp-buffer))
+                   (window-width . 80))))
 #+end_src
 
 *** iMenu (Built-In)
@@ -1263,13 +1209,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq mac-command-modifier 'meta
-                  mac-option-modifier 'super)
-
-
-    (and (or (daemonp)
-             (display-graphic-p))
-         (require 'ns-auto-titlebar nil t)
-         (ns-auto-titlebar-mode +1)))
+                  mac-option-modifier 'super
+                  mac-right-control-modifier 'hyper))
 #+end_src
 
 *** Outline (Built-In)
@@ -1316,7 +1257,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Project (Built-In)
-#+name: init-project (built-in)-block
+#+name: init-project-block
 #+begin_src emacs-lisp
   (use-package project
     :straight (:type built-in))
@@ -1328,7 +1269,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package recentf
     :straight (:type built-in)
-    :ghook 'emacs-startup-hook
+    :ghook 'pre-command-hook
     :general
     ("C-x C-r" #'crux-recentf-find-file)
     :config
@@ -1346,7 +1287,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package savehist
     :straight (:type built-in)
-    :ghook 'after-init-hook
+    :ghook 'emacs-startup-hook
     :config
     (general-setq savehist-additional-variables '(mark-ring
                                                   global-mark-ring
@@ -1364,7 +1305,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package saveplace
     :straight (:type built-in)
-    :ghook ('after-init-hook #'save-place-mode))
+    :ghook ('emacs-startup-hook #'save-place-mode))
 #+end_src
 
 *** Select (Built-In)
@@ -1372,7 +1313,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package select
     :straight (:type built-in)
-    :init
+    :config
     (general-setq select-enable-clipboard t
                   x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
@@ -1462,7 +1403,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package time
     :straight (:type built-in)
-    :ghook ('after-init-hook #'display-time-mode)
+    :ghook ('emacs-startup-hook #'display-time-mode)
     :config
     (general-setq-default display-time-24hr-format nil
                           display-time-day-and-date t
@@ -1765,6 +1706,18 @@ This is a cool package that I never knew I needed until I found out it existed. 
 #+end_src
 
 ** Meta
+*** [[https://gitlab.com/koral/gcmh/][GCMH]]
+#+name: init-gcmh-block
+#+begin_src emacs-lisp
+  (use-package gcmh
+    :straight t
+    :ghook 'pre-command-hook
+    :config
+    (general-setq gcmh-idle-delay 10
+                  gcmh-high-cons-threshold 16777216) ;; 16mb
+    (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect))
+#+end_src
+
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 A nice way to restart emacs on the fly if you need to.
 #+name: init-restart-emacs-block
@@ -1798,6 +1751,19 @@ A nice way to restart emacs on the fly if you need to.
       "Return remote user name."
       (or (tramp-file-name-user (tramp-dissect-file-name default-directory)) "mcdodyla"))
 
+    (el-patch-defun aweshell-dedicated-close ()
+      "Close dedicated `aweshell' window."
+      (interactive)
+      (if (aweshell-dedicated-exist-p)
+          (let ((current-window (selected-window)))
+            ;; Remember height.
+            (aweshell-dedicated-select-window)
+            (kill-buffer aweshell-dedicated-buffer)
+            (if (aweshell-window-exist-p current-window)
+                (select-window current-window)))
+        (message "`AWESHELL DEDICATED' window is not exist.")))
+
+
     (general-setq aweshell-complete-selection-key "C-f")
     (general-setq eshell-highlight-prompt nil
                   eshell-prompt-function #'epe-theme-pipeline
@@ -1819,8 +1785,7 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq multi-libvterm-dedicated-window-height 25))
 #+end_src
 
-*** [[https://github.com/akermu/emacs-libvterm][Vterm
-]]
+*** [[https://github.com/akermu/emacs-libvterm][Vterm]]
 #+name: init-vterm-block
 #+begin_src emacs-lisp
   (use-package vterm
@@ -1976,7 +1941,6 @@ A nice way to restart emacs on the fly if you need to.
                   '(not message-mode
                         help-mode
                         gud-mode
-                        eshell-mode
                         vterm-mode
                         term-mode))
 
@@ -2080,20 +2044,18 @@ A nice way to restart emacs on the fly if you need to.
       (general-pushnew shls company-backends)))
 #+end_src
 
-*** [[https://gitlab.com/ambrevar/emacs-fish-completion][Fish-Completion]]
-#+name: init-fish-completion-block
+*** [[https://github.com/CeleritasCelery/company-fish][Company-Fish]]
+#+name: init-company-fish-block
 #+begin_src emacs-lisp
-  (use-package bash-completion
-    :straight t
-    :commands (bash-completion-dynamic-complete)
+  (use-package company-fish
+    :straight (:host github :repo "CeleritasCelery/company-fish")
+    :after (company)
+    :if (executable-find "fish")
     :init
-    (general-add-hook 'shell-dynamic-complete-functions 'bash-completion-dynamic-complete))
-
-  (use-package fish-completion
-    :straight t
-    :ghook ('emacs-startup-hook #'global-fish-completion-mode)
-    :config
-    (general-setq fish-completion-fallback-on-bash-p t))
+    (defun arco/init-company-fish()
+      (general-pushnew 'company-fish company-backends))
+    (general-add-hook 'eshell-mode-hook #'arco/init-company-fish)
+    (general-add-hook 'shell-mode-hook #'arco/init-company-fish))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -3113,10 +3075,6 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 *** [[https://github.com/jkitchin/org-ref][Org-Ref]]
-:LOGBOOK:
-- State "HOLD"       from              [2020-01-24 Fri 14:08] \\
-  I don't like having to install/load helm.
-:END:
 #+name: init-org-ref-block
 #+begin_src emacs-lisp
   (use-package org-ref
@@ -3656,10 +3614,13 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package emacs-lisp-mode
     :straight (:type built-in)
+    :blackout (emacs-lisp-mode . "Elisp")
     :mode (("\\.el$" . emacs-lisp-mode)
            ("^Cask$" . emacs-lisp-mode))
     :gfhook #'outline-minor-mode
-    :config (general-setq lisp-indent-offset t))
+    :config
+    (general-setq lisp-indent-offset t)
+    (general-setq emacs-lisp-docstring-fill-column 80))
 #+end_src
 
 **** Fix Identation
@@ -3996,50 +3957,11 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t)
 #+end_src
 
-**** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
-#+name: init-plantuml-mode-block
-#+begin_src emacs-lisp
-  (use-package plantuml-mode
-    :straight t
-    :config
-    (general-setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"
-                  plantuml-default-exec-mode 'jar))
-#+end_src
-
-**** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
-#+name: init-yaml-block
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-    :straight t
-    :mode ("\\.yaml'" "\\.yml'"))
-#+end_src
-
-**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
-#+name: init-toml-mode-block
-#+begin_src emacs-lisp
-  (use-package toml-mode
-    :blackout "TOML" :straight t
-    :mode "Pipfile\\'")
-#+end_src
-
 **** JSON-Mode
 #+name: init-json-mode-block
 #+begin_src emacs-lisp
   (use-package json-mode
     :straight t)
-#+end_src
-
-**** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
-#+name: init-subtitle-mode-block
-#+begin_src emacs-lisp :tangle no
-  (use-package subed
-    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
-    :mode ("\\.srt$")
-    :defines subed--init-alist
-    :gfhook 'auto-fill-mode
-    :config
-    ;; Break lines at 40 characters
-    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
 #+end_src
 
 **** [[https://github.com/ledger/ledger-mode][Ledger-Mode]]
@@ -4093,12 +4015,52 @@ This is a nifty package that allows me to define functions as local variables in
     :after (:and flycheck ledger-mode))
 #+end_src
 
+**** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]
+#+name: init-plantuml-mode-block
+#+begin_src emacs-lisp
+  (use-package plantuml-mode
+    :straight t
+    :config
+    (general-setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"
+                  plantuml-default-exec-mode 'jar))
+#+end_src
+
 **** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
 #+begin_src emacs-lisp
   (use-package ssh-config-mode
     :straight t)
 #+end_src
+
+**** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
+#+name: init-subtitle-mode-block
+#+begin_src emacs-lisp :tangle no
+  (use-package subed
+    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
+    :mode ("\\.srt$")
+    :defines subed--init-alist
+    :gfhook 'auto-fill-mode
+    :config
+    ;; Break lines at 40 characters
+    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
+#+end_src
+
+**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
+#+name: init-toml-mode-block
+#+begin_src emacs-lisp
+  (use-package toml-mode
+    :blackout "TOML" :straight t
+    :mode "Pipfile\\'")
+#+end_src
+
+**** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
+#+name: init-yaml-block
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :straight t
+    :mode ("\\.yaml'" "\\.yml'"))
+#+end_src
+
 
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]

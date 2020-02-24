@@ -1,7 +1,8 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
 typeset -aU path cdpath fpath manpath module_path
-typeset -A ZINIT
+declare -A ZINIT
+typeset -g ZPLG_MOD_DEBUG=1
 
 ###
 ### XDG-Configuration
@@ -50,6 +51,7 @@ export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
 export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
 export ZINIT[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
 export ZINIT[COMPINIT_OPTS]="-C"
+export ZPFX="$ZINIT[HOME_DIR]/polaris"
 
 ###
 ### ZSH-Auto-Suggestions
@@ -171,7 +173,7 @@ module_path+=($ZINIT[BIN_DIR]/zmodules/Src)
 path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
-      $ZINIT[HOME_DIR]/polaris/bin  # Zplugin Installed Programs
+      $ZPFX/bin                     # Zplugin Installed Programs
       $DOTFILES/bin                 # Personal CLT Tools
       /usr/local/bin                # Homebrew Installations
       /usr/bin
@@ -187,11 +189,7 @@ cdpath=($HOME/Documents/projects
         $HOME/Documents/forked_github)
 
 
-export FPATH
-export MODULE_PATH
-export MANPATH
 export PATH
-export CDPATH
 
 ###
 ### Personal Functions

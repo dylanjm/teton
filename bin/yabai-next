@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+main() {
+    yabai -m window --focus next || yabai -m window --focus \
+        "$( (yabai -m query --spaces --display next || yabai -m query --spaces --display first) \
+        | jq -re '.[] | select(.visible == 1)."first-window"')" || yabai -m display --focus next || yabai -m display --focus first
+}
+
+main "${@}" 2>/dev/null

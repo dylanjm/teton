@@ -1,6 +1,6 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
-typeset -aU path cdpath fpath manpath module_path
+typeset -gaU cdpath fpath mailpath module_path path
 declare -A ZINIT
 typeset -g ZPLG_MOD_DEBUG=1
 
@@ -34,8 +34,8 @@ export EMACS="/Appplications/Emacs.app"
 ###
 export HISTFILE="$XDG_DATA_HOME/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
-export HISTSIZE=120000
-export SAVEHIST=100000
+typeset -gi HISTSIZE=1000000000
+typeset -gi SAVEHIST=1000000000
 
 ###
 ### ZSH
@@ -174,7 +174,7 @@ path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZPFX/bin                     # Zplugin Installed Programs
-      $DOTFILES/bin                 # Personal CLT Tools
+      $XDG_BIN_HOME                 # Personal CLT Tools
       /usr/local/bin                # Homebrew Installations
       /usr/bin
       /bin

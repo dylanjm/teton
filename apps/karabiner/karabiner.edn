@@ -1,13 +1,20 @@
 {:profiles
  {:Default {:default true
-            :sim   75
-            :delay 500
-            :alone 500
-            :held  500}}
- :applications {:vmware  ["^com\\.vmware\\.fusion$"]
-                :emacs   ["^org\\.gnu\\.Emacs$"]
-                :firefox ["^org\\.mozilla\\.firefox$"]}
- :simlayers    {:super-shift-mode {:key :left_shift :condi :!vmware}}
+            :sim     75
+            :delay   500
+            :alone   500
+            :held    500}}
+
+ :applications {:vmware   ["^com\\.vmware\\.fusion$"]
+                :emacs    ["^org\\.gnu\\.Emacs$"]
+                :firefox  ["^org\\.mozilla\\.firefox$"]}
+
+ :layers    {:tab-mode          {:key :tab
+                                 :afterup [{:set ["yabai-move-mode" 0]}
+                                           {:set ["yabai-scale-mode" 0]}]}
+             :yabai-move-mode   {:key :f :condi :tab-mode}
+             :yabai-scale-mode  {:key :c :condi :tab-mode}}
+
  :main         [
                 {:des "caps to ctrl modifier"
                  :rules [[:##caps_lock :left_control]]}
@@ -15,10 +22,34 @@
                 {:des "left ctrl to right ctrl"
                  :rules [[:##left_control :right_control]]}
 
-                {:des "super-shift-mode"
-                 :rules [:super-shift-mode
-                         [:down_arrow           :!COdown_arrow          ]
-                         [:up_arrow             :!COup_arrow            ]
-                         [:left_arrow           :!COleft_arrow          ]
-                         [:right_arrow          :!COright_arrow         ]]}
+                {:des "yabai mode"
+                 :rules [
+                         :yabai-move-mode
+                         [:h "/usr/local/bin/yabai -m window --warp west"]
+                         [:j "/usr/local/bin/yabai -m window --warp south"]
+                         [:k "/usr/local/bin/yabai -m window --warp north"]
+                         [:l "/usr/local/bin/yabai -m window --warp east"]
+
+                         :yabai-scale-mode
+                         [:h "~/.local/bin/yabai-resize left"]
+                         [:j "~/.local/bin/yabai-resize down"]
+                         [:k "~/.local/bin/yabai-resize up"]
+                         [:l "~/.local/bin/yabai-resize right"]
+
+                         :tab-mode
+                         [:grave_accent_and_tilde "launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\""]
+                         [:o "~/.local/bin/yabai-prev"]
+                         [:n "~/.local/bin/yabai-next"]
+                         [:h "/usr/local/bin/yabai -m window --focus west"]
+                         [:j "/usr/local/bin/yabai -m window --focus south"]
+                         [:k "/usr/local/bin/yabai -m window --focus north"]
+                         [:l "/usr/local/bin/yabai -m window --focus east"]
+                         [:a "/usr/local/bin/yabai -m window --toggle float"]
+                         [:spacebar "/usr/local/bin/yabai -m window --toggle zoom-fullscreen"]
+                         [:b "/usr/local/bin/yabai -m window --layout bsp"]
+                         [:m "/usr/local/bin/yabai -m window --toggle zoom-parent"]
+                         [:delete_or_backspace "/usr/local/bin/yabai -m window --close"]
+                         [:open_bracket "/usr/local/bin/yabai -m window --space prev"]
+                         [:close_bracket "/usr/local/bin/yabai -m window --space next"]
+                         [:backslash "/usr/local/bin/yabai -m window --display next"]]}
                 ]}

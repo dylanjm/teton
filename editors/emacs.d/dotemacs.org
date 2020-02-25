@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-25 12:13:51
+/last updated/: 2020-02-25 13:09:01
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -228,9 +228,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :straight t
+    :demand t :straight t
     :if (eq system-type 'darwin)
-    :hook ('emacs-startup . #'exec-path-from-shell-initialize)
     :init
     (setq exec-path-from-shell-variables '("XDG_CACHE_HOME"
                                            "XDG_CONFIG_HOME"
@@ -266,8 +265,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "TERMINFO"
                                            "PYTHONSTARTUP"
                                            "MPLCONFIGDIR")
-          exec-path-from-shell-arguments '("-l")))
-
+          exec-path-from-shell-arguments '("-l"))
+    (exec-path-from-shell-initialize))
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
@@ -525,36 +524,40 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
-  (defun setup-main-fonts (default-height variable-pitch-height)
-    "Set up default fonts.
+  (defun setup-main-fonts ()
+    (let ((default-height)
+          (variable-pitch-height))
+      (when window-system
+        (if (> (x-display-pixel-width) 1800)
+            (setq variable-pitch-height 170
+                  default-height 180)
+          (setq variable-pitch-height 135
+                default-height 140))
 
-  Use DEFAULT-HEIGHT for default face and VARIABLE-PITCH-HEIGHT
-  for variable-pitch face."
-    (set-face-attribute 'default nil
-                        :family "Iosevka TermLig SS09"
-                        :weight 'ultra-light
-                        :width 'extra-expanded
-                        :height default-height)
-    (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Aile"
-                        :height variable-pitch-height
-                        :weight 'regular
-                        :width 'extra-expanded)
-    (set-face-attribute 'fixed-pitch nil
-                        :family "Iosevka TermLig SS09"
-                        :height default-height
-                        :weight 'ultra-light
-                        :width 'extra-expanded))
+        (set-face-attribute 'default nil
+                            :family "Iosevka TermLig SS09"
+                            :weight 'ultra-light
+                            :width 'extra-expanded
+                            :height default-height)
+        (set-face-attribute 'variable-pitch nil
+                            :family "Iosevka Aile"
+                            :height variable-pitch-height
+                            :weight 'regular
+                            :width 'extra-expanded)
+        (set-face-attribute 'fixed-pitch nil
+                            :family "Iosevka TermLig SS09"
+                            :height default-height
+                            :weight 'ultra-light
+                            :width 'extra-expanded))))
 
-  (when window-system
-    (if (> (x-display-pixel-width) 1800)
-        (setup-main-fonts 170 165)
-      (setup-main-fonts 140 135)))
+  (if (daemonp)
+      (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+    (setup-main-fonts))
 
   (defun configure-fonts ()
     "Set up fonts for FRAME.
-  Set the default font, and configure various overrides for
-  symbols, emojis, greek letters, as well as fall backs for."
+    Set the default font, and configure various overrides for
+    symbols, emojis, greek letters, as well as fall backs for."
     ;; Additional fonts for special characters and fallbacks
     ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
     (dolist (script '(symbol mathematical))
@@ -1542,7 +1545,8 @@ Sort of a standard package in most emacs-configs these days.
     :straight t
     :config
     (general-setq all-the-icons-scale-factor 1.3)
-    (general-pushnew '("\\.db$" all-the-icons-faicon "database" :face all-the-icons-blue) all-the-icons-icon-alist))
+    (general-pushnew '("\\.db$" all-the-icons-faicon "database" :face all-the-icons-blue) all-the-icons-icon-alist)
+    (general-pushnew '("\\.edn$" all-the-icons-alltheicon "clojure" :face all-the-icons-green) all-the-icons-icon-alist))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]

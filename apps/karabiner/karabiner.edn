@@ -45,7 +45,7 @@
                          [:k "/usr/local/bin/yabai -m window --focus north"]
                          [:l "/usr/local/bin/yabai -m window --focus east"]
                          [:a "/usr/local/bin/yabai -m window --toggle float"]
-                         [:spacebar "/usr/local/bin/yabai -m window --toggle zoom-fullscreen"]
+                         [:spacebar "yabai -m window --toggle zoom-fullscreen"]
                          [:b "/usr/local/bin/yabai -m window --layout bsp"]
                          [:m "/usr/local/bin/yabai -m window --toggle zoom-parent"]
                          [:delete_or_backspace "/usr/local/bin/yabai -m window --close"]

@@ -53281,7 +53281,7 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>2183 16 1650 2117 0 0 3840 2137 </string>
+	<string>1923 14 1910 2119 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>3841 0 1918 2137 3840 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -56662,7 +56662,7 @@
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
-			<integer>0</integer>
+			<integer>2</integer>
 			<key>Prompt Before Closing 2</key>
 			<false/>
 			<key>Reduce Flicker</key>
@@ -58945,8 +58945,8 @@
 		<string>3.3.8beta4</string>
 		<string>3.3.8beta5</string>
 		<string>3.3.9beta1</string>
-		<string>3.3.10beta1</string>
 		<string>3.3.2</string>
+		<string>3.3.10beta1</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -58966,7 +58966,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>891</integer>
+	<integer>893</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>

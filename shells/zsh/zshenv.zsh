@@ -190,6 +190,7 @@ cdpath=($HOME/Documents/projects
 
 
 export PATH
+export FPATH
 
 ###
 ### Personal Functions

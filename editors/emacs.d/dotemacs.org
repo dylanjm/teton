@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-24 14:29:38
+/last updated/: 2020-02-24 23:10:13
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -135,6 +135,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                                       (font . "Iosevka TermLig SS09-18:weight=ultra-light:width=expanded")))
 
   (modify-all-frames-parameters '((vertical-scroll-bars)))
+  (menu-bar-mode t)
 
   ;; Not sure if this is really needed anymore
   (prefer-coding-system 'utf-8-unix)
@@ -547,7 +548,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
   (when window-system
     (if (> (x-display-pixel-width) 1800)
-        (setup-main-fonts 190 185)
+        (setup-main-fonts 160 155)
       (setup-main-fonts 140 135)))
 
   (defun configure-fonts ()
@@ -841,7 +842,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                           ffap-machine-p-known 'reject
                           fill-column 80
                           frame-resize-pixelwise t
-                          frame-title-format '("%b - Emacs")
+                          frame-title-format '("Emacs")
                           highlight-nonselected-windows nil
                           history-delete-duplicates t
                           history-length 3000
@@ -2035,13 +2036,15 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
   (use-package company-shell
-    :straight t :after sh-script
-    :config
-    (dolist (shls '(company-shell
-                    company-shell-env
-                    company-fish-shell
-                    company-files))
-      (general-pushnew shls company-backends)))
+    :straight t :after (company)
+    :init
+    (defun arco/init-company-shell ()
+      (dolist (shls '(company-shell
+                      company-shell-env
+                      company-fish-shell
+                      company-files))
+        (general-pushnew shls company-backends)))
+    (general-add-hook 'sh-mode-hook #'arco/init-company-shell))
 #+end_src
 
 *** [[https://github.com/CeleritasCelery/company-fish][Company-Fish]]

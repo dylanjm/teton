@@ -39,6 +39,7 @@
     ~/.config/vivid: apps/vivid
     ~/.config/python: apps/python
     ~/.config/karabiner/karabiner.edn: apps/karabiner/karabiner.edn
+    ~/.config/yabai: apps/yabai
     ~/.ledgerrc: apps/ledgerrc
 
 - shell:

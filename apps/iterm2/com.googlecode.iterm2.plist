@@ -53224,13 +53224,15 @@
 	<key>LoadPrefsFromCustomFolder</key>
 	<true/>
 	<key>NSColorPanelMode</key>
-	<string>6</string>
+	<string>7</string>
 	<key>NSColorPickerPreferredRGBEntryMode</key>
 	<integer>2</integer>
+	<key>NSFontPanelAttributes</key>
+	<string>1, 0</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~/teton/apps/iterm2</string>
+	<string>~/Documents/forked_github/iTerm2-Color-Schemes/schemes</string>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
-	<string>{799, 448}</string>
+	<string>{712, 448}</string>
 	<key>NSQuotedKeystrokeBinding</key>
 	<string></string>
 	<key>NSRepeatCountBinding</key>
@@ -53241,29 +53243,29 @@
 	<false/>
 	<key>NSSplitView Subview Frames NSColorPanelSplitView</key>
 	<array>
-		<string>0.000000, 0.000000, 228.000000, 258.000000, NO, NO</string>
-		<string>0.000000, 259.000000, 228.000000, 48.000000, NO, NO</string>
+		<string>0.000000, 0.000000, 228.000000, 263.000000, NO, NO</string>
+		<string>0.000000, 264.000000, 228.000000, 43.000000, NO, NO</string>
 	</array>
 	<key>NSTableView Columns v2 KeyBingingTable</key>
 	<data>
-	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
-	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVVBcnJheYABrgsMEx4fICEiIyQqNDU2VSRu
-	dWxs0g0ODxJaTlMub2JqZWN0c1YkY2xhc3OiEBGAAoAKgA3TFA0OFRkdV05TLmtleXOj
-	FhcYgAOABIAFoxobHIAGgAeACIAJWklkZW50aWZpZXJVV2lkdGhWSGlkZGVuUTAjQGjA
-	AAAAAAAI0iUmJyhaJGNsYXNzbmFtZVgkY2xhc3Nlc1xOU0RpY3Rpb25hcnmiJylYTlNP
-	YmplY3TTFA0OKy8doxYXGIADgASABaMwMRyAC4AMgAiACVExI0B0oZ2yLQ5W0iUmNzhe
-	TlNNdXRhYmxlQXJyYXmjNzkpV05TQXJyYXkACAARABoAJAApADIANwBJAEwAUgBUAGMA
-	aQBuAHkAgACDAIUAhwCJAJAAmACcAJ4AoACiAKYAqACqAKwArgC5AL8AxgDIANEA0gDX
-	AOIA6wD4APsBBAELAQ8BEQETARUBGQEbAR0BHwEhASMBLAExAUABRAAAAAAAAAIBAAAA
+	YnBsaXN0MDDUAQIDBAUGNjdYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+	AAGGoK4HCA8aGxwdHh8gJjAxMlUkbnVsbNIJCgsOWk5TLm9iamVjdHNWJGNsYXNzogwN
+	gAKACoAN0xAJChEVGVdOUy5rZXlzoxITFIADgASABaMWFxiABoAHgAiACVpJZGVudGlm
+	aWVyVVdpZHRoVkhpZGRlblEwI0BowAAAAAAACNIhIiMkWiRjbGFzc25hbWVYJGNsYXNz
+	ZXNcTlNEaWN0aW9uYXJ5oiMlWE5TT2JqZWN00xAJCicrGaMSExSAA4AEgAWjLC0YgAuA
+	DIAIgAlRMSNAdKGdsi0OVtIhIjM0Xk5TTXV0YWJsZUFycmF5ozM1JVdOU0FycmF5XxAP
+	TlNLZXllZEFyY2hpdmVy0Tg5VUFycmF5gAEACAARABoAIwAtADIANwBGAEwAUQBcAGMA
+	ZgBoAGoAbABzAHsAfwCBAIMAhQCJAIsAjQCPAJEAnACiAKkAqwC0ALUAugDFAM4A2wDe
+	AOcA7gDyAPQA9gD4APwA/gEAAQIBBAEGAQ8BFAEjAScBLwFBAUQBSgAAAAAAAAIBAAAA
 	AAAAADoAAAAAAAAAAAAAAAAAAAFM
 	</data>
 	<key>NSTableView Sort Ordering v2 KeyBingingTable</key>
 	<data>
-	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
-	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVVBcnJheYABowsMEVUkbnVsbNINDg8QWk5T
-	Lm9iamVjdHNWJGNsYXNzoIAC0hITFBVaJGNsYXNzbmFtZVgkY2xhc3Nlc15OU011dGFi
-	bGVBcnJheaMUFhdXTlNBcnJheVhOU09iamVjdAgRGiQpMjdJTFJUWF5jbnV2eH2IkaCk
-	rAAAAAAAAAEBAAAAAAAAABgAAAAAAAAAAAAAAAAAAAC1
+	YnBsaXN0MDDUAQIDBAUGFBVYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3AS
+	AAGGoKMHCA1VJG51bGzSCQoLDFpOUy5vYmplY3RzViRjbGFzc6CAAtIODxARWiRjbGFz
+	c25hbWVYJGNsYXNzZXNeTlNNdXRhYmxlQXJyYXmjEBITV05TQXJyYXlYTlNPYmplY3Rf
+	EA9OU0tleWVkQXJjaGl2ZXLRFhdVQXJyYXmAAQgRGiMtMjc7QUZRWFlbYGt0g4ePmKqt
+	swAAAAAAAAEBAAAAAAAAABgAAAAAAAAAAAAAAAAAAAC1
 	</data>
 	<key>NSTableView Supports v2 KeyBingingTable</key>
 	<true/>
@@ -53273,13 +53275,15 @@
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame NSColorPanel</key>
-	<string>0 83 228 275 0 0 1680 1027 </string>
-	<key>NSWindow Frame NSNavPanelAutosaveName</key>
-	<string>1520 846 799 448 0 0 3840 1577 </string>
+	<string>3326 269 228 280 0 0 3840 2137 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>1570 716 700 622 0 0 3840 1577 </string>
+	<string>2530 758 700 622 0 0 3840 2137 </string>
+	<key>NSWindow Frame UKCrashReporter</key>
+	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>4 16 946 1557 0 0 3840 1577 </string>
+	<string>1923 23 1910 2110 0 0 3840 2137 </string>
+	<key>NSWindow Frame iTerm Window 1</key>
+	<string>1923 29 1910 1038 0 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
 	<true/>
 	<key>NeverWarnAboutMeta_selection</key>
@@ -56652,7 +56656,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Iosevka-TermLig-SS09-Light-Extended 18</string>
+			<string>Iosevka-TermLig-SS09-Extralight-Extended 18</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
 			<key>Open Toolbelt</key>
@@ -58932,15 +58936,21 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.10beta1</string>
-		<string>3.3.8beta4</string>
+		<string>3.3.6</string>
+		<string>3.3.2</string>
+		<string>3.3.1</string>
+		<string>3.3.3</string>
+		<string>3.3.5</string>
 		<string>3.3.7</string>
-		<string>3.3.9beta1</string>
+		<string>3.3.8beta4</string>
 		<string>3.3.8beta5</string>
+		<string>3.3.9beta1</string>
+		<string>3.3.10beta1</string>
+		<string>3.3.4</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
-		<string>FiraCode Nerd Font</string>
+		<string>FuraCode Nerd Font</string>
 		<string>Iosevka TermLig SS09</string>
 		<string>Menlo</string>
 	</array>
@@ -58949,22 +58959,20 @@
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{0, 0}, {3840, 1600}}</string>
+		<string>{{0, 0}, {3840, 2160}}</string>
 		<key>topLeft</key>
-		<string>{913, 1255}</string>
+		<string>{1965, 1581}</string>
 	</dict>
-	<key>NoSyncHaveUsedCopyMode</key>
-	<true/>
 	<key>NoSyncInstallationId</key>
-	<string>6E4C90DB-27D7-4ADC-89E0-0713DCFD784F</string>
+	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>370</integer>
+	<integer>900</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
 	<integer>0</integer>
 	<key>NoSyncNextAnnoyanceTime</key>
-	<real>596220990.31208801</real>
+	<real>588403359.36032903</real>
 	<key>NoSyncOnboardingWindowHasBeenShown</key>
 	<true/>
 	<key>NoSyncPermissionToShowTip</key>
@@ -59327,6 +59335,14 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
+				<string>currentTab.currentSession.terminalWindowName</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
 				<string>currentTab.currentSession.terminalIconName</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
@@ -59336,14 +59352,6 @@
 				<true/>
 				<key>name</key>
 				<string>currentTab.currentSession.lastCommand</string>
-				<key>nonterminalContext</key>
-				<integer>0</integer>
-			</dict>
-			<dict>
-				<key>isTerminal</key>
-				<true/>
-				<key>name</key>
-				<string>currentTab.currentSession.terminalWindowName</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -59399,14 +59407,6 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
-				<string>number</string>
-				<key>nonterminalContext</key>
-				<integer>0</integer>
-			</dict>
-			<dict>
-				<key>isTerminal</key>
-				<true/>
-				<key>name</key>
 				<string>currentTab.currentSession.path</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
@@ -59416,6 +59416,14 @@
 				<true/>
 				<key>name</key>
 				<string>currentTab.currentSession.commandLine</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>number</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -59515,6 +59523,14 @@
 				<true/>
 				<key>name</key>
 				<string>iterm2.localhostName</string>
+				<key>nonterminalContext</key>
+				<integer>0</integer>
+			</dict>
+			<dict>
+				<key>isTerminal</key>
+				<true/>
+				<key>name</key>
+				<string>currentSession.jobPid</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -59626,7 +59642,7 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
-				<string>currentSession.path</string>
+				<string>currentSession.pid</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -59634,7 +59650,7 @@
 				<key>isTerminal</key>
 				<true/>
 				<key>name</key>
-				<string>currentSession.pid</string>
+				<string>currentSession.path</string>
 				<key>nonterminalContext</key>
 				<integer>0</integer>
 			</dict>
@@ -59692,7 +59708,7 @@
 		</array>
 	</dict>
 	<key>NoSyncTipOfTheDayEligibilityBeganTime</key>
-	<real>595919505.18632996</real>
+	<real>586836807.44295895</real>
 	<key>OpenArrangementAtStartup</key>
 	<false/>
 	<key>OpenNoWindowsAtStartup</key>
@@ -59737,7 +59753,7 @@
 		</dict>
 	</dict>
 	<key>PrefsCustomFolder</key>
-	<string>/Users/djm/teton/apps/iterm2</string>
+	<string>/Users/mcdodj/teton/apps/iterm2</string>
 	<key>PreserveWindowSizeWhenTabBarVisibilityChanges</key>
 	<true/>
 	<key>Print In Black And White</key>
@@ -59751,15 +59767,15 @@
 	<key>SUFeedAlternateAppNameKey</key>
 	<string>iTerm</string>
 	<key>SUFeedURL</key>
-	<string>https://iterm2.com/appcasts/testing_new.xml?shard=95</string>
+	<string>https://iterm2.com/appcasts/testing_new.xml?shard=2</string>
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-02-27T01:23:34Z</date>
+	<date>2020-02-27T15:27:03Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>
-	<integer>103669439</integer>
+	<integer>3447662661</integer>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>SeparateWindowTitlePerTab</key>
@@ -59784,6 +59800,8 @@
 	<array>
 		<string>Actions</string>
 	</array>
+	<key>UKCrashReporterLastCrashReportDate</key>
+	<real>1579714560</real>
 	<key>URLHandlersByGuid</key>
 	<dict/>
 	<key>UseBorder</key>

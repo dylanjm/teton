@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-26 19:07:41
+/last updated/: 2020-02-27 14:33:24
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -92,7 +92,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 16777216) ;; 16mb
+  (defvar default-gc-cons-threshold 20000000)
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
@@ -135,7 +135,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                                       (font . "Iosevka TermLig SS09-18:weight=ultra-light:width=expanded")))
 
   (modify-all-frames-parameters '((vertical-scroll-bars)))
-  (menu-bar-mode t)
 
   ;; Not sure if this is really needed anymore
   (prefer-coding-system 'utf-8-unix)
@@ -267,6 +266,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                            "MPLCONFIGDIR")
           exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
+
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
@@ -525,6 +525,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 #+name: init-font-config-block
 #+begin_src emacs-lisp
   (defun setup-main-fonts ()
+    "Set up fonts based on window size."
     (let ((default-height)
           (variable-pitch-height))
       (when window-system
@@ -550,23 +551,53 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
                             :weight 'ultra-light
                             :width 'extra-expanded))))
 
-  (if (daemonp)
-      (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-    (setup-main-fonts))
-
-  (defun configure-fonts ()
+  (defun configure-fonts (frame)
     "Set up fonts for FRAME.
     Set the default font, and configure various overrides for
     symbols, emojis, greek letters, as well as fall backs for."
     ;; Additional fonts for special characters and fallbacks
     ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+    ;; ()[]{}<>«»‹›
+    ;; 6bB8&0ODdo
+    ;; 1tiIlL|
+    ;; !ij
+    ;; 5$Ss
+    ;; 7Zz
+    ;; gqp
+    ;; nmMN
+    ;; uvvwWuuw
+    ;; x×X
+    ;; .,·°;:¡!¿?
+    ;; :;
+    ;; `'
+    ;; ‘’
+    ;; ''"
+    ;; '
+    ;; "
+    ;; “”
+    ;; —-~≈=_.…
+
+    ;; Sample character set
+    ;; Check for monospacing and Greek glyphs
+
+    ;;ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    ;;abcdefghijklmnopqrstuvwxyz
+    ;;1234567890#%^*
+    ;;ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
+    ;;αβγδεζηθικλμνξοπρστυφχψω
     (dolist (script '(symbol mathematical))
-      (set-fontset-font t script (font-spec :family "XITS Math") nil 'prepend))
+      (set-fontset-font "fontset-default" script (font-spec :family "XITS Math" :weight 'normal) nil nil))
 
-    (set-fontset-font t 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
+    ;; Define a font set stack for symbols, greek and math characters
+    (dolist (script '(symbol greek))
+      (set-fontset-font "fontset-default" script (font-spec :family "Symbola") nil 'append))
 
-    ;; Fallbacks for math and generic symbols
-    (set-fontset-font t 'symbol (font-spec :family "Apple Symbols") nil 'append))
+    ;; Colored Emoji on OS X, prefer over everything else!
+    (set-fontset-font "fontset-default" 'unicode (font-spec :family "Symbola") nil nil)
+    (set-fontset-font "fontset-default" 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+    (set-fontset-font "fontset-default" nil (font-spec :family "Apple Symbols") nil 'append))
+
 #+end_src
 
 **** Clean-Up Yanked Text
@@ -909,6 +940,24 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                           x-underline-at-descent-line t))
 #+end_src
 
+*** Dabbrev (Built-In)
+#+name: init-dabbrev-block
+#+begin_src emacs-lisp
+  (use-package dabbrev
+    :straight (:type built-in)
+    :commands (dabbrev-expand dabbrev-completion)
+    :config
+    (general-setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_"
+                  dabbrev-abbrev-skip-leading-regexp "\\$\\|\\*\\|/\\|="
+                  dabbrev-backward-only nil
+                  dabbrev-case-distinction nil
+                  dabbrev-case-fold-search t
+                  dabbrev-case-replace nil
+                  dabbrev-check-other-buffers t
+                  dabbrev-eliminate-newlines nil
+                  dabbrev-upcase-means-case-search t))
+#+end_src
+
 *** Delsel (Built-In)
 
 #+name: init-delsel-block
@@ -944,9 +993,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
   (use-package eldoc
-    :blackout t
     :straight (:type built-in)
-    :ghook ('emacs-lisp-mode-hook #'turn-on-eldoc-mode)
+    :ghook ('emacs-startup-hook #'turn-on-eldoc-mode)
     :config
     (general-setq eldoc-idle-delay 0.2
                   eldoc-echo-area-use-multiline-p nil))
@@ -1001,8 +1049,23 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
-  (use-package eww
-    :straight (:type built-in))
+  (use-package shr
+    :straight (:type built-in)
+    :commands (eww
+               eww-browse-url)
+    :config
+    (general-setq browse-url-browser-function 'eww-browse-url
+                  shr-use-fonts nil
+                  shr-use-colors nil
+                  shr-max-image-proportion 0.2
+                  shr-width (current-fill-column)))
+
+  (use-package shr-tag-pre-highlight
+    :straight t
+    :after shr
+    :config
+    (add-to-list 'shr-external-rendering-functions
+                 '(pre . shr-tag-pre-highlight)))
 #+end_src
 
 *** Face-Remap (Built-In)
@@ -1104,6 +1167,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package help
     :straight (:type built-in)
+    :gfhook 'visual-line-mode
     :config
     (general-setq help-window-select 'always)
     (general-add-advice 'help-window-display-message :override #'ignore))
@@ -1115,6 +1179,30 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package hideshow
     :straight (:type built-in)
     :ghook ('prog-mode-hook #'hs-minor-mode))
+#+end_src
+
+*** Hippie-Expand (Built-In)
+#+name: init-hippie-expand-block
+#+begin_src emacs-lisp
+  (use-package hippie-exp
+    :straight (:type built-in)
+    :after (dabbrev)
+    :general
+    ("M-/" #'hippie-expand)
+    :config
+    (general-setq hippie-expand-try-functions-list
+                  '(try-expand-dabbrev-visible
+                    try-expand-dabbrev
+                    try-expand-dabbrev-all-buffers
+                    try-expand-dabbrev-from-kill
+                    try-expand-list-all-buffers
+                    try-expand-list
+                    try-expand-line-all-buffers
+                    try-expand-line
+                    try-complete-file-name-partially
+                    try-complete-file-name
+                    try-expand-all-abbrevs)
+                  hippie-expand-verbose nil))
 #+end_src
 
 *** iElm (Built-In)
@@ -1208,22 +1296,38 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :general
     ("C-g" #'minibuffer-keyboard-quit)
-    :config
-    (general-setq minibuffer-prompt-properties
-                  '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
-
+    :init
     (defun djm/minibuffer-setup-hook ()
       "With modern packages like Ivy/Counsel, let's extend the gc-threshold while
     using the minibuffer to maximize performance"
-      (setq gc-cons-threshold extended-gc-cons-threshold))
+      (general-setq gc-cons-threshold extended-gc-cons-threshold))
 
     (defun djm/minibuffer-exit-hook ()
       "Upon exiting the minibuffer, we'll set everything back to normal"
-      (setq gc-cons-threshold default-gc-cons-threshold))
+      (general-setq gc-cons-threshold default-gc-cons-threshold))
 
     (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
     (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
-    (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+    (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    :config
+    (general-setq minibuffer-prompt-properties
+                  '(read-only t intangible t cursor-intangible t face minibuffer-prompt)
+                  completion-cycle-threshold 3
+                  completion-flex-nospace nil
+                  completion-pcm-complete-word-inserts-delimiters t
+                  completion-pcm-word-delimiters "-_./:| "
+                  completion-show-help nil
+                  completion-styles '(partial-comletion substring initials flex)
+                  completion-category-overrides '((file (styles initials basic))
+                                                  (buffer (styles initials basic))
+                                                  (info-menu (styles basic)))
+                  completions-format 'vertical
+                  read-answer-short t
+                  read-buffer-completion-ignore-case t
+                  read-file-name-completion-ignore-case t
+                  resize-mini-windows t)
+    (file-name-shadow-mode +1)
+    (minibuffer-electric-default-mode +1))
 #+end_src
 
 *** New-Comment (Built-In)
@@ -1357,6 +1461,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :mode (("\\.[a-zA-Z]+rc$" . sh-mode))
     :init
+    ;; taken from radian.el
     (defun arco/sh-script-prettify-mode-line ()
       (general-setq mode-line-process nil)
       (when (eq major-mode 'sh-mode)
@@ -1464,7 +1569,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq uniquify-ignore-buffers-re "^\\*"
-                  uniquify-buffer-name-style 'forward
+                  uniquify-buffer-name-style 'post-forward-angle-brackets
+                  uniquify-strip-common-suffix t
+                  uniquify-after-kill-buffer-p t
                   uniquify-separator "/"))
 #+end_src
 
@@ -1503,6 +1610,70 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package whitespace
     :straight (:type built-in))
+#+end_src
+
+*** Window (Built-In)
+#+name: init-window (built-in)-block
+#+begin_src emacs-lisp
+  (use-package window
+    :straight nil
+    :init
+    (general-setq display-buffer-alist
+                  '(;; top side window
+                    ("\\*\\(Flycheck\\|Package-Lint\\).*"
+                     (display-buffer-in-side-window)
+                     (window-height . 0.16)
+                     (side . bottom)
+                     (slot . 0)
+                     (window-parameters . ((no-other-window . t))))
+                    ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*"
+                     (display-buffer-in-side-window)
+                     (window-height . 0.16)
+                     (side . bottom)
+                     (slot . 1)
+                     (window-parameters . ((no-other-window . t))))
+                    ;; bottom side window
+                    (".*\\*Completions.*"
+                     (display-buffer-in-side-window)
+                     (window-height . 0.16)
+                     (side . bottom)
+                     (slot . 0)
+                     (window-parameters . ((no-other-window . t))))
+                    ("\\*e?shell.*"
+                     (display-buffer-in-side-window)
+                     (window-height . 0.16)
+                     (side . bottom)
+                     (slot . 1))
+                    ;; left side window
+                    ("\\*helpful.*"
+                     (display-buffer-in-side-window)
+                     (window-width . 0.30)       ; See the :hook
+                     (side . right)
+                     (slot . 0)
+                     (window-parameters . ((no-other-window . t))))
+                    ("\\*Help.*"
+                     (display-buffer-in-side-window)
+                     (window-width . 0.30)       ; See the :hook
+                     (side . right)
+                     (slot . 0)
+                     (window-parameters . ((no-other-window . t))))
+                    ;; right side window
+                    ("\\*Faces\\*"
+                     (display-buffer-in-side-window)
+                     (window-width . 0.25)
+                     (side . right)
+                     (slot . 0)
+                     (window-parameters . ((no-other-window . t)
+                                           (mode-line-format . (" "
+                                                                mode-line-buffer-identification)))))
+                    ("\\*Custom.*"
+                     (display-buffer-in-side-window)
+                     (window-width . 0.25)
+                     (side . right)
+                     (slot . 1))))
+    (general-setq window-combination-resize t
+                  even-window-sizes 'height-only
+                  window-sides-vertical nil))
 #+end_src
 
 *** Winner (Built-In)
@@ -1651,24 +1822,16 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
     (defun djm/load-gruvbox-theme ()
       (load-theme 'gruvbox-dark-hard t))
 
-    (defun djm/config-fonts (frame)
-      (dolist (script '(symbol mathematical))
-        (set-fontset-font "fontset-default" script (font-spec :family "XITS Math" :weight 'normal) nil nil))
-
-      ;; Define a font set stack for symbols, greek and math characters
-      (dolist (script '(symbol greek))
-        (set-fontset-font "fontset-default" script (font-spec :family "Symbola") nil 'append))
-
-      ;; Colored Emoji on OS X, prefer over everything else!
-      (set-fontset-font "fontset-default" 'unicode (font-spec :family "Symbola") nil nil)
-      (set-fontset-font "fontset-default" 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
-
-      (set-fontset-font "fontset-default" nil (font-spec :family "Apple Symbols") nil 'append))
+    (if (daemonp)
+        (progn
+          (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+          (general-add-hook 'after-make-frame-functions #'(lambda () (menu-bar-mode -1))))
+      (progn
+        (general-add-hook 'after-init-hook #'setup-main-fonts)
+        (general-add-hook 'after-make-frame-functions #'configure-fonts)))
 
     (when-let (frame (selected-frame))
-      (djm/config-fonts frame))
-
-    (general-add-hook 'after-make-frame-functions #'djm/config-fonts))
+      (configure-fonts frame)))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -1717,10 +1880,8 @@ This is a cool package that I never knew I needed until I found out it existed. 
   (use-package persistent-scratch
     :straight t
     :init
-    (general-setq persistent-scratch-autosave-interval 60)
-    (run-with-idle-timer 3 nil
-                         (lambda ()
-                           (persistent-scratch-setup-default))))
+    (general-setq persistent-scratch-autosave-interval 30)
+    (run-with-idle-timer 3 nil (lambda () (persistent-scratch-setup-default))))
 #+end_src
 
 *** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
@@ -1729,14 +1890,6 @@ This is a cool package that I never knew I needed until I found out it existed. 
   (use-package rainbow-mode
     :blackout t :straight t
     :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
-#+end_src
-
-*** [[https://github.com/k-talo/volatile-highlights.el][Volatile-Highlights]]
-#+name: init-volatile-highlights-block
-#+begin_src emacs-lisp :tangle no
-  (use-package volatile-highlights
-    :blackout t :straight t
-    :ghook 'emacs-startup-hook)
 #+end_src
 
 ** Meta
@@ -1748,7 +1901,7 @@ This is a cool package that I never knew I needed until I found out it existed. 
     :ghook 'emacs-startup-hook
     :config
     (general-setq gcmh-idle-delay 10
-                  gcmh-high-cons-threshold 16777216) ;; 16mb
+                  gcmh-high-cons-threshold 20000000)
     (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect))
 #+end_src
 
@@ -1895,7 +2048,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-flx-block
 #+begin_src emacs-lisp
   (use-package flx
-    :demand t :straight t)
+    :straight t)
 #+end_src
 
 *** [[https://github.com/abo-abo/swiper][Swiper]]
@@ -2121,6 +2274,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package helpful
     :straight t
+    :gfhook 'visual-line-mode
     :general
     ([remap describe-function] #'helpful-callable
      "C-h C"                   #'helpful-command
@@ -2234,6 +2388,16 @@ A nice way to restart emacs on the fly if you need to.
      "C-c i j" #'string-inflection-java-style-cycle
      "C-c i r" #'string-inflection-ruby-style-cycle
      "C-c i p" #'string-inflection-python-style-cycle))
+#+end_src
+
+*** [[https://github.com/mhayashi1120/Emacs-wgrep][Wgrep]]
+#+name: init-wgrep-block
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :straight t
+    :config
+    (general-setq wgrep-auto-save-buffer t
+                  wgrep-change-readonly-file t))
 #+end_src
 
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
@@ -2381,6 +2545,21 @@ A nice way to restart emacs on the fly if you need to.
     (general-add-hook 'dired-mode-hook #'hl-line-mode))
 #+end_src
 
+*** Dired-Aux (Built-In)
+#+name: init-dired-aux-block
+#+begin_src emacs-lisp
+  (use-package dired-aux
+    :demand t :straight (:type built-in)
+    :after (dired)
+    :general
+    (:keymaps 'dired-mode-map
+     "C-c +" #'dired-create-empty-file)
+    :config
+    (general-setq dired-isearch-filenames 'dwim
+                  dired-create-destination-dirs 'ask
+                  dired-vc-rename-file t))
+#+end_src
+
 *** WDired (Built-In)
 #+name: init-wdired-block
 #+begin_src emacs-lisp
@@ -2405,7 +2584,9 @@ A nice way to restart emacs on the fly if you need to.
                   dired-omit-verbose t
                   dired-omit-files-p t
                   dired-clean-up-buffers-too t
-                  dired-clean-confirm-killing-deleted-buffers nil
+                  dired-clean-confirm-killing-deleted-buffers t
+                  dired-bind-man nil
+                  dired-bind-info nil
                   dired-omit-files (concat dired-omit-files
                                            "\\|^.DS_Store\\'"
                                            "\\|^.project\\(?:ile\\)?\\'"
@@ -2414,6 +2595,22 @@ A nice way to restart emacs on the fly if you need to.
                                            "\\|^__pycache__\\'"
                                            "\\|\\(?:\\.js\\)?\\.meta\\'"
                                            "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
+#+end_src
+
+*** Image-Dired (Built-In)
+#+name: init-image-dired-block
+#+begin_src emacs-lisp
+  (use-package image-dired
+    :demand t :straight (:type built-in)
+    :after (dired)
+    :general
+    (:keymaps 'image-dired-thumbnail-mode-map
+     "<return>" #'image-dired-thumbnail-display-external)
+    :config
+    (general-setq image-dired-thumb-size 80
+                  image-dired-thumb-margin 2
+                  image-dired-thumb-relief 0
+                  image-dired-thumbs-per-row 4))
 #+end_src
 
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
@@ -2430,7 +2627,9 @@ A nice way to restart emacs on the fly if you need to.
   (use-package dired-git-info
     :straight t
     :general
-    (:keymaps 'dired-mode-map ":" #'dired-git-info-mode))
+    (:keymaps 'dired-mode-map ":" #'dired-git-info-mode)
+    :config
+    (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
 #+end_src
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
@@ -2489,7 +2688,19 @@ A nice way to restart emacs on the fly if you need to.
     (:keymaps
      'dired-mode-map
      "<tab>"     #'dired-subtree-toggle
-     "<backtab>" #'dired-subtree-cycle))
+     "<backtab>" #'dired-subtree-cycle)
+    :config
+    (general-setq dired-subtree-use-backgrounds nil))
+#+end_src
+
+*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
+#+name: init-dired-rsync-block
+#+begin_src emacs-lisp
+  (use-package dired-rsync
+    :straight t
+    :general
+    (:keymaps 'dired-mode-map
+     "r" #'dired-rsync))
 #+end_src
 
 *** [[https://github.com/purcell/diredfl][Diredfl]]
@@ -2500,6 +2711,22 @@ A nice way to restart emacs on the fly if you need to.
     :ghook 'dired-mode-hook)
 #+end_src
 
+*** [[https://github.com/asok/peep-dired][Peep-Dired]]
+#+name: init-peep-dired-block
+#+begin_src emacs-lisp
+  (use-package peep-dired
+    :demand t :straight t
+    :after (dired)
+    :general
+    (:keymaps 'dired-mode-map
+     "P" #'peep-dired)
+    :config
+    (general-setq peep-dired-cleanup-on-disable t
+                  peep-dired-enable-on-directories nil
+                  peep-dired-ignored-extensions '("mkv" "webm" "mp4" "mp3" "ogg" "iso")))
+
+#+end_src
+
 ** Navigation
 *** [[https://github.com/abo-abo/ace-window][Ace-Window]]
 #+name: init-ace-window-block
@@ -2508,7 +2735,17 @@ A nice way to restart emacs on the fly if you need to.
     :straight t
     :general ("C-x o" #'ace-window)
     :config
-    (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)))
+    (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
+                  aw-scope 'frame
+                  aw-dispatch-always nil
+                  aw-dispatch-alist '((?s aw-swap-window "Swap Windows")
+                                      (?2 aw-split-window-vert "Split Window Vertically")
+                                      (?3 aw-split-window-horz "Split Window Horizontally")
+                                      (?? aw-show-dispatch-help))
+                  aw-minibuffer-flag t
+                  aw-ignore-current nil
+                  aw-display-mode-overlay t
+                  aw-background t))
 #+end_src
 
 *** [[https://github.com/abo-abo/avy][Avy]]
@@ -2545,7 +2782,14 @@ A nice way to restart emacs on the fly if you need to.
               ibuffer-never-show-predicates)
     :config/el-patch
     (general-setq ibuffer-expert t
-                  ibuffer-show-empty-filter-groups nil)
+                  ibuffer-display-summary nil
+                  ibuffer-use-other-window nil
+                  ibuffer-show-empty-filter-groups nil
+                  ibuffer-movement-cycle nil
+                  ibuffer-default-sorting-mode 'filename/process
+                  ibuffer-title-face 'font-lock-doc-face
+                  ibuffer-use-header-line t
+                  ibuffer-default-shrink-to-minimum-size nil)
     (general-setq ibuffer-formats
                   '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
     (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"

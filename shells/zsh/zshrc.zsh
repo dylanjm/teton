@@ -8,12 +8,13 @@ fi
 
 source $ZSH/zplugin.zsh
 
-if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-  PROMPT="%9F%m%f %4F>%f %{$(vterm_prompt_end)%}"
-else
-  # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-  [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
-fi
+[[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+# if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
+#   PROMPT="%9F%m%f %4F>%f %{$(vterm_prompt_end)%}"
+# else
+#   # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+#   [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+# fi
 
 eval "$(direnv hook $0)"
 # If zsh init ends with a failing command (like a conditional) the prompt will

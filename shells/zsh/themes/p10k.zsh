@@ -54,40 +54,40 @@
       command_execution_time  # duration of the last command
       background_jobs         # presence of background jobs
       direnv                  # direnv status (https://direnv.net/)
-      virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
-      anaconda                # conda environment (https://conda.io/)
+      # virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
+      # anaconda                # conda environment (https://conda.io/)
       pyenv                   # python environment (https://github.com/pyenv/pyenv)
-      goenv                   # go environment (https://github.com/syndbg/goenv)
-      nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
-      nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
-      nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
+      #goenv                   # go environment (https://github.com/syndbg/goenv)
+      #nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
+      #nvm                     # node.js version from nvm (https://github.com/nvm-sh/nvm)
+      #nodeenv                 # node.js environment (https://github.com/ekalinin/nodeenv)
       # node_version          # node.js version
       # go_version            # go version (https://golang.org)
       # rust_version          # rustc version (https://www.rust-lang.org)
       # dotnet_version        # .NET version (https://dotnet.microsoft.com)
-      rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
-      rvm                     # ruby version from rvm (https://rvm.io)
-      fvm                     # flutter version management (https://github.com/leoafarias/fvm)
-      luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
-      jenv                    # java version from jenv (https://github.com/jenv/jenv)
-      plenv                   # perl version from plenv (https://github.com/tokuhirom/plenv)
-      kubecontext             # current kubernetes context (https://kubernetes.io/)
-      terraform               # terraform workspace (https://www.terraform.io)
-      aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+      # rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+      # rvm                     # ruby version from rvm (https://rvm.io)
+      # fvm                     # flutter version management (https://github.com/leoafarias/fvm)
+      # luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
+      # jenv                    # java version from jenv (https://github.com/jenv/jenv)
+      # plenv                   # perl version from plenv (https://github.com/tokuhirom/plenv)
+      # kubecontext             # current kubernetes context (https://kubernetes.io/)
+      # terraform               # terraform workspace (https://www.terraform.io)
+      # aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
       # aws_eb_env            # aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/)
       # azure                 # azure account name (https://docs.microsoft.com/en-us/cli/azure)
       # gcloud                # google cloud cli acccount and project (https://cloud.google.com/)
       # google_app_cred       # google application credentials (https://cloud.google.com/docs/authentication/production)
       context                 # user@hostname
-      nordvpn                 # nordvpn connection status, linux only (https://nordvpn.com/)
-      ranger                  # ranger shell (https://github.com/ranger/ranger)
-      nnn                     # nnn shell (https://github.com/jarun/nnn)
+      # nordvpn                 # nordvpn connection status, linux only (https://nordvpn.com/)
+      # ranger                  # ranger shell (https://github.com/ranger/ranger)
+      # nnn                     # nnn shell (https://github.com/jarun/nnn)
       # vim_shell               # vim shell indicator (:sh)
       # midnight_commander    # midnight commander shell (https://midnight-commander.org/)
       # vpn_ip                # virtual private network indicator
       # ram                   # free RAM
       # load                  # CPU load
-      todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
+      # todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
       time                    # current time
       # =========================[ Line #2 ]=========================
       newline
@@ -516,80 +516,80 @@
   # Icon to show when direnv is active.
   typeset -g POWERLEVEL9K_DIRENV_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
 
-  ##########[ nordvpn: nordvpn connection status, linux only (https://nordvpn.com/) ]###########
-  # NordVPN connection indicator color.
-  typeset -g POWERLEVEL9K_NORDVPN_FOREGROUND=39
-  # Hide NordVPN connection indicator when not connected.
-  typeset -g POWERLEVEL9K_NORDVPN_{DISCONNECTED,CONNECTING,DISCONNECTING}_CONTENT_EXPANSION=
-  typeset -g POWERLEVEL9K_NORDVPN_{DISCONNECTED,CONNECTING,DISCONNECTING}_VISUAL_IDENTIFIER_EXPANSION=
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NORDVPN_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ##########[ nordvpn: nordvpn connection status, linux only (https://nordvpn.com/) ]###########
+  # # NordVPN connection indicator color.
+  # typeset -g POWERLEVEL9K_NORDVPN_FOREGROUND=39
+  # # Hide NordVPN connection indicator when not connected.
+  # typeset -g POWERLEVEL9K_NORDVPN_{DISCONNECTED,CONNECTING,DISCONNECTING}_CONTENT_EXPANSION=
+  # typeset -g POWERLEVEL9K_NORDVPN_{DISCONNECTED,CONNECTING,DISCONNECTING}_VISUAL_IDENTIFIER_EXPANSION=
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NORDVPN_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  #################[ ranger: ranger shell (https://github.com/ranger/ranger) ]##################
-  # Ranger shell color.
-  typeset -g POWERLEVEL9K_RANGER_FOREGROUND=178
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_RANGER_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # #################[ ranger: ranger shell (https://github.com/ranger/ranger) ]##################
+  # # Ranger shell color.
+  # typeset -g POWERLEVEL9K_RANGER_FOREGROUND=178
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_RANGER_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ######################[ nnn: nnn shell (https://github.com/jarun/nnn) ]#######################
-  # Nnn shell color.
-  typeset -g POWERLEVEL9K_NNN_FOREGROUND=72
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NNN_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ######################[ nnn: nnn shell (https://github.com/jarun/nnn) ]#######################
+  # # Nnn shell color.
+  # typeset -g POWERLEVEL9K_NNN_FOREGROUND=72
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NNN_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ###########################[ vim_shell: vim shell indicator (:sh) ]###########################
-  # Vim shell indicator color.
-  typeset -g POWERLEVEL9K_VIM_SHELL_FOREGROUND=34
-  # Icon to show when in a vim shell.
-  typeset -g POWERLEVEL9K_VIM_SHELL_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
+  # ###########################[ vim_shell: vim shell indicator (:sh) ]###########################
+  # # Vim shell indicator color.
+  # typeset -g POWERLEVEL9K_VIM_SHELL_FOREGROUND=34
+  # # Icon to show when in a vim shell.
+  # typeset -g POWERLEVEL9K_VIM_SHELL_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
 
-  ######[ midnight_commander: midnight commander shell (https://midnight-commander.org/) ]######
-  # Midnight Commander shell color.
-  typeset -g POWERLEVEL9K_MIDNIGHT_COMMANDER_FOREGROUND=178
-  # Icon to show when in a midnight commander shell.
-  typeset -g POWERLEVEL9K_MIDNIGHT_COMMANDER_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
+  # ######[ midnight_commander: midnight commander shell (https://midnight-commander.org/) ]######
+  # # Midnight Commander shell color.
+  # typeset -g POWERLEVEL9K_MIDNIGHT_COMMANDER_FOREGROUND=178
+  # # Icon to show when in a midnight commander shell.
+  # typeset -g POWERLEVEL9K_MIDNIGHT_COMMANDER_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
 
-  ######################################[ ram: free RAM ]#######################################
-  # RAM color.
-  typeset -g POWERLEVEL9K_RAM_FOREGROUND=66
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_RAM_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ######################################[ ram: free RAM ]#######################################
+  # # RAM color.
+  # typeset -g POWERLEVEL9K_RAM_FOREGROUND=66
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_RAM_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ######################################[ load: CPU load ]######################################
-  # Show average CPU load over this many last minutes. Valid values are 1, 5 and 15.
-  typeset -g POWERLEVEL9K_LOAD_WHICH=5
-  # Load color when load is under 50%.
-  typeset -g POWERLEVEL9K_LOAD_NORMAL_FOREGROUND=66
-  # Load color when load is between 50% and 70%.
-  typeset -g POWERLEVEL9K_LOAD_WARNING_FOREGROUND=178
-  # Load color when load is over 70%.
-  typeset -g POWERLEVEL9K_LOAD_CRITICAL_FOREGROUND=166
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_LOAD_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ######################################[ load: CPU load ]######################################
+  # # Show average CPU load over this many last minutes. Valid values are 1, 5 and 15.
+  # typeset -g POWERLEVEL9K_LOAD_WHICH=5
+  # # Load color when load is under 50%.
+  # typeset -g POWERLEVEL9K_LOAD_NORMAL_FOREGROUND=66
+  # # Load color when load is between 50% and 70%.
+  # typeset -g POWERLEVEL9K_LOAD_WARNING_FOREGROUND=178
+  # # Load color when load is over 70%.
+  # typeset -g POWERLEVEL9K_LOAD_CRITICAL_FOREGROUND=166
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_LOAD_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ################[ todo: todo items (https://github.com/todotxt/todo.txt-cli) ]################
-  # Todo color.
-  typeset -g POWERLEVEL9K_TODO_FOREGROUND=110
-  # Hide todo when the total number of tasks is zero.
-  typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_TOTAL=true
-  # Hide todo when the number of tasks after filtering is zero.
-  typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_FILTERED=false
+  # ################[ todo: todo items (https://github.com/todotxt/todo.txt-cli) ]################
+  # # Todo color.
+  # typeset -g POWERLEVEL9K_TODO_FOREGROUND=110
+  # # Hide todo when the total number of tasks is zero.
+  # typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_TOTAL=true
+  # # Hide todo when the number of tasks after filtering is zero.
+  # typeset -g POWERLEVEL9K_TODO_HIDE_ZERO_FILTERED=false
 
-  # Todo format. The following parameters are available within the expansion.
-  #
-  # - P9K_TODO_TOTAL_TASK_COUNT     The total number of tasks.
-  # - P9K_TODO_FILTERED_TASK_COUNT  The number of tasks after filtering.
-  #
-  # These variables correspond to the last line of the output of `todo.sh -p ls`:
-  #
-  #   TODO: 24 of 42 tasks shown
-  #
-  # Here 24 is P9K_TODO_FILTERED_TASK_COUNT and 42 is P9K_TODO_TOTAL_TASK_COUNT.
-  #
-  # typeset -g POWERLEVEL9K_TODO_CONTENT_EXPANSION='$P9K_TODO_FILTERED_TASK_COUNT'
+  # # Todo format. The following parameters are available within the expansion.
+  # #
+  # # - P9K_TODO_TOTAL_TASK_COUNT     The total number of tasks.
+  # # - P9K_TODO_FILTERED_TASK_COUNT  The number of tasks after filtering.
+  # #
+  # # These variables correspond to the last line of the output of `todo.sh -p ls`:
+  # #
+  # #   TODO: 24 of 42 tasks shown
+  # #
+  # # Here 24 is P9K_TODO_FILTERED_TASK_COUNT and 42 is P9K_TODO_TOTAL_TASK_COUNT.
+  # #
+  # # typeset -g POWERLEVEL9K_TODO_CONTENT_EXPANSION='$P9K_TODO_FILTERED_TASK_COUNT'
 
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_TODO_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_TODO_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ##################################[ context: user@hostname ]##################################
   # Context color when running with privileges.
@@ -626,14 +626,14 @@
   # typeset -g POWERLEVEL9K_VIRTUALENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #####################[ anaconda: conda environment (https://conda.io/) ]######################
-  # Anaconda environment color.
-  typeset -g POWERLEVEL9K_ANACONDA_FOREGROUND=37
-  # Don't show Python version next to the anaconda environment name.
-  typeset -g POWERLEVEL9K_ANACONDA_SHOW_PYTHON_VERSION=false
-  # Separate environment name from Python version only with a space.
-  typeset -g POWERLEVEL9K_ANACONDA_{LEFT,RIGHT}_DELIMITER=
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Anaconda environment color.
+  # typeset -g POWERLEVEL9K_ANACONDA_FOREGROUND=37
+  # # Don't show Python version next to the anaconda environment name.
+  # typeset -g POWERLEVEL9K_ANACONDA_SHOW_PYTHON_VERSION=false
+  # # Separate environment name from Python version only with a space.
+  # typeset -g POWERLEVEL9K_ANACONDA_{LEFT,RIGHT}_DELIMITER=
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ################[ pyenv: python environment (https://github.com/pyenv/pyenv) ]################
   # Pyenv color.
@@ -647,128 +647,128 @@
   # typeset -g POWERLEVEL9K_PYENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ################[ goenv: go environment (https://github.com/syndbg/goenv) ]################
-  # Goenv color.
-  typeset -g POWERLEVEL9K_GOENV_FOREGROUND=37
-  # Don't show the current Go version if it's the same as global.
-  typeset -g POWERLEVEL9K_GOENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_GOENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Goenv color.
+  # typeset -g POWERLEVEL9K_GOENV_FOREGROUND=37
+  # # Don't show the current Go version if it's the same as global.
+  # typeset -g POWERLEVEL9K_GOENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_GOENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ##########[ nodenv: node.js version from nodenv (https://github.com/nodenv/nodenv) ]##########
-  # Nodenv color.
-  typeset -g POWERLEVEL9K_NODENV_FOREGROUND=70
-  # Don't show node version if it's the same as global: $(nodenv version-name) == $(nodenv global).
-  typeset -g POWERLEVEL9K_NODENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NODENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Nodenv color.
+  # typeset -g POWERLEVEL9K_NODENV_FOREGROUND=70
+  # # Don't show node version if it's the same as global: $(nodenv version-name) == $(nodenv global).
+  # typeset -g POWERLEVEL9K_NODENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NODENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ##############[ nvm: node.js version from nvm (https://github.com/nvm-sh/nvm) ]###############
-  # Nvm color.
-  typeset -g POWERLEVEL9K_NVM_FOREGROUND=70
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Nvm color.
+  # typeset -g POWERLEVEL9K_NVM_FOREGROUND=70
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ############[ nodeenv: node.js environment (https://github.com/ekalinin/nodeenv) ]############
-  # Nodeenv color.
-  typeset -g POWERLEVEL9K_NODEENV_FOREGROUND=70
-  # Don't show Node version next to the environment name.
-  typeset -g POWERLEVEL9K_NODEENV_SHOW_NODE_VERSION=false
-  # Separate environment name from Node version only with a space.
-  typeset -g POWERLEVEL9K_NODEENV_{LEFT,RIGHT}_DELIMITER=
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NODEENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Nodeenv color.
+  # typeset -g POWERLEVEL9K_NODEENV_FOREGROUND=70
+  # # Don't show Node version next to the environment name.
+  # typeset -g POWERLEVEL9K_NODEENV_SHOW_NODE_VERSION=false
+  # # Separate environment name from Node version only with a space.
+  # typeset -g POWERLEVEL9K_NODEENV_{LEFT,RIGHT}_DELIMITER=
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NODEENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ##############################[ node_version: node.js version ]###############################
-  # Node version color.
-  typeset -g POWERLEVEL9K_NODE_VERSION_FOREGROUND=70
-  # Show node version only when in a directory tree containing package.json.
-  typeset -g POWERLEVEL9K_NODE_VERSION_PROJECT_ONLY=true
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_NODE_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Node version color.
+  # typeset -g POWERLEVEL9K_NODE_VERSION_FOREGROUND=70
+  # # Show node version only when in a directory tree containing package.json.
+  # typeset -g POWERLEVEL9K_NODE_VERSION_PROJECT_ONLY=true
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_NODE_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #######################[ go_version: go version (https://golang.org) ]########################
-  # Go version color.
-  typeset -g POWERLEVEL9K_GO_VERSION_FOREGROUND=37
-  # Show go version only when in a go project subdirectory.
-  typeset -g POWERLEVEL9K_GO_VERSION_PROJECT_ONLY=true
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_GO_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Go version color.
+  # typeset -g POWERLEVEL9K_GO_VERSION_FOREGROUND=37
+  # # Show go version only when in a go project subdirectory.
+  # typeset -g POWERLEVEL9K_GO_VERSION_PROJECT_ONLY=true
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_GO_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #################[ rust_version: rustc version (https://www.rust-lang.org) ]##################
-  # Rust version color.
-  typeset -g POWERLEVEL9K_RUST_VERSION_FOREGROUND=37
-  # Show rust version only when in a rust project subdirectory.
-  typeset -g POWERLEVEL9K_RUST_VERSION_PROJECT_ONLY=true
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_RUST_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Rust version color.
+  # typeset -g POWERLEVEL9K_RUST_VERSION_FOREGROUND=37
+  # # Show rust version only when in a rust project subdirectory.
+  # typeset -g POWERLEVEL9K_RUST_VERSION_PROJECT_ONLY=true
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_RUST_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ###############[ dotnet_version: .NET version (https://dotnet.microsoft.com) ]################
-  # .NET version color.
-  typeset -g POWERLEVEL9K_DOTNET_VERSION_FOREGROUND=134
-  # Show .NET version only when in a .NET project subdirectory.
-  typeset -g POWERLEVEL9K_DOTNET_VERSION_PROJECT_ONLY=true
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_DOTNET_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # .NET version color.
+  # typeset -g POWERLEVEL9K_DOTNET_VERSION_FOREGROUND=134
+  # # Show .NET version only when in a .NET project subdirectory.
+  # typeset -g POWERLEVEL9K_DOTNET_VERSION_PROJECT_ONLY=true
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_DOTNET_VERSION_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #############[ rbenv: ruby version from rbenv (https://github.com/rbenv/rbenv) ]##############
-  # Rbenv color.
-  typeset -g POWERLEVEL9K_RBENV_FOREGROUND=168
-  # Hide ruby version if it doesn't come from one of these sources.
-  typeset -g POWERLEVEL9K_RBENV_SOURCES=(shell local global)
-  # If set to false, hide ruby version if it's the same as global:
-  # $(rbenv version-name) == $(rbenv global).
-  typeset -g POWERLEVEL9K_RBENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_RBENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Rbenv color.
+  # typeset -g POWERLEVEL9K_RBENV_FOREGROUND=168
+  # # Hide ruby version if it doesn't come from one of these sources.
+  # typeset -g POWERLEVEL9K_RBENV_SOURCES=(shell local global)
+  # # If set to false, hide ruby version if it's the same as global:
+  # # $(rbenv version-name) == $(rbenv global).
+  # typeset -g POWERLEVEL9K_RBENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_RBENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #######################[ rvm: ruby version from rvm (https://rvm.io) ]########################
-  # Rvm color.
-  typeset -g POWERLEVEL9K_RVM_FOREGROUND=168
-  # Don't show @gemset at the end.
-  typeset -g POWERLEVEL9K_RVM_SHOW_GEMSET=false
-  # Don't show ruby- at the front.
-  typeset -g POWERLEVEL9K_RVM_SHOW_PREFIX=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Rvm color.
+  # typeset -g POWERLEVEL9K_RVM_FOREGROUND=168
+  # # Don't show @gemset at the end.
+  # typeset -g POWERLEVEL9K_RVM_SHOW_GEMSET=false
+  # # Don't show ruby- at the front.
+  # typeset -g POWERLEVEL9K_RVM_SHOW_PREFIX=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ###########[ fvm: flutter version management (https://github.com/leoafarias/fvm) ]############
-  # Fvm color.
-  typeset -g POWERLEVEL9K_FVM_FOREGROUND=38
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_FVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Fvm color.
+  # typeset -g POWERLEVEL9K_FVM_FOREGROUND=38
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_FVM_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ##########[ luaenv: lua version from luaenv (https://github.com/cehoffman/luaenv) ]###########
-  # Lua color.
-  typeset -g POWERLEVEL9K_LUAENV_FOREGROUND=32
-  # Hide lua version if it doesn't come from one of these sources.
-  typeset -g POWERLEVEL9K_LUAENV_SOURCES=(shell local global)
-  # If set to false, hide lua version if it's the same as global:
-  # $(luaenv version-name) == $(luaenv global).
-  typeset -g POWERLEVEL9K_LUAENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_LUAENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Lua color.
+  # typeset -g POWERLEVEL9K_LUAENV_FOREGROUND=32
+  # # Hide lua version if it doesn't come from one of these sources.
+  # typeset -g POWERLEVEL9K_LUAENV_SOURCES=(shell local global)
+  # # If set to false, hide lua version if it's the same as global:
+  # # $(luaenv version-name) == $(luaenv global).
+  # typeset -g POWERLEVEL9K_LUAENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_LUAENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ###############[ jenv: java version from jenv (https://github.com/jenv/jenv) ]################
   # Java color.
-  typeset -g POWERLEVEL9K_JENV_FOREGROUND=32
-  # Hide java version if it doesn't come from one of these sources.
-  typeset -g POWERLEVEL9K_JENV_SOURCES=(shell local global)
-  # If set to false, hide java version if it's the same as global:
-  # $(jenv version-name) == $(jenv global).
-  typeset -g POWERLEVEL9K_JENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_JENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # typeset -g POWERLEVEL9K_JENV_FOREGROUND=32
+  # # Hide java version if it doesn't come from one of these sources.
+  # typeset -g POWERLEVEL9K_JENV_SOURCES=(shell local global)
+  # # If set to false, hide java version if it's the same as global:
+  # # $(jenv version-name) == $(jenv global).
+  # typeset -g POWERLEVEL9K_JENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_JENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ###########[ plenv: perl version from plenv (https://github.com/tokuhirom/plenv) ]############
-  # Perl color.
-  typeset -g POWERLEVEL9K_PLENV_FOREGROUND=67
-  # Hide perl version if it doesn't come from one of these sources.
-  typeset -g POWERLEVEL9K_PLENV_SOURCES=(shell local global)
-  # If set to false, hide perl version if it's the same as global:
-  # $(plenv version-name) == $(plenv global).
-  typeset -g POWERLEVEL9K_PLENV_PROMPT_ALWAYS_SHOW=false
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_PLENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Perl color.
+  # typeset -g POWERLEVEL9K_PLENV_FOREGROUND=67
+  # # Hide perl version if it doesn't come from one of these sources.
+  # typeset -g POWERLEVEL9K_PLENV_SOURCES=(shell local global)
+  # # If set to false, hide perl version if it's the same as global:
+  # # $(plenv version-name) == $(plenv global).
+  # typeset -g POWERLEVEL9K_PLENV_PROMPT_ALWAYS_SHOW=false
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_PLENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   #############[ kubecontext: current kubernetes context (https://kubernetes.io/) ]#############
   # Kubernetes context classes for the purpose of using different colors, icons and expansions with
@@ -797,11 +797,11 @@
   #   typeset -g POWERLEVEL9K_KUBECONTEXT_TEST_FOREGROUND=28
   #   typeset -g POWERLEVEL9K_KUBECONTEXT_TEST_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_KUBECONTEXT_TEST_CONTENT_EXPANSION='> ${P9K_CONTENT} <'
-  typeset -g POWERLEVEL9K_KUBECONTEXT_CLASSES=(
-      # '*prod*'  PROD    # These values are examples that are unlikely
-      # '*test*'  TEST    # to match your needs. Customize them as needed.
-      '*'       DEFAULT)
-  typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_FOREGROUND=134
+  # typeset -g POWERLEVEL9K_KUBECONTEXT_CLASSES=(
+  #     # '*prod*'  PROD    # These values are examples that are unlikely
+  #     # '*test*'  TEST    # to match your needs. Customize them as needed.
+  #     '*'       DEFAULT)
+  # typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_FOREGROUND=134
   # typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   # Use POWERLEVEL9K_KUBECONTEXT_CONTENT_EXPANSION to specify the content displayed by kubecontext
@@ -842,24 +842,24 @@
   #   - P9K_KUBECONTEXT_CLOUD_ACCOUNT=123456789012
   #   - P9K_KUBECONTEXT_CLOUD_ZONE=us-east-1
   #   - P9K_KUBECONTEXT_CLOUD_CLUSTER=my-cluster-01
-  typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION=
-  # Show P9K_KUBECONTEXT_CLOUD_CLUSTER if it's not empty and fall back to P9K_KUBECONTEXT_NAME.
-  POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION+='${P9K_KUBECONTEXT_CLOUD_CLUSTER:-${P9K_KUBECONTEXT_NAME}}'
-  # Append the current context's namespace if it's not "default".
-  POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION+='${${:-/$P9K_KUBECONTEXT_NAMESPACE}:#/default}'
+  # typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION=
+  # # Show P9K_KUBECONTEXT_CLOUD_CLUSTER if it's not empty and fall back to P9K_KUBECONTEXT_NAME.
+  # POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION+='${P9K_KUBECONTEXT_CLOUD_CLUSTER:-${P9K_KUBECONTEXT_NAME}}'
+  # # Append the current context's namespace if it's not "default".
+  # POWERLEVEL9K_KUBECONTEXT_DEFAULT_CONTENT_EXPANSION+='${${:-/$P9K_KUBECONTEXT_NAMESPACE}:#/default}'
 
   # Custom prefix.
   # typeset -g POWERLEVEL9K_KUBECONTEXT_PREFIX='%fat '
 
   ################[ terraform: terraform workspace (https://www.terraform.io) ]#################
   # Terraform color.
-  typeset -g POWERLEVEL9K_TERRAFORM_FOREGROUND=38
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_TERRAFORM_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # typeset -g POWERLEVEL9K_TERRAFORM_FOREGROUND=38
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_TERRAFORM_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  #[ aws: aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) ]#
-  # AWS profile color.
-  typeset -g POWERLEVEL9K_AWS_DEFAULT_FOREGROUND=208
+  # #[ aws: aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) ]#
+  # # AWS profile color.
+  # typeset -g POWERLEVEL9K_AWS_DEFAULT_FOREGROUND=208
   # POWERLEVEL9K_AWS_CLASSES is an array with even number of elements. The first element
   # in each pair defines a pattern against which the current AWS profile gets matched.
   # More specifically, it's P9K_CONTENT prior to the application of context expansion (see below)
@@ -883,125 +883,125 @@
   #   typeset -g POWERLEVEL9K_AWS_TEST_FOREGROUND=28
   #   typeset -g POWERLEVEL9K_AWS_TEST_VISUAL_IDENTIFIER_EXPANSION='⭐'
   #   typeset -g POWERLEVEL9K_AWS_TEST_CONTENT_EXPANSION='> ${P9K_CONTENT} <'
-  typeset -g POWERLEVEL9K_AWS_CLASSES=(
-      # '*prod*'  PROD    # These values are examples that are unlikely
-      # '*test*'  TEST    # to match your needs. Customize them as needed.
-      '*'       DEFAULT)
+  # typeset -g POWERLEVEL9K_AWS_CLASSES=(
+  #     # '*prod*'  PROD    # These values are examples that are unlikely
+  #     # '*test*'  TEST    # to match your needs. Customize them as needed.
+  #     '*'       DEFAULT)
   # typeset -g POWERLEVEL9K_AWS_DEFAULT_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  #[ aws_eb_env: aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/) ]#
-  # AWS Elastic Beanstalk environment color.
-  typeset -g POWERLEVEL9K_AWS_EB_ENV_FOREGROUND=70
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_AWS_EB_ENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # #[ aws_eb_env: aws elastic beanstalk environment (https://aws.amazon.com/elasticbeanstalk/) ]#
+  # # AWS Elastic Beanstalk environment color.
+  # typeset -g POWERLEVEL9K_AWS_EB_ENV_FOREGROUND=70
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_AWS_EB_ENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ##########[ azure: azure account name (https://docs.microsoft.com/en-us/cli/azure) ]##########
-  # Azure account name color.
-  typeset -g POWERLEVEL9K_AZURE_FOREGROUND=32
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_AZURE_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ##########[ azure: azure account name (https://docs.microsoft.com/en-us/cli/azure) ]##########
+  # # Azure account name color.
+  # typeset -g POWERLEVEL9K_AZURE_FOREGROUND=32
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_AZURE_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  ##########[ gcloud: google cloud acccount and project (https://cloud.google.com/) ]###########
-  # Google cloud color.
-  typeset -g POWERLEVEL9K_GCLOUD_FOREGROUND=32
+  # ##########[ gcloud: google cloud acccount and project (https://cloud.google.com/) ]###########
+  # # Google cloud color.
+  # typeset -g POWERLEVEL9K_GCLOUD_FOREGROUND=32
 
-  # Google cloud format. Uncomment POWERLEVEL9K_GCLOUD_CONTENT_EXPANSION and edit its value if the
-  # default is too verbose.
-  #
-  #   P9K_GCLOUD_ACCOUNT: the output of `gcloud config get-value account`
-  #   P9K_GCLOUD_PROJECT: the output of `gcloud config get-value project`
-  #   ${VARIABLE//\%/%%}: ${VARIABLE} with all occurences of '%' replaced with '%%'.
-  #
-  # typeset -g POWERLEVEL9K_GCLOUD_CONTENT_EXPANSION='${P9K_GCLOUD_ACCOUNT//\%/%%}:${P9K_GCLOUD_PROJECT//\%/%%}'
+  # # Google cloud format. Uncomment POWERLEVEL9K_GCLOUD_CONTENT_EXPANSION and edit its value if the
+  # # default is too verbose.
+  # #
+  # #   P9K_GCLOUD_ACCOUNT: the output of `gcloud config get-value account`
+  # #   P9K_GCLOUD_PROJECT: the output of `gcloud config get-value project`
+  # #   ${VARIABLE//\%/%%}: ${VARIABLE} with all occurences of '%' replaced with '%%'.
+  # #
+  # # typeset -g POWERLEVEL9K_GCLOUD_CONTENT_EXPANSION='${P9K_GCLOUD_ACCOUNT//\%/%%}:${P9K_GCLOUD_PROJECT//\%/%%}'
 
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_GCLOUD_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_GCLOUD_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  #[ google_app_cred: google application credentials (https://cloud.google.com/docs/authentication/production) ]#
-  # Google application credentials classes for the purpose of using different colors, icons and
-  # expansions with different credentials.
-  #
-  # POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES is an array with even number of elements. The first
-  # element in each pair defines a pattern against which the current kubernetes context gets
-  # matched. More specifically, it's P9K_CONTENT prior to the application of context expansion
-  # (see below) that gets matched. If you unset all POWERLEVEL9K_GOOGLE_APP_CRED_*CONTENT_EXPANSION
-  # parameters, you'll see this value in your prompt. The second element of each pair in
-  # POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES defines the context class. Patterns are tried in order.
-  # The first match wins.
-  #
-  # For example, given these settings:
-  #
-  #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES=(
-  #     '*:*prod*:*'  PROD
-  #     '*:*test*:*'  TEST
-  #     '*'           DEFAULT)
-  #
-  # If your current Google application credentials is "service_account deathray-testing x@y.com",
-  # its class is TEST because it doesn't match the pattern '* *prod* *' but does match '* *test* *'.
-  #
-  # You can define different colors, icons and content expansions for different classes:
-  #
-  #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_FOREGROUND=28
-  #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_VISUAL_IDENTIFIER_EXPANSION='⭐'
-  #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_CONTENT_EXPANSION='$P9K_GOOGLE_APP_CRED_PROJECT_ID'
-  typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES=(
-      # '*:*prod*:*'  PROD    # These values are examples that are unlikely
-      # '*:*test*:*'  TEST    # to match your needs. Customize them as needed.
-      '*'             DEFAULT)
-  typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_FOREGROUND=32
-  # typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # #[ google_app_cred: google application credentials (https://cloud.google.com/docs/authentication/production) ]#
+  # # Google application credentials classes for the purpose of using different colors, icons and
+  # # expansions with different credentials.
+  # #
+  # # POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES is an array with even number of elements. The first
+  # # element in each pair defines a pattern against which the current kubernetes context gets
+  # # matched. More specifically, it's P9K_CONTENT prior to the application of context expansion
+  # # (see below) that gets matched. If you unset all POWERLEVEL9K_GOOGLE_APP_CRED_*CONTENT_EXPANSION
+  # # parameters, you'll see this value in your prompt. The second element of each pair in
+  # # POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES defines the context class. Patterns are tried in order.
+  # # The first match wins.
+  # #
+  # # For example, given these settings:
+  # #
+  # #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES=(
+  # #     '*:*prod*:*'  PROD
+  # #     '*:*test*:*'  TEST
+  # #     '*'           DEFAULT)
+  # #
+  # # If your current Google application credentials is "service_account deathray-testing x@y.com",
+  # # its class is TEST because it doesn't match the pattern '* *prod* *' but does match '* *test* *'.
+  # #
+  # # You can define different colors, icons and content expansions for different classes:
+  # #
+  # #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_FOREGROUND=28
+  # #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # #   typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_TEST_CONTENT_EXPANSION='$P9K_GOOGLE_APP_CRED_PROJECT_ID'
+  # typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_CLASSES=(
+  #     # '*:*prod*:*'  PROD    # These values are examples that are unlikely
+  #     # '*:*test*:*'  TEST    # to match your needs. Customize them as needed.
+  #     '*'             DEFAULT)
+  # typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_FOREGROUND=32
+  # # typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  # Use POWERLEVEL9K_GOOGLE_APP_CRED_CONTENT_EXPANSION to specify the content displayed by
-  # google_app_cred segment. Parameter expansions are very flexible and fast, too. See reference:
-  # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion.
-  #
-  # You can use the following parameters in the expansion. Each of them corresponds to one of the
-  # fields in the JSON file pointed to by GOOGLE_APPLICATION_CREDENTIALS.
-  #
-  #   Parameter                        | JSON key file field
-  #   ---------------------------------+---------------
-  #   P9K_GOOGLE_APP_CRED_TYPE         | type
-  #   P9K_GOOGLE_APP_CRED_PROJECT_ID   | project_id
-  #   P9K_GOOGLE_APP_CRED_CLIENT_EMAIL | client_email
-  #
-  # Note: ${VARIABLE//\%/%%} expands to ${VARIABLE} with all occurences of '%' replaced by '%%'.
-  typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_CONTENT_EXPANSION='${P9K_GOOGLE_APP_CRED_PROJECT_ID//\%/%%}'
+  # # Use POWERLEVEL9K_GOOGLE_APP_CRED_CONTENT_EXPANSION to specify the content displayed by
+  # # google_app_cred segment. Parameter expansions are very flexible and fast, too. See reference:
+  # # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion.
+  # #
+  # # You can use the following parameters in the expansion. Each of them corresponds to one of the
+  # # fields in the JSON file pointed to by GOOGLE_APPLICATION_CREDENTIALS.
+  # #
+  # #   Parameter                        | JSON key file field
+  # #   ---------------------------------+---------------
+  # #   P9K_GOOGLE_APP_CRED_TYPE         | type
+  # #   P9K_GOOGLE_APP_CRED_PROJECT_ID   | project_id
+  # #   P9K_GOOGLE_APP_CRED_CLIENT_EMAIL | client_email
+  # #
+  # # Note: ${VARIABLE//\%/%%} expands to ${VARIABLE} with all occurences of '%' replaced by '%%'.
+  # typeset -g POWERLEVEL9K_GOOGLE_APP_CRED_DEFAULT_CONTENT_EXPANSION='${P9K_GOOGLE_APP_CRED_PROJECT_ID//\%/%%}'
 
-  ###############################[ public_ip: public IP address ]###############################
-  # Public IP color.
-  typeset -g POWERLEVEL9K_PUBLIC_IP_FOREGROUND=94
-  # Custom icon.
-  # typeset -g POWERLEVEL9K_PUBLIC_IP_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # ###############################[ public_ip: public IP address ]###############################
+  # # Public IP color.
+  # typeset -g POWERLEVEL9K_PUBLIC_IP_FOREGROUND=94
+  # # Custom icon.
+  # # typeset -g POWERLEVEL9K_PUBLIC_IP_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ########################[ vpn_ip: virtual private network indicator ]#########################
   # VPN IP color.
-  typeset -g POWERLEVEL9K_VPN_IP_FOREGROUND=81
-  # When on VPN, show just an icon without the IP address.
-  typeset -g POWERLEVEL9K_VPN_IP_CONTENT_EXPANSION=
-  # Regular expression for the VPN network interface. Run ifconfig while on VPN to see the
-  # name of the interface.
-  typeset -g POWERLEVEL9K_VPN_IP_INTERFACE='(wg|(.*tun))[0-9]*'
-  # Icon to show when on VPN.
-  typeset -g POWERLEVEL9K_VPN_IP_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
+  # typeset -g POWERLEVEL9K_VPN_IP_FOREGROUND=81
+  # # When on VPN, show just an icon without the IP address.
+  # typeset -g POWERLEVEL9K_VPN_IP_CONTENT_EXPANSION=
+  # # Regular expression for the VPN network interface. Run ifconfig while on VPN to see the
+  # # name of the interface.
+  # typeset -g POWERLEVEL9K_VPN_IP_INTERFACE='(wg|(.*tun))[0-9]*'
+  # # Icon to show when on VPN.
+  # typeset -g POWERLEVEL9K_VPN_IP_VISUAL_IDENTIFIER_EXPANSION='${P9K_VISUAL_IDENTIFIER}'
 
   #########################[ proxy: system-wide http/https/ftp proxy ]##########################
   # Proxy color.
-  typeset -g POWERLEVEL9K_PROXY_FOREGROUND=68
+  # typeset -g POWERLEVEL9K_PROXY_FOREGROUND=68
   # Custom icon.
   # typeset -g POWERLEVEL9K_PROXY_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
   ################################[ battery: internal battery ]#################################
   # Show battery in red when it's below this level and not connected to power supply.
-  typeset -g POWERLEVEL9K_BATTERY_LOW_THRESHOLD=20
-  typeset -g POWERLEVEL9K_BATTERY_LOW_FOREGROUND=160
-  # Show battery in green when it's charging or fully charged.
-  typeset -g POWERLEVEL9K_BATTERY_{CHARGING,CHARGED}_FOREGROUND=70
-  # Show battery in yellow when it's discharging.
-  typeset -g POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND=178
-  # Battery pictograms going from low to high level of charge.
-  typeset -g POWERLEVEL9K_BATTERY_STAGES=$'\uf58d\uf579\uf57a\uf57b\uf57c\uf57d\uf57e\uf57f\uf580\uf581\uf578'
-  # Don't show the remaining time to charge/discharge.
-  typeset -g POWERLEVEL9K_BATTERY_VERBOSE=false
+  # typeset -g POWERLEVEL9K_BATTERY_LOW_THRESHOLD=20
+  # typeset -g POWERLEVEL9K_BATTERY_LOW_FOREGROUND=160
+  # # Show battery in green when it's charging or fully charged.
+  # typeset -g POWERLEVEL9K_BATTERY_{CHARGING,CHARGED}_FOREGROUND=70
+  # # Show battery in yellow when it's discharging.
+  # typeset -g POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND=178
+  # # Battery pictograms going from low to high level of charge.
+  # typeset -g POWERLEVEL9K_BATTERY_STAGES=$'\uf58d\uf579\uf57a\uf57b\uf57c\uf57d\uf57e\uf57f\uf580\uf581\uf578'
+  # # Don't show the remaining time to charge/discharge.
+  # typeset -g POWERLEVEL9K_BATTERY_VERBOSE=false
 
   ####################################[ time: current time ]####################################
   # Current time color.

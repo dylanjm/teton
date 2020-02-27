@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+
 main() {
     yabai -m window --focus next || yabai -m window --focus \
         "$( (yabai -m query --spaces --display next || yabai -m query --spaces --display first) \

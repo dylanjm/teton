@@ -23,9 +23,7 @@ zmodload zsh/terminfo
 # Change to load=load for debugging.
 load=light
 
-if [[ "$INSIDE_EMACS" != 'vterm' ]]; then
-  zinit $load romkatv/powerlevel10k
-fi
+zinit $load romkatv/powerlevel10k
 
 zinit ice wait multisrc"*.zsh" lucid
 zinit $load $ZSH/interactive
@@ -39,13 +37,13 @@ zinit $load laggardkernel/zsh-thefuck
 zinit ice wait blockf lucid
 zinit $load zsh-users/zsh-completions
 
-zinit ice wait lucid
+zinit ice lucid
 zinit $load zdharma/history-search-multi-word
 
-zinit ice wait lucid blockf
+zinit ice lucid
 zinit $load rupa/z
 
-zinit ice wait lucid blockf
+zinit ice lucid
 zinit $load changyuheng/fz
 
 zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid

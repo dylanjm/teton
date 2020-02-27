@@ -2,9 +2,9 @@
 ### Suffix
 ###
 #alias -s org='emacs'
-alias -s py='emacs'
+#alias -s py='emacs'
 #alias -s sh='emacs'
-alias -s zsh='emacs'
+#alias -s zsh='emacs'
 
 ###
 ### Global
@@ -24,9 +24,7 @@ alias zconf="$EDITOR $ZSH &"
 alias econf="$EDITOR $DOTFILES/editors/emacs.d &"
 alias kemc="brew services restart emacs-head"
 alias et="emacsclient -t"
-if [[ "$INSIDE_EMACS" = 'vterm' ]]; then
-  alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
-fi
+[[ "$INSIDE_EMACS" = 'vterm' ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
 ### Navigation
@@ -37,7 +35,6 @@ alias dl="cd $HOME/Downloads"
 
 alias dot="cd $DOTFILES"
 alias dotapp="cd $DOTFILES/apps"
-alias dotm="cd $DOTFILES/misc"
 alias dotshell="cd $ZSH"
 alias dotem="cd $DOTFILES/editors/emacs.d"
 alias dotbin='cd $DOTFILES/bin'
@@ -47,7 +44,7 @@ alias cachem='cd $XDG_CACHE_HOME/emacs'
 alias cachez='cd $XDG_CACHE_HOME/zsh'
 alias plugins='cd $XDG_CACHE_HOME/zsh/zplugin/plugins'
 
-alias org='cd $HOME/org'
+alias org='cd $HOME/Documents/org-files'
 
 ###
 ### Commands
@@ -57,6 +54,7 @@ alias la='gls -la --color=tty --group-directories-first'
 alias lx='exa -lah --icons --time=changed --time-style long-iso --group-directories-first'
 alias lxg='exa -lah --icons --time=changed --time-style long-iso --git --sort=modified'
 alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified'
+alias bc='eva'
 
 ###
 ### Misc

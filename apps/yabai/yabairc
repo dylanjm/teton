@@ -11,16 +11,16 @@ yabai -m config focus_follows_mouse          off
 
 yabai -m config window_placement             second_child
 yabai -m config window_topmost               on
-yabai -m config window_opacity               off
-yabai -m config window_opacity_duration      0.25
+yabai -m config window_opacity               on
+yabai -m config window_opacity_duration      0.15
 yabai -m config window_shadow                float
 
 yabai -m config window_border                on
 yabai -m config window_border_width          5
 yabai -m config window_border_placement      inset
-yabai -m config active_window_border_color   0xff775759
-yabai -m config normal_window_border_color   0xff505050
-yabai -m config insert_window_border_color   0xffd75f5f
+yabai -m config active_window_border_color   0xff98971a
+yabai -m config normal_window_border_color   0xff928374
+yabai -m config insert_window_border_color   0xffcc241d
 
 yabai -m config active_window_opacity        1.0
 yabai -m config normal_window_opacity        0.98
@@ -47,7 +47,7 @@ yabai -m rule --add label="mpv" app="^mpv$" manage=off
 yabai -m rule --add label="Karabiner EventViewer" app="^Karabiner-EventViewer$" manage=off
 
 # float all Emacs apps
-yabai -m rule --add app="Emacs" manage=off
+yabai -m rule --add label="Emacs Childframes" app="^Emacs$" title="^(  —  \(.*\))$" manage=off border=off topmost=on
 
 yabai -m rule --add label=emacs app="Emacs" space=1 display=2
 yabai -m rule --add label=iterm app="iTerm2" space=1 display=1
@@ -61,4 +61,4 @@ yabai -m rule --add app="Messages" space=2
 # yabai -m signal --add event=application_terminated action="yabai -m query --windows --window &> /dev/null || yabai -m window --focus mouse"
 # add a signal that floats a window created by these apps when it's the only window
 # yabai -m signal --add event=window_created action="yabai -m window --focus ${YABAI_WINDOW_ID}"
-yabai -m signal --add event=window_created app="${apps}" action='~/.local/bin/yabai-float-children'
+#yabai -m signal --add event=window_created app="${apps}" action='~/.local/bin/yabai-float-children'

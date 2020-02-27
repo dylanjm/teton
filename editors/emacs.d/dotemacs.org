@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-25 13:09:01
+/last updated/: 2020-02-26 17:11:07
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -580,6 +580,34 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
     (delete-trailing-whitespace))
 
   (general-add-advice #'insert-for-yank :after #'djm/yank-ws-cleanup)
+#+end_src
+
+**** Clipboard-Integration
+
+Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
+#+name: init-clipboard-integration-block
+#+begin_src emacs-lisp
+  (unless (display-graphic-p)
+    (defvar clipboard-last-copy nil)
+
+    (eval-and-compile
+      (defun arco/clipboard-paste ()
+        (let* ((default-directory "/")
+               (text (shell-command-to-string "pbpaste")))
+          (unless (string= text clipboard-last-copy)
+            text)))
+
+      (defun arco/clipboard-copy (text)
+        (let* ((default-directory "/")
+               (process-connection-type nil)
+               (proc (start-process "pbcopy" nil "pbcopy")))
+          (process-send-string proc text)
+          (process-send-eof proc))
+        (setq clipboard-last-copy text)))
+
+    (setq interprogram-paste-function #'arco/clipboard-paste)
+    (setq interprogram-cut-function #'arco/clipboard-copy))
+
 #+end_src
 
 *** Hooks & Advice
@@ -1558,9 +1586,9 @@ Sort of a standard package in most emacs-configs these days.
   (use-package default-text-scale
     :straight t
     :general
-    ("<C-s-up>" #'default-text-scale-increase
-     "<C-s-down>" #'default-text-scale-decrease
-     "<C-M-s-down>" #'default-text-scale-reset)
+    ("<s-up>" #'default-text-scale-increase
+     "<s-down>" #'default-text-scale-decrease
+     "s-r" #'default-text-scale-reset)
     :config
     (general-setq default-text-scale-amount 20))
 #+end_src
@@ -1575,7 +1603,8 @@ I hesitated to use doom-modeline for a long time because it always seemed to slo
     :ghook 'after-init-hook
     :config
     (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
-                  doom-modeline-height 10
+                  doom-modeline-height 12
+                  doom-modeline-bar-width 3
                   doom-modeline-github t
                   doom-modeline-mu4e t
                   doom-modeline-project-detection 'projectile))
@@ -1716,7 +1745,7 @@ This is a cool package that I never knew I needed until I found out it existed. 
 #+begin_src emacs-lisp
   (use-package gcmh
     :straight t
-    :ghook 'pre-command-hook
+    :ghook 'emacs-startup-hook
     :config
     (general-setq gcmh-idle-delay 10
                   gcmh-high-cons-threshold 16777216) ;; 16mb
@@ -1886,7 +1915,10 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package ctrlf
     :straight (:host github :repo "raxod502/ctrlf")
-    :ghook 'emacs-startup-hook)
+    :general
+    ([remap isearch-forward] #'ctrlf-forward)
+    :config
+    (ctrlf-mode))
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
@@ -1898,7 +1930,7 @@ A nice way to restart emacs on the fly if you need to.
                :files ("*.el"))
     :ghook 'emacs-startup-hook
     :config
-    (general-setq selectrum-num-candidates-displayed 15))
+    (general-setq selectrum-num-candidates-displayed 20))
 
 
     (use-package selectrum-prescient
@@ -1914,7 +1946,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package company
     :straight t
-    :ghook ('after-init-hook #'global-company-mode)
+    :ghook ('emacs-startup-hook #'global-company-mode)
     :general
     ([remap completion-at-point] #'company-manual-begin
      [remap complete-symbol] #'company-manual-begin)
@@ -1930,11 +1962,11 @@ A nice way to restart emacs on the fly if you need to.
     :preface
     (general-unbind :keymaps 'company-active-map "C-w" "C-h")
     :config
-    (general-setq company-async-timeout 30
+    (general-setq company-async-timeout 10
                   company-dabbrev-other-buffers nil
                   company-dabbrev-ignore-case nil
                   company-dabbrev-downcase nil
-                  company-idle-delay .3
+                  company-idle-delay .15
                   company-minimum-prefix-length 2
                   company-show-numbers t
                   company-require-match #'company-explicit-action-p
@@ -2095,16 +2127,7 @@ A nice way to restart emacs on the fly if you need to.
      [remap describe-variable] #'helpful-variable
      [remap describe-key]      #'helpful-key
      "C-c C-d"                 #'helpful-at-point
-     "C-h x"                   #'helpful-macro)
-    :config
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*helpful ")
-                   (display-buffer-reuse-window
-                    display-buffer-pop-up-window)
-                   (reusable-frames . visible)
-                   (side . right)
-                   (slot . 1)
-                   (window-width . 0.5))))
+     "C-h x"                   #'helpful-macro))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
@@ -2134,10 +2157,11 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package anzu
     :straight t
-    :ghook ('emacs-startup-hook #'global-anzu-mode)
     :general
     ([remap query-replace] #'anzu-query-replace-regexp
-     [remap query-replace-regexp] #'anzu-query-replace))
+     [remap query-replace-regexp] #'anzu-query-replace)
+    :config
+    (global-anzu-mode))
 #+end_src
 
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
@@ -2249,7 +2273,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-aggressive-indent-block
 #+begin_src emacs-lisp
   (use-package aggressive-indent
-    :blackout t :straight t
+    :straight t
     :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
@@ -4067,7 +4091,6 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t
     :mode ("\\.yaml'" "\\.yml'"))
 #+end_src
-
 
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]

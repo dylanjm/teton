@@ -2,9 +2,6 @@
 
 yabai -m config debug_output on
 
-# regex that matches JetBrains apps
-apps='^(Emacs)$'
-
 # global settings
 yabai -m config mouse_follows_focus          off
 yabai -m config focus_follows_mouse          off
@@ -43,10 +40,10 @@ yabai -m rule --add label="System Preferences" app="^System Preferences$" manage
 yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
 yabai -m rule --add label="App Store" app="^App Store$" manage=off
 yabai -m rule --add label="Activity Monitor" app="^Activity Monitor$" manage=off
-yabai -m rule --add label="mpv" app="^mpv$" manage=off
-yabai -m rule --add label="Karabiner EventViewer" app="^Karabiner-EventViewer$" manage=off
+#yabai -m rule --add label="mpv" app="^mpv$" manage=off
+yabai -m rule --add label="Karabiner EventViewer" app="^Karabiner-.*$" manage=off
 
-# float all Emacs apps
+# float all Emacs child-frames
 yabai -m rule --add label="Emacs Childframes" app="^Emacs$" title="^(  —  \(.*\))$" manage=off border=off topmost=on
 
 yabai -m rule --add label=emacs app="Emacs" space=1 display=2

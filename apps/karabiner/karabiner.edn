@@ -9,12 +9,12 @@
                 :emacs    ["^org\\.gnu\\.Emacs$"]
                 :firefox  ["^org\\.mozilla\\.firefox$"]}
 
- :layers    {:tab-mode          {:key :tab
-                                 :afterup [{:set ["yabai-move-mode" 0]}
-                                           {:set ["yabai-scale-mode" 0]}]}
-             :yabai-move-mode   {:key :f :condi :tab-mode}
-             :yabai-scale-mode  {:key :c :condi :tab-mode}}
-
+ :layers    {:tab-mode           {:key :tab
+                                  :afterup [{:set ["yabai-move-mode" 0]}
+                                            {:set ["yabai-scale-mode" 0]}]}
+             :yabai-insert-mode  {:key :i :condi :tab-mode}
+             :yabai-move-mode    {:key :f :condi :tab-mode}
+             :yabai-scale-mode   {:key :c :condi :tab-mode}}
  :main         [
                 {:des "caps to ctrl modifier"
                  :rules [[:##caps_lock :left_control]]}
@@ -24,11 +24,18 @@
 
                 {:des "yabai mode"
                  :rules [
+                         :yabai-insert-mode
+                         [:h "/usr/local/bin/yabai -m window --insert west"]
+                         [:j "/usr/local/bin/yabai -m window --insert south"]
+                         [:k "/usr/local/bin/yabai -m window --insert north"]
+                         [:l "/usr/local/bin/yabai -m window --insert east"]
                          :yabai-move-mode
                          [:h "/usr/local/bin/yabai -m window --warp west"]
                          [:j "/usr/local/bin/yabai -m window --warp south"]
                          [:k "/usr/local/bin/yabai -m window --warp north"]
                          [:l "/usr/local/bin/yabai -m window --warp east"]
+                         [:o "/usr/local/bin/yabai -m window --warp prev"]
+                         [:n "/usr/local/bin/yabai -m window --warp next"]
                          [:period "/usr/local/bin/yabai -m window --display next"]
                          [:comma "/usr/local/bin/yabai -m window --display previous"]
                          [:open_bracket "/usr/local/bin/yabai -m window --space prev"]
@@ -45,6 +52,7 @@
                          ; cycle to next visible window
                          [:o "~/.local/bin/yabai-prev"]
                          [:n "~/.local/bin/yabai-next"]
+
                          [:h "/usr/local/bin/yabai -m window --focus west"]
                          [:j "/usr/local/bin/yabai -m window --focus south"]
                          [:k "/usr/local/bin/yabai -m window --focus north"]

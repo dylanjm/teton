@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-02-27 14:33:24
+/last updated/: 2020-02-29 12:32:01
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -529,7 +529,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
     (let ((default-height)
           (variable-pitch-height))
       (when window-system
-        (if (> (x-display-pixel-width) 1800)
+        (if (> (x-display-pixel-width) 2000)
             (setq variable-pitch-height 170
                   default-height 180)
           (setq variable-pitch-height 135
@@ -2250,6 +2250,28 @@ A nice way to restart emacs on the fly if you need to.
     (general-add-hook 'shell-mode-hook #'arco/init-company-fish))
 #+end_src
 
+*** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
+#+name: init-company-auctex-block
+#+begin_src emacs-lisp
+  (use-package company-auctex
+    :straight t
+    :after (:all company auctex)
+    :ghook (TeX-mode-hook #'company-auctex-init))
+#+end_src
+
+*** [[https://github.com/vspinu/company-math][Company-Math]]
+#+name: init-company-math-block
+#+begin_src emacs-lisp
+  (use-package company-math
+    :straight t
+    :after (:all company auctex)
+    :ghook (TeX-mode-hook #'arco/company-mode-init)
+    :preface
+    (defun arco/company-math-init ()
+      (general-push-new '((company-math-symbols-latex company-latex-commands))
+                        company-backends)))
+#+end_src
+
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -3285,6 +3307,7 @@ A nice way to restart emacs on the fly if you need to.
                                              (python . t)
                                              (ditaa . t)
                                              (dot . t)
+                                             (latex . t)
                                              (plantuml . t)))
     (general-setq org-confirm-babel-evaluate nil))
 
@@ -3811,10 +3834,14 @@ A nice way to restart emacs on the fly if you need to.
   (use-package eglot
     :straight t
     :ghook ('python-mode-hook #'eglot-ensure)
+    :ghook ('tex-mode-hook #'eglot-ensure)
     :config
     (add-to-list 'eglot-server-programs
                  `(python-mode . ("pyls" "-v" "--tcp" "--host"
-                                  "localhost" "--port" :autoport))))
+                                  "localhost" "--port" :autoport)))
+    (add-to-list 'eglot-server-programs
+                 '((tex-mode context-mode texinfo-mode bibtex-mode)
+                   . ("digestif"))))
 #+end_src
 
 ** Syntax & Linting
@@ -3845,7 +3872,7 @@ A nice way to restart emacs on the fly if you need to.
   This prevents ElDoc and Flycheck from fighting over the echo
   area."
       (not (flycheck-overlay-errors-at (point))))
-    (general-add-advice #'arco/disable-eldoc-on-flycheck :after-while #'eldoc-display-message-no-interference-p)
+    (general-add-advice #'arco/disable-eldoc-on-flycheck :after-while 'eldoc-display-message-no-interference-p)
     :config
     (general-setq flycheck-sh-shellcheck-executable "shellcheck"
                   flycheck-shellcheck-follow-sources t)
@@ -4069,7 +4096,113 @@ This is a nifty package that allows me to define functions as local variables in
 **** AuCTeX
 #+name: init-auctex-block
 #+begin_src emacs-lisp
+    (straight-use-package 'auctex)
 
+    (use-package tex
+      :straight (:type built-in)
+      :mode ("\\.tex$" . latex-mode)
+      :config/el-patch
+
+      ;; Remove annoying messages when opening *.tex files.
+      (defun TeX-update-style (&optional force)
+        (el-patch-concat
+          "Run style specific hooks"
+          (el-patch-add
+            ", silently,")
+          " for the current document.
+    Only do this if it has not been done before, or if optional argument
+    FORCE is not nil.")
+        (unless (or (and (boundp 'TeX-auto-update)
+                         (eq TeX-auto-update 'BibTeX)) ; Not a real TeX buffer
+                    (and (not force)
+                         TeX-style-hook-applied-p))
+          (setq TeX-style-hook-applied-p t)
+          (el-patch-remove
+            (message "Applying style hooks..."))
+          (TeX-run-style-hooks (TeX-strip-extension nil nil t))
+          ;; Run parent style hooks if it has a single parent that isn't itself.
+          (if (or (not (memq TeX-master '(nil t)))
+                  (and (buffer-file-name)
+                       (string-match TeX-one-master
+                                     (file-name-nondirectory (buffer-file-name)))))
+              (TeX-run-style-hooks (TeX-master-file)))
+          (if (and TeX-parse-self
+                   (null (cdr-safe (assoc (TeX-strip-extension nil nil t)
+                                          TeX-style-hook-list))))
+              (TeX-auto-apply))
+          (run-hooks 'TeX-update-style-hook)
+          (el-patch-remove
+            (message "Applying style hooks...done"))))
+      :config
+      (general-setq-default TeX-engine 'xetex)
+      (general-setq TeX-auto-save t
+                    TeX-parse-self t
+                    TeX-byte-compile t
+                    TeX-clean-confirm nil
+                    TeX-master 'dwim
+                    TeX-PDF-mode t
+                    TeX-source-correlate-mode t)
+
+      (defun arco/flycheck-tex-setup ()
+        (flycheck-disable-checker 'tex-chktex)
+        (flycheck-disable-checker 'tex-lacheck))
+
+      (general-add-hook 'TeX-mode-hook #'arco/flycheck-tex-setup))
+
+    (use-package tex-buf
+      :demand t :straight nil
+      :after (tex)
+      :config
+      (general-setq TeX-save-query nil))
+
+    (use-package latex
+      :demand t :straight nil
+      :after (tex)
+      :config
+      (general-setq LaTeX-fill-break-at-separators nil)
+      (put 'LaTeX-insert-left-brace 'delete-selection t)
+
+      (defun arco/latex-environment-kill-extra-newline (func &rest args)
+        "Prevent inserting a new environment from adding an unnecessary newline.
+    Specifically, this fixes a bug that happens when you insert a new
+    environment with point at the end of a non-empty line of text."
+        (let ((needs-fixup (save-excursion
+                             (beginning-of-line)
+                             (re-search-forward
+                              "[^[:space:]]" (point-at-eol) 'noerror))))
+          (prog1 (apply func args)
+            (when needs-fixup
+              (save-excursion
+                (forward-line 2)
+                (when (looking-at "\n")
+                  (delete-char 1)))))))
+
+      (general-add-advice #'arco/latex-environment-kill-extra-newline :around 'LaTeX-insert-environment)
+      (put 'LaTeX-using-Biber 'safe-local-variable #'booleanp))
+
+    (use-package font-latex
+      :demand t
+      :straight nil
+      :after (tex)
+      :config
+      (general-setq font-latex-fontify-script nil))
+
+  (use-package bibtex
+    :demand t :straight nil
+    :after (auctex)
+    :ghook (bibtex-mode-hook #'arco/bibtex-fill-column)
+    :preface
+    (defun arco/bibtex-fill-column ()
+      "Ensures that each entry does not exceed 120 characters."
+      (general-setq fill-column 120)))
+
+  (use-package reftex
+    :demand t :straight t
+    :after (auctex)
+    :config
+    (general-setq reftex-plug-into-AUCTeX t
+                  reftex-save-parse-info t
+                  reftex-use-multiple-selection-buffers t))
 #+end_src
 
 *** Go

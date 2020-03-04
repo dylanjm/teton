@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-02 15:22:50
+/last updated/: 2020-03-03 20:11:41
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3236,25 +3236,6 @@ A nice way to restart emacs on the fly if you need to.
     (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
-*** Org-Capture
-#+name: init-org-capture-block
-#+begin_src emacs-lisp
-  (use-package org-capture
-    :straight nil :after org)
-#+end_src
-
-*** Org-Clock
-#+name: init-org-clock-block
-#+begin_src emacs-lisp
-  (use-package org-clock
-    :straight nil
-    :config
-    (general-setq org-clock-history-length 20
-                  org-clock-in-resume t
-                  org-clock-out-remove-zero-time-clocks t
-                  org-clock-persist t))
-#+end_src
-
 *** Org-Agenda
 #+name: init-org-agenda-block
 #+begin_src emacs-lisp
@@ -3403,13 +3384,6 @@ A nice way to restart emacs on the fly if you need to.
     :commands (org-ref-insert-link))
 #+end_src
 
-*** [[https://github.com/tesujimath/org-wc][Org-WC]]
-#+name: init-org-src-block
-#+begin_src emacs-lisp
-  (use-package org-wc
-    :straight t :after (org))
-#+end_src
-
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
 #+begin_src emacs-lisp
@@ -3417,34 +3391,18 @@ A nice way to restart emacs on the fly if you need to.
     :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
-*** [[https://github.com/kiwanami/emacs-calfw][Calfw]]
-#+name: init-calfw-block
+*** [[https://github.com/jethrokuan/org-roam][Org-Roam]]
+#+name: init-org-roam-block
 #+begin_src emacs-lisp
-  (use-package calfw
-    :straight t
-    :commands cfw:open-calendar-buffer
-    :config
-    (general-setq cfw:face-item-separator-color nil
-                  cfw:render-line-breaker 'cfw:render-line-breaker-none
-                  cfw:fchar-junction ?╋
-                  cfw:fchar-vertical-line ?┃
-                  cfw:fchar-horizontal-line ?━
-                  cfw:fchar-left-junction ?┣
-                  cfw:fchar-right-junction ?┫
-                  cfw:fchar-top-junction ?┯
-                  cfw:fchar-top-left-corner ?┏
-                  cfw:fchar-top-right-corner ?┓))
-#+end_src
-
-*** [[https://github.com/kiwanami/emacs-calfw][Calfw-Org]]
-#+name: init-calfw-org-block
-#+begin_src emacs-lisp
-  (use-package calfw-org
-    :straight t
-    :commands (cfw:open-org-calendar
-               cfw:org-create-source
-               cfw:open-org-calendar-withkevin
-               my-open-calendar))
+  (use-package org-roam
+    :straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
+    :general
+    (:keymaps 'org-roam-mode-map
+     "C-c n l" #'org-roam
+     "C-c n f" #'org-roam-find-file
+     "C-c n g" #'org-roam-show-graph)
+    (:keymaps 'org-mode-map
+     "C-c n i" #'org-roam-insert))
 #+end_src
 
 ** Email
@@ -4041,6 +3999,7 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
+
 This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
 #+name: init-firestarter-block
 #+begin_src emacs-lisp
@@ -4060,7 +4019,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacscollective/auto-compile][Auto-Compile]]
 #+name: init-auto-compile-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package auto-compile
     :straight t
     :config
@@ -4343,21 +4302,21 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t)
 #+end_src
 
-**** Gitconfig-Mode
+**** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
 #+name: init-gitconfig-mode-block
 #+begin_src emacs-lisp
   (use-package gitconfig-mode
     :straight t)
 #+end_src
 
-**** Gitignore-Mode
+**** [[https://github.com/vkazanov/crontab-mode][Gitignore-Mode]]
 #+name: init-gitignore-mode-block
 #+begin_src emacs-lisp
   (use-package gitignore-mode
     :straight t)
 #+end_src
 
-**** JSON-Mode
+**** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
 #+name: init-json-mode-block
 #+begin_src emacs-lisp
   (use-package json-mode

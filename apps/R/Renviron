@@ -1,14 +1,11 @@
 R_ENVIRON_USER="~/.config/R/Renviron"
 R_PROFILE_USER="~/.config/R/Rprofile"
 R_MAKEVARS_USER="~/.config/R/Makevars"
-TZ=America/Boise
+R_HISTFILE="~/.local/share/Rhistory"
+R_LIBS_USER="~/Library/R/3.6/library"
 PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_2/lib/pkgconfig"
-R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
-R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
-R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
-R_HISTFILE="$XDG_DATA_HOME/Rhistory"
+TZ=America/Boise
 R_HISTSIZE=100000
-R_LIBS_USER="$HOME/Library/R/3.6/library"
 R_STARTUP_DEBUG=TRUE
 MKL_NUM_THREADS=16
 OMP_NUM_THREADS=16

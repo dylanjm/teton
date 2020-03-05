@@ -1,7 +1,19 @@
-#!/bin/bash
+#!/usr//bin/env bash
 
-server=${1:-mcdodyla@falcon1}
-basedir=${2:-/projects/bison/git/bison_20200120/assessment}
+NORMAL='\033[0m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+YELLOW='\033[1;33m'
+
+yellow() { echo "${YELLOW}$*${NORMAL}"; }
+green() { echo "${GREEN}$*${NORMAL}"; }
+blue() { echo "${BLUE}$*${NORMAL}"; }
+red() { echo "${RED}$*${NORMAL}"; }
+magenta() { echo "${MAGENTA}$*${NORMAL}"; }
+bold() { echo "${BOLD}$*${NORMAL}"; }
+
+basedir=${1:-/projects/bison/git/bison_20200120/assessment}
 
 while read -r line; do        ## read line at a time from find output on server
     dname="${line%/*}"
@@ -12,4 +24,4 @@ while read -r line; do        ## read line at a time from find output on server
     }
     echo "$line"
     rsync -uavq "$server:$line" "$lname" ## rsync file to correct directory
-done < <(ssh -qn "$server" "find $basedir -type f -name '*_metrics.csv' ! -path './*/doc/*' ! -path '*/gold/*' 2>/dev/null")
+done < <(ssh -qn falcon1 "/home/mcdodyla/.config/cargo/bin/fd -t f -g \"**/{*_metrics.csv,*.txt}\" -E \"**/positions.txt\" --no-ignore $basedir")

@@ -102,7 +102,7 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 ###
 ### Java
 ###
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.1.jdk/Contents/Home"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"
 
 ###
 ### Julia
@@ -117,7 +117,11 @@ export R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
 export R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
 export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
 export R_HISTFILE="$XDG_DATA_HOME/Rhistory"
+export R_HISTSIZE=100000
 export R_LIBS_USER="$HOME/Library/R/3.6/library"
+export R_STARTUP_DEBUG=TRUE
+export MKL_NUM_THREADS=16
+export OMP_NUM_THREADS=16
 
 ###
 ### Rust/Cargo

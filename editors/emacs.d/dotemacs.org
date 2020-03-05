@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-03 20:11:41
+/last updated/: 2020-03-04 11:32:12
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3831,7 +3831,6 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package apheleia
     :straight (:host github :repo "raxod502/apheleia")
-    :ghook ('emacs-startup-hook #'apheleia-global-mode)
     :init
     (defun arco/save-buffer-reformat-maybe (func &optional arg)
       "Make it so \\[save-buffer] with prefix arg inhibits reformatting."
@@ -4168,13 +4167,14 @@ This is a nifty package that allows me to define functions as local variables in
 *** R
 **** ESS
 #+name: init-ess-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ess
     :straight t
     :general
     (:keymaps '(ess-mode-map inferior-ess-mode-map)
      "C-c ." #'djm/R-pipe-operator)
     :preface
+    (autoload 'ess-rdired "ess-rdired")
     (defun djm/R-pipe-operator ()
       "R - piping operator (%>%)"
       (interactive)
@@ -4183,7 +4183,10 @@ This is a nifty package that allows me to define functions as local variables in
       (reindent-then-newline-and-indent))
     :config
     (general-setq ess-ask-for-ess-directory nil
+                  ess-eldoc-show-on-symbol t
+                  ess-use-tracebug t
                   ess-style 'RStudio
+                  ess-describe-at-point-method 'tooltip
                   ess-eval-visibly 'nowait
                   ess-fill-calls-newlines t
                   ess-help-own-frame 'one
@@ -4195,8 +4198,13 @@ This is a nifty package that allows me to define functions as local variables in
                   ess-roxy-fontify-examples t
                   ess-use-auto-complete nil
                   ess-use-company t
+                  inferior-ess-program "R"
+                  inferior-R-program-name "R"
+                  ess-local-process-name "R"
                   inferior-R-args "--no-restore --quiet --no-save"
-                  inferior-ess-same-window nil))
+                  inferior-ess-same-window nil
+                  inferior-ess-same-window nil
+                  ess-help-own-frame nil))
 #+end_src
 
 *** Julia

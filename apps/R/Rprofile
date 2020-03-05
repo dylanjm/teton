@@ -1,2 +1,6 @@
 options(Ncpus = 16)
 options(dependencies = TRUE)
+options(showWarnCalls=TRUE)
+options(showErrorCalls=TRUE)
+options(max.print=500)
+options(warnPartialMatchDollar = TRUE)

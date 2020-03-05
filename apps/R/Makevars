@@ -22,7 +22,7 @@ XH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 CCACHE=$(HB)/ccache
 
 # Make using all cores (set # to # of cores on your machine)
-MAKE=make -j8
+MAKE=make -j10
 
 # GNU version (August 2019)
 GNU_VER=9
@@ -48,8 +48,8 @@ CXX17STD=-std=c++17
 
 # FLAGS
 STD_FLAGS=-g -O3 -Wall -pedantic -mtune=native -pipe
-CFLAGS=$(STD_FLAGS)
-CXXFLAGS=$(STD_FLAGS)
+CFLAGS=$(STD_FLAGS) -std=gnu99
+CXXFLAGS=$(STD_FLAGS) -std=c++11
 CXX98FLAGS=$(STD_FLAGS)
 CXX11FLAGS=$(STD_FLAGS)
 CXX14FLAGS=$(STD_FLAGS)
@@ -58,11 +58,11 @@ CXX17FLAGS=$(STD_FLAGS)
 # Preprocessor FLAGS
 # NB: -isysroot refigures the include path to the Xcode SDK we set above
 CPPFLAGS=-isysroot $(XH) -I$(HI) \
-    -I$(HO)/llvm/include -I$(HO)/openssl/include \
-    -I$(HO)/gettext/include	-I$(HO)/tcl-tk/include
+	-I$(HO)/llvm/include -I$(HO)/openssl/include \
+	-I$(HO)/gettext/include	-I$(HO)/tcl-tk/include
 
 # Linker flags (suggested by homebrew)
-LDFLAGS+=-L$(HO)/llvm/lib -Wl,-rpath,$(HO)/llvm/lib
+LDFLAGS+=-L/usr/local/opt/gettext/lib -L$(HO)/llvm/lib -Wl,-rpath,$(HO)/llvm/lib
 
 # Flags for OpenMP support that should allow packages that want to use
 # OpenMP to do so (data.table), and other packages that bork with

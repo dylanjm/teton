@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-04 11:32:12
+/last updated/: 2020-03-06 15:16:48
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -92,7 +92,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 20000000)
+  (defvar default-gc-cons-threshold 100000000)
 
   (setq-default auto-window-vscroll nil
                 bidi-display-reordering 'left-to-right
@@ -101,6 +101,7 @@ You'll see this modification in many config files around the internet. The idea 
                 frame-inhibit-implied-resize t
                 inhibit-default-init t
                 site-run-file nil
+                read-process-output-max (* 1024 1024)
                 load-prefer-newer t)
 
   (setq file-name-handler-alist nil
@@ -116,7 +117,6 @@ You'll see this modification in many config files around the internet. The idea 
           gc-cons-percentage 0.1))
 
   (add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
-
 #+end_src
 
 *** Pre-Gui Optimization
@@ -230,43 +230,16 @@ Application launching on MacOS isn't handled by a specific system. This makes it
     :demand t :straight t
     :if (eq system-type 'darwin)
     :init
-    (setq exec-path-from-shell-variables '("XDG_CACHE_HOME"
-                                           "XDG_CONFIG_HOME"
-                                           "XDG_DATA_HOME"
-                                           "XDG_BIN_HOME"
-                                           "LS_COLORS"
-                                           "LC_ALL"
-                                           "LANG"
-                                           "EDITOR"
-                                           "EA_PATH"
-                                           "EA_EDITOR"
-                                           "BROWSER"
-                                           "DOTFILES"
-                                           "ORG_FILES"
-                                           "HISTFILE"
-                                           "MPD_HOST"
-                                           "MPD_PORT"
-                                           "ZSH"
-                                           "EXA_COLORS"
-                                           "CCACHE_DIR"
-                                           "JAVA_HOME"
-                                           "JULIA_NUM_THREADS"
-                                           "JULIA_DEPOT_PATH"
-                                           "R_ENVIRON_USER"
-                                           "PATH"
-                                           "FPATH"
-                                           "CDPATH"
-                                           "MANPATH"
-                                           "GPG_TTY"
-                                           "PYLINTHOME"
-                                           "PYENV_ROOT"
-                                           "IPYTHONDIR"
-                                           "TERMINFO"
-                                           "PYTHONSTARTUP"
-                                           "MPLCONFIGDIR")
+    (setq exec-path-from-shell-variables
+          '("BROWSER" "CCACHE_DIR" "CDPATH" "DOTFILES" "EA_EDITOR" "EA_PATH"
+            "EDITOR" "EXA_COLORS" "FPATH" "GPG_TTY" "GNUPGHOME" "HISTFILE"
+            "IPYTHONDIR" "JAVA_HOME" "JULIA_DEPOT_PATH" "JULIA_NUM_THREADS"
+            "LANG" "LC_ALL" "LS_COLORS" "MANPATH" "MPD_HOST" "MPD_PORT"
+            "MPLCONFIGDIR" "ORG_FILES" "PATH" "PYENV_ROOT" "PYLINTHOME"
+            "PYTHONSTARTUP" "R_ENVIRON_USER" "TERMINFO" "XDG_BIN_HOME"
+            "XDG_CACHE_HOME" "XDG_CONFIG_HOME" "XDG_DATA_HOME" "ZSH")
           exec-path-from-shell-arguments '("-l"))
     (exec-path-from-shell-initialize))
-
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
@@ -1896,7 +1869,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 
 This is a cool package that I never knew I needed until I found out it existed. So many times I write some quick code to a scratch buffer and accidently lose it when closing Emacs. This will save it to a file for you periodically. It is a little finnicky about being consistent though. I probably need to configure it more.
 #+name: init-persistent-scratch-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package persistent-scratch
     :straight t
     :init
@@ -2139,8 +2112,8 @@ A nice way to restart emacs on the fly if you need to.
                   company-dabbrev-other-buffers nil
                   company-dabbrev-ignore-case nil
                   company-dabbrev-downcase nil
-                  company-idle-delay .15
-                  company-minimum-prefix-length 2
+                  company-idle-delay .00
+                  company-minimum-prefix-length 1
                   company-show-numbers t
                   company-require-match #'company-explicit-action-p
                   company-auto-complete-chars nil
@@ -2160,7 +2133,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
 #+name: init-company-box-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-box
     :blackout t :straight t
     :ghook 'company-mode-hook
@@ -3109,15 +3082,17 @@ A nice way to restart emacs on the fly if you need to.
       (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
       (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
 
-    ;; Chris Barrett Org Hacks
-    (defun org-hacks--fix-org-src-block-edit (fn &rest args)
-      (let ((element-type (ignore-errors
-                            (org-element-type (org-element-context (org-element-at-point))))))
-        (if (equal 'src-block element-type)
-            (org-edit-src-code)
-          (funcall fn args))))
-    (general-add-advice 'org-edit-special :around #'org-hacks--fix-org-src-block-edit)
     (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
+
+    ;; ;; Chris Barrett Org Hacks
+    ;; (defun org-hacks--fix-org-src-block-edit (fn &rest args)
+    ;;   (let ((element-type (ignore-errors
+    ;;                         (org-element-type (org-element-context (org-element-at-point))))))
+    ;;     (if (equal 'src-block element-type)
+    ;;         (org-edit-src-code)
+    ;;       (funcall fn args))))
+    ;; (general-add-advice 'org-edit-special :around #'org-hacks--fix-org-src-block-edit)
+
     :config
     ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
@@ -3184,8 +3159,7 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq org-use-fast-todo-selection t
                   org-use-fast-tag-selection t
                   org-use-speed-commands t
-                  org-use-tag-inheritance t
-                  org-goto-interface 'outline-path-completion)
+                  org-use-tag-inheritance t)
 
     ;; Aesthetic Settings
     (general-setq org-pretty-entities t
@@ -3311,7 +3285,6 @@ A nice way to restart emacs on the fly if you need to.
                                              (python . t)
                                              (ditaa . t)
                                              (dot . t)
-                                             (latex . t)
                                              (plantuml . t)))
     (general-setq org-confirm-babel-evaluate nil))
 
@@ -3326,7 +3299,7 @@ A nice way to restart emacs on the fly if you need to.
     :straight nil
     :commands (org-babel-execute:plantuml)
     :config
-    (general-setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.0/libexec/plantuml.jar"))
+    (general-setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.2/libexec/plantuml.jar"))
 #+end_src
 
 *** Org-Ox
@@ -3809,9 +3782,46 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 ** Language Server Support
+*** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
+#+name: init-lsp-mode-block
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :straight t
+    :commands (lsp)
+    :gfhook #'lsp-enable-which-key-integration
+    :config
+    (general-setq lsp-prefer-capf t
+                  lsp-idle-delay 0.500)
+    (general-setq lsp-auto-configure                 t
+                  lsp-auto-execute-action            nil
+                  lsp-auto-guess-root                nil
+                  lsp-before-save-edits              nil
+                  lsp-document-sync-method           nil
+                  lsp-eldoc-render-all               nil
+                  lsp-enable-completion-at-point     nil
+                  lsp-enable-file-watchers           nil
+                  lsp-enable-indentation             nil
+                  lsp-enable-on-type-formatting      nil
+                  lsp-enable-semantic-highlighting   nil
+                  lsp-enable-snippet                 nil
+                  lsp-enable-xref                    t
+                  lsp-imenu-show-container-name      nil
+                  lsp-imenu-sort-methods             nil
+                  lsp-inhibit-message                nil
+                  lsp-keep-workspace-alive           nil
+                  lsp-log-io                         t
+                  lsp-prefer-flymake                 :none
+                  lsp-print-performance              t
+                  lsp-report-if-no-buffer            t
+                  lsp-response-timeout               10
+                  lsp-restart                        'interactive
+                  lsp-server-trace                   nil
+                  lsp-signature-render-all           nil))
+#+end_src
+
 *** [[https://github.com/joaotavora/eglot#animated_gifs][Eglot]]
 #+name: init-eglot-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package eglot
     :straight t
     :ghook ('python-mode-hook #'eglot-ensure)
@@ -3828,7 +3838,7 @@ A nice way to restart emacs on the fly if you need to.
 ** Syntax & Linting
 *** [[https://github.com/raxod502/apheleia][Apheleia]]
 #+name: init-apheleia-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package apheleia
     :straight (:host github :repo "raxod502/apheleia")
     :init
@@ -3861,7 +3871,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package flycheck-popup-tip
     :straight t :after (flycheck)
     :if (display-graphic-p)
@@ -3872,12 +3882,49 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/polymode/polymode][Polymode]]
 #+name: init-polymode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package polymode
     :straight t)
 
   (use-package poly-R
     :straight t :after ess)
+#+end_src
+
+*** [[https://github.com/kaz-yos/eval-in-repl][Eval-in-REPL]]
+#+name: init-eval-in-repl-block
+#+begin_src emacs-lisp
+  (use-package eval-in-repl
+    :demand t :straight t
+    :config
+    (general-setq eir-always-split-script-window t
+                  eir-repl-placement 'right))
+
+  (use-package eval-in-repl-ielm
+    :straight nil
+    :requires eval-in-repl
+    :general
+    (:keymaps 'emacs-lisp-mode-map
+     "<C-return>" #'eir-eval-in-ielm)
+    (:keymaps 'lisp-interaction-mode-map
+     "<C-return>" #'eir-eval-in-ielm)
+    (:keymaps 'Info-mode-map
+     "<C-return>" #'eir-eval-in-ielm)
+    :config
+    (general-setq eir-ielm-eval-in-current-buffer t))
+
+  (use-package eval-in-repl-python
+    :straight nil
+    :requires eval-in-repl
+    :general
+    (:keymaps 'python-mode-map
+     "<C-return>" #'eir-eval-in-python))
+
+  (use-package eval-in-repl-shell
+    :straight nil
+    :requires eval-in-repl
+    :general
+    (:keymaps 'sh-mode-map
+     "<C-return>" #'eir-eval-in-shell))
 #+end_src
 
 ** Languages
@@ -4260,13 +4307,24 @@ This is a nifty package that allows me to define functions as local variables in
   (use-package python
     :straight (:type built-in)
     :config
-    (use-package python-docstring
-      :demand t :straight t
-      :ghook 'python-mode-hook)
-    (outline-minor-mode t)
     (general-setq python-shell-interpreter "ipython"
-                  python-shell-interpreter-args "--simple-prompt"
-                  python-indent-guess-indent-offset-verbose nil))
+                  python-shell-interpreter-args "--simple-prompt -i --pprint"
+                  python-indent-guess-indent-offset-verbose nil
+                  python-indent-offset 4
+                  comment-inline-offset 2
+                  tab-width 4))
+#+end_src
+
+**** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
+#+name: init-lsp-python-ms-block
+#+begin_src emacs-lisp
+  (use-package lsp-python-ms
+    :straight t
+    :ghook ('python-mode-hook #'init-lsp-python-ms)
+    :preface
+    (defun init-lsp-python-ms ()
+      (require 'lsp-python-ms)
+      (lsp)))
 #+end_src
 
 *** Rust

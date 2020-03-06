@@ -55,6 +55,7 @@ alias lx='exa -lah --icons --time=changed --time-style long-iso --group-director
 alias lxg='exa -lah --icons --time=changed --time-style long-iso --git --sort=modified'
 alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified'
 alias bc='eva'
+alias cat='bat'
 
 ###
 ### Misc

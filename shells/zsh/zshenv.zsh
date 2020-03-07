@@ -1,6 +1,6 @@
 #!/usr/local/bin/zsh
 unsetopt GLOBAL_RCS
-typeset -gaU cdpath fpath mailpath module_path path
+typeset -gaU cdpath fpath mailpath module_path path manpath
 declare -A ZINIT
 typeset -g ZPLG_MOD_DEBUG=1
 
@@ -192,9 +192,13 @@ path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
 cdpath=($HOME/Documents/projects
         $HOME/Documents/forked_github)
 
+manpath=(/usr/share/man
+         /usr/local/share/man
+         /usr/X11/share/man)
 
 export PATH
 export FPATH
+export MANPATH
 
 ###
 ### Personal Functions

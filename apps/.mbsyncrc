@@ -1,0 +1,32 @@
+#=iCloud==============================================================================
+IMAPAccount fastmail
+Host imap.fastmail.com
+User inbox@djmcdowell.com
+PassCmd "gpg -q --for-your-eyes-only --no-tty -d $XDG_DATA_HOME/.mbsyncpass.gpg"
+Port 993
+SSLType IMAPS
+SSLVersions TLSv1.2
+AuthMechs Login
+
+IMAPStore fastmail-remote
+Account fastmail
+
+MaildirStore fastmail-local
+Path ~/Mail/
+Inbox ~/Mail/INBOX
+SubFolders Verbatim
+
+#
+# Channels and Groups
+# (so that we can rename local directories and flatten the hierarchy)
+#
+#
+Channel fastmail
+Master :fastmail-remote:
+Slave :fastmail-local:
+Patterns *
+Create Slave
+Sync All
+Expunge Both
+CopyArrivalDate yes
+SyncState *

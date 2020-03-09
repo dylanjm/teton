@@ -163,6 +163,12 @@ export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
 export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 
 ###
+### Zoxide
+###
+export _ZO_DATA="$XDG_DATA_HOME/zo"
+export _ZO_MAXAGE=120
+
+###
 ### Paths
 ###
 fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions

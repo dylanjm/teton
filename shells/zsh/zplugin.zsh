@@ -14,7 +14,6 @@ autoload -Uz _zinit
 
 ### Check if zmodule is installed and built.
 zmodload zdharma/zplugin 2>/dev/null || zinit module build
-zmodload zsh/terminfo
 
 ###
 ### Load Zsh Plugins
@@ -31,9 +30,6 @@ zinit $load $ZSH/interactive
 zinit ice wait lucid
 zinit $load hlissner/zsh-autopair
 
-zinit ice wait lucid
-zinit $load laggardkernel/zsh-thefuck
-
 zinit ice wait blockf lucid
 zinit $load zsh-users/zsh-completions
 
@@ -45,6 +41,13 @@ zinit $load rupa/z
 
 zinit ice lucid
 zinit $load changyuheng/fz
+
+zinit ice wait lucid
+zinit $load zsh-users/zsh-history-substring-search
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
 
 zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid
 zinit $load zdharma/fast-syntax-highlighting

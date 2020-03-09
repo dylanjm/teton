@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-07 09:45:03
+/last updated/: 2020-03-08 20:56:25
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1369,7 +1369,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-project-block
 #+begin_src emacs-lisp
   (use-package project
-    :straight (:type built-in))
+    :straight (:type built-in)
+    :init
+    (general-setq project-vc-ignores '("__pycache__")
+                  project-find-functions nil))
 #+end_src
 
 *** Recentf (Built-In)
@@ -2098,7 +2101,9 @@ A nice way to restart emacs on the fly if you need to.
      [remap complete-symbol] #'company-manual-begin)
     (:keymaps 'company-active-map
      "TAB"     #'company-complete-selection
-     "<tab>"   #'company-complete-selection)
+     "<tab>"   #'company-complete-selection
+     "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
+     "C-p"     #'company-select-previous-or-abort)
     (:keymaps 'company-active-map
      :predicate '(company-explicit-action-p)
      "<return>" #'company-complete-selection
@@ -2108,6 +2113,18 @@ A nice way to restart emacs on the fly if you need to.
     :preface
     (general-unbind :keymaps 'company-active-map "C-w" "C-h")
     :config
+
+    (defvar company-mode/enable-yas t
+      "Eanble yasnippet for all backends.")
+
+    (defun company-mode/backend-with-yas (backend)
+      (if (or (not company-mode/enable-yas)
+              (and (listp backend) (member 'company-yasnippet backend)))
+          backend
+        (append (if (consp backend) backend (list backend))
+                '(:with company-yasnippet))))
+
+
     (general-setq company-async-timeout 10
                   company-dabbrev-other-buffers nil
                   company-dabbrev-ignore-case nil
@@ -2126,6 +2143,15 @@ A nice way to restart emacs on the fly if you need to.
                         gud-mode
                         vterm-mode
                         term-mode))
+
+    (general-setq company-backends '(company-capf
+                                     company-files
+                                     (company-dabbrev-code company-keywords)
+                                     company-dabbrev))
+
+    (general-setq company-backends
+                  (mapcar #'company-mode/backend-with-yas company-backends))
+
 
     (general-setq company-frontends '(company-pseudo-tooltip-frontend
                                       company-echo-metadata-frontend)))
@@ -2198,9 +2224,6 @@ A nice way to restart emacs on the fly if you need to.
           (make-frame-visible (frame-parameter nil 'company-box-doc-frame))))))
 #+end_src
 
-#+RESULTS: init-company-box-block
-: #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (:use-package (24157 19514 332172 0) :init (24157 19514 332033 0) :init-secs (0 0 803 0) :use-package-secs (0 0 16472 0) :config (24157 19514 332026 0) :config-secs (0 0 762 0)))
-
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
 #+name: init-company-prescient-block
 #+begin_src emacs-lisp
@@ -2219,7 +2242,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/Alexander-Miller/company-shell][Company-Shell]]
 #+name: init-company-shell-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-shell
     :straight t :after (company)
     :init
@@ -2234,7 +2257,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/CeleritasCelery/company-fish][Company-Fish]]
 #+name: init-company-fish-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-fish
     :straight (:host github :repo "CeleritasCelery/company-fish")
     :after (company)
@@ -2248,7 +2271,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
 #+name: init-company-auctex-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-auctex
     :straight t
     :after (:all company auctex)
@@ -2257,7 +2280,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/vspinu/company-math][Company-Math]]
 #+name: init-company-math-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-math
     :straight t
     :after (:all company auctex)
@@ -2786,6 +2809,14 @@ A nice way to restart emacs on the fly if you need to.
     :commands (dumb-jump-mode)
     :config (general-setq dumb-jump-selector 'ivy
                           dumb-jump-prefer-searcher 'rg))
+#+end_src
+
+*** [[https://github.com/bling/fzf.el][FZF]]
+#+name: init-fzf-block
+#+begin_src emacs-lisp
+  (use-package fzf
+    :straight t
+    :commands (fzf))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]

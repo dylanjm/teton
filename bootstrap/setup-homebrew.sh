@@ -1,8 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 
-NORMAL='\033[0m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
+NORMAL='\033[0m' 
+GREEN='\033[0;32m' 
+RED='\033[0;31m' 
 BLUE='\033[0;34m'
 
 marker="${BLUE}==>${NORMAL}"
@@ -15,7 +15,7 @@ function bootstrap-homebrew () {
   printf "%b\r" "$marker Checking for Homebrew installation - $status"
   if [[ ! -e "$(command -v brew)" ]]; then
     printf "%b\n" "$marker Checking for Homebrew installation - $status_bad"
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
     printf "%b\n" "$marker Checking for Homebrew installation - $status_good"
     brew upgrade > /dev/null

@@ -4,7 +4,7 @@ sudo true
 set -eo pipefail
 
 # shellcheck source=setup-xcode-clt.sh
-source ./bootstrap/setup-xcode-clt.sh
+# source ./bootstrap/setup-xcode-clt.sh
 
 # shellcheck source=setup-homebrew.sh
 source ./bootstrap/setup-homebrew.sh

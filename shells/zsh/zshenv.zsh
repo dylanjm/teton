@@ -113,12 +113,13 @@ export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
 ###
 ### R
 ###
+export R_USER="$XDG_CONFIG_HOME/R"
 export R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
 export R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
 export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
 export R_HISTFILE="$XDG_DATA_HOME/Rhistory"
-export R_HISTSIZE=100000
 export R_LIBS_USER="$HOME/Library/R/3.6/library"
+export R_HISTSIZE=100000
 export R_STARTUP_DEBUG=TRUE
 export MKL_NUM_THREADS=16
 export OMP_NUM_THREADS=16

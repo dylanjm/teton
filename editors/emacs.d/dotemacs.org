@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-08 20:56:25
+/last updated/: 2020-03-09 10:14:20
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1847,6 +1847,16 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
         (width . ,(or maple-minibuffer:width (window-pixel-width)))
         (left-fringe . 5)
         (right-fringe . 5))))
+#+end_src
+
+*** [[https://github.com/SpecialBomb/emacs-modern-fringes][Modern-Fringes]]
+#+name: init-modern-fringes-block
+#+begin_src emacs-lisp
+  (use-package modern-fringes
+    :straight (:host github :repo "SpecialBomb/emacs-modern-fringes")
+    :ghook ('emacs-startup-hook #'modern-fringes-init)
+    :config
+    (modern-fringes-invert-arrows))
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]

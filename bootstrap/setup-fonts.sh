@@ -4,46 +4,61 @@ declare -a arr=(
   ###
   ### Iosevka Font - https://github.com/be5invis/Iosevka/releases
   ###
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/iosevka-ss09-3.0.0-alpha.4.zip"           # Iosevka SS09 - Default
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/iosevka-type-ss09-3.0.0-alpha.4.zip"      # Iosevka SS09 - Typesetting Font
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/iosevka-term-lig-ss09-3.0.0-alpha.4.zip"  # Iosevka SS09 - Monospace w/ Ligatures
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/iosevka-term-ss09-3.0.0-alpha.4.zip"      # Iosevka SS09 - Monospace w/o Ligatures
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/ttc-iosevka-aile-3.0.0-alpha.4.zip"       # Iosevka Aile - Quasi Proportional
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/ttc-iosevka-etoile-3.0.0-alpha.4.zip"     # Iosevka Etoile - Quasi Proportional Slab-Serif
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-alpha.4/ttc-iosevka-sparkle-3.0.0-alpha.4.zip"    # Iosevka Sparkle - Quasi Proportional
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/01-iosevka-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/02-iosevka-fixed-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/03-iosevka-term-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/iosevka-ss07-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-aile-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-etoile-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-sparkle-3.0.0-rc.1.zip"
 
   ###
   ### Symbola
   ###
-  "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip"  # Great Unicode Support
+  "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip" # Great Unicode Support
 
   ###
   ### XITS
   ###
-  "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip"  # Great Math Support
+  "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip" # Great Math Support
 )
 
-function move_font () {
-  if [[ -e "$HOME/Library/Fonts/$(basename "$1")" ]]; then
-      printf "Skipping %s" "$(basename "$1")"
-      return
-    fi
-    printf "Installing %s to ~/Library/Fonts" "$(basename "$1")"
-    # cp "$line" "$HOME/Library/Fonts"
+move_font() {
+  local fontname="${1}"
+  if [[ -e "$HOME/Library/Fonts/$(basename "${fontname}")" ]]; then
+    printf "Skipping %s" "$(basename "${fontname}")"
+  else
+    printf "Installing %s to ~/Library/Fonts" "$(basename "${fontname}")"
+    # cp "${fontname}" "$HOME/Library/Fonts"
+  fi
 }
 
-for i in "${arr[@]}"; do
+create_tmp_dir(){
+  local fonturl="${1}"
+  printf "%s\n" "${fonturl}"
+
   TMPFILE=$(mktemp)
   TMPDIR="/tmp/font-temp"
   PWD=$(pwd)
-  curl -s "$i" -L -o "$TMPFILE" && unzip -q "$TMPFILE" -d "$TMPDIR"
+  curl -s "${fonturl}" -L -o "$TMPFILE" && unzip -q "$TMPFILE" -d "$TMPDIR"
   rm "$TMPFILE"
+}
 
-  find -E "$TMPDIR"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*" -print0 |
-    xargs -0 -I{} sh -c 'if [[ -e "$HOME/Library/Fonts/$(basename {})" ]]; then printf "Not Insalled %s\n" "$(basename {})"; fi'
+install_fonts() {
+  local i
+  for i in "${arr[@]}"; do
+    create_tmp_dir "${i}"
 
-  # 'if [[ -e "$HOME/Library/Fonts/$(basename {})" ]]; then printf "Skipping %s\n" "$(basename {})"; else printf "Installing %s to ~/Library/Fonts\n" "$(basename {})"; cp {} $HOME/Library/Fonts; fi'
+    while read -r line; do
+      move_font "$line"
+    done < <(find -E "$TMPDIR"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*" -print0)
 
+    rm -rf "$TMPDIR"
+  done
+}
 
-  rm -rf "$TMPDIR"
-done
+main() {
+  install_fonts
+}
+
+main "${@}"

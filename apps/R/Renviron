@@ -1,3 +1,4 @@
+R_USER="~/.config/R"
 R_ENVIRON_USER="~/.config/R/Renviron"
 R_PROFILE_USER="~/.config/R/Rprofile"
 R_MAKEVARS_USER="~/.config/R/Makevars"

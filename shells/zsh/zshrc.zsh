@@ -10,7 +10,11 @@ source $ZSH/zplugin.zsh
 
 [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
 
-eval "$(direnv hook $0)"
+if [[ -f /opt/moose/environments/moose_profile && -r /opt/moose/environments/moose_profile ]]; then
+  source /opt/moose/environments/moose_profile
+fi
+
+#eval "$(direnv hook $0)"
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:

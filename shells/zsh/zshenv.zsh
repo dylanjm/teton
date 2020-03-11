@@ -157,6 +157,7 @@ export TERMINFO="$XDG_CONFIG_HOME/terminfo"
 ###
 export GPG_TTY=$(tty)
 export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
+export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
 
 ###
 ### Goku

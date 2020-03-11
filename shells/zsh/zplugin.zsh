@@ -22,6 +22,8 @@ zmodload zdharma/zplugin 2>/dev/null || zinit module build
 # Change to load=load for debugging.
 load=light
 
+zinit $load zinit-zsh/z-a-rust
+
 zinit $load romkatv/powerlevel10k
 
 zinit ice wait multisrc"*.zsh" lucid

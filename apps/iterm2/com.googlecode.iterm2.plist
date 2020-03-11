@@ -53273,7 +53273,7 @@
 	<key>NSWindow Frame NSNavPanelAutosaveName</key>
 	<string>1603 754 799 448 0 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1920 32 970 2105 0 0 3840 2137 </string>
+	<string>1920 32 1920 2105 0 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
 	<true/>
 	<key>NeverWarnAboutMeta_selection</key>
@@ -59982,13 +59982,13 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.001</real>
+								<real>9.9999999999999995e-08</real>
 								<key>base: priority</key>
 								<real>3</real>
 								<key>iTermStatusBarGitComponentPollingIntervalKey</key>
 								<real>10</real>
 								<key>maxwidth</key>
-								<real>100</real>
+								<real>200</real>
 								<key>minwidth</key>
 								<integer>0</integer>
 								<key>shared text color</key>
@@ -60488,14 +60488,14 @@
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{0, 0}, {3840, 2160}}</string>
+		<string>{{3840, 0}, {3840, 2160}}</string>
 		<key>topLeft</key>
-		<string>{2286, 1501}</string>
+		<string>{4787, 1545}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>F040EDB6-1D50-4AC8-9309-FAB8A213B060</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>21</integer>
+	<integer>22</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>

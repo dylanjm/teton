@@ -10,13 +10,10 @@ source $ZSH/zplugin.zsh
 
 [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
 
-if [[ -f /opt/moose/environments/moose_profile && -r /opt/moose/environments/moose_profile ]]; then
-  source /opt/moose/environments/moose_profile
-fi
+#source "$XDG_DATA_HOME/iterm2_shell_integration.zsh"
 
-source "$XDG_DATA_HOME/iterm2_shell_integration.zsh"
-
-#eval "$(direnv hook $0)"
+eval "$(direnv hook $0)"
+/usr/local/bin/gpgconf --launch gpg-agent
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:

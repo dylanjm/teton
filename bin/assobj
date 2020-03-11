@@ -66,7 +66,9 @@ get_input_files() {
     local i
 
     for i in "${files[@]}"; do
-        printf "%b\n" "$(blue "${i}")"
+        printf "%s\n" "${i}"
+        "$HOME/Documents/projects/bison/bison-opt" -i "${i}" --list-constructed-objects --no-gdb-backtrace \
+            | awk '/^\*\*START OBJECT DATA\*\*$/{flag=1;next} /^\*\*END OBJECT DATA\*\*$/{flag=0} flag'
     done
 }
 

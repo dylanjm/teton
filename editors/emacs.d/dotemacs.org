@@ -132,7 +132,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
                                       (alpha . (100 100))
                                       (tool-bar-lines . 0)
                                       (ns-appearance . dark)
-                                      (font . "Iosevka TermLig SS09-18:weight=ultra-light:width=expanded")))
+                                      (font . "Iosevka-18:weight=ultra-light:width=expanded")))
 
   (modify-all-frames-parameters '((vertical-scroll-bars)))
 

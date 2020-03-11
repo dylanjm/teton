@@ -29,7 +29,7 @@ move_font() {
     printf "Skipping %s" "$(basename "${fontname}")"
   else
     printf "Installing %s to ~/Library/Fonts" "$(basename "${fontname}")"
-    # cp "${fontname}" "$HOME/Library/Fonts"
+    cp "${fontname}" "$HOME/Library/Fonts"
   fi
 }
 
@@ -51,7 +51,7 @@ install_fonts() {
 
     while read -r line; do
       move_font "$line"
-    done < <(find -E "$TMPDIR"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*" -print0)
+    done < <(find -E "$TMPDIR"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*")
 
     rm -rf "$TMPDIR"
   done

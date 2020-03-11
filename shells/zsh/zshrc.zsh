@@ -14,6 +14,8 @@ if [[ -f /opt/moose/environments/moose_profile && -r /opt/moose/environments/moo
   source /opt/moose/environments/moose_profile
 fi
 
+source "$XDG_DATA_HOME/iterm2_shell_integration.zsh"
+
 #eval "$(direnv hook $0)"
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-09 10:14:20
+/last updated/: 2020-03-11 10:37:20
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -509,7 +509,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
                 default-height 140))
 
         (set-face-attribute 'default nil
-                            :family "Iosevka TermLig SS09"
+                            :family "Iosevka"
                             :weight 'ultra-light
                             :width 'extra-expanded
                             :height default-height)
@@ -519,7 +519,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
                             :weight 'regular
                             :width 'extra-expanded)
         (set-face-attribute 'fixed-pitch nil
-                            :family "Iosevka TermLig SS09"
+                            :family "Iosevka"
                             :height default-height
                             :weight 'ultra-light
                             :width 'extra-expanded))))

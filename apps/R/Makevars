@@ -16,20 +16,20 @@ HI=/usr/local/include
 # MacOS 10.15 Xcode header location (October 2019)
 # (do "xcrun -show-sdk-path" in terminal to get path; change if yours is different)
 #XH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-XH=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+XH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
 # ccache
 CCACHE=$(HB)/ccache
 
 # Make using all cores (set # to # of cores on your machine)
-MAKE=make -j16
+MAKE=make -j28
 
 # GNU version (August 2019)
 GNU_VER=9
 
 # LLVM (Clang) compiler options
 CC=$(CCACHE) $(HO)/llvm/bin/clang
-CXX=$(CC)++
+CXX=$(CC)
 CXX98=$(CC)++
 CXX11=$(CC)++
 CXX14=$(CC)++
@@ -48,8 +48,8 @@ CXX17STD=-std=c++17
 
 # FLAGS
 STD_FLAGS=-g -O3 -Wall -pedantic -mtune=native -pipe
-CFLAGS=$(STD_FLAGS) -std=gnu99
-CXXFLAGS=$(STD_FLAGS) -std=c++11
+CFLAGS=$(STD_FLAGS) -std=gnu99 -fopenmp
+CXXFLAGS=$(STD_FLAGS) -std=c++11 -fopenmp
 CXX98FLAGS=$(STD_FLAGS)
 CXX11FLAGS=$(STD_FLAGS)
 CXX14FLAGS=$(STD_FLAGS)

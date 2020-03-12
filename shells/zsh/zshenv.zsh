@@ -139,6 +139,10 @@ export PYLINTHOME="$XDG_DATA_HOME/pylint.d"
 export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
 export MPLCONFIGDIR="$XDG_DATA_HOME/matplotlib"
 
+###
+### GNU Parallel
+###
+export PARALLEL_HOME="$XDG_CACHE_HOME/parallel"
 
 ###
 ### Emacs-Anywhere
@@ -150,7 +154,6 @@ export EA_EDITOR="em"
 ### Terminfo
 ###
 export TERMINFO="$XDG_CONFIG_HOME/terminfo"
-
 
 ###
 ### Gnupg
@@ -165,10 +168,9 @@ export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
 export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 
 ###
-### Zoxide
+### Subversion
 ###
-export _ZO_DATA="$XDG_DATA_HOME/zo"
-export _ZO_MAXAGE=120
+export SUBVERSION_HOME="$XDG_CONFIG_HOME/subversion"
 
 ###
 ### Paths

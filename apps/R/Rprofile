@@ -1,6 +1,11 @@
-options(Ncpus = 16)
+options(Ncpus = 28)
 options(dependencies = TRUE)
 options(showWarnCalls=TRUE)
 options(showErrorCalls=TRUE)
 options(max.print=500)
 options(warnPartialMatchDollar = TRUE)
+
+local({r <- getOption("repos")
+       r["CRAN"] <- "https://cloud.r-project.org"
+       options(repos=r)
+})

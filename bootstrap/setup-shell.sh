@@ -1,83 +1,71 @@
 #!/usr/bin/env bash
 
-NORMAL='\033[0m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-
-marker="${BLUE}==>${NORMAL}"
-status="…"
-status_good="${GREEN}✔${NORMAL}"
-status_bad="${RED}✘${NORMAL}"
-
-function brew_shell() {
-    printf "%b\r" "$marker Checking for $1 installation - $status"
-    if test ! -e "/usr/local/bin/$1"; then
-        printf "%b\n" "$marker Checking for $1 installation - $status_bad"
-        printf "%s\n\n" "Installing latest version of $1 from homebrew"
-        brew install "$1"
-    else
-        printf "%b\n" "$marker Checking for $1 installation - $status_good"
-    fi
-
+brew_shell() {
+  local shell="${1}"
+  if test ! -e "/usr/local/bin/${shell}"; then
+    brew install "${shell}"
+  else
+    printf "%s already installed!\n" "${shell}"
+  fi
 }
 
-function allowed_shells() {
-    printf "%b\r" "$marker Checking /etc/shells - $status"
-    if ! grep -Fxq "/usr/local/bin/$1" /etc/shells; then
-        printf "%b\n" "$marker Checking /etc/shells - $status_bad"
-        printf "Adding /usr/local/bin/%s to /etc/shells\n" "$1"
-        echo "/usr/local/bin/$1" | sudo tee -a /etc/shells 1>/dev/null
-    else
-        printf "%b\n" "$marker Checking /etc/shells - $status_good"
-    fi
+allowed_shells() {
+  local shell="${1}"
+  if ! grep -Fxq "/usr/local/bin/${shell}" /etc/shells; then
+    echo "/usr/local/bin/${shell}" | sudo tee -a /etc/shells 1>/dev/null
+  else
+    printf "%s shell already in /etc/shells!\n" "${shell}"
+  fi
 }
 
-function change_shell() {
-    printf "%b\r" "$marker Checking \$SHELL - $status"
-    if [ "$SHELL" != "/usr/local/bin/$1" ]; then
-        printf "%b\n" "$marker Checking \$SHELL - $status_bad"
-        sudo chsh -s "/usr/local/bin/$1" "$USER"
-        printf "%s is now your default shell. Please restart your terminal once this script has finished\n" "$1"
-    else
-        printf "%b\n" "$marker Checking \$SHELL - $status_good"
-    fi
+change_shell() {
+  local shell="${1}"
+  if [ "$SHELL" != "/usr/local/bin/${shell}" ]; then
+    sudo chsh -s "/usr/local/bin/${shell}" "$USER"
+  else
+    printf "%s already default shell!\n" "${shell}"
+  fi
 }
 
-function bootstrap_shell() {
-    brew_shell "$1"
-    allowed_shells "$1"
-    change_shell "$1"
+bootstrap_shell() {
+  local shell="${1}"
+  brew_shell "${shell}"
+  allowed_shells "${shell}"
+  change_shell "${shell}"
 }
 
-printf "\n%s\n" "Please select a default shell:"
-PS3="> "
-options=("zsh" "bash" "fish" "skip shell config")
+main() {
+  printf "\n%s\n" "Please select a default shell:"
+  PS3="> "
+  options=("zsh" "bash" "fish" "skip shell config")
 
-select opt in "${options[@]}"; do
+  select opt in "${options[@]}"; do
     case "$REPLY" in
     1)
-        printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-        bootstrap_shell "$opt"
-        break
-        ;;
+      printf "\n%b\n" "Setting up $opt:"
+      bootstrap_shell "$opt"
+      break
+      ;;
     2)
-        printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-        bootstrap_shell "$opt"
-        break
-        ;;
+      printf "\n%b\n" "Setting up $opt:"
+      bootstrap_shell "$opt"
+      break
+      ;;
     3)
-        printf "\n%b\n" "Setting up ${GREEN}$opt${NORMAL}:"
-        bootstrap_shell "$opt"
-        break
-        ;;
+      printf "\n%b\n" "Setting up $opt:"
+      bootstrap_shell "$opt"
+      break
+      ;;
     4)
-        printf "\n%s\n" "Skipping Shell Config..."
-        break
-        ;;
+      printf "\n%s\n" "Skipping Shell Config..."
+      break
+      ;;
     *)
-        echo "Invalid option. Try another one."
-        continue
-        ;;
+      echo "Invalid option. Try another one."
+      continue
+      ;;
     esac
-done
+  done
+}
+
+main "${@}"

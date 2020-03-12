@@ -1,23 +1,11 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash
 
-NORMAL='\033[0m' 
-GREEN='\033[0;32m' 
-RED='\033[0;31m' 
-BLUE='\033[0;34m'
-
-marker="${BLUE}==>${NORMAL}"
-status="…"
-status_good="${GREEN}✔${NORMAL}"
-status_bad="${RED}✘${NORMAL}"
 
 function bootstrap-homebrew () {
   # Check for Homebrew
-  printf "%b\r" "$marker Checking for Homebrew installation - $status"
   if [[ ! -e "$(command -v brew)" ]]; then
-    printf "%b\n" "$marker Checking for Homebrew installation - $status_bad"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
-    printf "%b\n" "$marker Checking for Homebrew installation - $status_good"
     brew upgrade > /dev/null
   fi
 }
@@ -28,12 +16,12 @@ function bootstrap-bundle () {
   select opt in "Yes" "No"; do
     case "$REPLY" in
       1)
-        printf "%b\n" "Installing Brewfile $status"
+        printf "%b\n" "Installing Brewfile"
         brew bundle --file="$(pwd)/bootstrap/Brewfile"
         break
         ;;
       2)
-        printf "%b\n\n" "Skipping Brewfile install $status"
+        printf "%b\n\n" "Skipping Brewfile install"
         break
         ;;
       *)

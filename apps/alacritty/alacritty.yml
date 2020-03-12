@@ -71,7 +71,7 @@ window:
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
-  history: 10000
+  history: 100000
 
   # Number of lines the viewport will move for every line scrolled when
   # scrollback is enabled (history > 0).
@@ -102,21 +102,24 @@ tabspaces: 4
 font:
   # Normal (roman) font face
   normal:
-    family: Iosevka Term
-    style: Thin
+    family: Iosevka
+    style: Light
+    family: FiraCode Nerd Font
+    style: Regular
+    size: 14
 
   # Bold font face
   bold:
-    family: Iosevka Term
+    family: Iosevka
     style: Bold
 
   # Italic font face
   italic:
-    family: Iosevka Term
+    family: Iosevka
     style: Italic
 
   # Point size
-  size: 12.0
+  size: 16.0
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -235,7 +238,7 @@ visual_bell:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 0.8
+background_opacity: 1.0
 
 # Mouse bindings
 #

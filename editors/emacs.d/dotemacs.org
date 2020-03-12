@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-11 10:37:20
+/last updated/: 2020-03-12 14:32:05
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1529,7 +1529,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package tramp
     :straight (:type built-in)
     :config
-    (general-setq tramp-default-method "ssh"
+    (general-setq tramp-default-method "scp"
                   tramp-verbose 5
                   tramp-completion-reread-directory-timeout nil
                   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
@@ -1829,26 +1829,6 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
     (general-add-hook 'Info-selection-hook #'info-colors-fontify-mode))
 #+end_src
 
-*** [[https://github.com/honmaple/emacs-maple-minibuffer][Maple-Minibuffer]]
-#+name: init-maple-minibuffer-block
-#+begin_src emacs-lisp :tangle no
-  (use-package maple-minibuffer
-    :straight (:host github :repo "honmaple/emacs-maple-minibuffer")
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq maple-minibuffer:position-type 'window-bottom-left
-                  maple-minibuffer:height nil
-                  maple-minibuffer:width 100
-                  maple-minibuffer:border-color "gray50")
-    ;; more custom parameters for frame
-    (defun maple-minibuffer:parameters ()
-      "Maple minibuffer parameters."
-      `((height . ,(or maple-minibuffer:height 10))
-        (width . ,(or maple-minibuffer:width (window-pixel-width)))
-        (left-fringe . 5)
-        (right-fringe . 5))))
-#+end_src
-
 *** [[https://github.com/SpecialBomb/emacs-modern-fringes][Modern-Fringes]]
 #+name: init-modern-fringes-block
 #+begin_src emacs-lisp
@@ -1951,7 +1931,7 @@ A nice way to restart emacs on the fly if you need to.
           (let ((current-window (selected-window)))
             ;; Remember height.
             (aweshell-dedicated-select-window)
-            (kill-buffer aweshell-dedicated-buffer)
+            (delete-window aweshell-dedicated-window)
             (if (aweshell-window-exist-p current-window)
                 (select-window current-window)))
         (message "`AWESHELL DEDICATED' window is not exist.")))

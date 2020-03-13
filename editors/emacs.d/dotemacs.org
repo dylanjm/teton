@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-12 14:32:05
+/last updated/: 2020-03-12 22:03:12
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1963,19 +1963,9 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package vterm
     :straight t
-    :preface
-    (defun find-file-below (path)
-      (if-let* ((buf (find-file-noselect path))
-                (window (display-buffer-below-selected buf nil)))
-          (select-window window)
-        (message "Failed to open file: %s" path)))
     :config
-    (defun arco/vterm-kill-buffer-on-quit (buffer event)
-      (if buffer (kill-buffer buffer)))
-
-    (general-setq vterm-term-environment-variable "xterm-256color")
-    (general-add-hook 'vterm-exit-functions #'arco/vterm-kill-buffer-on-quit)
-    (general-pushnew '("find-file-below" find-file-below) vterm-eval-cmds))
+    (general-setq vterm-term-environment-variable "eterm-color"
+                  vterm-kill-buffer-on-exit t))
 #+end_src
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
@@ -2673,7 +2663,9 @@ A nice way to restart emacs on the fly if you need to.
     :straight dired-hacks)
 
   (use-package dired-rainbow
-    :straight dired-hacks)
+    :demand t :straight dired-hacks :after (dired)
+    :config
+    (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
 
   (use-package dired-narrow
     :straight dired-hacks

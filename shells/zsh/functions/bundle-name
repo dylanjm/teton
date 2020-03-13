@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
 function bundle-name () {
     osascript -e 'id of app "'$1'"'

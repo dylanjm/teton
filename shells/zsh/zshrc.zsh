@@ -8,9 +8,13 @@ fi
 
 source $ZSH/zplugin.zsh
 
-[[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
-
-#source "$XDG_DATA_HOME/iterm2_shell_integration.zsh"
+if [[ "$INSIDE_EMACS" == "vterm" ]]; then
+  setopt PROMPT_SUBST
+  [[ ! -f $DOTFILES/shells/zsh/themes/p10k_vterm.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k_vterm.zsh
+  PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+else
+  [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+fi
 
 eval "$(direnv hook $0)"
 /usr/local/bin/gpgconf --launch gpg-agent

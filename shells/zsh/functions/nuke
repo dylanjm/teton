@@ -1,8 +1,9 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
 function nuke() {
     read -r "response?Are you sure? [y/N] "
     read -r "dry?Would you like to do a dry-run first? "
+
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         if [[ "$dry" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
            git clean -dfxn -e .envrc && git submodule foreach --recursive git clean -dfxn

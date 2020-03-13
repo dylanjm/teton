@@ -90,11 +90,6 @@ export _Z_DATA="$XDG_DATA_HOME/z"
 export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
 
 ###
-### FASD
-###
-export _FASD_DATA="$XDG_CACHE_HOME/fasd"
-
-###
 ### FZF
 ###
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'

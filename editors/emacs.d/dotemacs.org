@@ -260,7 +260,7 @@ Not super stoked on using this package, as I might replace it later with my own 
 #+name: init-compdef-block
 #+begin_src emacs-lisp
   (use-package compdef
-    :straight (:host gitlab :repo "jzmajic/compdef"))
+    :straight (:host gitlab :repo "jjzmajic/compdef"))
 #+end_src
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]

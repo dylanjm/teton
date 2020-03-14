@@ -37,3 +37,7 @@
 	match = red bold
 [column]
 	ui = auto
+[credential "https://gitlab.com"]
+	username = dylanjm
+[credential "https://github.com"]
+        username = dylanjm

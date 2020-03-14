@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-12 22:03:12
+/last updated/: 2020-03-13 21:32:36
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -256,6 +256,13 @@ Not super stoked on using this package, as I might replace it later with my own 
           no-littering-var-directory "~/.cache/emacs/var/"))
 #+end_src
 
+*** [[https://gitlab.com/jjzmajic/compdef][Compdef]]
+#+name: init-compdef-block
+#+begin_src emacs-lisp
+  (use-package compdef
+    :straight (:host gitlab :repo "jzmajic/compdef"))
+#+end_src
+
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
 
 Great package by the same author of Straight.el. It's similar to adding advice to functions but with a twist. Helpful if you need to future proof your emacs or need to alter a function from a package.
@@ -474,6 +481,23 @@ This saves me tons of time tangling this config file. Code taken from [[https://
                          (float-time (time-subtract (current-time)
                                                     ',init-tangle-start-time)))
               (message "ERROR: %s as tangle failed." ,org-file)))))))
+#+end_src
+
+**** Run-Python-Tests
+#+name: init-run-python-tests-block
+#+begin_src emacs-lisp
+  (defun arco/run-python-tests ()
+    (interactive)
+    (cd (expand-file-name "~/Documents/College/OMSCS/cs7637-kbai/projects/KBAI-package-python/Project-Code-Python"))
+    (call-process-shell-command "python RavensProject.py")
+    (find-file-noselect "SetResults.csv")
+    (display-buffer "SetResults.csv"
+                    '((display-buffer-below-selected display-buffer-at-bottom)
+                      (inhibit-same-window . t)
+                      (window-height . 15)))
+    (with-current-buffer "SetResults.csv"
+      (csv-mode)
+      (csv-align-mode)))
 #+end_src
 
 **** Temp Buffers
@@ -1089,6 +1113,15 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   flyspell-issue-message-flag nil))
 #+end_src
 
+*** Font-Core (Built-In)
+#+name: init-font-core-block
+#+begin_src emacs-lisp
+  (use-package font-core
+    :straight (:type built-in)
+    :init
+    (global-font-lock-mode))
+#+end_src
+
 *** Frame (Built-In)
 
 #+name: init-frame-block
@@ -1701,13 +1734,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 ** Themes & Aesthetics
-*** Adaptive Wrap Prefix Mode
-
-This package isn't as reliable as I hoped it would be. It never seems to format my org files automatically.
-#+name: init-adaptive-wrap-prefix-mode-block
+*** [[https://github.com/luisgerhorst/virtual-auto-fill][Virtual-Auto-Fill]]
+#+name: init-virtual-auto-fill-block
 #+begin_src emacs-lisp
-  (use-package adaptive-wrap
-    :straight t)
+  (use-package virtual-auto-fill
+    :straight (:host github :repo "luisgerhorst/virtual-auto-fill")
+    :ghook '(markdown-mode-hook text-mode-hook org-mode-hook))
 #+end_src
 
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
@@ -1834,7 +1866,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 #+begin_src emacs-lisp
   (use-package modern-fringes
     :straight (:host github :repo "SpecialBomb/emacs-modern-fringes")
-    :ghook ('emacs-startup-hook #'modern-fringes-init)
+    :ghook 'emacs-startup-hook
     :config
     (modern-fringes-invert-arrows))
 #+end_src
@@ -1907,6 +1939,15 @@ A nice way to restart emacs on the fly if you need to.
   (use-package osx-trash
     :straight t
     :ghook ('after-init-hook #'osx-trash-setup))
+#+end_src
+
+*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
+#+name: init-pdf-tools-block
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :straight t
+    :config
+    (pdf-tools-install))
 #+end_src
 
 ** Shells
@@ -2235,20 +2276,6 @@ A nice way to restart emacs on the fly if you need to.
     (general-add-hook 'sh-mode-hook #'arco/init-company-shell))
 #+end_src
 
-*** [[https://github.com/CeleritasCelery/company-fish][Company-Fish]]
-#+name: init-company-fish-block
-#+begin_src emacs-lisp :tangle no
-  (use-package company-fish
-    :straight (:host github :repo "CeleritasCelery/company-fish")
-    :after (company)
-    :if (executable-find "fish")
-    :init
-    (defun arco/init-company-fish()
-      (general-pushnew 'company-fish company-backends))
-    (general-add-hook 'eshell-mode-hook #'arco/init-company-fish)
-    (general-add-hook 'shell-mode-hook #'arco/init-company-fish))
-#+end_src
-
 *** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
 #+name: init-company-auctex-block
 #+begin_src emacs-lisp :tangle no
@@ -2271,6 +2298,13 @@ A nice way to restart emacs on the fly if you need to.
                         company-backends)))
 #+end_src
 
+*** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
+#+name: init-company-lsp-block
+#+begin_src emacs-lisp
+  (use-package company-lsp
+    :demand t :straight t :after (company lsp))
+#+end_src
+
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2290,6 +2324,15 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 ** Documentation
+*** [[https://github.com/dash-docs-el/dash-docs][Dash-Docs]]
+#+name: init-dash-docs-block
+#+begin_src emacs-lisp
+  (use-package dash-docs
+    :straight t
+    :commands (dash-docs-search
+               dash-docs-search-docset))
+#+end_src
+
 *** [[https://github.com/Wilfred/helpful][Helpful]]
 #+name: init-helpful-block
 #+begin_src emacs-lisp
@@ -3343,9 +3386,15 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package org-bullets
     :straight t
+    :disabled t
     :ghook 'org-mode-hook
     :config
     (general-setq org-bullets-bullet-list '("⦿" "❂" "⦾" "✤")))
+
+;;https://github.com/integral-dw/org-superstar-mode
+  (use-package org-superstar
+    :straight t
+    :ghook 'org-mode-hook)
 #+end_src
 
 *** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
@@ -4215,6 +4264,14 @@ This is a nifty package that allows me to define functions as local variables in
                   reftex-use-multiple-selection-buffers t))
 #+end_src
 
+**** [[http://joostkremers.github.io/ebib/ebib-manual.html][Ebib]]
+#+name: init-ebib-block
+#+begin_src emacs-lisp
+  (use-package ebib
+    :straight t
+    :commands (ebib))
+#+end_src
+
 *** Go
 **** [[https://github.com/dominikh/go-mode.el][Go-Mode]]
 #+name: init-go-mode-block
@@ -4313,6 +4370,52 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 
+**** [[https://github.com/gcv/julia-snail][Julia-Snail]]
+file:
+eww:
+mhe:
+irc:
+w3m:
+ftp:
+doi:
+info:
+gnus:
+bbdb:
+news:
+http:
+help:
+rmail:
+shell:
+https:
+elisp:
+bibtex:
+mailto:
+docview:
+
+#+name: init-julia-snail-block
+#+begin_src emacs-lisp
+  (use-package julia-snail
+    :straight (:host github :repo "gcv/julia-snail")
+    :ghook julia-mode-hook
+    :config
+    (progn
+      ;; order matters, unfortunately:
+      (add-to-list 'display-buffer-alist
+                   ;; match buffers named "*julia" in general
+                   '("\\*julia"
+                     ;; actions:
+                     (display-buffer-reuse-window display-buffer-same-window)))
+      (add-to-list 'display-buffer-alist
+                   ;; when displaying buffers named "*julia" in REPL mode
+                   '((lambda (bufname _action)
+                       (and (string-match-p "\\*julia" bufname)
+                            (with-current-buffer bufname
+                              (bound-and-true-p julia-snail-repl-mode))))
+                     ;; actions:
+                     (display-buffer-reuse-window display-buffer-pop-up-window)))
+      ))
+#+end_src
+
 *** Python
 **** Python (Built-In)
 #+name: init-python-block
@@ -4321,7 +4424,9 @@ This is a nifty package that allows me to define functions as local variables in
     :straight (:type built-in)
     :config
     (general-setq python-shell-interpreter "ipython"
-                  python-shell-interpreter-args "--simple-prompt -i --pprint"
+                  python-shell-interpreter-args "--colors=Linux --simple-prompt -i --pprint"
+                  python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+                  python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
                   python-indent-guess-indent-offset-verbose nil
                   python-indent-offset 4
                   comment-inline-offset 2
@@ -4379,6 +4484,15 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
   (use-package crontab-mode
     :straight t)
+#+end_src
+
+**** CSV-Mode
+#+name: init-csv-mode-block
+#+begin_src emacs-lisp
+  (use-package csv-mode
+    :straight t
+    :commands (csv-mode
+               csv-align-mode))
 #+end_src
 
 **** [[https://github.com/magit/git-modes][Gitconfig-Mode]]

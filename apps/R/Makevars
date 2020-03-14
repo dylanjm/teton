@@ -48,8 +48,8 @@ CXX17STD=-std=c++17
 
 # FLAGS
 STD_FLAGS=-g -O3 -Wall -pedantic -mtune=native -pipe
-CFLAGS=$(STD_FLAGS) -std=gnu99 -fopenmp
-CXXFLAGS=$(STD_FLAGS) -std=c++11 -fopenmp
+CFLAGS=$(STD_FLAGS) -std=gnu99
+CXXFLAGS=$(STD_FLAGS) -std=c++11
 CXX98FLAGS=$(STD_FLAGS)
 CXX11FLAGS=$(STD_FLAGS)
 CXX14FLAGS=$(STD_FLAGS)
@@ -67,11 +67,11 @@ LDFLAGS+=-L/usr/local/opt/gettext/lib -L$(HO)/llvm/lib -Wl,-rpath,$(HO)/llvm/lib
 # Flags for OpenMP support that should allow packages that want to use
 # OpenMP to do so (data.table), and other packages that bork with
 # -fopenmp flag (stringi) to be left alone
-SHLIB_OPENMP_CFLAGS=-fopenmp
-SHLIB_OPENMP_CXXFLAGS=-fopenmp
-SHLIB_OPENMP_CXX98FLAGS=-fopenmp
-SHLIB_OPENMP_CXX11FLAGS=-fopenmp
-SHLIB_OPENMP_CXX14FLAGS=-fopenmp
-SHLIB_OPENMP_CXX17FLAGS=-fopenmp
-SHLIB_OPENMP_FCFLAGS=-fopenmp
-SHLIB_OPENMP_FFLAGS=-fopenmp
+SHLIB_OPENMP_CFLAGS= -fopenmp
+SHLIB_OPENMP_CXXFLAGS= -fopenmp
+SHLIB_OPENMP_CXX98FLAGS= -fopenmp
+SHLIB_OPENMP_CXX11FLAGS= -fopenmp
+SHLIB_OPENMP_CXX14FLAGS= -fopenmp
+SHLIB_OPENMP_CXX17FLAGS= -fopenmp
+SHLIB_OPENMP_FCFLAGS= -fopenmp
+SHLIB_OPENMP_FFLAGS= -fopenmp

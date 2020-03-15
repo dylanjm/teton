@@ -24,6 +24,8 @@
     ~/.bash_profile: shells/bash/bash_profile.sh
     ~/.config/starship.toml: shells/bash/themes/starship.toml
 
+    ~/.config/fish: shells/fish
+
     ~/.config/emacs: editors/emacs.d
 
     ~/.gitconfig: git/gitconfig

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-15 17:25:07
+/last updated/: 2020-03-16 02:27:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -533,7 +533,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
                 default-height 140))
 
         (set-face-attribute 'default nil
-                            :family "Iosevka"
+                            :family "Iosevka SS07"
                             :weight 'ultra-light
                             :width 'extra-expanded
                             :height default-height)
@@ -543,7 +543,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
                             :weight 'regular
                             :width 'extra-expanded)
         (set-face-attribute 'fixed-pitch nil
-                            :family "Iosevka"
+                            :family "Iosevka SS07"
                             :height default-height
                             :weight 'ultra-light
                             :width 'extra-expanded))))
@@ -1739,6 +1739,7 @@ Sort of a standard package in most emacs-configs these days.
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
   (use-package all-the-icons
+    :demand t
     :straight t
     :config
     (general-setq all-the-icons-scale-factor 1.3)
@@ -1971,7 +1972,7 @@ A nice way to restart emacs on the fly if you need to.
 ** Shells
 *** [[https://github.com/manateelazycat/aweshell][Aweshell]]
 #+name: init-aweshell-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package aweshell
     :straight (:host github :repo "manateelazycat/aweshell")
     :general
@@ -2064,7 +2065,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
 #+name: init-direnv-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package direnv
     :straight t
     :ghook 'projectile-mode-hook)
@@ -2218,9 +2219,9 @@ A nice way to restart emacs on the fly if you need to.
     :demand t
     :straight t
     :after (:all sh-mode company)
-    :config
+    :init
     (compdef
-     :modes '(sh-mode shell-script-mode bash-mode)
+     :modes #'sh-mode
      :capf '(sh-completion-at-point-function)
      :company '(company-shell
                 company-shell-env
@@ -2367,21 +2368,21 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
 #+name: init-vdiff-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package vdiff
     :straight t)
 #+end_src
 
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package format-all
     :straight t)
 #+end_src
 
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package multiple-cursors
     :straight t
     :general
@@ -2406,16 +2407,6 @@ A nice way to restart emacs on the fly if you need to.
      "C-c i j" #'string-inflection-java-style-cycle
      "C-c i r" #'string-inflection-ruby-style-cycle
      "C-c i p" #'string-inflection-python-style-cycle))
-#+end_src
-
-*** [[https://github.com/mhayashi1120/Emacs-wgrep][Wgrep]]
-#+name: init-wgrep-block
-#+begin_src emacs-lisp :tangle no
-  (use-package wgrep
-    :straight t
-    :config
-    (general-setq wgrep-auto-save-buffer t
-                  wgrep-change-readonly-file t))
 #+end_src
 
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
@@ -2453,7 +2444,7 @@ A nice way to restart emacs on the fly if you need to.
 ** Minor Modes
 *** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
 #+name: init-aggressive-indent-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package aggressive-indent
     :straight t
     :ghook 'emacs-lisp-mode-hook)
@@ -2463,13 +2454,14 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
   (use-package editorconfig
+    :blackout t
     :straight t
     :ghook 'emacs-startup-hook)
 #+end_src
 
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
 #+name: init-highlight-indent-guides-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :straight t
     :ghook 'python-mode-hook 'yaml-mode-hook)
@@ -2485,7 +2477,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
 #+name: init-rainbow-delimiters-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :blackout t :straight t
     :ghook 'prog-mode-hook)
@@ -2528,7 +2520,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/lewang/ws-butler][WS-Butler]]
 #+name: init-ws-butler-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ws-butler
     :blackout t :straight t
     :ghook ('emacs-startup-hook #'ws-butler-global-mode)
@@ -2831,167 +2823,167 @@ A nice way to restart emacs on the fly if you need to.
                                                               "*Flycheck error messages*"
                                                               "*Help*"))))
 
-    (general-add-hook 'ibuffer-mode-hook #'hl-line-mode))
+    (general-add-hook 'ibuffer-mode-hook #'hl-line-mode)
 
-    ;; (define-ibuffer-column mode
-    ;;   (:inline t)
-    ;;   (with-current-buffer (current-buffer)
-    ;;     (let ((icon (all-the-icons-icon-for-buffer)))
-    ;;       (if (stringp icon)
-    ;;           icon
-    ;;         " "))))
+    (define-ibuffer-column mode
+      (:inline t)
+      (with-current-buffer (current-buffer)
+        (let ((icon (all-the-icons-icon-for-buffer)))
+          (if (stringp icon)
+              icon
+            " "))))
 
-    ;; ;; Dim directory part of file path.
-    ;; (define-ibuffer-column filename-and-process
-    ;;   (:name "Filename/Process")
-    ;;   (let ((proc (get-buffer-process buffer))
-    ;;         (filename (ibuffer-make-column-filename buffer mark)))
-    ;;     (if proc
-    ;;         (concat (propertize (format "(%s %s)" proc (process-status proc))
-    ;;                             'font-lock-face 'italic)
-    ;;                 (if (> (length filename) 0)
-    ;;                     (format " %s" filename)
-    ;;                   ""))
-    ;;       (propertize (f-abbrev filename) 'face 'dired-symlink))))
+    ;; Dim directory part of file path.
+    (define-ibuffer-column filename-and-process
+      (:name "Filename/Process")
+      (let ((proc (get-buffer-process buffer))
+            (filename (ibuffer-make-column-filename buffer mark)))
+        (if proc
+            (concat (propertize (format "(%s %s)" proc (process-status proc))
+                                'font-lock-face 'italic)
+                    (if (> (length filename) 0)
+                        (format " %s" filename)
+                      ""))
+          (propertize (f-abbrev filename) 'face 'dired-symlink))))
 
-    ;; ;; Show buffer name in a consistent way.
-    ;; (define-ibuffer-column name
-    ;;   (:inline t)
-    ;;   (let ((string (buffer-name)))
-    ;;     (if (not (seq-position string ?\n))
-    ;;         string
-    ;;       (replace-regexp-in-string
-    ;;        "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
-    ;; 
-    ;; ;; Show a horizontal rule using page-break-lines instead of using dashes.
-    ;; (el-patch-defun ibuffer-update-title-and-summary (format)
-    ;;   (ibuffer-assert-ibuffer-mode)
-    ;;   ;; Don't do funky font-lock stuff here
-    ;;   (let ((inhibit-modification-hooks t))
-    ;;     (if (get-text-property (point-min) 'ibuffer-title)
-    ;;         (delete-region (point-min)
-    ;;                        (next-single-property-change
-    ;;                         (point-min) 'ibuffer-title)))
-    ;;     (goto-char (point-min))
-    ;;     (add-text-properties
-    ;;      (point)
-    ;;      (progn
-    ;;        (let ((opos (point)))
-    ;;          ;; Insert the title names.
-    ;;          (dolist (element format)
-    ;;            (insert
-    ;;             (if (stringp element)
-    ;;                 element
-    ;;               (pcase-let ((`(,sym ,min ,_max ,align) element))
-    ;;                 ;; Ignore a negative min when we're inserting the title
-    ;;                 (when (cl-minusp min)
-    ;;                   (setq min (- min)))
-    ;;                 (let* ((name (or (get sym 'ibuffer-column-name)
-    ;;                                  (error "Unknown column %s in ibuffer-formats" sym)))
-    ;;                        (len (length name))
-    ;;                        (hmap (get sym 'header-mouse-map))
-    ;;                        (strname (if (< len min)
-    ;;                                     (ibuffer-format-column name
-    ;;                                                            (- min len)
-    ;;                                                            align)
-    ;;                                   name)))
-    ;;                   (when hmap
-    ;;                     (setq
-    ;;                      strname
-    ;;                      (propertize strname 'mouse-face 'highlight 'keymap hmap)))
-    ;;                   strname)))))
-    ;;          (add-text-properties opos (point) '(ibuffer-title-header t))
-    ;;          (insert "\n")
-    ;;          ;; Add the underlines
+    ;; Show buffer name in a consistent way.
+    (define-ibuffer-column name
+      (:inline t)
+      (let ((string (buffer-name)))
+        (if (not (seq-position string ?\n))
+            string
+          (replace-regexp-in-string
+           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+    
+    ;; Show a horizontal rule using page-break-lines instead of using dashes.
+    (el-patch-defun ibuffer-update-title-and-summary (format)
+      (ibuffer-assert-ibuffer-mode)
+      ;; Don't do funky font-lock stuff here
+      (let ((inhibit-modification-hooks t))
+        (if (get-text-property (point-min) 'ibuffer-title)
+            (delete-region (point-min)
+                           (next-single-property-change
+                            (point-min) 'ibuffer-title)))
+        (goto-char (point-min))
+        (add-text-properties
+         (point)
+         (progn
+           (let ((opos (point)))
+             ;; Insert the title names.
+             (dolist (element format)
+               (insert
+                (if (stringp element)
+                    element
+                  (pcase-let ((`(,sym ,min ,_max ,align) element))
+                    ;; Ignore a negative min when we're inserting the title
+                    (when (cl-minusp min)
+                      (setq min (- min)))
+                    (let* ((name (or (get sym 'ibuffer-column-name)
+                                     (error "Unknown column %s in ibuffer-formats" sym)))
+                           (len (length name))
+                           (hmap (get sym 'header-mouse-map))
+                           (strname (if (< len min)
+                                        (ibuffer-format-column name
+                                                               (- min len)
+                                                               align)
+                                      name)))
+                      (when hmap
+                        (setq
+                         strname
+                         (propertize strname 'mouse-face 'highlight 'keymap hmap)))
+                      strname)))))
+             (add-text-properties opos (point) '(ibuffer-title-header t))
+             (insert "\n")
+             ;; Add the underlines
 
-    ;;          (el-patch-swap (let ((str (save-excursion
-    ;;                                      (forward-line -1)
-    ;;                                      (beginning-of-line)
-    ;;                                      (buffer-substring (point) (line-end-position)))))
-    ;;                           (apply #'insert (mapcar
-    ;;                                            (lambda (c)
-    ;;                                              (if (not (or (eq c ?\s)
-    ;;                                                           (eq c ?\n)))
-    ;;                                                  ?-
-    ;;                                                ?\s))
-    ;;                                            str)))
-    ;;                         (insert ""))
-    ;;          (insert "\n"))
-    ;;        (point))
-    ;;      `(ibuffer-title t font-lock-face ,ibuffer-title-face))
-    ;;     ;; Now, insert the summary columns.
-    ;;     (goto-char (point-max))
-    ;;     (if (get-text-property (1- (point-max)) 'ibuffer-summary)
-    ;;         (delete-region (previous-single-property-change
-    ;;                         (point-max) 'ibuffer-summary)
-    ;;                        (point-max)))
-    ;;     (if ibuffer-display-summary
-    ;;         (add-text-properties
-    ;;          (point)
-    ;;          (progn
-    ;;            (insert "\n")
-    ;;            (dolist (element format)
-    ;;              (insert
-    ;;               (if (stringp element)
-    ;;                   (make-string (length element) ?\s)
-    ;;                 (pcase-let ((`(,sym ,min ,_max ,align) element))
-    ;;                   ;; Ignore a negative min when we're inserting the title.
-    ;;                   (when (cl-minusp min)
-    ;;                     (setq min (- min)))
-    ;;                   (let* ((summary
-    ;;                           (if (get sym 'ibuffer-column-summarizer)
-    ;;                               (funcall (get sym 'ibuffer-column-summarizer)
-    ;;                                        (get sym 'ibuffer-column-summary))
-    ;;                             (make-string
-    ;;                              (length (get sym 'ibuffer-column-name))
-    ;;                              ?\s)))
-    ;;                          (len (length summary)))
-    ;;                     (if (< len min)
-    ;;                         (ibuffer-format-column summary
-    ;;                                                (- min len)
-    ;;                                                align)
-    ;;                       summary))))))
-    ;;            (point))
-    ;;          '(ibuffer-summary t)))))
+             (el-patch-swap (let ((str (save-excursion
+                                         (forward-line -1)
+                                         (beginning-of-line)
+                                         (buffer-substring (point) (line-end-position)))))
+                              (apply #'insert (mapcar
+                                               (lambda (c)
+                                                 (if (not (or (eq c ?\s)
+                                                              (eq c ?\n)))
+                                                     ?-
+                                                   ?\s))
+                                               str)))
+                            (insert ""))
+             (insert "\n"))
+           (point))
+         `(ibuffer-title t font-lock-face ,ibuffer-title-face))
+        ;; Now, insert the summary columns.
+        (goto-char (point-max))
+        (if (get-text-property (1- (point-max)) 'ibuffer-summary)
+            (delete-region (previous-single-property-change
+                            (point-max) 'ibuffer-summary)
+                           (point-max)))
+        (if ibuffer-display-summary
+            (add-text-properties
+             (point)
+             (progn
+               (insert "\n")
+               (dolist (element format)
+                 (insert
+                  (if (stringp element)
+                      (make-string (length element) ?\s)
+                    (pcase-let ((`(,sym ,min ,_max ,align) element))
+                      ;; Ignore a negative min when we're inserting the title.
+                      (when (cl-minusp min)
+                        (setq min (- min)))
+                      (let* ((summary
+                              (if (get sym 'ibuffer-column-summarizer)
+                                  (funcall (get sym 'ibuffer-column-summarizer)
+                                           (get sym 'ibuffer-column-summary))
+                                (make-string
+                                 (length (get sym 'ibuffer-column-name))
+                                 ?\s)))
+                             (len (length summary)))
+                        (if (< len min)
+                            (ibuffer-format-column summary
+                                                   (- min len)
+                                                   align)
+                          summary))))))
+               (point))
+             '(ibuffer-summary t)))))
 
-    ;; ;; Change the way groups are rendered.
-    ;; (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
-    ;;   (add-text-properties
-    ;;    (point)
-    ;;    (progn
-    ;;      (insert (el-patch-remove "[ ")
-    ;;              display-name
-    ;;              (el-patch-remove " ]"))
-    ;;      (point))
-    ;;    `(ibuffer-filter-group-name
-    ;;      ,name
-    ;;      font-lock-face ,ibuffer-filter-group-name-face
-    ;;      keymap ,ibuffer-mode-filter-group-map
-    ;;      mouse-face highlight
-    ;;      help-echo ,(let ((echo '(if tooltip-mode
-    ;;                                  "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
-    ;;                                "mouse-1: toggle marks  mouse-2: hide/show")))
-    ;;                   (if (> (length filter-string) 0)
-    ;;                       `(concat ,filter-string
-    ;;                                (if tooltip-mode "\n" " ")
-    ;;                                ,echo)
-    ;;                     echo))))
-    ;;   (insert "\n")
-    ;;   (when bmarklist
-    ;;     (put-text-property
-    ;;      (point)
-    ;;      (progn
-    ;;        (dolist (entry bmarklist)
-    ;;          (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
-    ;;        (point))
-    ;;      'ibuffer-filter-group
-    ;;      name))
-    ;;   (el-patch-add (insert "\n"))))
+    ;; Change the way groups are rendered.
+    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+      (add-text-properties
+       (point)
+       (progn
+         (insert (el-patch-remove "[ ")
+                 display-name
+                 (el-patch-remove " ]"))
+         (point))
+       `(ibuffer-filter-group-name
+         ,name
+         font-lock-face ,ibuffer-filter-group-name-face
+         keymap ,ibuffer-mode-filter-group-map
+         mouse-face highlight
+         help-echo ,(let ((echo '(if tooltip-mode
+                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                   "mouse-1: toggle marks  mouse-2: hide/show")))
+                      (if (> (length filter-string) 0)
+                          `(concat ,filter-string
+                                   (if tooltip-mode "\n" " ")
+                                   ,echo)
+                        echo))))
+      (insert "\n")
+      (when bmarklist
+        (put-text-property
+         (point)
+         (progn
+           (dolist (entry bmarklist)
+             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+           (point))
+         'ibuffer-filter-group
+         name))
+      (el-patch-add (insert "\n"))))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
 #+name: init-ibuffer-ext-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ibuf-ext
     :straight (:type built-in)
     :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
@@ -3000,7 +2992,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/purcell/ibuffer-projectile][iBuffer-Projectile]]
 #+name: init-ibuffer-projectile-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ibuffer-projectile
     :straight t
     :preface
@@ -3087,6 +3079,14 @@ A nice way to restart emacs on the fly if you need to.
     (:keymaps 'org-mode-map
      "M-n" #'outline-next-visible-heading
      "M-p" #'outline-previous-visible-heading)
+    :preface
+    (defun set-buffer-fixed-pitch ()
+      (setq-local line-spacing 3)
+      (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+      (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
+      (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
+
+    (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
     :config
     ;; ;; Directory Settings
     (general-setq org-archive-location "~/Documents/org-files/archive.org::"
@@ -4511,6 +4511,15 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t)
 #+end_src
 
+*** [[https://github.com/canatella/xwidget-plus][Xwidget-Plus]]
+#+name: init-xwidget-plus-block
+#+begin_src emacs-lisp
+  (use-package xwidget-plus
+    :straight (:host github :repo "canatella/xwidget-plus")
+    :general
+    (:keymaps 'xwidget-webkit-mode-map
+    "v" #'xwidget-plus-follow-link))
+#+end_src
 ** Footer
 
 #+name: init-footer-block

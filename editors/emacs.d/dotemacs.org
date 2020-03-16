@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-16 13:37:16
+/last updated/: 2020-03-16 14:46:46
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2531,7 +2531,11 @@ A nice way to restart emacs on the fly if you need to.
                   dired-recursive-copies 'always
                   dired-deletion-confirmer '(lambda (x) t)) ;; Don't confirm deleting files
 
-    (general-add-hook 'dired-mode-hook #'hl-line-mode))
+    (general-add-hook 'dired-mode-hook #'hl-line-mode)
+    (defun arco/dired-for-tramp ()
+      (when (file-remote-p dired-directory)
+        (setq-local dired-actual-switches "-alhF")))
+    (general-add-hook 'dired-mode-hook #'arco/dired-for-tramp))
 #+end_src
 
 *** Dired-Aux (Built-In)

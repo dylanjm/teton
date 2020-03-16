@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-16 13:17:50
+/last updated/: 2020-03-16 13:37:16
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1244,7 +1244,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :preface
     (defun djm/fetch-hunspell-dictionary ()
       (unless (file-exists-p "~/Library/Spelling/en_US.aff")
-        (shell-command "bash $DOTFILES/bootstrap/setup_dictionaries.sh")))
+        (shell-command "bash $DOTFILES/bootstrap/setup-dictionaries.sh")))
     :config
     (djm/fetch-hunspell-dictionary)
     (general-setq ispell-dictionary "en_US"

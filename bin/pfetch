@@ -59,9 +59,9 @@ main() {
 
     get_args "${@}"
 
-    while read -r line; do ## read line at a time from find output on server
-        lpath=${line//$maindir/}  # path to check if file exists.
-        fpath=${lpath//*\/assessment\//}  # truncated output path
+    while read -r line; do            ## read line at a time from find output on server
+        lpath=${line//$maindir/}         # path to check if file exists.
+        fpath=${lpath//*\/assessment\//} # truncated output path
 
         # alignment and color for output.
         folder=$(printf "%-100b" "$(yellow "$(dirname "$fpath")")" | tr ' ' '.')
@@ -87,7 +87,7 @@ main() {
         fi
         # The output of our ssh command has to have a './' where we want rsync
         # to copy the relative file-path.
-    done < <(ssh -qn falcon1 '/home/mcdodyla/.config/cargo/bin/fd -t f -g "**/{*_metrics.csv,*.txt}" -E "**/positions.txt" --no-ignore '"${basedir}"' |' \
+    done < <(ssh -qn falcon1 '/home/mcdodyla/.config/cargo/bin/fd -t f -g "**/{*_metrics.csv,*.txt}" -E "**/positions.txt" -E "**/moose/**" --no-ignore '"${basedir}"' |' \
         'sed -re "s|(^.+/)'"$dirb"'|\1./'"$dirb"'|g"')
 }
 

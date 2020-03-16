@@ -15,7 +15,7 @@ indent_size = 4
 [{Vagrant,Cap,Rake,Gem}file]
 indent_size = 2
 
-[*.{el,rb,cr,lua,y{a,}ml,json,toml,coffee,css,s{a,c}ss,styl,slim,jade,pug,html,{,z}sh}]
+[*.{el,rb,cr,lua,y{a,}ml,json,toml,coffee,css,s{a,c}ss,styl,slim,jade,pug,html,{ba,z}sh}]
 indent_size = 2
 
 [*.go]

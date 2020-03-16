@@ -18,6 +18,8 @@ fi
 
 eval "$(direnv hook $0)"
 /usr/local/bin/gpgconf --launch gpg-agent
+
+[[ $TERM == "dumb" ]] && unsetopt zle && PS1='$ ' && return
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:

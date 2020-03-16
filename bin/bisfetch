@@ -40,63 +40,63 @@ foldernames() {
 }
 
 usage() {
-    cat <<- EOF
-$(echo -e "$(red "
- ______  _________ _______  _______  _______ _________ _______
-(  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
-| (   ) )   ) (   | (    \/| (    \/| (    \/   ) (   | (    \/| )   ( |
-| (__/ /    | |   | (_____ | (__    | (__       | |   | |      | (___) |
-|  __ (     | |   (_____  )|  __)   |  __)      | |   | |      |  ___  |
-| (  \ \    | |         ) || (      | (         | |   | |      | (   ) |
-| )___) )___) (___/\____) || )      | (____/\   | |   | (____/\| )   ( |
-|/ \___/ \_______/\_______)|/       (_______/   )_(   (_______/|/     \|
-")")
+    cat <<-EOF
+        $(echo -e "$(red "
+         ______  _________ _______  _______  _______ _________ _______
+        (  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
+        | (   ) )   ) (   | (    \/| (    \/| (    \/   ) (   | (    \/| )   ( |
+        | (__/ /    | |   | (_____ | (__    | (__       | |   | |      | (___) |
+        |  __ (     | |   (_____  )|  __)   |  __)      | |   | |      |  ___  |
+        | (  \ \    | |         ) || (      | (         | |   | |      | (   ) |
+        | )___) )___) (___/\____) || )      | (____/\   | |   | (____/\| )   ( |
+        |/ \___/ \_______/\_______)|/       (_______/   )_(   (_______/|/     \|
+        ")")
 
-$(echo -e "$(blue "BIS")")on $(echo -e "$(blue "F")")etch:
+        $(echo -e "$(blue "BIS")")on $(echo -e "$(blue "F")")etch:
 
-Script that fetches most recent nightly run data from HPC.
+        Script that fetches most recent nightly run data from HPC.
 
-$(echo -e "$(yellow "USAGE")"):
-       $PROGNAME [-h] [-n] [-l num] [-f folder] [<folder> ...]
+        $(echo -e "$(yellow "USAGE")"):
+               $PROGNAME [-h] [-n] [-l num] [-f folder] [<folder> ...]
 
-$(echo -e "$(yellow "OPTIONS")"):
-       -h        - Show this message
-       -n        - Perform a dry-run
-       -l        - Look back a previous run; Defaults to 1 (most-recent)
-       -f        - Folder of interest; the flag is optional but a folder is required."
+        $(echo -e "$(yellow "OPTIONS")"):
+               -h        - Show this message
+               -n        - Perform a dry-run
+               -l        - Look back a previous run; Defaults to 1 (most-recent)
+               -f        - Folder of interest; the flag is optional but a folder is required."
 
-$(echo -e "$(yellow "ARGS")"):
-       <folder>        - Folder of interest from remote machine. To fetch all folders specify '*'
+        $(echo -e "$(yellow "ARGS")"):
+               <folder>        - Folder of interest from remote machine. To fetch all folders specify '*'
 
-$(echo -e "$(green "Possible folder names include")"):
-$(foldernames)
-EOF
+        $(echo -e "$(green "Possible folder names include")"):
+        $(foldernames)
+    EOF
     exit 0
 }
 
-get_args () {
+get_args() {
     while getopts ":hnl:f:" flag; do
         case "$flag" in
-            n)
-                dry_run=1
-                ;;
-            l)
-                lookback=${OPTARG}
-                ;;
-            h)
-                usage
-                ;;
-            f)
-                folder="${OPTARG}"
-                ;;
-            :)
-                echo "Invalid options: $OPTARG requires an argurment" 1>&2
-                exit 1
-                ;;
-            \?)
-                echo "Usage: bisfetch [-h] [-n] [-l num] [-f folder] [folder(s) ...]"
-                exit 1
-                ;;
+        n)
+            dry_run=1
+            ;;
+        l)
+            lookback=${OPTARG}
+            ;;
+        h)
+            usage
+            ;;
+        f)
+            folder="${OPTARG}"
+            ;;
+        :)
+            echo "Invalid options: $OPTARG requires an argurment" 1>&2
+            exit 1
+            ;;
+        \?)
+            echo "Usage: bisfetch [-h] [-n] [-l num] [-f folder] [folder(s) ...]"
+            exit 1
+            ;;
         esac
     done
 
@@ -112,7 +112,6 @@ get_args () {
     # If no -f flag then assign folder to first ARG
     [ -n "$1" ] && folder="$1"
 }
-
 
 fetch_folder_files() {
     # Find all *_out.csv files on Falcon1 for specific folder
@@ -130,8 +129,8 @@ fetch_folder_files() {
 create_local_paths() {
     # Modify remote paths to fit for local paths
     for i in "${files[@]}"; do
-        echo "$i" \
-            | sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
+        echo "$i" |
+            sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
     done
 }
 

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-16 02:27:04
+/last updated/: 2020-03-16 13:17:50
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -521,32 +521,34 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
-  (defun setup-main-fonts ()
+  (defun setup-main-fonts (frame)
     "Set up fonts based on window size."
-    (let ((default-height)
-          (variable-pitch-height))
-      (when window-system
-        (if (> (x-display-pixel-width) 2000)
-            (setq variable-pitch-height 170
-                  default-height 180)
-          (setq variable-pitch-height 135
-                default-height 140))
+    (select-frame frame)
+    (when (display-graphic-p frame)
+      (let ((default-height)
+            (variable-pitch-height))
+        (when window-system
+          (if (> (x-display-pixel-width) 2000)
+              (setq variable-pitch-height 170
+                    default-height 180)
+            (setq variable-pitch-height 135
+                  default-height 140))
 
-        (set-face-attribute 'default nil
-                            :family "Iosevka SS07"
-                            :weight 'ultra-light
-                            :width 'extra-expanded
-                            :height default-height)
-        (set-face-attribute 'variable-pitch nil
-                            :family "Iosevka Aile"
-                            :height variable-pitch-height
-                            :weight 'regular
-                            :width 'extra-expanded)
-        (set-face-attribute 'fixed-pitch nil
-                            :family "Iosevka SS07"
-                            :height default-height
-                            :weight 'ultra-light
-                            :width 'extra-expanded))))
+          (set-face-attribute 'default nil
+                              :family "Iosevka SS07"
+                              :weight 'ultra-light
+                              :width 'extra-expanded
+                              :height default-height)
+          (set-face-attribute 'variable-pitch nil
+                              :family "Iosevka Aile"
+                              :height variable-pitch-height
+                              :weight 'regular
+                              :width 'extra-expanded)
+          (set-face-attribute 'fixed-pitch nil
+                              :family "Iosevka SS07"
+                              :height default-height
+                              :weight 'ultra-light
+                              :width 'extra-expanded)))))
 
   (defun configure-fonts (frame)
     "Set up fonts for FRAME.
@@ -1242,7 +1244,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :preface
     (defun djm/fetch-hunspell-dictionary ()
       (unless (file-exists-p "~/Library/Spelling/en_US.aff")
-        (shell-command "bash $DOTFILES/bootstrap/bootstrap_dicts.sh")))
+        (shell-command "bash $DOTFILES/bootstrap/setup_dictionaries.sh")))
     :config
     (djm/fetch-hunspell-dictionary)
     (general-setq ispell-dictionary "en_US"
@@ -1547,16 +1549,21 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Tramp (Built-In)
 #+name: init-tramp-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package tramp
     :straight (:type built-in)
     :config
-    (general-setq tramp-default-method "scp"
-                  tramp-verbose 5
+    (general-setq tramp-default-method "ssh"
+                  tramp-verbose 2
                   tramp-completion-reread-directory-timeout nil
+                  tramp-use-ssh-control-master-options nil
+                  tramp-histfile-override nil
                   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                                vc-ignore-dir-regexp
-                                               tramp-file-name-regexp)))
+                                               tramp-file-name-regexp)
+                  tramp-use-ssh-controlmaster-options
+                  (concat "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+                          "-o ControlMaster=auto -o ControlPersist=yes")))
 #+end_src
 
 *** Uniquify (Built-In)
@@ -1581,7 +1588,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq vc-follow-symlinks t
-                  vc-handled-backends nil))
+                  vc-handled-backends '(Git)))
 #+end_src
 
 *** View (Built-In)
@@ -1780,34 +1787,6 @@ I hesitated to use doom-modeline for a long time because it always seemed to slo
                   doom-modeline-project-detection 'projectile))
 #+end_src
 
-*** [[https://github.com/hlissner/emacs-doom-themes][Doom-Themes]]
-
-I really like the functions that doom-themes provides but do not like the gruvbox theme it comes with. I would like to create my own theme that provide similar API commands.
-
-#+name: init-doom-themes-block
-#+begin_src emacs-lisp :tangle no
-  (use-package doom-themes
-    :demand t :straight t
-    :config/el-patch
-    (general-setq doom-themes-enable-bold t
-                  doom-themes-enable-italic t)
-    (load-theme 'doom-laserwave t)
-    (doom-themes-org-config)
-    (doom-themes-visual-bell-config)
-    (configure-fonts)
-    ;; Taken from Chris Barrett doom-modeline-hacks.el
-    (el-patch-defun doom-modeline-set-modeline (key &optional default)
-      "Set the modeline format. Does nothing if the modeline KEY doesn't exist.
-  If DEFAULT is non-nil, set the default mode-line for all buffers."
-      (when-let ((modeline (doom-modeline key)))
-        (el-patch-wrap 2
-          (unless (frame-parent)
-            (setf (if default
-                      (default-value (el-patch-swap 'mode-line-format 'header-line-format))
-                    (buffer-local-value (el-patch-swap 'mode-line-format 'header-line-format) (current-buffer)))
-                  (list "%e" modeline)))))))
-#+end_src
-
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
 
 My own personal fork of the gruvbox-theme. I've mostly added color-modes for missing packages.
@@ -1844,18 +1823,14 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
     (defun arco/load-modus-theme ()
       (load-theme 'modus-vivendi)
       (if (daemonp)
-          (progn
-            (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-            (general-add-hook 'after-make-frame-functions #'(lambda () (menu-bar-mode -1))))
-        (progn
-          (general-add-hook 'after-init-hook #'setup-main-fonts)
-          (general-add-hook 'after-make-frame-functions #'configure-fonts)))
-
+          (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+        (general-add-hook 'after-init-hook #'setup-main-fonts))
       (when-let (frame (selected-frame))
         (configure-fonts frame))))
 
-  (use-package modus-operandi-theme
-    :straight t)
+
+    (use-package modus-operandi-theme
+      :straight t)
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -2030,7 +2005,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
 #+name: init-eterm-256color-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package eterm-256color
     :straight t
     :init
@@ -2043,7 +2018,8 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-projectile-block
 #+begin_src emacs-lisp
   (use-package projectile
-    :blackout t :straight t
+    :blackout t
+    :straight t
     :ghook 'emacs-startup-hook
     :general
     (:prefix "C-c p"
@@ -2057,7 +2033,8 @@ A nice way to restart emacs on the fly if you need to.
     :config
     (general-setq projectile-completion-system 'default
                   projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired)
+                  projectile-switch-project-action 'projectile-dired
+                  projectile--mode-line "Projectile")
     (general-pushnew 'projectile-project-find-function project-find-functions))
 #+end_src
 
@@ -2134,22 +2111,23 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-company-block
 #+begin_src emacs-lisp
   (use-package company
+    :blackout t
     :straight t
     :ghook ('emacs-startup-hook #'global-company-mode)
     :general
     ([remap completion-at-point] #'company-manual-begin
      [remap complete-symbol] #'company-manual-begin)
     (:keymaps 'company-active-map
-     "TAB"     #'company-complete-selection
-     "<tab>"   #'company-complete-selection
-     "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
-     "C-p"     #'company-select-previous-or-abort)
+              "TAB"     #'company-complete-selection
+              "<tab>"   #'company-complete-selection
+              "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
+              "C-p"     #'company-select-previous-or-abort)
     (:keymaps 'company-active-map
-     :predicate '(company-explicit-action-p)
-     "<return>" #'company-complete-selection
-     "RET"      #'company-complete-selection)
+              :predicate '(company-explicit-action-p)
+              "<return>" #'company-complete-selection
+              "RET"      #'company-complete-selection)
     (:keymaps 'comint-mode-map
-     [remap indent-for-tab-command] #'company-manual-begin)
+              [remap indent-for-tab-command] #'company-manual-begin)
     :preface
     (general-unbind :keymaps 'company-active-map "C-w" "C-h")
     :config
@@ -2192,8 +2170,9 @@ A nice way to restart emacs on the fly if you need to.
                   (mapcar #'company-mode/backend-with-yas company-backends))
 
 
-    (general-setq company-frontends '(company-pseudo-tooltip-frontend
-                                      company-echo-metadata-frontend)))
+    (general-setq company-frontends
+                  '(company-pseudo-tooltip-frontend
+                    company-echo-metadata-frontend)))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -3082,6 +3061,9 @@ A nice way to restart emacs on the fly if you need to.
     :preface
     (defun set-buffer-fixed-pitch ()
       (setq-local line-spacing 3)
+      (set-face-attribute 'fixed-pitch nil
+                          :family "Iosevka SS07"
+                          :inherit 'default)
       (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
       (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
       (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
@@ -3688,7 +3670,7 @@ A nice way to restart emacs on the fly if you need to.
 ** Version Control
 *** [[https://github.com/magit/magit][Magit]]
 #+name: init-magit-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package magit
     :straight t
     :general ("C-x g"   #'magit-status
@@ -3703,17 +3685,9 @@ A nice way to restart emacs on the fly if you need to.
                   magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 #+end_src
 
-*** [[https://github.com/jtatarik/magit-gitflow][Magit-Gitflow]]
-#+name: init-magit-gitflow-block
-#+begin_src emacs-lisp :tangle no
-  (use-package magit-gitflow
-    :straight t
-    :ghook ('magit-mode-hook #'turn-on-magit-gitflow))
-#+end_src
-
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
 #+name: init-git-commit-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package git-commit
     :straight nil
     :ghook ('magit-mode-hook #'global-git-commit-mode)
@@ -3731,7 +3705,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
 #+name: init-git-timemachine-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package git-timemachine
     :straight (:host gitlab :repo "pidu/git-timemachine")
     :config
@@ -3740,7 +3714,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
 #+name: init-with-editor-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package with-editor
     :straight t
     :preface
@@ -3749,7 +3723,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package vdiff-magit
     :straight t
     :general
@@ -3938,7 +3912,7 @@ A nice way to restart emacs on the fly if you need to.
 [[https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/lisp-hacks.el][Chris Barrett's very similar fix to the same problem]]
 
 #+name: init-elisp-identation-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (el-patch-feature lisp-mode)
 
   ;; Improve indentation for plists.
@@ -4316,7 +4290,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** CSV-Mode
 #+name: init-csv-mode-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package csv-mode
     :straight t
     :commands (csv-mode
@@ -4501,13 +4475,6 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-stack-exchange-block
 #+begin_src emacs-lisp :tangle no
   (use-package sx
-    :straight t)
-#+end_src
-
-*** [[https://github.com/rnkn/fountain-mode][Fountain-Mode]]
-#+name: init-fountain-mode-block
-#+begin_src emacs-lisp :tangle no
-  (use-package fountain-mode
     :straight t)
 #+end_src
 

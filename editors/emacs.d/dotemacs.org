@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-16 21:42:44
+/last updated/: 2020-03-17 10:29:09
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1561,9 +1561,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                                vc-ignore-dir-regexp
                                                tramp-file-name-regexp)
-                  tramp-use-ssh-controlmaster-options
-                  (concat "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
-                          "-o ControlMaster=auto -o ControlPersist=yes")))
+                  tramp-use-ssh-controlmaster-options nil))
 #+end_src
 
 *** Uniquify (Built-In)
@@ -2765,14 +2763,6 @@ A nice way to restart emacs on the fly if you need to.
     :commands (dumb-jump-mode)
     :config (general-setq dumb-jump-selector 'ivy
                           dumb-jump-prefer-searcher 'rg))
-#+end_src
-
-*** [[https://github.com/bling/fzf.el][FZF]]
-#+name: init-fzf-block
-#+begin_src emacs-lisp :tangle no
-  (use-package fzf
-    :straight t
-    :commands (fzf))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
@@ -4288,7 +4278,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** Crontab-Mode
 #+name: init-crontab-mode-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package crontab-mode
     :straight t)
 #+end_src
@@ -4304,7 +4294,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
 #+name: init-gitconfig-mode-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package gitconfig-mode
     :straight t)
 #+end_src
@@ -4400,7 +4390,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ssh-config-mode
     :straight t)
 #+end_src

@@ -2,6 +2,9 @@
 
 [[https://github.com/dylanjm/teton/actions][file:https://github.com/dylanjm/teton/workflows/CI/badge.svg]]
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
+[[https://unsplash.com/@grakozy?utm_medium=referral&utm_campaign=photographer-credit&utm_content=creditBadge][https://img.shields.io/badge/unsplash-Greg%20Rakozy-black.svg]]
+
+[[file:editors/emacs.d/assets/teton.jpg]]
 
 * Summary
 
@@ -63,11 +66,7 @@ Dotbot will then launch the =bootstrap-tools= script and walk you through the in
 - Light-weight completion framework
 - Strong language and editing support
 - Simple and modular.
-** Better-Touch-Tool
 ** Karabiner
-/"A powerful and stable keyboard customizer for macOS."/[fn:1]
+"/A powerful and stable keyboard customizer for macOS./"
 
 Custom keyboard configuration made super easy using [[https://github.com/yqrashawn/GokuRakuJoudo][Goku]]. Emacs is configured with a hyper-key using the left-control modifier.
-
-
-[fn:1] https://karabiner-elements.pqrs.org/

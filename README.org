@@ -2,6 +2,9 @@
 
 [[https://github.com/dylanjm/teton/actions][file:https://github.com/dylanjm/teton/workflows/CI/badge.svg]]
 [[file:https://img.shields.io/badge/platform-macOS-blue.svg]]
+[[https://unsplash.com/@grakozy?utm_medium=referral&utm_campaign=photographer-credit&utm_content=creditBadge][https://img.shields.io/badge/unsplash-Greg%20Rakozy-black.svg]]
+
+[[file:editors/emacs.d/assets/teton.jpg]]
 
 * Summary
 
@@ -50,15 +53,20 @@ Directory structure:
 I use a simple dotfile management tool called [[https://github.com/anishathalye/dotbot][dotbot]] that runs all my bootstrap scripts and symlinks files to their proper location. Dotbot is configured through the =install.conf.yaml= file. You can choose to clone this repo directly or fork it to make your own changes. Then run the following commands in your shell.
 
 #+begin_src bash :exports code
-$ git clone https://github.com/dylanjm/dotz.git ~/dotz
-$ cd ~/dotz
+$ git clone https://github.com/dylanjm/teton.git ~/teton
+$ cd ~/teton
 $ ./install
 #+end_src
 
 Dotbot will then launch the =bootstrap-tools= script and walk you through the installation and symlinking process. If the script encounters any errors, it will automatically exit and the configuration will not be complete.
 * Features
 ** Zsh
-- Extremly fast and configurable package manager - [[https://github.com/zdharma/zplugin][Zplugin]].
+- Extremly fast and configurable package manager - [[https://github.com/zdharma/zinit][Zinit]].
 ** Emacs
-** Better-Touch-Tool
+- Light-weight completion framework
+- Strong language and editing support
+- Simple and modular.
 ** Karabiner
+"/A powerful and stable keyboard customizer for macOS./"
+
+Custom keyboard configuration made super easy using [[https://github.com/yqrashawn/GokuRakuJoudo][Goku]]. Emacs is configured with a hyper-key using the left-control modifier.

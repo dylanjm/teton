@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-18 14:28:58
+/last updated/: 2020-03-19 19:44:10
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -210,6 +210,7 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
   (setq-default use-package-verbose nil
                 use-package-always-defer t
                 use-package-compute-statistics nil
+                use-package-expand-minimally nil
                 use-package-enable-imenu-support nil)
 
   (straight-use-package 'use-package)
@@ -697,7 +698,11 @@ I might set-up some abbreviations in the future. This is more a placeholder bloc
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
   (use-package abbrev
-    :straight (:type built-in))
+    :blackout t
+    :straight (:type built-in)
+    :config
+    (general-setq abbrev-file-name (no-littering-expand-var-file-name "abbrevs")
+                  only-global-abbrevs nil))
 #+end_src
 
 *** Advice (Built-In)
@@ -929,7 +934,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                           window-combination-resize t
                           window-resize-pixelwise t
                           word-wrap t
-                          x-underline-at-descent-line t))
+                          x-underline-at-descent-line t
+                          underline-minimum-offset 0))
 #+end_src
 
 *** Dabbrev (Built-In)
@@ -998,9 +1004,22 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package electric
     :straight (:type built-in)
+    :gfhook #'electric-indent-mode
     :config
-    (general-setq-default electric-indent-chars '(?\n ?\^?))
-    (electric-pair-mode))
+    (general-setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
+                  electirc-pair-preserve-balance t
+                  electric-pair-pairs '((8216 . 8217)
+                                        (8220 . 8221)
+                                        (171 . 187))
+                  electric-pair-skip-self 'electric-pair-default-skip-self
+                  electric-pair-skip-whitespace nil
+                  electric-pair-skip-whitespace-chars '(9 10 32)
+                  electric-quote-context-sensitive t
+                  electric-quote-paragraph t
+                  electric-quote-string nil
+                  electric-quote-replace-double t)
+    (general-setq-default electric-indent-chars '(?\n ?\^?)))
+
 #+end_src
 
 *** Epa (Built-In)
@@ -1054,7 +1073,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   shr-width (current-fill-column)))
 
   (use-package shr-tag-pre-highlight
-    :demand t :straight t
+    :demand t
+    :straight t
     :after shr
     :config
     (add-to-list 'shr-external-rendering-functions
@@ -1180,7 +1200,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Hippie-Expand (Built-In)
 #+name: init-hippie-expand-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package hippie-exp
     :straight (:type built-in)
     :after (dabbrev)
@@ -1202,6 +1222,26 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   hippie-expand-verbose nil))
 #+end_src
 
+*** iComplete (Built-In)
+#+name: init-icomplete-block
+#+begin_src emacs-lisp
+  (use-package icomplete
+    :demand t
+    :straight (:type built-in)
+    :config
+    (general-setq icomplete-delay-completions-threshold 0
+                  icomplete-max-chars 0
+                  icomplete-compute-delay 0
+                  icomplete-show-matches-on-no-input t
+                  icomplete-hide-common-prefix nil
+                  icomplete-prospects-height 1
+                  icomplete-separator " · "
+                  icomplete-with-completion-tables t
+                  icomplete-in-buffer t)
+
+    (fido-mode -1)
+    (icomplete-mode +1))
+#+end_src
 *** iElm (Built-In)
 #+name: init-ielm-block
 #+begin_src emacs-lisp
@@ -1232,7 +1272,17 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package isearch
     :straight (:type built-in)
     :config
-    (general-setq lazy-highlight-initial-delay 0))
+    (general-setq lazy-highlight-initial-delay 0
+                  search-highlight t
+                  search-whitespace-regexp ".*?"
+                  isearch-lax-whitespace t
+                  isearch-regexp-lax-whitespace nil
+                  isearch-lazy-highlight t
+                  isearch-lazy-count t
+                  lazy-count-prefix-format "(%s/%s) "
+                  lazy-count-suffix-format nil
+                  isearch-yank-on-move 'shift
+                  isearch-allow-scroll 'unlimited))
 #+end_src
 
 *** iSpell (Built-In)
@@ -1304,14 +1354,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
     (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
     :config
-    (general-setq minibuffer-prompt-properties
-                  '(read-only t intangible t cursor-intangible t face minibuffer-prompt)
-                  completion-cycle-threshold 3
+    (general-setq completion-cycle-threshold 3
                   completion-flex-nospace nil
                   completion-pcm-complete-word-inserts-delimiters t
                   completion-pcm-word-delimiters "-_./:| "
                   completion-show-help nil
-                  completion-styles '(partial-comletion substring initials flex)
+                  completion-styles '(partial-completion substring initials flex)
                   completion-category-overrides '((file (styles initials basic))
                                                   (buffer (styles initials basic))
                                                   (info-menu (styles basic)))
@@ -1320,7 +1368,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   read-buffer-completion-ignore-case t
                   read-file-name-completion-ignore-case t
                   resize-mini-windows t)
-    (file-name-shadow-mode)
+    (file-name-shadow-mode +1)
+    (minibuffer-depth-indicate-mode +1)
     (minibuffer-electric-default-mode))
 #+end_src
 
@@ -1328,7 +1377,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-new-comment-block
 #+begin_src emacs-lisp
   (use-package newcomment
-    :straight (:type built-in))
+    :straight (:type built-in)
+    :config
+    (general-setq comment-empty-lines t
+                  comment-fill-column nil
+                  comment-multi-line t
+                  comment-style 'multi-line))
 #+end_src
 
 *** NS-Win (Built-In)
@@ -1359,7 +1413,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :ghook ('emacs-startup-hook #'show-paren-mode)
     :config
-    (general-setq show-paren-delay 0))
+    (general-setq show-paren-delay 0
+                  show-paren-style 'parenthesis
+                  show-paren-when-point-in-periphery t
+                  show-paren-when-point-inside-paren nil))
 #+end_src
 
 *** Pixel-Scroll (Built-In)
@@ -1369,6 +1426,19 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package pixel-scroll
     :straight (:type built-in)
     :ghook 'emacs-startup-hook)
+#+end_src
+
+*** Proced (Built-In)
+#+name: init-proced (built-in)-block
+#+begin_src emacs-lisp
+  (use-package proced
+    :straight (:type built-in)
+    :commands proced
+    :config
+    (general-setq proced-auto-update-flag t
+                  proced-auto-update-interval 1
+                  proced-descend t
+                  proced-filter 'user))
 #+end_src
 
 *** Prog-Mode (Built-In)
@@ -1397,6 +1467,14 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                   project-find-functions nil))
 #+end_src
 
+*** Re-Builder (Built-In)
+#+name: init-re-builder (built-in)-block
+#+begin_src emacs-lisp
+  (use-package re-builder
+    :straight (:type built-in)
+    :config
+    (general-setq reb-re-syntax 'read))
+#+end_src
 *** Recentf (Built-In)
 
 #+name: init-recentf-block
@@ -1468,6 +1546,16 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 company-dabbrev-code)))
 #+end_src
 
+*** Shell (Built-In)
+#+name: init-shell-block
+#+begin_src emacs-lisp
+  (use-package shell
+    :straight (:type built-in)
+    :commands shell-command
+    :config
+    (general-setq ansi-color-for-comint-mode t
+                  shell-command-prompt-show-cwd t))
+#+end_src
 *** Simple (Built-In)
 
 #+name: init-simple-block
@@ -1478,7 +1566,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     ("C-x p" #'pop-to-mark-command)
     :config
     (general-setq blink-matching-paren t
-                  column-number-mode nil
+                  column-number-mode t
                   delete-trailing-lines nil
                   eval-expression-print-length nil
                   eval-expression-print-level nil
@@ -1526,6 +1614,18 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (use-package subword
     :straight (:type built-in)
     :ghook ('emacs-startup-hook #'global-subword-mode))
+#+end_src
+
+*** Term (Built-In)
+#+name: init-term-block
+#+begin_src emacs-lisp
+  (use-package term
+    :commands term
+    :config
+    (general-setq term-buffer-maximum-size 9999
+                  termp-completion-autolist t
+                  term-completion-recexact t
+                  term-scroll-to-bottom-on-output t))
 #+end_src
 
 *** Time (Built-In)
@@ -1815,23 +1915,58 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 
 #+name: init-modus-theme-block
 #+begin_src emacs-lisp
-  (use-package modus-vivendi-theme
-    :straight t
-    :ghook ('emacs-startup-hook #'arco/load-modus-theme)
-    :preface
-    (defun arco/load-modus-theme ()
-      (load-theme 'modus-vivendi)
-      (if (daemonp)
-          (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-        (general-add-hook 'after-init-hook #'setup-main-fonts))
-      (when-let (frame (selected-frame))
-        (configure-fonts frame))))
+(use-package modus-vivendi-theme
+  :straight t
+  :ghook ('emacs-startup-hook #'arco/load-modus-theme)
+  :preface
+  (defun arco/load-modus-theme ()
+    (general-setq modus-vivendi-theme-slanted-constructs t
+                  modus-vivendi-theme-proportional-fonts t
+                  modus-vivendi-theme-bold-constructs t
+                  modus-vivendi-theme-scale-headings t
+                  modus-vivendi-theme-scale-1 1.05
+                  modus-vivendi-theme-scale-2 1.1
+                  modus-vivendi-theme-scale-3 1.15
+                  modus-vivendi-theme-scale-4 1.2)
+    (load-theme 'modus-vivendi)
+    (if (daemonp)
+        (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+      (general-add-hook 'after-init-hook #'setup-main-fonts))
+    (when-let (frame (selected-frame))
+      (configure-fonts frame))))
 
 
     (use-package modus-operandi-theme
       :straight t)
 #+end_src
 
+*** Mode-line
+#+name: init-mode-line-block
+#+begin_src emacs-lisp
+  (use-package emacs
+    :straight nil
+    :config
+    (general-setq mode-line-percent-position nil
+                  mode-line-defining-kbd-macro
+                  (propertize " Macro" 'face 'mode-line-emphasis))
+    (general-setq-default mode-line-format
+                          '("%e"
+                            mode-line-front-space
+                            mode-line-mule-info
+                            mode-line-client
+                            mode-line-modified
+                            mode-line-remote
+                            mode-line-frame-identification
+                            mode-line-buffer-identification
+                            " "
+                            mode-line-position
+                            " "
+                            mode-line-modes
+                            " "
+                            mode-line-misc-info
+                            mode-line-end-spaces)))
+
+#+end_src
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
 
 #+name: init-hide-mode-line-block
@@ -2067,7 +2202,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/raxod502/ctrlf][Ctrl-F]]
 #+name: init-ctrl-f-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ctrlf
     :straight (:host github :repo "raxod502/ctrlf")
     :general
@@ -2522,7 +2657,7 @@ A nice way to restart emacs on the fly if you need to.
                   dired-use-ls-dired t
                   dired-ls-F-marks-symlinks t
                   dired-hide-details-hide-symlink-targets nil
-                  dired-listing-switches "-lha --group-directories-first"
+                  dired-listing-switches "-AFhlv --group-directories-first"
                   dired-recursive-deletes 'always
                   dired-recursive-copies 'always
                   dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
@@ -2567,6 +2702,11 @@ A nice way to restart emacs on the fly if you need to.
     :straight (:type built-in)
     :after (dired)
     :ghook ('dired-mode-hook #'dired-omit-mode)
+    :general
+    ("C-x C-j" #'dired-jump
+     "s-j" #'dired-jump
+     "C-x 4 C-j" #'dired-jump-other-window
+     "s-J" #'dired-jump-other-window)
     :config
     (general-setq dired-x-hands-off-my-keys t
                   dired-omit-verbose t
@@ -2585,6 +2725,15 @@ A nice way to restart emacs on the fly if you need to.
                                            "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
 #+end_src
 
+*** Find-Dired (Built-In)
+#+name: init-find-dired-block
+#+begin_src emacs-lisp
+  (use-package find-dired
+    :straight (:type built-in)
+    :config
+    (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
+                  find-name-arg "-iname"))
+#+end_src
 *** Image-Dired (Built-In)
 #+name: init-image-dired-block
 #+begin_src emacs-lisp
@@ -2643,11 +2792,19 @@ A nice way to restart emacs on the fly if you need to.
 
   (use-package dired-narrow
     :straight nil
+    :after dired
+    :commands (dired-narrow
+               dired-narrow-fuzzy
+               dired-narrow-regexp)
     :general
     (:keymaps 'dired-mode-map
      "C-c C-n" #'dired-narrow
      "C-c C-f" #'dired-narrow-fuzzy
-     "C-c C-r" #'dired-narrow-regexp))
+     "C-c C-r" #'dired-narrow-regexp)
+    :config
+    (general-setq dired-narrow-exit-when-one-left t
+                  dired-narrow-enable-blinking t
+                  dired-narrow-blink-time 0.3))
 
   (use-package dired-collapse
     :straight nil
@@ -2656,10 +2813,10 @@ A nice way to restart emacs on the fly if you need to.
      "c" #'dired-collapse-mode))
 
   (use-package dired-open
-	       :straight nil
-	       :config
-	       (general-setq dired-open-functions '(dired-open-by-extension
-						    dired-open-subdir)))
+           :straight nil
+           :config
+           (general-setq dired-open-functions '(dired-open-by-extension
+                            dired-open-subdir)))
 
   (use-package dired-list
     :straight nil)
@@ -2771,11 +2928,14 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package ibuffer
     :straight t
-    :general
-    ([remap list-buffers] #'ibuffer)
-    :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
+    :commands (ibuffer
+               ibuffer-forward-line
+               ibuffer-backward-line)
     :defines (ibuffer-show-empty-filter-groups
               ibuffer-never-show-predicates)
+    :gfhook #'hl-line-mode
+    :general
+    ([remap list-buffers] #'ibuffer)
     :config/el-patch
     (general-setq ibuffer-expert t
                   ibuffer-display-summary nil
@@ -2796,8 +2956,6 @@ A nice way to restart emacs on the fly if you need to.
                                                               "*helpful"
                                                               "*Flycheck error messages*"
                                                               "*Help*"))))
-
-    (general-add-hook 'ibuffer-mode-hook #'hl-line-mode)
 
     (define-ibuffer-column mode
       (:inline t)
@@ -3043,136 +3201,119 @@ A nice way to restart emacs on the fly if you need to.
 *** Org
 #+name: init-org-block
 #+begin_src emacs-lisp
-  (use-package org
-    :straight nil
-    :mode ("\\.org\\'" . org-mode)
-    :gfhook 'virtual-auto-fill-mode
-    :general
-    ("C-c a" #'org-agenda
-     "C-c c" #'org-capture)
-    (:keymaps 'org-mode-map
-     "M-n" #'outline-next-visible-heading
-     "M-p" #'outline-previous-visible-heading)
-    :preface
-    (defun set-buffer-fixed-pitch ()
-      (setq-local line-spacing 2)
-      (set-face-attribute 'fixed-pitch nil
-                          :family "Iosevka SS07"
-                          :inherit 'default)
-      (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-      (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
-      (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
+(use-package org
+  :straight nil
+  :mode ("\\.org\\'" . org-mode)
+  :gfhook 'virtual-auto-fill-mode 'variable-pitch-mode
+  :general
+  ("C-c a" #'org-agenda
+   "C-c c" #'org-capture)
+  (:keymaps 'org-mode-map
+   "M-n" #'outline-next-visible-heading
+   "M-p" #'outline-previous-visible-heading)
+  :preface
+  (defun set-buffer-fixed-pitch ()
+    (setq-local line-spacing 2)
+    (set-face-attribute 'fixed-pitch nil
+                        :family "Iosevka SS07"
+                        :inherit 'default)
+    (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
 
-    (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
-    :config
-    ;; ;; Directory Settings
-    (general-setq org-archive-location "~/Documents/org-files/archive.org::"
-                  org-default-notes-file "~/Documents/org-files/inbox.org"
-                  org-directory "~/Documents/org-files")
+  (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
+  :config
+  ;; ;; Directory Settings
+  (general-setq org-archive-location "~/Documents/org-files/archive.org::"
+                org-default-notes-file "~/Documents/org-files/inbox.org"
+                org-directory "~/Documents/org-files")
 
-    ;; ;; Export Settings
-    (general-setq org-export-backends '(ascii html latex gfm)
-                  org-export-coding-system 'utf-8
-                  org-export-exclude-tags '("noexport" "no_export" "ignore")
-                  org-export-headline-levels 5
-                  org-export-with-author t
-                  org-export-with-drawers t
-                  org-export-with-email t
-                  org-export-with-footnotes t
-                  org-export-with-latex t
-                  org-export-with-properties t
-                  org-export-with-section-numbers nil
-                  org-export-with-smart-quotes t
-                  org-export-with-toc nil
-                  org-html-html5-fancy t
-                  org-html-postamble nil)
+  ;; ;; LaTeX Settings
+  ;; (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
+  ;;               org-latex-remove-logfiles t
+  ;;               org-latex-prefer-user-labels t
+  ;;               bibtex-dialect 'biblatex)
 
-    ;; ;; LaTeX Settings
-    ;; (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-    ;;               org-latex-remove-logfiles t
-    ;;               org-latex-prefer-user-labels t
-    ;;               bibtex-dialect 'biblatex)
-
-    ;; ;; (dolist (ext '("lof" "lot" "tex"
-    ;; ;;                "aux" "idx" "log"
-    ;; ;;                "out" "toc" "nav"
-    ;; ;;                "snm" "vrb" "dvi"
-    ;; ;;                "fdb_latexmk" "blg"
-    ;; ;;                "brf" "fls" "entoc"
-    ;; ;;                "ps" "spl" "bbl"
-    ;; ;;                "bcf" "run.xml"))
-    ;; ;;   (general-pushnew ext org-latex-logfiles-extensions))
+  ;; ;; (dolist (ext '("lof" "lot" "tex"
+  ;; ;;                "aux" "idx" "log"
+  ;; ;;                "out" "toc" "nav"
+  ;; ;;                "snm" "vrb" "dvi"
+  ;; ;;                "fdb_latexmk" "blg"
+  ;; ;;                "brf" "fls" "entoc"
+  ;; ;;                "ps" "spl" "bbl"
+  ;; ;;                "bcf" "run.xml"))
+  ;; ;;   (general-pushnew ext org-latex-logfiles-extensions))
 
 
-    ;; ;; Startup Settings
-    (general-setq org-startup-folded 'content
-                  org-startup-with-inline-images t
-                  org-startup-indented t
-                  org-indent-mode t)
+  ;; ;; Startup Settings
+  (general-setq org-startup-folded 'content
+                org-startup-with-inline-images t
+                org-startup-indented t
+                org-indent-mode t)
 
-    ;; ;; Fontify Settings
-    (general-setq org-fontify-whole-heading-line t
-                  org-fontify-quote-and-verse-blocks t
-                  org-fontify-done-headline t
-                  org-fontify-todo-headline t)
+  ;; ;; Fontify Settings
+  (general-setq org-fontify-whole-heading-line t
+                org-fontify-quote-and-verse-blocks t
+                org-fontify-done-headline t
+                org-fontify-todo-headline t)
 
-    ;; ;; Refile Settings
-    ;; (general-setq org-refile-allow-creating-parent-nodes 'confirm
-    ;;               org-refile-use-outline-path 'file
-    ;;               org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+  ;; ;; Refile Settings
+  ;; (general-setq org-refile-allow-creating-parent-nodes 'confirm
+  ;;               org-refile-use-outline-path 'file
+  ;;               org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
-    ;; ;; Log Settings
-    ;; (general-setq org-log-done 'time
-    ;;               org-log-into-drawer t
-    ;;               org-log-state-notes-insert-after-drawers nil)
+  ;; ;; Log Settings
+  ;; (general-setq org-log-done 'time
+  ;;               org-log-into-drawer t
+  ;;               org-log-state-notes-insert-after-drawers nil)
 
-    ;; ;; Usage Settings
-    (general-setq org-use-fast-todo-selection t
-                  org-use-fast-tag-selection t
-                  org-use-speed-commands t
-                  org-use-tag-inheritance t)
+  ;; ;; Usage Settings
+  (general-setq org-use-fast-todo-selection t
+                org-use-fast-tag-selection t
+                org-use-speed-commands t
+                org-use-tag-inheritance t)
 
-    ;; ;; Aesthetic Settings
-    (general-setq org-pretty-entities t
-                  org-hide-emphasis-markers t
-                  org-hide-leading-stars t
-                  org-ellipsis "…"
-                  org-image-actual-width nil)
+  ;; ;; Aesthetic Settings
+  (general-setq org-pretty-entities t
+                org-hide-emphasis-markers t
+                org-hide-leading-stars t
+                org-ellipsis "…"
+                org-image-actual-width nil)
 
-    (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
+  (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
-    (font-lock-add-keywords 'org-mode
-                            `((,(rx bol (* space) (group "-") (+ space))
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-                              (,(rx bol (* space) (group "#+end_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
-                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+  (font-lock-add-keywords 'org-mode
+                          `((,(rx bol (* space) (group "-") (+ space))
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                            (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                            (,(rx bol (* space) (group "#+end_src") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                            (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                            (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
-    ;; ;; List Settings
-    (general-setq org-list-indent-offset 2)
+  ;; ;; List Settings
+  (general-setq org-list-indent-offset 2)
 
-    ;; ;; Other Settings
-    (general-setq org-catch-invisible-edits 'smart
-                  org-cycle-separator-lines 0
-                  org-enforce-todo-dependencies t
-                  org-enforce-todo-checkbox-dependencies t
-                  org-insert-heading-respect-content t
-                  org-outline-path-complete-in-steps nil
-                  org-special-ctrl-a/e t
-                  org-special-ctrl-k t
-                  org-tags-column 0
-                  org-yank-adjusted-subtrees t)
+  ;; ;; Other Settings
+  (general-setq org-catch-invisible-edits 'smart
+                org-cycle-separator-lines 0
+                org-enforce-todo-dependencies t
+                org-enforce-todo-checkbox-dependencies t
+                org-insert-heading-respect-content t
+                org-outline-path-complete-in-steps nil
+                org-special-ctrl-a/e t
+                org-special-ctrl-k t
+                org-tags-column 0
+                org-yank-adjusted-subtrees t)
 
-    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist)
-    (compdef
-     :modes #'org-mode
-     :company '(company-dabbrev company-capf)
-     :capf #'pcomplete-completions-at-point))
+  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist)
+  (compdef
+   :modes #'org-mode
+   :company '(company-dabbrev company-capf)
+   :capf #'pcomplete-completions-at-point))
 #+end_src
 
 *** Org-Agenda
@@ -3230,7 +3371,9 @@ A nice way to restart emacs on the fly if you need to.
 
     (general-setq org-src-window-setup 'current-window
                   org-src-fontify-natively t
-                  org-src-tab-acts-natively t))
+                  org-src-preserve-indentation t
+                  org-src-tab-acts-natively t
+                  org-edit-src-content-indentation 0))
 #+end_src
 
 *** Org-Ob
@@ -3270,6 +3413,25 @@ A nice way to restart emacs on the fly if you need to.
 *** Org-Ox
 #+name: init-org-ox-block
 #+begin_src emacs-lisp :tangle no
+  (use-package ox
+    :straight nil
+    :config
+    (general-setq org-export-with-toc nil
+                  org-export-headline-levels 8
+                  org-export-backends '(ascii html latex md)
+                  org-export-dispatch-use-expert-ui nil
+                  org-export-coding-system 'utf-8
+                  org-export-exclude-tags '("noexport" "no_export" "ignore")
+                  org-export-with-author t
+                  org-export-with-drawers t
+                  org-export-with-email t
+                  org-export-with-footnotes t
+                  org-export-with-latex t
+                  org-export-with-properties t
+                  org-export-with-smart-quotes t
+                  org-html-html5-fancy t
+                  org-html-postamble nil))
+
   (use-package ox-gfm
     :demand t :straight t
     :after (org))
@@ -3652,7 +3814,10 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-htmlize-block
 #+begin_src emacs-lisp
   (use-package htmlize
-    :straight t)
+    :straight t
+    :after org
+    :config
+    (general-setq htmlize-ignore-face-size t))
 #+end_src
 
 *** [[https://github.com/flexibeast/ebuku][Ebuku]]
@@ -3680,6 +3845,15 @@ A nice way to restart emacs on the fly if you need to.
                   magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 #+end_src
 
+*** Magit-Diff
+#+name: init-magit-diff-block
+#+begin_src emacs-lisp
+  (use-package magit-diff
+    :straight nil
+    :after magit
+    :config
+    (general-setq magit-diff-refine-hunk t))
+#+end_src
 *** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
 #+name: init-git-commit-block
 #+begin_src emacs-lisp
@@ -3817,6 +3991,14 @@ A nice way to restart emacs on the fly if you need to.
     (general-pushnew 'zsh flycheck-shellcheck-supported-shells))
 #+end_src
 
+*** Flycheck-Indicator
+#+name: init-flycheck-indicator-block
+#+begin_src emacs-lisp
+  (use-package flycheck-indicator
+    :straight t
+    :after flycheck
+    :ghook 'flycheck-mode-hook)
+#+end_src
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
 #+begin_src emacs-lisp
@@ -4489,6 +4671,22 @@ This is a nifty package that allows me to define functions as local variables in
     "v" #'xwidget-plus-follow-link))
 #+end_src
 
+*** [[https://github.com/tarsius/keycast][Keycast]]
+#+name: init-keycast-block
+#+begin_src emacs-lisp
+  (use-package moody
+    :straight t)
+
+  (use-package keycast
+    :straight t
+    :after moody
+    :commands keycast-mode
+    :config
+    (general-setq keycast-window-predicate 'moody-window-active-p
+                  keycast-separator-width 1
+                  keycast-insert-after 'mode-line-buffer-identification
+                  keycast-remove-tail-elements nil))
+#+end_src
 ** Footer
 
 #+name: init-footer-block

@@ -58,7 +58,9 @@ get_args() {
 get_cons_obs() {
     local line="${1}"
     "$HOME/Documents/projects/bison/bison-opt" -i "${line}" --list-constructed-objects --no-gdb-backtrace 2>&1 \
-        | awk '/^\*\*\* ERROR \*\*\*/{print "ERROR"; exit} /^\*\*START OBJECT DATA\*\*$/{flag=1;next} /^\*\*END OBJECT DATA\*\*$/{flag=0} flag' \
+        | awk '/^\*\*\* ERROR \*\*\*/{print "ERROR"; exit}'\
+              '/^\*\*START OBJECT DATA\*\*$/{flag=1;next}'\
+              '/^\*\*END OBJECT DATA\*\*$/{flag=0} flag' \
         | xargs printf "${line},%s\n"
 }
 export -f get_cons_obs

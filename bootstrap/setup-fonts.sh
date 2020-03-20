@@ -29,19 +29,17 @@ move_font() {
     printf "Skipping %s\n" "$(basename "${fontname}")"
   else
     printf "Installing %s to ~/Library/Fonts\n" "$(basename "${fontname}")"
-    cp "${fontname}" "$HOME/Library/Fonts"
+    cp "${fontname}" "$HOME/Library/Fonts/"
   fi
 }
 
 create_tmp_dir(){
   local fonturl="${1}"
   printf "%s\n" "${fonturl}"
-
   TMPFILE=$(mktemp)
   TMPDIR="/tmp/font-temp"
-  PWD=$(pwd)
-  curl -s "${fonturl}" -L -o "$TMPFILE" && unzip -q "$TMPFILE" -d "$TMPDIR"
-  rm "$TMPFILE"
+  curl -s "${fonturl}" -L -o "${TMPFILE}" && unzip -q "${TMPFILE}" -d "${TMPDIR}"
+  rm "${TMPFILE}"
 }
 
 install_fonts() {
@@ -50,10 +48,10 @@ install_fonts() {
     create_tmp_dir "${i}"
 
     while read -r line; do
-      move_font "$line"
-    done < <(find -E "$TMPDIR"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*")
+      move_font "${line}"
+    done < <(find -E "${TMPDIR}"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*")
 
-    rm -rf "$TMPDIR"
+    rm -rf "${TMPDIR}"
   done
 }
 
@@ -61,4 +59,4 @@ main() {
   install_fonts
 }
 
-main "${@}"
+main

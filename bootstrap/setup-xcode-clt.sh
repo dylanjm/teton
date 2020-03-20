@@ -1,40 +1,5 @@
 #!/usr/bin/env bash
 
-NORMAL='\033[0m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-
-marker="${BLUE}==>${NORMAL}"
-status_good="${GREEN}✔${NORMAL}"
-status_bad="${RED}✘${NORMAL}"
-
-function bootstrap-xcode-clt () {
-  # Check for xcode-CLT
-  if [[ ! -d "$(xcode-select -p)" ]]; then
-
-    printf "%b\n" "$marker Checking for Command Line Tools - $status_bad"
-
-    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-
-    PROD=$(softwareupdate -l |
-             grep "\*.*Command Line" |
-             head -n 1 |
-             awk -F"*" '{print $2}' |
-             sed -e 's/^ *//' |
-             tr -d '\n')
-
-    sudo softwareupdate -i "$PROD" --verbose
-
-    rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-
-  else
-
-    printf "%b\n" "$marker Checking for Command Line Tools - $status_good"
-
-  fi
-}
-
 function install-clt () {
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 
@@ -45,9 +10,15 @@ function install-clt () {
            sed -e 's/^ *//' |
            tr -d '\n')
 
-  softwareupdate -i "$PROD" --verbose
+  sudo softwareupdate -i "$PROD" --verbose
 
   rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+}
+
+function bootstrap-xcode-clt () {
+  # Check for xcode-CLT
+  [[ ! -d "$(xcode-select -p)" ]] && install-clt && return 0
+  printf "command line tools already installed!\n"
 }
 
 bootstrap-xcode-clt

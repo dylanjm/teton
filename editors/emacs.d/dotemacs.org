@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-17 20:40:38
+/last updated/: 2020-03-18 14:28:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -383,7 +383,7 @@ This function is a great way to conditional run functions at different intervals
 A quick work around function to easily snap screenshots of lecture videos while taking notes. Use the prefix command =C-u M-x emacs-screen-capture RET= to insert it automatically as an org link.
 
 #+name: init-screen-capture-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defun emacs-screen-capture (arg &optional name dir format)
     (interactive "P")
     (let* ((format (completing-read "Screenshot Format: " '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
@@ -406,7 +406,7 @@ A quick work around function to easily snap screenshots of lecture videos while 
 I needed this function to download a list of pdfs that were written as links in a textfile. It was pretty useful.
 
 #+name: init-wget-thing-at-point-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defun wget-thing-at-point ()
     (interactive)
     (let* ((name (read-string "Name of File: " nil))
@@ -421,7 +421,7 @@ I needed this function to download a list of pdfs that were written as links in 
 There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
 
 #+name: init-protected-buffers-func-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defvar *protected-buffers* '("*scratch*" "*Messages*"))
 
   (defun arco/protected-buffers ()
@@ -485,7 +485,7 @@ This saves me tons of time tangling this config file. Code taken from [[https://
 
 **** Run-Python-Tests
 #+name: init-run-python-tests-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defun arco/run-python-tests ()
     (interactive)
     (cd (expand-file-name "~/Documents/College/OMSCS/cs7637-kbai/projects/KBAI-package-python/Project-Code-Python"))
@@ -505,7 +505,7 @@ This saves me tons of time tangling this config file. Code taken from [[https://
 Sometimes I need a different scratch buffer to do some work on.
 
 #+name: init-temp-buffers-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defun arco/new-scratch ()
     "open up a guaranteed new scratch buffer"
     (interactive)
@@ -604,7 +604,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]].
 
 #+name: init-yank-ws-cleanup-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (defun djm/yank-ws-cleanup (&rest _)
     (whitespace-cleanup)
     (delete-trailing-whitespace))
@@ -616,7 +616,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
 #+name: init-clipboard-integration-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (unless (display-graphic-p)
     (defvar clipboard-last-copy nil)
 
@@ -1180,7 +1180,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Hippie-Expand (Built-In)
 #+name: init-hippie-expand-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package hippie-exp
     :straight (:type built-in)
     :after (dabbrev)
@@ -1457,18 +1457,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package sh-script
     :straight (:type built-in)
-    :init
-    ;; taken from radian.el
-    (defun arco/sh-script-prettify-mode-line ()
-      (general-setq mode-line-process nil)
-      (when (eq major-mode (or 'sh-mode 'shell-script-mode))
-        (general-setq mode-name (capitalize (symbol-name sh-shell)))))
-    (general-add-hook 'sh-mode #'arco/sh-script-prettify-mode-line)
-    (general-add-hook 'shell-script-mode #'arco/sh-script-prettify-mode-line)
     :config
-    (general-setq sh-indentation 2
-                  sh-basic-offset 2
-                  sh-indent-after-continuation 'always)
     (compdef
      :modes '(sh-mode shell-script-mode)
      :capf '(sh-completion-at-point-function)
@@ -2010,7 +1999,9 @@ A nice way to restart emacs on the fly if you need to.
     :straight t
     :config
     (general-setq vterm-term-environment-variable "eterm-color"
-                  vterm-kill-buffer-on-exit t))
+                  vterm-kill-buffer-on-exit t
+                  vterm-shell "zsh"
+                  vterm-max-scrollback 10000))
 #+end_src
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
@@ -2426,7 +2417,15 @@ A nice way to restart emacs on the fly if you need to.
   (use-package editorconfig
     :blackout t
     :straight t
-    :ghook 'emacs-startup-hook)
+    :ghook 'emacs-startup-hook
+    :init
+    (defun arco/hack-makefile-indentation (props)
+      (when (derived-mode-p 'makefile-mode)
+        (puthash 'indent_style "tab" props)))
+    :config
+    (general-setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
+    (general-add-hook
+     'editorconfig-hack-properties-functions #'arco/hack-makefile-indentation))
 #+end_src
 
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
@@ -2708,7 +2707,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/asok/peep-dired][Peep-Dired]]
 #+name: init-peep-dired-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package peep-dired
     :demand t
     :straight t
@@ -3798,7 +3797,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
   (use-package flycheck
     :straight t
-    :ghook ('prog-mode-hook #'global-flycheck-mode)
+    :ghook ('after-init-hook #'global-flycheck-mode)
     :init
     (defun arco/disable-eldoc-on-flycheck (&rest _)
       "Disable ElDoc when point is on a Flycheck overlay.
@@ -3814,12 +3813,13 @@ A nice way to restart emacs on the fly if you need to.
                   flycheck-display-errors-delay 0.25)
     (general-setq flycheck-sh-shellcheck-executable "shellcheck"
                   flycheck-shellcheck-follow-sources t)
-    (general-pushnew 'sh-shellcheck flycheck-checkers))
+    (general-pushnew 'sh-shellcheck flycheck-checkers)
+    (general-pushnew 'zsh flycheck-shellcheck-supported-shells))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flycheck-popup-tip
     :straight t
     :blackout t
@@ -3907,93 +3907,124 @@ A nice way to restart emacs on the fly if you need to.
 **** Fix Identation
 [[https://stackoverflow.com/questions/22166895/customize-elisp-plist-indentation][Found on StackOverflow by the great @raxod502.]]
 [[https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/lisp-hacks.el][Chris Barrett's very similar fix to the same problem]]
+[[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][Noctuid approach to fixing this problem.]]
 
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
-  (el-patch-feature lisp-mode)
-
-  ;; Improve indentation for plists.
-
-  (with-eval-after-load 'lisp-mode
-    (with-no-warnings
-      (el-patch-defun lisp-indent-function (indent-point state)
-        "This function is the normal value of the variable `lisp-indent-function'.
+  ;; https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned
+  ;; https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94
+  (defun fuco1/lisp-indent-function (indent-point state)
+    "This function is the normal value of the variable `lisp-indent-function'.
   The function `calculate-lisp-indent' calls this to determine
   if the arguments of a Lisp function call should be indented specially.
+
   INDENT-POINT is the position at which the line being indented begins.
   Point is located at the point to indent under (for default indentation);
   STATE is the `parse-partial-sexp' state for that position.
+
   If the current line is in a call to a Lisp function that has a non-nil
   property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
   it specifies how to indent.  The property value can be:
-  ,* `defun', meaning indent `defun'-style
-    (this is also the case if there is no property and the function
+
+  - `defun', meaning indent `defun'-style
+    \(this is also the case if there is no property and the function
     has a name that begins with \"def\", and three or more arguments);
-  ,* an integer N, meaning indent the first N arguments specially
+
+  - an integer N, meaning indent the first N arguments specially
     (like ordinary function arguments), and then indent any further
     arguments like a body;
-  ,* a function to call that returns the indentation (or nil).
+
+  - a function to call that returns the indentation (or nil).
     `lisp-indent-function' calls this function with the same two arguments
     that it itself received.
+
   This function returns either the indentation to use, or nil if the
   Lisp function does not specify a special indentation."
-        (el-patch-let (($cond (and (elt state 2)
-                                   (el-patch-wrap 1 1
-                                     (or (not (looking-at "\\sw\\|\\s_"))
-                                         (looking-at ":")))))
-                       ($then (progn
-                                (if (not (> (save-excursion (forward-line 1) (point))
-                                            calculate-lisp-indent-last-sexp))
-                                    (progn (goto-char calculate-lisp-indent-last-sexp)
-                                           (beginning-of-line)
-                                           (parse-partial-sexp (point)
-                                                               calculate-lisp-indent-last-sexp 0 t)))
-                                ;; Indent under the list or under the first sexp on the same
-                                ;; line as calculate-lisp-indent-last-sexp.  Note that first
-                                ;; thing on that line has to be complete sexp since we are
-                                ;; inside the innermost containing sexp.
-                                (backward-prefix-chars)
-                                (current-column)))
-                       ($else (let ((function (buffer-substring (point)
-                                                                (progn (forward-sexp 1) (point))))
-                                    method)
-                                (setq method (or (function-get (intern-soft function)
-                                                               'lisp-indent-function)
-                                                 (get (intern-soft function) 'lisp-indent-hook)))
-                                (cond ((or (eq method 'defun)
-                                           (and (null method)
-                                                (> (length function) 3)
-                                                (string-match "\\`def" function)))
-                                       (lisp-indent-defform state indent-point))
-                                      ((integerp method)
-                                       (lisp-indent-specform method state
-                                                             indent-point normal-indent))
-                                      (method
-                                       (funcall method indent-point state))))))
-          (let ((normal-indent (current-column))
-                (el-patch-add
-                  (orig-point (point))))
-            (goto-char (1+ (elt state 1)))
-            (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-            (el-patch-swap
-              (if $cond
-                  ;; car of form doesn't seem to be a symbol
-                  $then
-                $else)
-              (cond
-               ;; car of form doesn't seem to be a symbol, or is a keyword
-               ($cond $then)
-               ((and (save-excursion
-                       (goto-char indent-point)
-                       (skip-syntax-forward " ")
-                       (not (looking-at ":")))
-                     (save-excursion
-                       (goto-char orig-point)
-                       (looking-at ":")))
-                (save-excursion
-                  (goto-char (+ 2 (elt state 1)))
-                  (current-column)))
-               (t $else))))))))
+    (let ((normal-indent (current-column))
+          (orig-point (point)))
+      (goto-char (1+ (elt state 1)))
+      (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+      (cond
+       ;; car of form doesn't seem to be a symbol, or is a keyword
+       ((and (elt state 2)
+             (or (not (looking-at "\\sw\\|\\s_"))
+                 (looking-at ":")))
+        (if (not (> (save-excursion (forward-line 1) (point))
+                    calculate-lisp-indent-last-sexp))
+            (progn (goto-char calculate-lisp-indent-last-sexp)
+                   (beginning-of-line)
+                   (parse-partial-sexp (point)
+                                       calculate-lisp-indent-last-sexp 0 t)))
+        ;; Indent under the list or under the first sexp on the same
+        ;; line as calculate-lisp-indent-last-sexp.  Note that first
+        ;; thing on that line has to be complete sexp since we are
+        ;; inside the innermost containing sexp.
+        (backward-prefix-chars)
+        (current-column))
+       ((and (save-excursion
+               (goto-char indent-point)
+               (skip-syntax-forward " ")
+               (not (looking-at ":")))
+             (save-excursion
+               (goto-char orig-point)
+               (looking-at ":")))
+        (save-excursion
+          (goto-char (+ 2 (elt state 1)))
+          (current-column)))
+       (t
+        (let ((function (buffer-substring (point)
+                                          (progn (forward-sexp 1) (point))))
+              method)
+          (setq method (or (function-get (intern-soft function)
+                                         'lisp-indent-function)
+                           (get (intern-soft function) 'lisp-indent-hook)))
+          (cond ((or (eq method 'defun)
+                     (and (null method)
+                          (> (length function) 3)
+                          (string-match "\\`def" function)))
+                 (lisp-indent-defform state indent-point))
+                ((integerp method)
+                 (lisp-indent-specform method state
+                                       indent-point normal-indent))
+                (method
+                 (funcall method indent-point state))))))))
+
+  ;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el
+  (require 'cl-indent)
+
+  (defun noct:lispy-indent-setup ()
+    "Make indentation settings compliant with lispy's."
+    (interactive)
+    (setq-local lisp-indent-function #'common-lisp-indent-function)
+    ;; TODO this is bad for actual common lisp (and not buffer-local)
+    (put 'if 'common-lisp-indent-function 2)
+    (put 'defface 'common-lisp-indent-function 1)
+    (put 'define-minor-mode 'common-lisp-indent-function 1)
+    (put 'define-derived-mode 'common-lisp-indent-function 3)
+    (put 'cl-flet 'common-lisp-indent-function
+         (get 'flet 'common-lisp-indent-function))
+    (put 'cl-labels 'common-lisp-indent-function
+         (get 'labels 'common-lisp-indent-function))
+    ;; additional
+    (put 'cl-macrolet 'common-lisp-indent-function (get 'flet 'common-lisp-indent-function))
+    (aggressive-indent-mode -1))
+
+  (defun noct:elisp-indent-setup ()
+    (when (eq major-mode 'emacs-lisp-mode)
+      (cond ((when (buffer-file-name)
+               (string-match
+                ".*lispy/"
+                (file-name-directory (buffer-file-name))))
+             (noct:lispy-indent-setup))
+
+            (t
+             (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
+             (put 'cl-macrolet 'lisp-indent-function
+                  (get 'flet 'common-lisp-indent-function))
+             (put 'cl-macrolet 'fuco1/lisp-indent-function
+                  (get 'flet 'common-lisp-indent-function))))))
+
+  (general-add-hook '(find-file-hook emacs-lisp-mode-hook) #'noct:elisp-indent-setup)
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -4126,6 +4157,7 @@ This is a nifty package that allows me to define functions as local variables in
     (general-setq ess-ask-for-ess-directory nil
                   ess-eldoc-show-on-symbol t
                   ess-use-tracebug t
+                  ess-use-flymake nil
                   ess-style 'RStudio
                   ess-describe-at-point-method 'tooltip
                   ess-eval-visibly 'nowait
@@ -4230,14 +4262,19 @@ This is a nifty package that allows me to define functions as local variables in
       "Use the correct Python executable for flycheck."
       (let ((executable python-shell-interpreter))
         (save-excursion
-         (goto-char (point-min))
-         (save-match-data
-           (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
-                     (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
-             (setq executable (substring-no-properties (match-string 1))))))
+          (goto-char (point-min))
+          (save-match-data
+            (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
+                      (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
+              (setq executable (substring-no-properties (match-string 1))))))
         (setq-local flycheck-python-pycompile-executable executable)
         (setq-local flycheck-python-pylint-executable "pylint")
         (setq-local flycheck-python-flake8-executable "flake8")))
+    :init
+    (with-eval-after-load 'lsp-clients
+      (setq lsp-clients-python-settings
+            (plist-put lsp-clients-python-settings
+                       :plugins.pydocstlye.enabled t)))
     :config
     (general-setq python-shell-interpreter "ipython"
                   python-shell-interpreter-args "-i --simple-prompt --no-color-info"
@@ -4251,8 +4288,8 @@ This is a nifty package that allows me to define functions as local variables in
     (compdef
      :modes #'python-mode
      :company '(company-lsp
-               company-files
-               company-capf)
+                company-files
+                company-capf)
      :capf #'python-completion-at-point)
 
 

@@ -22,7 +22,7 @@ else
   [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
 fi
 
-eval "$(direnv hook $0)"
+# eval "$(direnv hook $0)"
 /usr/local/bin/gpgconf --launch gpg-agent
 
 

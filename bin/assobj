@@ -26,7 +26,6 @@ $(echo -e "$(red "
   \__,_|___/___/\___/|_.__// |
                          |__/
 ")")
-
 $(echo -e "$(blue "ASS")")essment $(echo -e "$(blue "OBJ")")ects:
 
 Script that maps assessment test objects to respective input file names.
@@ -35,7 +34,7 @@ $(echo -e "$(green "USAGE")"):
        ${PROGNAME} [-h]
 
 $(echo -e "$(green "OPTIONS")"):
-       -h  Display this help information.
+       -h      Display this help information.
 
 EOF
 }
@@ -58,24 +57,22 @@ get_args() {
 get_cons_obs() {
     local line="${1}"
     "$HOME/Documents/projects/bison/bison-opt" -i "${line}" --list-constructed-objects --no-gdb-backtrace 2>&1 \
-        | awk '/^\*\*\* ERROR \*\*\*/{print "ERROR"; exit}'\
-              '/^\*\*START OBJECT DATA\*\*$/{flag=1;next}'\
-              '/^\*\*END OBJECT DATA\*\*$/{flag=0} flag' \
-        | xargs printf "${line},%s\n"
+        | awk -v line="$line" '
+        /^\*\*\* ERROR \*\*\*$/{printf "%s,ERROR\n", line}
+        /^\*\*START OBJECT DATA\*\*/{flag=1;next}
+        /^\*\*END OBJECT DATA\*\*$/{flag=0} flag {printf "%s,%s\n", line, $0}'
 }
 export -f get_cons_obs
 
 get_input_files() {
+    cd "$HOME/Documents/projects/bison" || exit 1
     local files
     mapfile -t files < <(fd -e i . "$HOME/Documents/projects/bison/assessment/LWR" --exec printf "%s\n" "{}";)
-
     parallel -j28 get_cons_obs ::: "${files[@]}"
 }
 
 main() {
-
     get_args "${ARGS[@]}"
-
     get_input_files
 }
 

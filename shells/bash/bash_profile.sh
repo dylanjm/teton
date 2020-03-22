@@ -12,3 +12,4 @@ echo
 export PATH="/Users/mcdodj/.config/cargo/bin:$PATH"
 
 export PATH="$HOME/.cargo/bin:$PATH"
+export PARALLEL_HOME="$HOME/.config/parallel"

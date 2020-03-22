@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-19 19:44:10
+/last updated/: 2020-03-21 13:36:20
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1146,8 +1146,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq window-divider-default-places t
-		  window-divider-default-bottom-width 1
-		  window-divider-default-right-width 1)
+          window-divider-default-bottom-width 1
+          window-divider-default-right-width 1)
     (blink-cursor-mode -1)
     (tooltip-mode -1)
     (mouse-wheel-mode -1)
@@ -1163,8 +1163,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :straight (:type built-in)
     :config
     (general-setq gnutls-verify-error t
-		  gnutls-min-prime-bits 2048
-		  tls-checktrust gnutls-verify-error))
+          gnutls-min-prime-bits 2048
+          tls-checktrust gnutls-verify-error))
 
 #+end_src
 
@@ -1533,17 +1533,27 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Shell-Script (Built-In)
 #+name: init-shell-script-block
 #+begin_src emacs-lisp
-  (use-package sh-script
-    :straight (:type built-in)
-    :config
-    (compdef
-     :modes '(sh-mode shell-script-mode)
-     :capf '(sh-completion-at-point-function)
-     :company '(company-shell
-                company-shell-env
-                company-files
-                company-capf
-                company-dabbrev-code)))
+(use-package sh-script
+  :straight (:type built-in)
+  :preface
+  (defun arco/sh-prettify-mode-line ()
+    "Instead of \"Shell[bash]\", display mode name as \"Bash\"."
+    ;; Only do this for `sh-mode', not derived modes such as
+    ;; `pkgbuild-mode'.
+    (setq mode-line-process nil)
+    (when (eq major-mode 'sh-mode)
+      (setq mode-name (capitalize (symbol-name sh-shell)))))
+  :init
+  (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
+  :config
+  (compdef
+   :modes '(sh-mode shell-script-mode)
+   :capf '(sh-completion-at-point-function)
+   :company '(company-shell
+              company-shell-env
+              company-files
+              company-capf
+              company-dabbrev-code)))
 #+end_src
 
 *** Shell (Built-In)
@@ -1923,7 +1933,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
     (general-setq modus-vivendi-theme-slanted-constructs t
                   modus-vivendi-theme-proportional-fonts t
                   modus-vivendi-theme-bold-constructs t
-                  modus-vivendi-theme-scale-headings t
+                  modus-vivendi-theme-scale-headings nil
                   modus-vivendi-theme-scale-1 1.05
                   modus-vivendi-theme-scale-2 1.1
                   modus-vivendi-theme-scale-3 1.15
@@ -2365,15 +2375,15 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
-  (use-package yasnippet
-    :straight t
-    :ghook ('(prog-mode-hook org-mode-hook text-mode-hook) #'yas-global-mode)
-    :general ("C-;" #'yas-expand)
-    :config
-    (general-setq yas-verbosity 1
-                  yas-wrap-around-region t
-                  yas-prompt-functions '(yas-completing-prompt)
-                  yas-snippet-dirs `(,djm--yasnippet-directory)))
+(use-package yasnippet
+  :straight t
+  :ghook ('(prog-mode-hook org-mode-hook text-mode-hook) #'yas-global-mode)
+  :general ("C-;" #'yas-expand)
+  :config
+  (general-setq yas-verbosity 1
+                yas-wrap-around-region t
+                yas-prompt-functions '(yas-completing-prompt)
+                yas-snippet-dirs `(,djm--yasnippet-directory)))
 
   (use-package yasnippet-snippets
     :disabled t
@@ -2432,13 +2442,14 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/syohex/emacs-anzu][Anzu]]
 #+name: init-anzu-block
 #+begin_src emacs-lisp
-  (use-package anzu
-    :straight t
-    :general
-    ([remap query-replace] #'anzu-query-replace-regexp
-     [remap query-replace-regexp] #'anzu-query-replace)
-    :config
-    (global-anzu-mode))
+(use-package anzu
+  :blackout t
+  :straight t
+  :general
+  ([remap query-replace] #'anzu-query-replace-regexp
+   [remap query-replace-regexp] #'anzu-query-replace)
+  :config
+  (global-anzu-mode))
 #+end_src
 
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]
@@ -2590,36 +2601,38 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
 #+name: init-undo-tree-block
 #+begin_src emacs-lisp
-  (use-package undo-tree
-    :straight t
-    :general
-    ("C-/" #'undo-tree-undo
-     "C-?" #'undo-tree-redo)
-    :config
-    (general-setq undo-tree-save-history t
-                  undo-tree-visualizer-timestamps t
-                  undo-tree-enable-undo-in-region nil
-                  undo-tree-visualizer-diff t
-                  undo-limit 800000
-                  undo-strong-limit 1200000
-                  undo-outer-limit 1200000)
-    (global-undo-tree-mode +1))
+(use-package undo-tree
+  :blackout t
+  :straight t
+  :general
+  ("C-/" #'undo-tree-undo
+   "C-?" #'undo-tree-redo)
+  :config
+  (general-setq undo-tree-save-history t
+                undo-tree-visualizer-timestamps t
+                undo-tree-enable-undo-in-region nil
+                undo-tree-visualizer-diff t
+                undo-limit 800000
+                undo-strong-limit 1200000
+                undo-outer-limit 1200000)
+  (global-undo-tree-mode +1))
 #+end_src
 
 *** [[https://github.com/purcell/whitespace-cleanup-mode][Whitespace-Cleanup]]
 #+name: init-whitespace-cleanup-block
 #+begin_src emacs-lisp
-  (use-package whitespace-cleanup-mode
-    :straight t
-    :ghook whitespace-modes
-    :preface
-    (defconst whitespace-modes
-      '(prog-mode-hook
-        org-mode-hook
-        text-mode-hook
-        conf-mode-hook))
-    :config
-    (general-setq show-trailing-whitespace t))
+(use-package whitespace-cleanup-mode
+  :blackout t
+  :straight t
+  :ghook whitespace-modes
+  :preface
+  (defconst whitespace-modes
+    '(prog-mode-hook
+      org-mode-hook
+      text-mode-hook
+      conf-mode-hook))
+  :config
+  (general-setq show-trailing-whitespace t))
 #+end_src
 
 *** [[https://github.com/lewang/ws-butler][WS-Butler]]
@@ -2696,7 +2709,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** Dired-X (Built-In)
 #+name: init-dired-x-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package dired-x
     :demand t
     :straight (:type built-in)
@@ -2734,6 +2747,7 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
                   find-name-arg "-iname"))
 #+end_src
+
 *** Image-Dired (Built-In)
 #+name: init-image-dired-block
 #+begin_src emacs-lisp
@@ -3202,6 +3216,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-org-block
 #+begin_src emacs-lisp
 (use-package org
+  :blackout ('org-indent-mode)
   :straight nil
   :mode ("\\.org\\'" . org-mode)
   :gfhook 'virtual-auto-fill-mode 'variable-pitch-mode
@@ -3378,7 +3393,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** Org-Ob
 #+name: init-org-ob-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ob
     :straight nil
     :preface
@@ -3799,6 +3814,13 @@ A nice way to restart emacs on the fly if you need to.
     (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
 #+end_src
 
+*** [[https://github.com/mihaiolteanu/vuiet][Vuiet]]
+#+name: init-vuiet-block
+#+begin_src emacs-lisp
+(use-package vuiet
+  :straight (:host github :repo "mihaiolteanu/vuiet"))
+#+end_src
+
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
 #+name: init-simple-mpc-block
 #+begin_src emacs-lisp
@@ -3831,47 +3853,46 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/magit/magit][Magit]]
 #+name: init-magit-block
 #+begin_src emacs-lisp
-  (use-package magit
-    :straight t
-    :general ("C-x g"   #'magit-status
-              "C-x M-g" #'magit-dispatch)
-    :preface
-    (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode)
-    :config
-    (general-setq magit-view-git-manual-method 'woman
-                  magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
-                  magit-diff-refine-hunk t
-                  magit-save-repository-buffers nil
-                  magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
-#+end_src
+(use-package magit
+  :straight t
+  :general ("C-x g"   #'magit-status
+            "C-x M-g" #'magit-dispatch)
+  :preface
+  (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode)
+  :config
+  (general-setq magit-view-git-manual-method 'woman
+                magit-revision-show-gravatars
+                '("^Author:     " . "^Commit:     ")
+                magit-diff-refine-hunk t
+                magit-save-repository-buffers nil
+                magit-display-buffer-function
+                #'magit-display-buffer-fullframe-status-v1))
 
-*** Magit-Diff
-#+name: init-magit-diff-block
-#+begin_src emacs-lisp
-  (use-package magit-diff
-    :straight nil
-    :after magit
-    :config
-    (general-setq magit-diff-refine-hunk t))
-#+end_src
-*** [[https://github.com/magit/magit/blob/master/lisp/git-commit.el][Git-Commit]]
-#+name: init-git-commit-block
-#+begin_src emacs-lisp
-  (use-package git-commit
-    :straight nil
-    :ghook ('magit-mode-hook #'global-git-commit-mode)
-    :config
-    (general-setq git-commit-summary-max-length 50
-                  git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line)))
+(use-package magit-diff
+  :demand t
+  :straight nil
+  :after magit
+  :config
+  (general-setq magit-diff-refine-hunk t))
+
+(use-package git-commit
+  :straight nil
+  :ghook ('magit-mode-hook #'global-git-commit-mode)
+  :config
+  (general-setq git-commit-summary-max-length 50
+                git-commit-style-convention-checks
+                '(overlong-summary-line non-empty-second-line)))
 #+end_src
 
 *** [[https://github.com/magit/forge][Forge]]
 #+name: init-forge-block
 #+begin_src emacs-lisp
-  (use-package forge
-    :demand t :straight t :after (magit)
-    :config
-    (general-setq ghub-use-workaround-for-emacs-bug 'force))
+(use-package forge
+  :demand t
+  :straight t
+  :after (magit)
+  :config
+  (general-setq ghub-use-workaround-for-emacs-bug 'force))
 #+end_src
 
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
@@ -3883,14 +3904,6 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
-*** [[https://github.com/magit/with-editor][With-Editor]]
-#+name: init-with-editor-block
-#+begin_src emacs-lisp
-  (use-package with-editor
-    :straight t
-    :preface
-    (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
-#+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
@@ -3906,6 +3919,16 @@ A nice way to restart emacs on the fly if you need to.
     (transient-suffix-put 'magit-dispatch "e" :command #'vdiff-magit-dwim)
     (transient-suffix-put 'magit-dispatch "E" :description "vdiff")
     (transient-suffix-put 'magit-dispatch "E" :command #'vdiff-magit))
+#+end_src
+
+*** [[https://github.com/magit/with-editor][With-Editor]]
+#+name: init-with-editor-block
+#+begin_src emacs-lisp
+(use-package with-editor
+  :straight t
+  :commands (with-editor-export-editor)
+  :init
+  (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
 #+end_src
 
 ** Language Server Support
@@ -3969,29 +3992,33 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
-  (use-package flycheck
-    :straight t
-    :ghook ('after-init-hook #'global-flycheck-mode)
-    :init
-    (defun arco/disable-eldoc-on-flycheck (&rest _)
-      "Disable ElDoc when point is on a Flycheck overlay.
+(use-package flycheck
+  :straight t
+  :ghook ('after-init-hook #'global-flycheck-mode)
+  :init
+  (defun arco/disable-eldoc-on-flycheck (&rest _)
+    "Disable ElDoc when point is on a Flycheck overlay.
   This prevents ElDoc and Flycheck from fighting over the echo
   area."
-      (not (flycheck-overlay-errors-at (point))))
+    (not (flycheck-overlay-errors-at (point))))
 
-    (general-add-advice #'arco/disable-eldoc-on-flycheck
-                        :after-while 'eldoc-display-message-no-interference-p)
-    :config
-    (general-setq flycheck-emacs-lisp-load-path 'inherit
-                  flycheck-check-syntax-automatically '(save mode-enabled)
-                  flycheck-display-errors-delay 0.25)
-    (general-setq flycheck-sh-shellcheck-executable "shellcheck"
-                  flycheck-shellcheck-follow-sources t)
-    (general-pushnew 'sh-shellcheck flycheck-checkers)
-    (general-pushnew 'zsh flycheck-shellcheck-supported-shells))
+  (general-add-advice #'arco/disable-eldoc-on-flycheck
+                      :after-while 'eldoc-display-message-no-interference-p)
+  :config
+  (general-setq flycheck-emacs-lisp-load-path 'inherit
+                flycheck-check-syntax-automatically '(save mode-enabled)
+                flycheck-display-errors-delay 0.25)
+  (general-setq flycheck-flake8rc
+                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
+  (general-setq flycheck-pylintrc
+                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
+  (general-setq flycheck-sh-shellcheck-executable "shellcheck"
+                flycheck-shellcheck-follow-sources t)
+  (general-pushnew 'sh-shellcheck flycheck-checkers)
+  (general-pushnew 'zsh flycheck-shellcheck-supported-shells))
 #+end_src
 
-*** Flycheck-Indicator
+*** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]
 #+name: init-flycheck-indicator-block
 #+begin_src emacs-lisp
   (use-package flycheck-indicator
@@ -3999,6 +4026,7 @@ A nice way to restart emacs on the fly if you need to.
     :after flycheck
     :ghook 'flycheck-mode-hook)
 #+end_src
+
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
 #+begin_src emacs-lisp
@@ -4437,45 +4465,44 @@ This is a nifty package that allows me to define functions as local variables in
 **** Python (Built-In)
 #+name: init-python-block
 #+begin_src emacs-lisp
-  (use-package python
-    :straight (:type built-in)
-    :preface
-    (defun arco/python-use-correct-flycheck-exe ()
-      "Use the correct Python executable for flycheck."
-      (let ((executable python-shell-interpreter))
-        (save-excursion
-          (goto-char (point-min))
-          (save-match-data
-            (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
-                      (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
-              (setq executable (substring-no-properties (match-string 1))))))
-        (setq-local flycheck-python-pycompile-executable executable)
-        (setq-local flycheck-python-pylint-executable "pylint")
-        (setq-local flycheck-python-flake8-executable "flake8")))
-    :init
-    (with-eval-after-load 'lsp-clients
-      (setq lsp-clients-python-settings
-            (plist-put lsp-clients-python-settings
-                       :plugins.pydocstlye.enabled t)))
-    :config
-    (general-setq python-shell-interpreter "ipython"
-                  python-shell-interpreter-args "-i --simple-prompt --no-color-info"
-                  python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-                  python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-                  python-indent-guess-indent-offset-verbose nil
-                  python-indent-offset 4
-                  comment-inline-offset 2
-                  tab-width 4)
+(use-package python
+  :straight (:type built-in)
+  :preface
+  (defun arco/python-use-correct-flycheck-exe ()
+    "Use the correct Python executable for flycheck."
+    (let ((executable python-shell-interpreter))
+      (save-excursion
+        (goto-char (point-min))
+        (save-match-data
+          (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
+                    (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
+            (setq executable (substring-no-properties (match-string 1))))))
+      (setq-local flycheck-python-pycompile-executable executable)
+      (setq-local flycheck-python-pylint-executable "pylint")
+      (setq-local flycheck-python-flake8-executable "flake8")))
+  ;; (with-eval-after-load 'lsp-clients
+  ;;   (setq lsp-clients-python-settings
+  ;;         (plist-put lsp-clients-python-settings
+  ;;                    :plugins.pydocstlye.enabled t)))
+  :config
+  (general-setq python-shell-interpreter "ipython"
+                python-shell-interpreter-args "-i --simple-prompt --no-color-info"
+                python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+                python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+                python-indent-guess-indent-offset-verbose nil
+                python-indent-offset 4
+                comment-inline-offset 2
+                tab-width 4)
 
-    (compdef
-     :modes #'python-mode
-     :company '(company-lsp
-                company-files
-                company-capf)
-     :capf #'python-completion-at-point)
+  (compdef
+   :modes #'python-mode
+   :company '(company-lsp
+              company-files
+              company-capf)
+   :capf #'python-completion-at-point)
 
 
-    (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe))
+  (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe))
 #+end_src
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]

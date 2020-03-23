@@ -1,16 +1,28 @@
 # Don't print a new line at the start of the prompt
 add_newline = false
 
-# Replace the "❯" symbol in the prompt with "➜"
+# Replace the "❯" symbol in the prompt with "λ"
 [character]      # The name of the module we are configuring is "character"
-symbol = "λ"     # The "symbol" segment is being set to "➜"
+symbol = "λ"     # The "symbol" segment is being set to "λ"
 
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true
 
 [cmd_duration]
-disabled = true
+disabled = true # Don't show command duration
 
 [line_break]
-disabled = true
+disabled = false
+
+[hostname]
+ssh_only = true
+
+[username]
+style_user = "bold dimmed blue"
+show_always = true
+
+[directory]
+truncate_to_repo = true # truncates directory to root folder if in github repo
+prefix = "📂️  "
+style = "bold italic #87A752"

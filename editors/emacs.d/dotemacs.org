@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-21 13:36:20
+/last updated/: 2020-03-23 13:58:37
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1861,6 +1861,14 @@ Sort of a standard package in most emacs-configs these days.
                        all-the-icons-alltheicon
                        "clojure"
                        :face all-the-icons-green) all-the-icons-icon-alist))
+#+end_src
+
+*** [[https://github.com/jojojames/vscode-icon-emacs][VSCode-Icons]]
+#+name: init-vscode-icons-block
+#+begin_src emacs-lisp
+(use-package vscode-icon
+  :straight t
+  :commands (vscode-icon-for-file))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -4438,7 +4446,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/gcv/julia-snail][Julia-Snail]]
 #+name: init-julia-snail-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package julia-snail
     :straight (:host github :repo "gcv/julia-snail")
     :ghook 'julia-mode-hook

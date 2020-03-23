@@ -204,4 +204,3 @@ cask "slack"
 cask "spectacle"
 cask "spotify"
 cask "the-unarchiver"
-mas "Xcode", id: 497799835

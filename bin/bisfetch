@@ -40,7 +40,7 @@ foldernames() {
 }
 
 usage() {
-    cat <<-EOF
+    cat <<-EOM
         $(echo -e "$(red "
          ______  _________ _______  _______  _______ _________ _______
         (  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
@@ -70,7 +70,7 @@ usage() {
 
         $(echo -e "$(green "Possible folder names include")"):
         $(foldernames)
-    EOF
+EOM
     exit 0
 }
 
@@ -119,11 +119,15 @@ fetch_folder_files() {
     # modified folder of the type 'bison_XXXXXXXX'
     # We then want to find all the *_out.csv files inside the folder specified at the
     # command-line within the 'bison_XXXXXXXX' folder.
-    ssh falcon1 -qn 'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d -regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
+    ssh falcon1 -qn \
+        'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d'\
+        '-regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
         'sort -t\t -r -nk1,5 | ' \
         'sed -n '"$lookback"'p | ' \
         'cut -f2-); ' \
-        'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/* -type f -name "*_out.csv" -perm 660 -not -path "*/doc/*" -printf "%p\n" 2>/dev/null'
+        'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/*'\
+        '-type f -name "*_out.csv" -perm 660 -not -path "*/doc/*"'\
+        '-printf "%p\n" 2>/dev/null'
 }
 
 create_local_paths() {

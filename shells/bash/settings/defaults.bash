@@ -1,4 +1,4 @@
-##!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Prevent file overwrite on stdout redirection
 # Use `>|` to force redirection to an existing file
@@ -34,4 +34,5 @@ bind "set show-all-if-ambiguous on"
 # Immediately add a trailing slash when autocompleting symlinks to directories
 bind "set mark-symlinked-directories on"
 
+# Show menu of available completions
 bind 'TAB:menu-complete'

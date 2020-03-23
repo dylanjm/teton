@@ -3,7 +3,7 @@
 # Bash History Handling
 
 ## SANE HISTORY DEFAULTS ##
-export HISTFILE=$CACHE/bash/bash_history
+export HISTFILE="$HOME/.local/share/bash_history"
 
 # Append to the history file, don't overwrite it
 shopt -s histappend
@@ -15,14 +15,14 @@ shopt -s cmdhist
 PROMPT_COMMAND='history -a'
 
 # Huge history. Doesn't appear to slow things down, so why not?
-HISTSIZE=500000
-HISTFILESIZE=100000
+HISTSIZE=1000000
+HISTFILESIZE=1000000
 
 # Avoid duplicate entries
 HISTCONTROL="erasedups:ignoreboth"
 
 # Don't record some commands
-export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
+export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear:lx:exa"
 
 # Use standard ISO 8601 timestamp
 # %F equivalent to %Y-%m-%d
@@ -35,7 +35,6 @@ bind '"\e[A": history-search-backward'
 bind '"\e[B": history-search-forward'
 bind '"\e[C": forward-char'
 bind '"\e[D": backward-char'
-
 
 function rh {
   history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head

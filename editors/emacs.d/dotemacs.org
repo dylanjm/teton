@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-23 13:58:37
+/last updated/: 2020-03-25 10:45:27
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -641,7 +641,13 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 
 #+end_src
 
-*** Hooks & Advice
+*** Hooks Macros & Advice
+
+#+name: init-macros-block
+#+begin_src emacs-lisp
+(fset 'insert-performance-action
+      (kmacro-lambda-form [?\C-s ?O ?u ?t ?p ?u ?t ?s ?\C-m ?\C-p ?\[ ?P ?e ?r ?f ?o ?r ?m ?a ?n ?c ?e ?M ?e ?t ?r ?i ?c ?O ?u ?t ?p ?u ?t ?s ?\] ?\C-m ?\[ ?\] ?\C-m ?\C-p ?\C-p ?\C-m ?\C-x ?\C-s] 0 "%d"))
+#+end_src
 
 This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
 #+name: init-personal-hooks-block
@@ -875,8 +881,9 @@ Let's add a few helpful units to the calculator.
 
 #+name: init-conf-mode-block
 #+begin_src emacs-lisp
-  (use-package conf-mode
-    :straight (:type built-in))
+(use-package conf-mode
+  :straight (:type built-in)
+  :mode ("\\.i$" . conf-mode))
 #+end_src
 
 *** Cus-Start (Built-In)
@@ -1225,22 +1232,21 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** iComplete (Built-In)
 #+name: init-icomplete-block
 #+begin_src emacs-lisp
-  (use-package icomplete
-    :demand t
-    :straight (:type built-in)
-    :config
-    (general-setq icomplete-delay-completions-threshold 0
-                  icomplete-max-chars 0
-                  icomplete-compute-delay 0
-                  icomplete-show-matches-on-no-input t
-                  icomplete-hide-common-prefix nil
-                  icomplete-prospects-height 1
-                  icomplete-separator " · "
-                  icomplete-with-completion-tables t
-                  icomplete-in-buffer t)
+(use-package icomplete
+  :straight (:type built-in)
+  :config
+  (general-setq icomplete-delay-completions-threshold 0
+                icomplete-max-chars 0
+                icomplete-compute-delay 0
+                icomplete-show-matches-on-no-input t
+                icomplete-hide-common-prefix nil
+                icomplete-prospects-height 1
+                icomplete-separator " · "
+                icomplete-with-completion-tables t
+                icomplete-in-buffer t)
 
-    (fido-mode -1)
-    (icomplete-mode +1))
+  (fido-mode -1)
+  (icomplete-mode +1))
 #+end_src
 *** iElm (Built-In)
 #+name: init-ielm-block
@@ -1852,7 +1858,7 @@ Sort of a standard package in most emacs-configs these days.
     :demand t
     :straight t
     :config
-    (general-setq all-the-icons-scale-factor 1.3)
+    (general-setq all-the-icons-scale-factor 1)
     (general-pushnew '("\\.db$"
                        all-the-icons-faicon
                        "database"
@@ -1861,14 +1867,6 @@ Sort of a standard package in most emacs-configs these days.
                        all-the-icons-alltheicon
                        "clojure"
                        :face all-the-icons-green) all-the-icons-icon-alist))
-#+end_src
-
-*** [[https://github.com/jojojames/vscode-icon-emacs][VSCode-Icons]]
-#+name: init-vscode-icons-block
-#+begin_src emacs-lisp
-(use-package vscode-icon
-  :straight t
-  :commands (vscode-icon-for-file))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -1885,23 +1883,6 @@ Sort of a standard package in most emacs-configs these days.
      "s-r" #'default-text-scale-reset)
     :config
     (general-setq default-text-scale-amount 20))
-#+end_src
-
-*** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
-
-I hesitated to use doom-modeline for a long time because it always seemed to slow down my emacs. I recently made the switch from smart-mode-line and it's /okay/. I probably need to get in here and add a few more customizations before I'm satisfied.
-
-#+name: init-doom-modeline-block
-#+begin_src emacs-lisp :tangle no
-  (use-package doom-modeline
-    :ghook 'after-init-hook
-    :config
-    (general-setq doom-modeline-buffer-file-name-style 'relative-from-project
-                  doom-modeline-height 12
-                  doom-modeline-bar-width 3
-                  doom-modeline-github t
-                  doom-modeline-mu4e t
-                  doom-modeline-project-detection 'projectile))
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
@@ -1939,7 +1920,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   :preface
   (defun arco/load-modus-theme ()
     (general-setq modus-vivendi-theme-slanted-constructs t
-                  modus-vivendi-theme-proportional-fonts t
+                  modus-vivendi-theme-proportional-fonts nil
                   modus-vivendi-theme-bold-constructs t
                   modus-vivendi-theme-scale-headings nil
                   modus-vivendi-theme-scale-1 1.05
@@ -2776,9 +2757,10 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
 #+name: init-dired-all-the-icons-block
 #+begin_src emacs-lisp
-  (use-package all-the-icons-dired
-    :straight t
-    :ghook 'dired-mode-hook)
+(use-package all-the-icons-dired
+  :blackout t
+  :straight t
+  :ghook 'dired-mode-hook)
 #+end_src
 
 *** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]

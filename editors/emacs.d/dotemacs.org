@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-26 15:50:50
+/last updated/: 2020-03-28 14:00:01
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -887,57 +887,57 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
-  (use-package cus-start
-    :straight (:type built-in)
-    :init
-    (general-setq-default auto-save-list-file-prefix nil
-                          auto-save-list-file-name nil
-                          auto-window-vscroll nil
-                          bidi-paragraph-separate-re "^"
-                          bidi-paragraph-start-re "^"
-                          cursor-in-non-selected-windows nil
-                          cursor-type 'bar
-                          delete-by-moving-to-trash t
-                          disabled-command-function nil
-                          default-directory "$HOME"
-                          echo-keystrokes 0.02
-                          fast-but-imprecise-scrolling nil
-                          ffap-machine-p-known 'reject
-                          fill-column 82
-                          frame-resize-pixelwise t
-                          frame-title-format '("Emacs")
-                          highlight-nonselected-windows nil
-                          history-delete-duplicates t
-                          history-length 3000
-                          icon-title-format frame-title-format
-                          indicate-buffer-boundaries nil
-                          indicate-empty-lines nil
-                          initial-major-mode 'fundamental-mode
-                          initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
-                          inhibit-compacting-font-caches t
-                          inhibit-startup-echo-area-message t
-                          inhibit-startup-screen t
-                          indent-tabs-mode nil
-                          resize-mini-windows 'grow-only
-                          max-mini-window-height 0.20
-                          ring-bell-function #'ignore
-                          scroll-conservatively 101
-                          scroll-margin 5
-                          scroll-preserve-screen-position t
-                          scroll-step 1
-                          sentence-end-double-space nil
-                          tab-always-indent 'complete
-                          tab-width 4
-                          truncate-lines t
-                          truncate-partial-width-windows nil
-                          use-dialog-box nil
-                          use-file-dialog nil
-                          visible-bell nil
-                          window-combination-resize t
-                          window-resize-pixelwise t
-                          word-wrap t
-                          x-underline-at-descent-line t
-                          underline-minimum-offset 0))
+(use-package cus-start
+  :straight (:type built-in)
+  :init
+  (general-setq-default auto-save-list-file-prefix nil
+                        auto-save-list-file-name nil
+                        auto-window-vscroll nil
+                        bidi-paragraph-separate-re "^"
+                        bidi-paragraph-start-re "^"
+                        cursor-in-non-selected-windows nil
+                        cursor-type 'bar
+                        delete-by-moving-to-trash t
+                        disabled-command-function nil
+                        default-directory "$HOME"
+                        echo-keystrokes 0.02
+                        fast-but-imprecise-scrolling nil
+                        ffap-machine-p-known 'reject
+                        fill-column 82
+                        frame-resize-pixelwise t
+                        frame-title-format '("Emacs")
+                        highlight-nonselected-windows nil
+                        history-delete-duplicates t
+                        history-length 3000
+                        icon-title-format frame-title-format
+                        indicate-buffer-boundaries nil
+                        indicate-empty-lines nil
+                        initial-major-mode 'fundamental-mode
+                        initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
+                        inhibit-compacting-font-caches t
+                        inhibit-startup-echo-area-message t
+                        inhibit-startup-screen t
+                        indent-tabs-mode nil
+                        resize-mini-windows 'grow-only
+                        max-mini-window-height 0.20
+                        ring-bell-function #'ignore
+                        scroll-conservatively 101
+                        scroll-margin 5
+                        scroll-preserve-screen-position t
+                        scroll-step 1
+                        sentence-end-double-space nil
+                        tab-always-indent 'complete
+                        tab-width 4
+                        truncate-lines t
+                        truncate-partial-width-windows nil
+                        use-dialog-box nil
+                        use-file-dialog nil
+                        visible-bell nil
+                        window-combination-resize t
+                        window-resize-pixelwise t
+                        word-wrap t
+                        x-underline-at-descent-line t
+                        underline-minimum-offset 0))
 #+end_src
 
 *** Dabbrev (Built-In)
@@ -992,12 +992,13 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Eldoc (Built-In)
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
-  (use-package eldoc
-    :straight (:type built-in)
-    :ghook ('prog-mode-hook #'turn-on-eldoc-mode)
-    :config
-    (general-setq eldoc-idle-delay 0.2
-                  eldoc-echo-area-use-multiline-p nil))
+(use-package eldoc
+  :blackout t
+  :straight (:type built-in)
+  :ghook ('prog-mode-hook #'turn-on-eldoc-mode)
+  :config
+  (general-setq eldoc-idle-delay 0.2
+                eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
 *** Electric (Built-In)
@@ -1195,9 +1196,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Hideshow (Built-In)
 #+name: init-hideshow-block
 #+begin_src emacs-lisp
-  (use-package hideshow
-    :straight (:type built-in)
-    :ghook ('prog-mode-hook #'hs-minor-mode))
+(use-package hideshow
+  :blackout t
+  :straight (:type built-in)
+  :ghook ('prog-mode-hook #'hs-minor-mode))
 #+end_src
 
 *** Hippie-Expand (Built-In)
@@ -1243,19 +1245,21 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (fido-mode -1)
   (icomplete-mode +1))
 #+end_src
+
 *** iElm (Built-In)
+
 #+name: init-ielm-block
 #+begin_src emacs-lisp
-  (use-package ielm
-    :straight (:type built-in)
-    :config
-    (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
+(use-package ielm
+  :straight (:type built-in)
+  :config
+  (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
 
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos "*ielm*" eos)
-                   (display-buffer-reuse-window display-buffer-in-side-window)
-                   (side . right)
-                   (window-width . 80))))
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos "*ielm*" eos)
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (side . right)
+                 (window-width . 80))))
 #+end_src
 
 *** iMenu (Built-In)
@@ -1402,8 +1406,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-outline-block
 #+begin_src emacs-lisp
-  (use-package outline
-    :straight (:type built-in))
+(use-package outline
+  :blackout t
+  :straight (:type built-in))
 #+end_src
 
 *** Paren (Built-In)
@@ -1476,6 +1481,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     :config
     (general-setq reb-re-syntax 'read))
 #+end_src
+
 *** Recentf (Built-In)
 
 #+name: init-recentf-block
@@ -1567,6 +1573,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (general-setq ansi-color-for-comint-mode t
                   shell-command-prompt-show-cwd t))
 #+end_src
+
 *** Simple (Built-In)
 
 #+name: init-simple-block
@@ -1885,24 +1892,18 @@ Sort of a standard package in most emacs-configs these days.
 My own personal fork of the gruvbox-theme. I've mostly added color-modes for missing packages.
 
 #+name: init-gruvbox-theme-block
-#+begin_src emacs-lisp :tangle no
-  (use-package gruvbox-theme
-    :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
-    :ghook ('emacs-startup-hook #'djm/load-gruvbox-theme)
-    :preface
-    (defun djm/load-gruvbox-theme ()
-      (load-theme 'gruvbox-dark-hard t))
-
+#+begin_src emacs-lisp
+(use-package gruvbox-theme
+  :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
+  :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
+  :preface
+  (defun arco/load-gruvbox-theme ()
+    (load-theme 'gruvbox-dark-hard)
     (if (daemonp)
-        (progn
-          (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-          (general-add-hook 'after-make-frame-functions #'(lambda () (menu-bar-mode -1))))
-      (progn
-        (general-add-hook 'after-init-hook #'setup-main-fonts)
-        (general-add-hook 'after-make-frame-functions #'configure-fonts)))
-
+	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+	  (general-add-hook 'after-init-hook #'setup-main-fonts))
     (when-let (frame (selected-frame))
-      (configure-fonts frame)))
+	  (configure-fonts frame))))
 #+end_src
 
 *** [[https://gitlab.com/protesilaos/modus-themes][Modus Theme]]
@@ -1924,14 +1925,14 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
       ;;               modus-vivendi-theme-scale-4 1.2)
       (load-theme 'modus-vivendi)
       (if (daemonp)
-	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-	(general-add-hook 'after-init-hook #'setup-main-fonts))
+      (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+    (general-add-hook 'after-init-hook #'setup-main-fonts))
       (when-let (frame (selected-frame))
-	(configure-fonts frame))))
+    (configure-fonts frame))))
 #+end_src
 
 #+name: init-modus-operandi-theme-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package modus-operandi-theme
   :straight t
   :ghook ('after-init-hook #'arco/load-modus-theme)
@@ -1948,30 +1949,92 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 *** Mode-line
 #+name: init-mode-line-block
 #+begin_src emacs-lisp
-  (use-package emacs
-    :straight nil
-    :config
-    (general-setq mode-line-percent-position nil
-                  mode-line-defining-kbd-macro
-                  (propertize " Macro" 'face 'mode-line-emphasis))
-    (general-setq-default mode-line-format
-                          '("%e"
-                            mode-line-front-space
-                            mode-line-mule-info
-                            mode-line-client
-                            mode-line-modified
-                            mode-line-remote
-                            mode-line-frame-identification
-                            mode-line-buffer-identification
-                            " "
-                            mode-line-position
-                            " "
-                            mode-line-modes
-                            " "
-                            mode-line-misc-info
-                            mode-line-end-spaces)))
+;; (use-package emacs
+;;   :straight nil
+;;   :config
+;;   (general-setq mode-line-percent-position nil
+;;     mode-line-defining-kbd-macro
+;;     (propertize " Macro" 'face 'mode-line-emphasis))
+;;   (general-setq-default mode-line-format
+;;     '("%e"
+;;        mode-line-front-space
+;;        mode-line-mule-info
+;;        mode-line-client
+;;        mode-line-modified
+;;        mode-line-remote
+;;        mode-line-frame-identification
+;;        mode-line-buffer-identification
+;;        " "
+;;        mode-line-position
+;;        " "
+;;        mode-line-modes
+;;        " "
+;;        mode-line-misc-info
+;;        mode-line-end-spaces)))
 
+(defun radian-mode-line-buffer-modified-status ()
+  "Return a mode line construct indicating buffer modification status.
+This is [*] if the buffer has been modified and whitespace
+otherwise. (Non-file-visiting buffers are never considered to be
+modified.) It is shown in the same color as the buffer name, i.e.
+`mode-line-buffer-id'."
+  (propertize
+    (if (and (buffer-modified-p)
+          (buffer-file-name))
+      "[*]"
+      "   ")
+    'face 'mode-line-buffer-id))
+
+;; Normally the buffer name is right-padded with whitespace until it
+;; is at least 12 characters. This is a waste of space, so we
+;; eliminate the padding here. Check the docstrings for more
+;; information.
+(setq-default mode-line-buffer-identification
+  (propertized-buffer-identification "%b"))
+
+;; https://emacs.stackexchange.com/a/7542/12534
+(defun radian--mode-line-align (left right)
+  "Render a left/right aligned string for the mode line.
+LEFT and RIGHT are strings, and the return value is a string that
+displays them left- and right-aligned respectively, separated by
+spaces."
+  (let ((width (- (window-total-width) (length left))))
+    (format (format "%%s%%%ds" width) left right)))
+
+(defcustom radian-mode-line-left
+  '(;; Show [*] if the buffer is modified.
+     (:eval (radian-mode-line-buffer-modified-status))
+     " "
+     ;; Show the name of the current buffer.
+     mode-line-buffer-identification
+     " "
+     ;; Show the row and column of point.
+     mode-line-position
+     ;; Show the active major and minor modes.
+     " "
+     mode-line-modes)
+  "Composite mode line construct to be shown left-aligned."
+  :type 'sexp)
+
+(defcustom radian-mode-line-right
+  '(" " mode-line-misc-info)
+  "Composite mode line construct to be shown right-aligned."
+  :type 'sexp)
+
+;; Actually reset the mode line format to show all the things we just
+;; defined.
+(general-setq-default mode-line-format
+  '(:eval (replace-regexp-in-string
+            "%" "%%"
+            (radian--mode-line-align
+              (format-mode-line radian-mode-line-left)
+              (format-mode-line radian-mode-line-right))
+            'fixedcase 'literal)))
+
+(general-setq mode-line-defining-kbd-macro
+  (propertize " Macro" 'face 'mode-line-emphasis))
 #+end_src
+
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
 
 #+name: init-hide-mode-line-block
@@ -2200,7 +2263,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package flx
     :straight t)
 #+end_src
@@ -4098,138 +4161,111 @@ A nice way to restart emacs on the fly if you need to.
 **** Elisp-Mode (Built-In)
 #+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
-  (use-package emacs-lisp-mode
-    :straight (:type built-in)
-    :blackout (emacs-lisp-mode . "Elisp")
-    :mode (("\\.el\\'" . emacs-lisp-mode)
-           ("\\.Cask\\'" . emacs-lisp-mode))
-    :gfhook #'outline-minor-mode
-    :config
-    (general-setq lisp-indent-offset 2)
-    (general-setq emacs-lisp-docstring-fill-column 80))
+(use-package lisp-mode
+  :blackout ((emacs-lisp-mode . "Elisp")
+              (lisp-interaction-mode . "Lisp-Interaction"))
+  :straight (:type built-in)
+  :mode (("\\.el\\'" . emacs-lisp-mode)
+          ("\\.Cask\\'" . emacs-lisp-mode))
+  :gfhook #'outline-minor-mode
+  :config
+  (general-setq lisp-indent-offset 2
+    emacs-lisp-docstring-fill-column 80))
 #+end_src
 
 **** Fix Identation
 [[https://stackoverflow.com/questions/22166895/customize-elisp-plist-indentation][Found on StackOverflow by the great @raxod502.]]
 [[https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/lisp-hacks.el][Chris Barrett's very similar fix to the same problem]]
 [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][Noctuid approach to fixing this problem.]]
+[[https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94][Fuco1 Solution]]
+[[https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el][Org Style Guide]]
 
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
-  ;; https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned
-  ;; https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94
-  (defun fuco1/lisp-indent-function (indent-point state)
-    "This function is the normal value of the variable `lisp-indent-function'.
-  The function `calculate-lisp-indent' calls this to determine
-  if the arguments of a Lisp function call should be indented specially.
+(el-patch-defun lisp-indent-function (indent-point state)
+  "This function is the normal value of the variable `lisp-indent-function'.
+The function `calculate-lisp-indent' calls this to determine
+if the arguments of a Lisp function call should be indented specially.
 
-  INDENT-POINT is the position at which the line being indented begins.
-  Point is located at the point to indent under (for default indentation);
-  STATE is the `parse-partial-sexp' state for that position.
+INDENT-POINT is the position at which the line being indented begins.
+Point is located at the point to indent under (for default indentation);
+STATE is the `parse-partial-sexp' state for that position.
 
-  If the current line is in a call to a Lisp function that has a non-nil
-  property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
-  it specifies how to indent.  The property value can be:
+If the current line is in a call to a Lisp function that has a non-nil
+property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
+it specifies how to indent.  The property value can be:
 
-  - `defun', meaning indent `defun'-style
-    \(this is also the case if there is no property and the function
-    has a name that begins with \"def\", and three or more arguments);
+,* `defun', meaning indent `defun'-style
+  (this is also the case if there is no property and the function
+  has a name that begins with \"def\", and three or more arguments);
 
-  - an integer N, meaning indent the first N arguments specially
-    (like ordinary function arguments), and then indent any further
-    arguments like a body;
+,* an integer N, meaning indent the first N arguments specially
+  (like ordinary function arguments), and then indent any further
+  arguments like a body;
 
-  - a function to call that returns the indentation (or nil).
-    `lisp-indent-function' calls this function with the same two arguments
-    that it itself received.
+,* a function to call that returns the indentation (or nil).
+  `lisp-indent-function' calls this function with the same two arguments
+  that it itself received.
 
-  This function returns either the indentation to use, or nil if the
-  Lisp function does not specify a special indentation."
+This function returns either the indentation to use, or nil if the
+Lisp function does not specify a special indentation."
+  (el-patch-let (($cond (and (elt state 2)
+                          (el-patch-wrap 1 1
+                            (or (not (looking-at "\\sw\\|\\s_"))
+                              (looking-at ":")))))
+                  ($then (progn
+                           (if (not (> (save-excursion (forward-line 1) (point))
+                                      calculate-lisp-indent-last-sexp))
+                             (progn (goto-char calculate-lisp-indent-last-sexp)
+                               (beginning-of-line)
+                               (parse-partial-sexp (point)
+                                 calculate-lisp-indent-last-sexp 0 t)))
+                           ;; Indent under the list or under the first sexp on the same
+                           ;; line as calculate-lisp-indent-last-sexp.  Note that first
+                           ;; thing on that line has to be complete sexp since we are
+                           ;; inside the innermost containing sexp.
+                           (backward-prefix-chars)
+                           (current-column)))
+                  ($else (let ((function (buffer-substring (point)
+                                           (progn (forward-sexp 1) (point))))
+                                method)
+                           (setq method (or (function-get (intern-soft function)
+                                              'lisp-indent-function)
+                                          (get (intern-soft function) 'lisp-indent-hook)))
+                           (cond ((or (eq method 'defun)
+                                    (and (null method)
+                                      (> (length function) 3)
+                                      (string-match "\\`def" function)))
+                                   (lisp-indent-defform state indent-point))
+                             ((integerp method)
+                               (lisp-indent-specform method state
+                                 indent-point normal-indent))
+                             (method
+                               (funcall method indent-point state))))))
     (let ((normal-indent (current-column))
-          (orig-point (point)))
+           (el-patch-add
+             (orig-point (point))))
       (goto-char (1+ (elt state 1)))
       (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-      (cond
-       ;; car of form doesn't seem to be a symbol, or is a keyword
-       ((and (elt state 2)
-             (or (not (looking-at "\\sw\\|\\s_"))
-                 (looking-at ":")))
-        (if (not (> (save-excursion (forward-line 1) (point))
-                    calculate-lisp-indent-last-sexp))
-            (progn (goto-char calculate-lisp-indent-last-sexp)
-                   (beginning-of-line)
-                   (parse-partial-sexp (point)
-                                       calculate-lisp-indent-last-sexp 0 t)))
-        ;; Indent under the list or under the first sexp on the same
-        ;; line as calculate-lisp-indent-last-sexp.  Note that first
-        ;; thing on that line has to be complete sexp since we are
-        ;; inside the innermost containing sexp.
-        (backward-prefix-chars)
-        (current-column))
-       ((and (save-excursion
-               (goto-char indent-point)
-               (skip-syntax-forward " ")
-               (not (looking-at ":")))
+      (el-patch-swap
+        (if $cond
+          ;; car of form doesn't seem to be a symbol
+          $then
+          $else)
+        (cond
+          ;; car of form doesn't seem to be a symbol, or is a keyword
+          ($cond $then)
+          ((and (save-excursion
+                  (goto-char indent-point)
+                  (skip-syntax-forward " ")
+                  (not (looking-at ":")))
              (save-excursion
                (goto-char orig-point)
                (looking-at ":")))
-        (save-excursion
-          (goto-char (+ 2 (elt state 1)))
-          (current-column)))
-       (t
-        (let ((function (buffer-substring (point)
-                                          (progn (forward-sexp 1) (point))))
-              method)
-          (setq method (or (function-get (intern-soft function)
-                                         'lisp-indent-function)
-                           (get (intern-soft function) 'lisp-indent-hook)))
-          (cond ((or (eq method 'defun)
-                     (and (null method)
-                          (> (length function) 3)
-                          (string-match "\\`def" function)))
-                 (lisp-indent-defform state indent-point))
-                ((integerp method)
-                 (lisp-indent-specform method state
-                                       indent-point normal-indent))
-                (method
-                 (funcall method indent-point state))))))))
-
-  ;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el
-  (require 'cl-indent)
-
-  (defun noct:lispy-indent-setup ()
-    "Make indentation settings compliant with lispy's."
-    (interactive)
-    (setq-local lisp-indent-function #'common-lisp-indent-function)
-    ;; TODO this is bad for actual common lisp (and not buffer-local)
-    (put 'if 'common-lisp-indent-function 2)
-    (put 'defface 'common-lisp-indent-function 1)
-    (put 'define-minor-mode 'common-lisp-indent-function 1)
-    (put 'define-derived-mode 'common-lisp-indent-function 3)
-    (put 'cl-flet 'common-lisp-indent-function
-         (get 'flet 'common-lisp-indent-function))
-    (put 'cl-labels 'common-lisp-indent-function
-         (get 'labels 'common-lisp-indent-function))
-    ;; additional
-    (put 'cl-macrolet 'common-lisp-indent-function (get 'flet 'common-lisp-indent-function))
-    (aggressive-indent-mode -1))
-
-  (defun noct:elisp-indent-setup ()
-    (when (eq major-mode 'emacs-lisp-mode)
-      (cond ((when (buffer-file-name)
-               (string-match
-                ".*lispy/"
-                (file-name-directory (buffer-file-name))))
-             (noct:lispy-indent-setup))
-
-            (t
-             (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
-             (put 'cl-macrolet 'lisp-indent-function
-                  (get 'flet 'common-lisp-indent-function))
-             (put 'cl-macrolet 'fuco1/lisp-indent-function
-                  (get 'flet 'common-lisp-indent-function))))))
-
-  (general-add-hook '(find-file-hook emacs-lisp-mode-hook) #'noct:elisp-indent-setup)
+            (save-excursion
+              (goto-char (+ 2 (elt state 1)))
+              (current-column)))
+          (t $else))))))
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -4709,6 +4745,7 @@ This is a nifty package that allows me to define functions as local variables in
                   keycast-insert-after 'mode-line-buffer-identification
                   keycast-remove-tail-elements nil))
 #+end_src
+
 ** Footer
 
 #+name: init-footer-block

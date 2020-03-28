@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-25 10:45:27
+/last updated/: 2020-03-26 15:50:50
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -385,21 +385,21 @@ A quick work around function to easily snap screenshots of lecture videos while 
 
 #+name: init-screen-capture-block
 #+begin_src emacs-lisp
-  (defun emacs-screen-capture (arg &optional name dir format)
-    (interactive "P")
-    (let* ((format (completing-read "Screenshot Format: " '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
-           (name (or name (read-string "Name of Screenshot: " nil)))
-           (dir (or dir (read-directory-name (format "Save %s%s to: " name format))))
-           (fp (concat dir name format))
-           (abb-fp (concat "file:" (file-relative-name fp))))
-      (set-process-sentinel
-       (start-process-shell-command
-        "imagecapture" nil (format "screencapture -i %s" fp))
-       `(lambda (process msg)
-          (when (memq (process-status process) '(exit signal))
-            (message (concat (process-name process) " - " msg))
-            (when (equal #',current-prefix-arg '(4))
-              (org-insert-link nil ,abb-fp nil)))))))
+(defun emacs-screen-capture (arg &optional name dir format)
+  (interactive "P")
+  (let* ((format (completing-read "Screenshot Format: " '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
+         (name (or name (read-string "Name of Screenshot: " nil)))
+         (dir (or dir (read-directory-name (format "Save %s%s to: " name format))))
+         (fp (concat dir name format))
+         (abb-fp (concat "file:" (file-relative-name fp))))
+    (set-process-sentinel
+     (start-process-shell-command
+      "imagecapture" nil (format "screencapture -i %s" fp))
+     `(lambda (process msg)
+        (when (memq (process-status process) '(exit signal))
+          (message (concat (process-name process) " - " msg))
+          (when (equal #',current-prefix-arg '(4))
+            (org-insert-link nil ,abb-fp nil)))))))
 #+end_src
 
 **** WGET-Thing-At-Point
@@ -522,82 +522,77 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
-  (defun setup-main-fonts (frame)
-    "Set up fonts based on window size."
-    (select-frame frame)
-    (when (display-graphic-p frame)
-      (let ((default-height)
-            (variable-pitch-height))
-        (when window-system
-          (if (> (x-display-pixel-width) 2000)
-              (setq variable-pitch-height 170
-                    default-height 180)
-            (setq variable-pitch-height 135
-                  default-height 140))
+(defun setup-main-fonts (frame)
+  "Determine font-size based on FRAME."
+  (select-frame frame)
+  (when (display-graphic-p frame)
+    (let ((default-height)
+          (variable-pitch-height))
+      (when window-system
+        (if (> (x-display-pixel-width) 2000)
+            (progn
+              (setq variable-pitch-height 170)
+              (setq default-height 180))
+          (progn
+            (setq variable-pitch-height 135)
+            (setq default-height 140)))
 
-          (set-face-attribute 'default nil
-                              :family "Iosevka SS07"
-                              :weight 'ultra-light
-                              :width 'extra-expanded
-                              :height default-height)
-          (set-face-attribute 'variable-pitch nil
-                              :family "Iosevka Aile"
-                              :height variable-pitch-height
-                              :weight 'regular
-                              :width 'extra-expanded)
-          (set-face-attribute 'fixed-pitch nil
-                              :family "Iosevka SS07"
-                              :height default-height
-                              :weight 'ultra-light
-                              :width 'extra-expanded)))))
+        (set-face-attribute 'default nil
+                            :family "Iosevka SS07"
+                            :weight 'ultra-light
+                            :width 'extra-expanded
+                            :height default-height)))))
 
-  (defun configure-fonts (frame)
-    "Set up fonts for FRAME.
+(defun configure-fonts (frame)
+  "Set up fonts for FRAME.
     Set the default font, and configure various overrides for
     symbols, emojis, greek letters, as well as fall backs for."
-    ;; Additional fonts for special characters and fallbacks
-    ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
-    ;; ()[]{}<>«»‹›
-    ;; 6bB8&0ODdo
-    ;; 1tiIlL|
-    ;; !ij
-    ;; 5$Ss
-    ;; 7Zz
-    ;; gqp
-    ;; nmMN
-    ;; uvvwWuuw
-    ;; x×X
-    ;; .,·°;:¡!¿?
-    ;; :;
-    ;; `'
-    ;; ‘’
-    ;; ''"
-    ;; '
-    ;; "
-    ;; “”
-    ;; —-~≈=_.…
+  ;; Additional fonts for special characters and fallbacks
+  ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
+  ;; ()[]{}<>«»‹›
+  ;; 6bB8&0ODdo
+  ;; 1tiIlL|
+  ;; !ij
+  ;; 5$Ss
+  ;; 7Zz
+  ;; gqp
+  ;; nmMN
+  ;; uvvwWuuw
+  ;; x×X
+  ;; .,·°;:¡!¿?
+  ;; :;
+  ;; `'
+  ;; ‘’
+  ;; ''"
+  ;; '
+  ;; "
+  ;; “”
+  ;; —-~≈=_.…
+  ;; Sample character set
+  ;; Check for monospacing and Greek glyphs
+  ;; ABCDEFGHIJKLMNOPQRSTUVWXYZ
+  ;; abcdefghijklmnopqrstuvwxyz
+  ;; 1234567890#%^*
+  ;; ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
+  ;; αβγδεζηθικλμνξοπρστυφχψω
+  (dolist (script '(symbol mathematical))
+    (set-fontset-font "fontset-default" script
+                      (font-spec :family "XITS Math" :weight 'normal) nil nil))
 
-    ;; Sample character set
-    ;; Check for monospacing and Greek glyphs
+  ;; Define a font set stack for symbols, greek and math characters
+  (dolist (script '(symbol greek))
+    (set-fontset-font "fontset-default" script
+                      (font-spec :family "Symbola") nil 'append))
 
-    ;;ABCDEFGHIJKLMNOPQRSTUVWXYZ
-    ;;abcdefghijklmnopqrstuvwxyz
-    ;;1234567890#%^*
-    ;;ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
-    ;;αβγδεζηθικλμνξοπρστυφχψω
-    (dolist (script '(symbol mathematical))
-      (set-fontset-font "fontset-default" script (font-spec :family "XITS Math" :weight 'normal) nil nil))
+  ;; Colored Emoji on OS X, prefer over everything else!
+  (set-fontset-font "fontset-default" 'unicode
+                    (font-spec :family "Symbola") nil nil)
+  (set-fontset-font "fontset-default" 'unicode
+                    (font-spec :family "Apple Color Emoji") nil 'prepend)
 
-    ;; Define a font set stack for symbols, greek and math characters
-    (dolist (script '(symbol greek))
-      (set-fontset-font "fontset-default" script (font-spec :family "Symbola") nil 'append))
-
-    ;; Colored Emoji on OS X, prefer over everything else!
-    (set-fontset-font "fontset-default" 'unicode (font-spec :family "Symbola") nil nil)
-    (set-fontset-font "fontset-default" 'unicode (font-spec :family "Apple Color Emoji") nil 'prepend)
-
-    (set-fontset-font "fontset-default" nil (font-spec :family "Apple Symbols") nil 'append))
-
+  ;; Apple Symbols for everything else
+  (set-fontset-font "fontset-default" nil
+                    (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 
 **** Clean-Up Yanked Text
@@ -606,11 +601,11 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 #+name: init-yank-ws-cleanup-block
 #+begin_src emacs-lisp
-  (defun djm/yank-ws-cleanup (&rest _)
-    (whitespace-cleanup)
-    (delete-trailing-whitespace))
+(defun arco/yank-ws-cleanup (&rest _)
+  (whitespace-cleanup)
+  (delete-trailing-whitespace))
 
-  (general-add-advice #'insert-for-yank :after #'djm/yank-ws-cleanup)
+(general-add-advice #'insert-for-yank :after #'arco/yank-ws-cleanup)
 #+end_src
 
 **** Clipboard-Integration
@@ -618,30 +613,30 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
 #+name: init-clipboard-integration-block
 #+begin_src emacs-lisp
-  (unless (display-graphic-p)
-    (defvar clipboard-last-copy nil)
+(unless (display-graphic-p)
+  (defvar clipboard-last-copy nil)
 
-    (eval-and-compile
-      (defun arco/clipboard-paste ()
-        (let* ((default-directory "/")
-               (text (shell-command-to-string "pbpaste")))
-          (unless (string= text clipboard-last-copy)
-            text)))
+  (eval-and-compile
+    (defun arco/clipboard-paste ()
+      (let* ((default-directory "/")
+             (text (shell-command-to-string "pbpaste")))
+        (unless (string= text clipboard-last-copy)
+          text)))
 
-      (defun arco/clipboard-copy (text)
-        (let* ((default-directory "/")
-               (process-connection-type nil)
-               (proc (start-process "pbcopy" nil "pbcopy")))
-          (process-send-string proc text)
-          (process-send-eof proc))
-        (setq clipboard-last-copy text)))
+    (defun arco/clipboard-copy (text)
+      (let* ((default-directory "/")
+             (process-connection-type nil)
+             (proc (start-process "pbcopy" nil "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))
+      (setq clipboard-last-copy text)))
 
-    (setq interprogram-paste-function #'arco/clipboard-paste)
-    (setq interprogram-cut-function #'arco/clipboard-copy))
+  (general-setq interprogram-paste-function #'arco/clipboard-paste)
+  (general-setq interprogram-cut-function #'arco/clipboard-copy))
 
 #+end_src
 
-*** Hooks Macros & Advice
+*** Hooks, Macros & Advice
 
 #+name: init-macros-block
 #+begin_src emacs-lisp
@@ -1913,30 +1908,41 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 *** [[https://gitlab.com/protesilaos/modus-themes][Modus Theme]]
 
 #+name: init-modus-theme-block
+#+begin_src emacs-lisp :tangle no
+  (use-package modus-vivendi-theme
+    :straight t
+    :ghook ('emacs-startup-hook #'arco/load-modus-theme)
+    :preface
+    (defun arco/load-modus-theme ()
+      ;; (general-setq modus-vivendi-theme-slanted-constructs t
+      ;;               modus-vivendi-theme-proportional-fonts nil
+      ;;               modus-vivendi-theme-bold-constructs t
+      ;;               modus-vivendi-theme-scale-headings nil
+      ;;               modus-vivendi-theme-scale-1 1.05
+      ;;               modus-vivendi-theme-scale-2 1.1
+      ;;               modus-vivendi-theme-scale-3 1.15
+      ;;               modus-vivendi-theme-scale-4 1.2)
+      (load-theme 'modus-vivendi)
+      (if (daemonp)
+	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+	(general-add-hook 'after-init-hook #'setup-main-fonts))
+      (when-let (frame (selected-frame))
+	(configure-fonts frame))))
+#+end_src
+
+#+name: init-modus-operandi-theme-block
 #+begin_src emacs-lisp
-(use-package modus-vivendi-theme
+(use-package modus-operandi-theme
   :straight t
-  :ghook ('emacs-startup-hook #'arco/load-modus-theme)
+  :ghook ('after-init-hook #'arco/load-modus-theme)
   :preface
   (defun arco/load-modus-theme ()
-    (general-setq modus-vivendi-theme-slanted-constructs t
-                  modus-vivendi-theme-proportional-fonts nil
-                  modus-vivendi-theme-bold-constructs t
-                  modus-vivendi-theme-scale-headings nil
-                  modus-vivendi-theme-scale-1 1.05
-                  modus-vivendi-theme-scale-2 1.1
-                  modus-vivendi-theme-scale-3 1.15
-                  modus-vivendi-theme-scale-4 1.2)
-    (load-theme 'modus-vivendi)
+    (load-theme 'modus-operandi)
     (if (daemonp)
         (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
       (general-add-hook 'after-init-hook #'setup-main-fonts))
     (when-let (frame (selected-frame))
       (configure-fonts frame))))
-
-
-    (use-package modus-operandi-theme
-      :straight t)
 #+end_src
 
 *** Mode-line
@@ -3206,10 +3212,9 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-org-block
 #+begin_src emacs-lisp
 (use-package org
-  :blackout ('org-indent-mode)
   :straight nil
   :mode ("\\.org\\'" . org-mode)
-  :gfhook 'virtual-auto-fill-mode 'variable-pitch-mode
+  :gfhook #'set-buffer-fixed-pitch
   :general
   ("C-c a" #'org-agenda
    "C-c c" #'org-capture)
@@ -3219,14 +3224,14 @@ A nice way to restart emacs on the fly if you need to.
   :preface
   (defun set-buffer-fixed-pitch ()
     (setq-local line-spacing 2)
+    (set-face-attribute 'variable-pitch nil
+                        :family "Iosevka Aile"
+                        :inherit 'default)
     (set-face-attribute 'fixed-pitch nil
                         :family "Iosevka SS07"
                         :inherit 'default)
-    (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-block nil :inherit 'fixed-pitch))
-
-  (general-add-hook 'org-mode-hook #'set-buffer-fixed-pitch)
+    (variable-pitch-mode +1)
+    (virtual-auto-fill-mode +1))
   :config
   ;; ;; Directory Settings
   (general-setq org-archive-location "~/Documents/org-files/archive.org::"

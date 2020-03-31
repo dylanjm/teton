@@ -100,6 +100,11 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"
 
 ###
+### Guile
+###
+export GUILE_AUTO_COMPILE=0
+
+###
 ### Julia
 ###
 export JULIA_NUM_THREADS=16

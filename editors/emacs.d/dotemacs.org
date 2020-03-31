@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-28 14:00:01
+/last updated/: 2020-03-30 21:31:36
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -4157,20 +4157,28 @@ A nice way to restart emacs on the fly if you need to.
     :mode ("\\.bats$"))
 #+end_src
 
-*** Emacs-Lisp
+*** LISP
 **** Elisp-Mode (Built-In)
 #+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
-(use-package lisp-mode
+(use-package elisp-mode
   :blackout ((emacs-lisp-mode . "Elisp")
               (lisp-interaction-mode . "Lisp-Interaction"))
-  :straight (:type built-in)
+  :straight nil
   :mode (("\\.el\\'" . emacs-lisp-mode)
           ("\\.Cask\\'" . emacs-lisp-mode))
   :gfhook #'outline-minor-mode
   :config
-  (general-setq lisp-indent-offset 2
-    emacs-lisp-docstring-fill-column 80))
+  (general-setq emacs-lisp-docstring-fill-column 80))
+
+(use-package cl-lib-highlight
+  :straight t
+  :ghook ('emacs-lisp-mode-hook #'cl-lib-highlight-initialize nil nil t)
+  :config (cl-lib-highlight-warn-cl-initialize))
+
+(use-package highlight-defined
+  :straight t
+  :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
 **** Fix Identation
@@ -4182,7 +4190,9 @@ A nice way to restart emacs on the fly if you need to.
 
 #+name: init-elisp-identation-block
 #+begin_src emacs-lisp
-(el-patch-defun lisp-indent-function (indent-point state)
+;; https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned
+;; https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94
+(defun fuco1/lisp-indent-function (indent-point state)
   "This function is the normal value of the variable `lisp-indent-function'.
 The function `calculate-lisp-indent' calls this to determine
 if the arguments of a Lisp function call should be indented specially.
@@ -4195,77 +4205,105 @@ If the current line is in a call to a Lisp function that has a non-nil
 property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
 it specifies how to indent.  The property value can be:
 
-,* `defun', meaning indent `defun'-style
+- `defun', meaning indent `defun'-style
   (this is also the case if there is no property and the function
   has a name that begins with \"def\", and three or more arguments);
 
-,* an integer N, meaning indent the first N arguments specially
+- an integer N, meaning indent the first N arguments specially
   (like ordinary function arguments), and then indent any further
   arguments like a body;
 
-,* a function to call that returns the indentation (or nil).
+- a function to call that returns the indentation (or nil).
   `lisp-indent-function' calls this function with the same two arguments
   that it itself received.
 
 This function returns either the indentation to use, or nil if the
 Lisp function does not specify a special indentation."
-  (el-patch-let (($cond (and (elt state 2)
-                          (el-patch-wrap 1 1
-                            (or (not (looking-at "\\sw\\|\\s_"))
-                              (looking-at ":")))))
-                  ($then (progn
-                           (if (not (> (save-excursion (forward-line 1) (point))
-                                      calculate-lisp-indent-last-sexp))
-                             (progn (goto-char calculate-lisp-indent-last-sexp)
-                               (beginning-of-line)
-                               (parse-partial-sexp (point)
-                                 calculate-lisp-indent-last-sexp 0 t)))
-                           ;; Indent under the list or under the first sexp on the same
-                           ;; line as calculate-lisp-indent-last-sexp.  Note that first
-                           ;; thing on that line has to be complete sexp since we are
-                           ;; inside the innermost containing sexp.
-                           (backward-prefix-chars)
-                           (current-column)))
-                  ($else (let ((function (buffer-substring (point)
-                                           (progn (forward-sexp 1) (point))))
-                                method)
-                           (setq method (or (function-get (intern-soft function)
-                                              'lisp-indent-function)
-                                          (get (intern-soft function) 'lisp-indent-hook)))
-                           (cond ((or (eq method 'defun)
-                                    (and (null method)
-                                      (> (length function) 3)
-                                      (string-match "\\`def" function)))
-                                   (lisp-indent-defform state indent-point))
-                             ((integerp method)
-                               (lisp-indent-specform method state
-                                 indent-point normal-indent))
-                             (method
-                               (funcall method indent-point state))))))
-    (let ((normal-indent (current-column))
-           (el-patch-add
-             (orig-point (point))))
-      (goto-char (1+ (elt state 1)))
-      (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-      (el-patch-swap
-        (if $cond
-          ;; car of form doesn't seem to be a symbol
-          $then
-          $else)
-        (cond
-          ;; car of form doesn't seem to be a symbol, or is a keyword
-          ($cond $then)
-          ((and (save-excursion
-                  (goto-char indent-point)
-                  (skip-syntax-forward " ")
-                  (not (looking-at ":")))
-             (save-excursion
-               (goto-char orig-point)
-               (looking-at ":")))
-            (save-excursion
-              (goto-char (+ 2 (elt state 1)))
-              (current-column)))
-          (t $else))))))
+  (let ((normal-indent (current-column))
+         (orig-point (point)))
+    (goto-char (1+ (elt state 1)))
+    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+    (cond
+      ;; car of form doesn't seem to be a symbol, or is a keyword
+      ((and (elt state 2)
+         (or (not (looking-at "\\sw\\|\\s_"))
+           (looking-at ":")))
+        (if (not (> (save-excursion (forward-line 1) (point))
+                   calculate-lisp-indent-last-sexp))
+          (progn (goto-char calculate-lisp-indent-last-sexp)
+            (beginning-of-line)
+            (parse-partial-sexp (point)
+              calculate-lisp-indent-last-sexp 0 t)))
+        ;; Indent under the list or under the first sexp on the same
+        ;; line as calculate-lisp-indent-last-sexp.  Note that first
+        ;; thing on that line has to be complete sexp since we are
+        ;; inside the innermost containing sexp.
+        (backward-prefix-chars)
+        (current-column))
+      ((and (save-excursion
+              (goto-char indent-point)
+              (skip-syntax-forward " ")
+              (not (looking-at ":")))
+         (save-excursion
+           (goto-char orig-point)
+           (looking-at ":")))
+        (save-excursion
+          (goto-char (+ 2 (elt state 1)))
+          (current-column)))
+      (t
+        (let ((function (buffer-substring (point)
+                          (progn (forward-sexp 1) (point))))
+               method)
+          (setq method (or (function-get (intern-soft function)
+                             'lisp-indent-function)
+                         (get (intern-soft function) 'lisp-indent-hook)))
+          (cond ((or (eq method 'defun)
+                   (and (null method)
+                     (> (length function) 3)
+                     (string-match "\\`def" function)))
+                  (lisp-indent-defform state indent-point))
+            ((integerp method)
+              (lisp-indent-specform method state
+                indent-point normal-indent))
+            (method
+              (funcall method indent-point state))))))))
+
+;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el
+(require 'cl-indent)
+
+(defun noct:lispy-indent-setup ()
+  "Make indentation settings compliant with lispy's."
+  (interactive)
+  (setq-local lisp-indent-function #'common-lisp-indent-function)
+  ;; TODO this is bad for actual common lisp (and not buffer-local)
+  (put 'if 'common-lisp-indent-function 2)
+  (put 'defface 'common-lisp-indent-function 1)
+  (put 'define-minor-mode 'common-lisp-indent-function 1)
+  (put 'define-derived-mode 'common-lisp-indent-function 3)
+  (put 'cl-flet 'common-lisp-indent-function
+    (get 'flet 'common-lisp-indent-function))
+  (put 'cl-labels 'common-lisp-indent-function
+    (get 'labels 'common-lisp-indent-function))
+  ;; additional
+  (put 'cl-macrolet 'common-lisp-indent-function (get 'flet 'common-lisp-indent-function))
+  (aggressive-indent-mode -1))
+
+(defun noct:elisp-indent-setup ()
+  (when (eq major-mode 'emacs-lisp-mode)
+    (cond ((when (buffer-file-name)
+             (string-match
+               ".*lispy/"
+               (file-name-directory (buffer-file-name))))
+            (noct:lispy-indent-setup))
+
+      (t
+        (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
+        (put 'cl-macrolet 'lisp-indent-function
+          (get 'flet 'common-lisp-indent-function))
+        (put 'cl-macrolet 'fuco1/lisp-indent-function
+          (get 'flet 'common-lisp-indent-function))))))
+
+(general-add-hook '(find-file-hook emacs-lisp-mode-hook) #'noct:elisp-indent-setup)
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -4288,13 +4326,67 @@ This is a nifty package that allows me to define functions as local variables in
     :blackout (dired-async-mode . ""))
 #+end_src
 
-*** Clojure
 **** [[https://github.com/clojure-emacs/clojure-mode][Clojure-Mode]]
 #+name: init-clojure-mode-block
 #+begin_src emacs-lisp
   (use-package clojure-mode
     :straight t
     :mode ("\\.edn$"))
+#+end_src
+
+**** Paredit
+#+name: init-paredit-block
+#+begin_src emacs-lisp :tangle no
+(use-package paredit
+  :straight t
+  :ghook (paredit-modes #'enable-paredit-mode)
+  :commands (enable-paredit-mode)
+  :preface
+  (defvar paredit-modes '(emacs-lisp-mode-hook
+                          eval-expression-minibuffer-setup-hook
+                          ielm-mode-hook lisp-mode-hook
+                          lisp-interaction-mode-hook
+                          scheme-mode-hook)))
+#+end_src
+
+**** [[https://github.com/abo-abo/lispy][Lispy]]
+#+name: init-lispy-block
+#+begin_src emacs-lisp :tangle no
+(use-package lispy
+  :straight t)
+#+end_src
+
+**** [[https://github.com/DogLooksGood/parinfer-mode][Parinfer]]
+#+name: init-parinfer-block
+#+begin_src emacs-lisp :tangle no
+(use-package parinfer
+  :straight t
+  :ghook parinfer-modes
+  :general
+  (:keymaps 'prog-mode-map
+            "C-," #'parinfer-toggle-mode)
+  :preface
+  (defvar parinfer-modes '(clojure-mode-hook
+                           emacs-lisp-mode-hook
+                           common-lisp-mode-hook
+                           scheme-mode-hook
+                           lisp-mode-hook))
+  :init
+  (general-setq parinfer-extensions '(defaults pretty-parens
+                                       lispy
+                                       paredit
+                                       smart-tab
+                                       smart-yank)))
+#+end_src
+
+**** [[https://gitlab.com/jaor/geiser][Geiser]]
+#+name: init-geiser-block
+#+begin_src emacs-lisp
+(use-package geiser
+  :straight t
+  :config
+  (general-setq geiser-active-implementations '(guile)
+                geiser-default-implementation 'guile))
 #+end_src
 
 *** Markdown

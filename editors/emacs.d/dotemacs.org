@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-03-30 21:31:36
+/last updated/: 2020-04-01 13:56:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -226,20 +226,20 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
-  (use-package exec-path-from-shell
-    :demand t :straight t
-    :if (eq system-type 'darwin)
-    :init
-    (setq exec-path-from-shell-variables
-          '("BROWSER" "CCACHE_DIR" "CDPATH" "DOTFILES" "EA_EDITOR" "EA_PATH"
-            "EDITOR" "EXA_COLORS" "FPATH" "GPG_TTY" "GNUPGHOME" "HISTFILE"
-            "IPYTHONDIR" "JAVA_HOME" "JULIA_DEPOT_PATH" "JULIA_NUM_THREADS"
-            "LANG" "LC_ALL" "LS_COLORS" "MANPATH" "MPD_HOST" "MPD_PORT"
-            "MPLCONFIGDIR" "ORG_FILES" "PATH" "PYENV_ROOT" "PYLINTHOME"
-            "PYTHONSTARTUP" "R_ENVIRON_USER" "TERMINFO" "XDG_BIN_HOME"
-            "XDG_CACHE_HOME" "XDG_CONFIG_HOME" "XDG_DATA_HOME" "ZSH")
-          exec-path-from-shell-arguments '("-l"))
-    (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :demand t :straight t
+  :if (eq system-type 'darwin)
+  :init
+  (setq exec-path-from-shell-variables
+        '("BROWSER" "CCACHE_DIR" "CDPATH" "DOTFILES" "EA_EDITOR" "EA_PATH"
+          "EDITOR" "EXA_COLORS" "FPATH" "GPG_TTY" "GNUPGHOME" "GUILE_HISTORY"
+          "HISTFILE" "IPYTHONDIR" "JAVA_HOME" "JULIA_DEPOT_PATH"
+          "JULIA_NUM_THREADS" "LANG" "LC_ALL" "LS_COLORS" "MANPATH" "MPD_HOST"
+          "MPD_PORT" "MPLCONFIGDIR" "ORG_FILES" "PATH" "PYENV_ROOT" "PYLINTHOME"
+          "PYTHONSTARTUP" "R_ENVIRON_USER" "TERMINFO" "XDG_BIN_HOME"
+          "XDG_CACHE_HOME" "XDG_CONFIG_HOME" "XDG_DATA_HOME" "ZSH")
+        exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
 #+end_src
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
@@ -1088,8 +1088,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-face-remap-block
 #+begin_src emacs-lisp
-  (use-package face-remap
-    :straight (:type built-in))
+(use-package face-remap
+  :blackout (buffer-face-mode . "")
+  :straight (:type built-in))
 #+end_src
 
 *** Files (Built-In)
@@ -1197,7 +1198,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-hideshow-block
 #+begin_src emacs-lisp
 (use-package hideshow
-  :blackout t
+  :blackout (hs-minor-mode . "")
   :straight (:type built-in)
   :ghook ('prog-mode-hook #'hs-minor-mode))
 #+end_src
@@ -1578,27 +1579,28 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-simple-block
 #+begin_src emacs-lisp
-  (use-package simple
-    :straight (:type built-in)
-    :general
-    ("C-x p" #'pop-to-mark-command)
-    :config
-    (general-setq blink-matching-paren t
-                  column-number-mode t
-                  delete-trailing-lines nil
-                  eval-expression-print-length nil
-                  eval-expression-print-level nil
-                  idle-update-delay 1
-                  inhibit-point-motion-hooks t
-                  kill-do-not-save-duplicates t
-                  kill-ring-max 300
-                  line-move-visual nil
-                  line-number-mode t
-                  mode-line-percent-position nil
-                  save-interprogram-paste-before-kill t
-                  set-mark-command-repeat-pop t
-                  shift-select-mode nil
-                  show-trailing-whitespace nil))
+(use-package simple
+  :blackout (visual-line-mode . "")
+  :straight (:type built-in)
+  :general
+  ("C-x p" #'pop-to-mark-command)
+  :config
+  (general-setq blink-matching-paren t
+                column-number-mode t
+                delete-trailing-lines nil
+                eval-expression-print-length nil
+                eval-expression-print-level nil
+                idle-update-delay 1
+                inhibit-point-motion-hooks t
+                kill-do-not-save-duplicates t
+                kill-ring-max 300
+                line-move-visual nil
+                line-number-mode t
+                mode-line-percent-position nil
+                save-interprogram-paste-before-kill t
+                set-mark-command-repeat-pop t
+                shift-select-mode nil
+                show-trailing-whitespace nil))
 #+end_src
 
 *** Smerge (Built-In)
@@ -2434,6 +2436,8 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
 (use-package yasnippet
+  :blackout ((yas-global-mode . "")
+             (yas-minor-mode . ""))
   :straight t
   :ghook ('(prog-mode-hook org-mode-hook text-mode-hook) #'yas-global-mode)
   :general ("C-;" #'yas-expand)
@@ -2988,12 +2992,14 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
 #+name: init-dumb-jump-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dumb-jump
-    :straight t
-    :commands (dumb-jump-mode)
-    :config (general-setq dumb-jump-selector 'ivy
-                          dumb-jump-prefer-searcher 'rg))
+#+begin_src emacs-lisp
+(use-package dumb-jump
+  :straight t
+  :commands (dumb-jump-mode)
+  :ghook 'prog-mode-hook
+  :config
+  (general-setq dumb-jump-prefer-searcher 'rg
+                dumb-jump-rg-search-args "--pcre2 --no-ignore"))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
@@ -3284,9 +3290,12 @@ A nice way to restart emacs on the fly if you need to.
   (:keymaps 'org-mode-map
    "M-n" #'outline-next-visible-heading
    "M-p" #'outline-previous-visible-heading)
+  :company '(company-dabbrev company-capf)
+  :capf #'pcomplete-completions-at-point
   :preface
   (defun set-buffer-fixed-pitch ()
-    (setq-local line-spacing 2)
+    (general-setq-local line-spacing 2
+                        fill-column 100)
     (set-face-attribute 'variable-pitch nil
                         :family "Iosevka Aile"
                         :inherit 'default)
@@ -3296,12 +3305,11 @@ A nice way to restart emacs on the fly if you need to.
     (variable-pitch-mode +1)
     (virtual-auto-fill-mode +1))
   :config
-  ;; ;; Directory Settings
+  ;; Directory Settings
   (general-setq org-archive-location "~/Documents/org-files/archive.org::"
-                org-default-notes-file "~/Documents/org-files/inbox.org"
                 org-directory "~/Documents/org-files")
 
-  ;; ;; LaTeX Settings
+  ;; LaTeX Settings
   ;; (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
   ;;               org-latex-remove-logfiles t
   ;;               org-latex-prefer-user-labels t
@@ -3318,35 +3326,35 @@ A nice way to restart emacs on the fly if you need to.
   ;; ;;   (general-pushnew ext org-latex-logfiles-extensions))
 
 
-  ;; ;; Startup Settings
+  ;; Startup Settings
   (general-setq org-startup-folded 'content
                 org-startup-with-inline-images t
                 org-startup-indented t
                 org-indent-mode t)
 
-  ;; ;; Fontify Settings
+  ;; Fontify Settings
   (general-setq org-fontify-whole-heading-line t
                 org-fontify-quote-and-verse-blocks t
                 org-fontify-done-headline t
                 org-fontify-todo-headline t)
 
-  ;; ;; Refile Settings
+  ;; Refile Settings
   ;; (general-setq org-refile-allow-creating-parent-nodes 'confirm
   ;;               org-refile-use-outline-path 'file
   ;;               org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
-  ;; ;; Log Settings
+  ;; Log Settings
   ;; (general-setq org-log-done 'time
   ;;               org-log-into-drawer t
   ;;               org-log-state-notes-insert-after-drawers nil)
 
-  ;; ;; Usage Settings
+  ;; Usage Settings
   (general-setq org-use-fast-todo-selection t
                 org-use-fast-tag-selection t
                 org-use-speed-commands t
                 org-use-tag-inheritance t)
 
-  ;; ;; Aesthetic Settings
+  ;; Aesthetic Settings
   (general-setq org-pretty-entities t
                 org-hide-emphasis-markers t
                 org-hide-leading-stars t
@@ -3376,177 +3384,176 @@ A nice way to restart emacs on the fly if you need to.
                 org-enforce-todo-dependencies t
                 org-enforce-todo-checkbox-dependencies t
                 org-insert-heading-respect-content t
-                org-outline-path-complete-in-steps nil
                 org-special-ctrl-a/e t
                 org-special-ctrl-k t
                 org-tags-column 0
                 org-yank-adjusted-subtrees t)
 
-  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist)
-  (compdef
-   :modes #'org-mode
-   :company '(company-dabbrev company-capf)
-   :capf #'pcomplete-completions-at-point))
+  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
 *** Org-Agenda
 #+name: init-org-agenda-block
-#+begin_src emacs-lisp :tangle no
-  (use-package org-agenda
-    :straight nil
-    :config
-    (general-setq org-agenda-block-separator nil
-                  org-agenda-diary-file "~/Documents/org-files/diary.org"
-                  org-agenda-dim-blocked-tasks 'invisible
-                  org-agenda-files '("~/Documents/org-files/inbox.org"
-                                     "~/Documents/org-files/projects.org")
-                  org-agenda-inhibit-startup nil
-                  org-agenda-show-all-dates t
-                  org-agenda-skip-deadline-if-done t
-                  org-agenda-skip-scheduled-if-done t
-                  org-agenda-span 'day
-                  org-agenda-start-on-weekday nil
-                  org-agenda-start-with-log-mode nil
-                  org-agenda-tags-column -100
-                  org-agenda-use-time-grid t
-                  org-agenda-window-setup 'only-window))
+#+begin_src emacs-lisp
+(use-package org-agenda
+  :straight nil
+  :config
+  (general-setq org-agenda-block-separator nil
+                org-agenda-diary-file "~/Documents/org-files/diary.org"
+                org-agenda-dim-blocked-tasks 'invisible
+                org-agenda-files '("~/Documents/org-files/inbox.org"
+                                   "~/Documents/org-files/projects.org")
+                org-agenda-inhibit-startup nil
+                org-agenda-show-all-dates t
+                org-agenda-skip-deadline-if-done t
+                org-agenda-skip-scheduled-if-done t
+                org-agenda-span 'day
+                org-agenda-start-on-weekday nil
+                org-agenda-start-with-log-mode nil
+                org-agenda-tags-column -100
+                org-agenda-use-time-grid t
+                org-agenda-window-setup 'only-window))
 
-  (use-package org-super-agenda
-    :straight t)
+(use-package org-super-agenda
+  :straight t)
 
-  (defun org-archive-done-tasks ()
-    (interactive)
-    (org-map-entries 'org-archive-subtree "/DONE" 'file))
+(defun org-archive-done-tasks ()
+  (interactive)
+  (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
 *** Org-Src
 #+name: init-org-src-block
 #+begin_src emacs-lisp
-  (use-package org-src
-    :straight nil
-    :preface
-    (defun djm/org-src-supress-final-newline ()
-      (setq-local require-final-newline nil))
+(use-package org-src
+  :straight nil
+  :preface
+  (defun djm/org-src-supress-final-newline ()
+    (setq-local require-final-newline nil))
 
-    (defun djm/org-src-delete-trailing-space (&rest _)
-      (delete-trailing-whitespace))
+  (defun djm/org-src-delete-trailing-space (&rest _)
+    (delete-trailing-whitespace))
 
-    (defun djm/disable-flycheck-in-org-src-block ()
-      (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (defun djm/disable-flycheck-in-org-src-block ()
+    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  :init
+  (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
+  (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
+  (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space)
+  :config/el-patch
+  (el-patch-defun org-src--construct-edit-buffer-name (org-buffer-name lang)
+    (concat "[" org-buffer-name "]"))
 
-    (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
-    (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-    (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space)
-
-    :config/el-patch
-    (defun org-src--construct-edit-buffer-name (org-buffer-name lang)
-      (concat "[" org-buffer-name "]"))
-
-    (general-setq org-src-window-setup 'current-window
-                  org-src-fontify-natively t
-                  org-src-preserve-indentation t
-                  org-src-tab-acts-natively t
-                  org-edit-src-content-indentation 0))
+  (general-setq org-src-window-setup 'current-window
+                org-src-fontify-natively t
+                org-src-preserve-indentation t
+                org-src-tab-acts-natively t
+                org-edit-src-content-indentation 0))
 #+end_src
 
 *** Org-Ob
 #+name: init-org-ob-block
 #+begin_src emacs-lisp
-  (use-package ob
-    :straight nil
-    :preface
-    (defun arco/org-redisplay-inline-images ()
-      (interactive)
-      (when org-inline-image-overlays
-        (org-redisplay-inline-images)))
-    (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images)
-    :config
-    (general-setq org-babel-load-languages '((emacs-lisp . t)
-                                             (shell . t)
-                                             (python . t)
-                                             (ditaa . t)
-                                             (dot . t)
-                                             (plantuml . t)))
-    (general-setq org-confirm-babel-evaluate nil))
+(use-package ob
+  :straight nil
+  :preface
+  (defun arco/org-redisplay-inline-images ()
+    (interactive)
+    (when org-inline-image-overlays
+      (org-redisplay-inline-images)))
+  :init
+  (general-add-hook 'org-babel-after-execute-hook
+                    #'arco/org-redisplay-inline-images)
+  :config
+  (general-setq org-babel-load-languages '((emacs-lisp . t)
+                                           (shell . t)
+                                           (python . t)
+                                           (ditaa . t)
+                                           (dot . t)
+                                           (plantuml . t))
+                org-confirm-babel-evaluate nil))
 
-  (use-package ob-ditaa
-    :straight nil
-    :commands (org-babel-execute:ditaa)
-    :config
-    (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
-                  "/usr/local/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar"))
+(use-package ob-ditaa
+  :straight nil
+  :commands (org-babel-execute:ditaa)
+  :config
+  (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
+                "/usr/local/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar"))
 
-  (use-package ob-plantuml
-    :straight nil
-    :commands (org-babel-execute:plantuml)
-    :config
-    (general-setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2020.2/libexec/plantuml.jar"))
+(use-package ob-plantuml
+  :straight nil
+  :commands (org-babel-execute:plantuml)
+  :config
+  (general-setq org-plantuml-jar-path
+                "/usr/local/Cellar/plantuml/1.2020.2/libexec/plantuml.jar"))
 #+end_src
 
 *** Org-Ox
 #+name: init-org-ox-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ox
-    :straight nil
-    :config
-    (general-setq org-export-with-toc nil
-                  org-export-headline-levels 8
-                  org-export-backends '(ascii html latex md)
-                  org-export-dispatch-use-expert-ui nil
-                  org-export-coding-system 'utf-8
-                  org-export-exclude-tags '("noexport" "no_export" "ignore")
-                  org-export-with-author t
-                  org-export-with-drawers t
-                  org-export-with-email t
-                  org-export-with-footnotes t
-                  org-export-with-latex t
-                  org-export-with-properties t
-                  org-export-with-smart-quotes t
-                  org-html-html5-fancy t
-                  org-html-postamble nil))
+#+begin_src emacs-lisp
+(use-package ox
+  :straight nil
+  :config
+  (general-setq org-export-with-toc nil
+                org-export-headline-levels 8
+                org-export-backends '(ascii html latex md)
+                org-export-dispatch-use-expert-ui nil
+                org-export-coding-system 'utf-8
+                org-export-exclude-tags '("noexport" "no_export" "ignore")
+                org-export-with-author t
+                org-export-with-drawers t
+                org-export-with-email t
+                org-export-with-footnotes t
+                org-export-with-latex t
+                org-export-with-properties t
+                org-export-with-smart-quotes t
+                org-html-html5-fancy t
+                org-html-postamble nil))
 
-  (use-package ox-gfm
-    :demand t :straight t
-    :after (org))
+(use-package ox-gfm
+  :demand t
+  :straight t
+  :after (org))
 
-  (use-package ox-koma-letter
-    :straight nil
-    :after (org)
-    :config
-    (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
+(use-package ox-koma-letter
+  :straight nil
+  :after (org)
+  :config
+  (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
 
-  (use-package ox-slack
-    :demand t :straight t
-    :after (org)
-    :commands (org-slack-export-to-clipboard-as-slack))
+(use-package ox-slack
+  :demand t
+  :straight t
+  :after (org)
+  :commands (org-slack-export-to-clipboard-as-slack))
 
-  (use-package ox-jdf-report
-    :demand t :straight (:host github :repo "dylanjm/ox-jdf")
-    :after (org))
+(use-package ox-jdf-report
+  :demand t
+  :straight (:host github :repo "dylanjm/ox-jdf")
+  :after (org))
 #+end_src
 
 *** [[https://github.com/integral-dw/org-superstar-mode][Org-SuperStar]]
 #+name: init-org-bullets-block
 #+begin_src emacs-lisp
-  ;;
-    (use-package org-superstar
-      :straight t
-      :ghook 'org-mode-hook
-      :config
-      (general-setq org-superstar-remove-leading-stars t
-                    org-superstar-special-todo-items t))
+(use-package org-superstar
+  :straight t
+  :ghook 'org-mode-hook
+  :config
+  (general-setq org-superstar-remove-leading-stars t
+                org-superstar-special-todo-items t))
 #+end_src
 
 *** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
 #+name: init-org-emms-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package org-emms
     :straight t :after (org))
 #+end_src
 
 *** [[https://github.com/jkitchin/org-ref][Org-Ref]]
 #+name: init-org-ref-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package org-ref
     :straight t
     :commands (org-ref-insert-link))
@@ -3554,158 +3561,158 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package toc-org
     :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
 *** [[https://github.com/jethrokuan/org-roam][Org-Roam]]
 #+name: init-org-roam-block
-#+begin_src emacs-lisp :tangle no
-  (use-package org-roam
-    :straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
-    :general
-    (:keymaps 'org-roam-mode-map
-     "C-c n l" #'org-roam
-     "C-c n f" #'org-roam-find-file
-     "C-c n g" #'org-roam-show-graph)
-    (:keymaps 'org-mode-map
-     "C-c n i" #'org-roam-insert))
+#+begin_src emacs-lisp
+(use-package org-roam
+  :straight (:host github :repo "jethrokuan/org-roam")
+  :general
+  (:keymaps 'org-roam-mode-map
+   "C-c n l" #'org-roam
+   "C-c n f" #'org-roam-find-file
+   "C-c n g" #'org-roam-show-graph)
+  (:keymaps 'org-mode-map
+   "C-c n i" #'org-roam-insert))
 #+end_src
 
 ** Email
 *** [[https://github.com/emacsmirror/mu4e][MU4E]]
 #+name: init-mu4e-block
 #+begin_src emacs-lisp :tangle no
-  (use-package mu4e
-    :straight t
-    :commands (mu4e mu4e-compose-new)
-    :preface
-    (defun config-mail--shr-buffer ()
-      (let ((shr-use-fonts nil))
-        (shr-render-region (point-min) (point-max))))
+(use-package mu4e
+  :straight t
+  :commands (mu4e mu4e-compose-new)
+  :preface
+  (defun config-mail--shr-buffer ()
+    (let ((shr-use-fonts nil))
+      (shr-render-region (point-min) (point-max))))
 
-    (defun config-mail--view-in-external-browser-action (msg)
-      "View the current message MSG in the browser."
-      (interactive (list mu4e~view-msg))
-      (let ((browse-url-browser-function #'browse-url-default-browser))
-        (mu4e-action-view-in-browser msg)))
+  (defun config-mail--view-in-external-browser-action (msg)
+    "View the current message MSG in the browser."
+    (interactive (list mu4e~view-msg))
+    (let ((browse-url-browser-function #'browse-url-default-browser))
+      (mu4e-action-view-in-browser msg)))
 
-    :config/el-patch
-    (general-add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
-    (general-add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+  :config/el-patch
+  (general-add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
+  (general-add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 
-    (general-setq mu4e-context-policy 'pick-first
-                  mu4e-compose-context-policy 'ask-if-none
-                  message-kill-buffer-on-exit t
-                  mu4e-view-use-gnus t
-                  mu4e-use-fancy-chars t
-                  mu4e-headers-include-related nil
-                  mu4e-headers-attach-mark '("a" . "A")
-                  mu4e-headers-unread-mark '("u" . "●")
-                  mu4e-headers-seen-mark '(" " . " ")
-                  mu4e-hide-index-messages t
-                  mu4e-headers-skip-duplicates t
-                  mu4e-index-lazy-check t
-                  mu4e-confirm-quit t
-                  mu4e-view-prefer-html t
-                  mu4e-view-show-images t
-                  mu4e-view-show-addresses t
-                  mu4e-maildir (f-expand "~/Mail")
-                  mu4e-headers-date-format "%d-%m-%y %k:%M"
-                  mu4e-completing-read-function #'completing-read
-                  sendmail-program "msmtp"
-                  message-send-mail-function #'message-send-mail-with-sendmail
-                  mu4e-compose-format-flowed t
-                  fill-flowed-encode-column 998
-                  mu4e-get-mail-command "mbsync -V -q -a"
-                  mu4e-change-filename-when-moving t
-                  smtpmail-queue-mail nil
-                  smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
-                  mu4e-attachments-dir (f-expand "~/Downloads")
-                  message-forward-before-signature nil
-                  message-citation-line-function #'message-insert-formatted-citation-line
-                  message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
-                  mu4e-update-interval (* 60 5)
-                  sendmail-coding-system 'utf-8
-                  mu4e-html2text-command #'config-mail--shr-buffer)
+  (general-setq mu4e-context-policy 'pick-first
+                mu4e-compose-context-policy 'ask-if-none
+                message-kill-buffer-on-exit t
+                mu4e-view-use-gnus t
+                mu4e-use-fancy-chars t
+                mu4e-headers-include-related nil
+                mu4e-headers-attach-mark '("a" . "A")
+                mu4e-headers-unread-mark '("u" . "●")
+                mu4e-headers-seen-mark '(" " . " ")
+                mu4e-hide-index-messages t
+                mu4e-headers-skip-duplicates t
+                mu4e-index-lazy-check t
+                mu4e-confirm-quit t
+                mu4e-view-prefer-html t
+                mu4e-view-show-images t
+                mu4e-view-show-addresses t
+                mu4e-maildir (f-expand "~/Mail")
+                mu4e-headers-date-format "%d-%m-%y %k:%M"
+                mu4e-completing-read-function #'completing-read
+                sendmail-program "msmtp"
+                message-send-mail-function #'message-send-mail-with-sendmail
+                mu4e-compose-format-flowed t
+                fill-flowed-encode-column 998
+                mu4e-get-mail-command "mbsync -V -q -a"
+                mu4e-change-filename-when-moving t
+                smtpmail-queue-mail nil
+                smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
+                mu4e-attachments-dir (f-expand "~/Downloads")
+                message-forward-before-signature nil
+                message-citation-line-function #'message-insert-formatted-citation-line
+                message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
+                mu4e-update-interval (* 60 5)
+                sendmail-coding-system 'utf-8
+                mu4e-html2text-command #'config-mail--shr-buffer)
 
-    ;; View html message in eww. `av` in view to activate
-    (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+  ;; View html message in eww. `av` in view to activate
+  (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
 
-    ;; View html message in external browser. `a&` in view to activate
-    (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)
+  ;; View html message in external browser. `a&` in view to activate
+  (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)
 
-    (setf (alist-get 'refile mu4e-marks)
-          '(:char ("r" . "▶")
-            :prompt "refile"
-            :dyn-target (lambda (target msg)
-                          (if (config-mail--message-from-me-p msg)
-                              (mu4e-get-sent-folder msg)
-                            (mu4e-get-refile-folder msg)))
-            :action (lambda (docid msg target)
-                      (unless (config-mail--message-from-me-p msg)
-                        (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N")))))
+  (setf (alist-get 'refile mu4e-marks)
+        '(:char ("r" . "▶")
+          :prompt "refile"
+          :dyn-target (lambda (target msg)
+                        (if (config-mail--message-from-me-p msg)
+                            (mu4e-get-sent-folder msg)
+                          (mu4e-get-refile-folder msg)))
+          :action (lambda (docid msg target)
+                    (unless (config-mail--message-from-me-p msg)
+                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N")))))
 
-    (add-to-list 'display-buffer-alist
-                 `(,(rx bos " *mu4e-main*" eos)
-                   (display-buffer-reuse-window
-                    display-buffer-fullframe)
-                   (reusable-frames . visible)))
+  (add-to-list 'display-buffer-alist
+               `(,(rx bos " *mu4e-main*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-fullframe)
+                 (reusable-frames . visible)))
 
-    ;; Chris Barrett lisp/mu4e-hacks.el
-    ;; https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/mu4e-hacks.el
-    (el-patch-defun mu4e-context-label ()
-      "Propertized string with the current context name, or \"\" if
+  ;; Chris Barrett lisp/mu4e-hacks.el
+  ;; https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/mu4e-hacks.el
+  (el-patch-defun mu4e-context-label ()
+    "Propertized string with the current context name, or \"\" if
     there is none."
-      (if (el-patch-wrap 1 1 (and (mu4e-context-current)
-                                  (derived-mode-p 'mu4e-main-mode 'mu4e-headers-mode
-                                                  'mu4e-view-mode 'mu4e-compose-mode)))
-          (concat "[" (propertize (mu4e~quote-for-modeline
-                                   (mu4e-context-name (mu4e-context-current)))
-                                  'face 'mu4e-context-face) "]")
-        ""))
+    (if (el-patch-wrap 1 1 (and (mu4e-context-current)
+                                (derived-mode-p 'mu4e-main-mode 'mu4e-headers-mode
+                                                'mu4e-view-mode 'mu4e-compose-mode)))
+        (concat "[" (propertize (mu4e~quote-for-modeline
+                                 (mu4e-context-name (mu4e-context-current)))
+                                'face 'mu4e-context-face) "]")
+      ""))
 
-    (el-patch-defun mu4e~main-view ()
-      "Create the mu4e main-view, and switch to it."
-      (if (eq mu4e-split-view 'single-window)
-          (if (buffer-live-p (mu4e-get-headers-buffer))
-              (switch-to-buffer (mu4e-get-headers-buffer))
-            (mu4e~main-menu))
-        (mu4e~main-view-real nil nil)
-        ((el-patch-swap switch-to-buffer display-buffer) mu4e~main-buffer-name)
-        (goto-char (point-min)))
-      (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
+  (el-patch-defun mu4e~main-view ()
+    "Create the mu4e main-view, and switch to it."
+    (if (eq mu4e-split-view 'single-window)
+        (if (buffer-live-p (mu4e-get-headers-buffer))
+            (switch-to-buffer (mu4e-get-headers-buffer))
+          (mu4e~main-menu))
+      (mu4e~main-view-real nil nil)
+      ((el-patch-swap switch-to-buffer display-buffer) mu4e~main-buffer-name)
+      (goto-char (point-min)))
+    (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
 
-  (use-package messages-are-flowing
-    :straight t
-    :ghook ('message-mode-hook #'messages-are-flowing-use-and-mark-hard-newlines)
-    :config/el-patch
-    (el-patch-defun messages-are-flowing-use-and-mark-hard-newlines ()
-      "Turn on `use-hard-newlines', and make hard newlines visible.
+(use-package messages-are-flowing
+  :straight t
+  :ghook ('message-mode-hook #'messages-are-flowing-use-and-mark-hard-newlines)
+  :config/el-patch
+  (el-patch-defun messages-are-flowing-use-and-mark-hard-newlines ()
+    "Turn on `use-hard-newlines', and make hard newlines visible.
   The main use of this is to send \"flowed\" email messages, where
   line breaks within paragraphs are adjusted by the recipient's
   device, such that messages remain readable on narrow displays."
-      (interactive)
-      (use-hard-newlines (el-patch-add +1 t))
-      (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t)))
+    (interactive)
+    (use-hard-newlines (el-patch-add +1 t))
+    (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t)))
 
-  (use-package mu4e-alert
-    :straight t
-    :after (mu4e)
-    :config
-    (general-setq mu4e-alert-interesting-mail-query "flag:unread maildir:/INBOX ")
-    (mu4e-alert-enable-mode-line-display))
+(use-package mu4e-alert
+  :straight t
+  :after (mu4e)
+  :config
+  (general-setq mu4e-alert-interesting-mail-query "flag:unread maildir:/INBOX ")
+  (mu4e-alert-enable-mode-line-display))
 
-  (use-package org-mu4e
-    :straight nil
-    :after (:any org mu4e))
+(use-package org-mu4e
+  :straight nil
+  :after (:any org mu4e))
 #+end_src
 
 ** Media
 *** [[https://www.gnu.org/software/emms/][EMMS]]
 #+name: init-emms-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package emms
     :straight t
     :commands (emms)
@@ -3902,7 +3909,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flexibeast/ebuku][Ebuku]]
 #+name: init-ebuku-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ebuku
     :straight t)
 #+end_src
@@ -3993,43 +4000,43 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/emacs-lsp/lsp-mode][LSP-Mode]]
 #+name: init-lsp-mode-block
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :straight t
-    :commands (lsp)
-    :gfhook #'lsp-enable-which-key-integration
-    :config
-    (general-setq lsp-client-packages '(lsp-clients)
-                  lsp-diagnostic-package :none
-                  lsp-enable-completion-at-point nil
-                  lsp-enable-folding nil
-                  lsp-enable-links nil
-                  lsp-enable-snippet nil
-                  lsp-enable-symbol-highlighting nil
-                  lsp-idle-delay 0.500
-                  lsp-log-io nil
-                  lsp-prefer-capf t
-                  lsp-prefer-flymake nil
-                  lsp-restart 'auto-restart)
+(use-package lsp-mode
+  :straight t
+  :commands (lsp lsp-deferred)
+  :ghook ('prog-mode-hook #'lsp-deferred)
+  :gfhook #'lsp-enable-which-key-integration
+  :company (company-lsp
+            company-capf
+            company-files
+            company-dabbrev-code)
+  :init
+  (defvar lsp-on-touch-time 0)
+  (defun lsp-on-change-hack (start end length)
+    (when (> (- (float-time (current-time)) lsp-on-touch-time) 30)
+      (setq lsp-on-touch-time (float-time (current-time)))))
+  :config
+  (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
+                lsp-diagnostic-package :none
+                lsp-idle-delay 0.500
+                lsp-log-io nil
+                lsp-prefer-capf t
+                lsp-restart 'auto-restart)
 
-       ;; don't ping LSP lanaguage server too frequently
-       (defvar lsp-on-touch-time 0)
-       (defadvice lsp-on-change (around lsp-on-change-hack activate)
-     ;; don't run `lsp-on-change' too frequently
-     (when (> (- (float-time (current-time))
-             lsp-on-touch-time) 30) ;; 30 seconds
-       (setq lsp-on-touch-time (float-time (current-time)))
-       ad-do-it)))
+  ;; don't ping LSP lanaguage server too frequently
+  (general-add-advice #'lsp-on-change-hack :around 'lsp-on-change)
+  (general-add-hook 'c++-mode-hook #'lsp)
+  (general-add-hook 'python-mode-hook #'lsp))
 
-  (use-package lsp-ui
-    :straight t
-    :if (display-graphic-p)
-    :ghook 'lsp-mode-hook
-    :init
-    (general-setq lsp-ui-doc-enable nil
-                  lsp-ui-imenu-enable nil
-                  lsp-ui-peek-enable nil
-                  lsp-ui-flycheck-enable t
-                  lsp-ui-sideline-enable t))
+(use-package lsp-ui
+  :straight t
+  :if (display-graphic-p)
+  :ghook 'lsp-mode-hook
+  :init
+  (general-setq lsp-ui-doc-enable t
+                lsp-ui-imenu-enable t
+                lsp-ui-peek-enable t
+                lsp-ui-flycheck-enable t
+                lsp-ui-sideline-enable t))
 #+end_src
 
 ** Syntax & Linting
@@ -4334,7 +4341,7 @@ This is a nifty package that allows me to define functions as local variables in
     :mode ("\\.edn$"))
 #+end_src
 
-**** Paredit
+**** [[https://www.emacswiki.org/emacs/ParEdit][Paredit]]
 #+name: init-paredit-block
 #+begin_src emacs-lisp :tangle no
 (use-package paredit
@@ -4590,6 +4597,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package python
   :straight (:type built-in)
+  :capf #'python-completion-at-point
   :preface
   (defun arco/python-use-correct-flycheck-exe ()
     "Use the correct Python executable for flycheck."
@@ -4603,10 +4611,7 @@ This is a nifty package that allows me to define functions as local variables in
       (setq-local flycheck-python-pycompile-executable executable)
       (setq-local flycheck-python-pylint-executable "pylint")
       (setq-local flycheck-python-flake8-executable "flake8")))
-  ;; (with-eval-after-load 'lsp-clients
-  ;;   (setq lsp-clients-python-settings
-  ;;         (plist-put lsp-clients-python-settings
-  ;;                    :plugins.pydocstlye.enabled t)))
+
   :config
   (general-setq python-shell-interpreter "ipython"
                 python-shell-interpreter-args "-i --simple-prompt --no-color-info"
@@ -4617,27 +4622,25 @@ This is a nifty package that allows me to define functions as local variables in
                 comment-inline-offset 2
                 tab-width 4)
 
-  (compdef
-   :modes #'python-mode
-   :company '(company-lsp
-              company-files
-              company-capf)
-   :capf #'python-completion-at-point)
-
-
   (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe))
 #+end_src
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
 #+begin_src emacs-lisp
-  (use-package lsp-python-ms
-    :straight t
-    :ghook ('python-mode-hook #'init-lsp-python-ms)
-    :preface
-    (defun init-lsp-python-ms ()
-      (require 'lsp-python-ms)
-      (lsp)))
+(use-package lsp-python-ms
+  :straight t)
+#+end_src
+
+*** C++
+**** [[https://github.com/MaskRay/emacs-ccls][CCLS]]
+#+name: init-ccls-block
+#+begin_src emacs-lisp
+(use-package ccls
+  :straight t
+  :after lsp-mode
+  :config
+  (general-setq ccls-executable "/usr/local/bin/ccls"))
 #+end_src
 
 *** File Modes

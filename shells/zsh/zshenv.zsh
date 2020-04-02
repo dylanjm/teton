@@ -102,7 +102,8 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/
 ###
 ### Guile
 ###
-export GUILE_AUTO_COMPILE=0
+export GUILE_AUTO_COMPILE="fresh"
+export GUILE_HISTORY="$XDG_DATA_HOME/guile_history"
 
 ###
 ### Julia

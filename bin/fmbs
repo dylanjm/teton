@@ -61,6 +61,7 @@ _main() {
 
     mapfile -t x < <(fd | grep -o 'U=.*:' | sort -k1.3n | uniq -d)
 
+    local i
     for i in "${x[@]}"; do
         y="$(fd ".*${i}" --exec gstat -c '%X %n' \; | sort -nr | awk 'NR==1 {print $2}')"
         newy="${y/,*}"

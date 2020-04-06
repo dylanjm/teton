@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-04-01 13:56:58
+/last updated/: 2020-04-06 11:25:02
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -4079,8 +4079,7 @@ A nice way to restart emacs on the fly if you need to.
                 (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
   (general-setq flycheck-sh-shellcheck-executable "shellcheck"
                 flycheck-shellcheck-follow-sources t)
-  (general-pushnew 'sh-shellcheck flycheck-checkers)
-  (general-pushnew 'zsh flycheck-shellcheck-supported-shells))
+  (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
 *** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]

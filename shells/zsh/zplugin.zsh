@@ -27,20 +27,20 @@ zinit $load romkatv/powerlevel10k
 zinit ice wait multisrc"*.zsh" lucid
 zinit $load $ZSH/interactive
 
-zinit ice wait lucid
-zinit $load hlissner/zsh-autopair
+# zinit ice wait lucid
+# zinit $load hlissner/zsh-autopair
 
 zinit ice wait blockf lucid
 zinit $load zsh-users/zsh-completions
 
-zinit ice lucid
-zinit $load zdharma/history-search-multi-word
+# zinit ice lucid
+# zinit $load zdharma/history-search-multi-word
 
-zinit ice lucid
-zinit $load rupa/z
-
-zinit ice lucid
-zinit $load changyuheng/fz
+# zinit ice lucid
+# zinit $load rupa/z
+#
+# zinit ice lucid
+# zinit $load changyuheng/fz
 
 zinit ice wait lucid
 zinit $load zsh-users/zsh-history-substring-search

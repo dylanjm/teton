@@ -34,6 +34,7 @@
     ~/.latexmkrc: apps/latexmkrc
     ~/.editorconfig: apps/editorconfig
     ~/.mbsyncrc: apps/mbsyncrc
+    ~/.guile: apps/guile
 
     ~/.config/alacritty: apps/alacritty
     ~/.config/direnv: apps/direnv

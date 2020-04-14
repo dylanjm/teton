@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+OFFICE_SPACE="$HOME/Documents/misc/office_space.jpg"
+
+file-to-clipboard() {
+    osascript \
+        -e 'on run args' \
+        -e 'set the clipboard to (read (POSIX file (first item of args)) as JPEG picture)' \
+        -e end \
+        "${@}"
+}
+
+main() {
+    local caption="${*}"
+    local tmpfile
+    [[ -e /tmp/smash.jpg ]] && rm /tmp/smash.jpg
+    tmpfile=$(mktemp /tmp/smash.jpg)
+
+    convert "${OFFICE_SPACE}" -pointsize 72 -annotate +750+1100 "${caption}" "${tmpfile}"
+
+    file-to-clipboard "${tmpfile}"
+}
+
+main "${@}"

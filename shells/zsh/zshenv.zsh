@@ -95,6 +95,11 @@ export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
 
 ###
+### Atom
+###
+export ATOM_HOME="$XDG_CONFIG_HOME/atom"
+
+###
 ### Java
 ###
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"

@@ -2,7 +2,7 @@
 
 function nuke() {
     read -r "response?Are you sure? [y/N] "
-    read -r "dry?Would you like to do a dry-run first? "
+    read -r "dry?Would you like to do a dry-run first? [y/N] "
 
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
         if [[ "$dry" =~ ^([yY][eE][sS]|[yY])+$ ]]; then

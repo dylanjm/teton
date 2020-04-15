@@ -26,7 +26,6 @@ parse-args() {
         ;;
     esac
   done
-  shift $((OPTIND - 1))
 }
 
 make_meme() {
@@ -61,10 +60,11 @@ file-to-clipboard() {
 
 
 main() {
-  parse-args "${@}"
-  setup-vars
-  make_meme "${1}"
-  file-to-clipboard
+    parse-args "${@}"
+    shift $((OPTIND - 1))
+    setup-vars
+    make_meme "${1}"
+    file-to-clipboard
 }
 
 main "${@}"

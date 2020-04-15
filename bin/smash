@@ -1,24 +1,70 @@
 #!/usr/bin/env bash
 
-OFFICE_SPACE="$HOME/Documents/misc/office_space.jpg"
+setup-vars() {
+  [[ -e /tmp/office_space.jpg ]] && rm /tmp/office_space.jpg
+  [[ -e /tmp/smash.jpg ]] && rm /tmp/smash.jpg
 
-file-to-clipboard() {
-    osascript \
-        -e 'on run args' \
-        -e 'set the clipboard to (read (POSIX file (first item of args)) as JPEG picture)' \
-        -e end \
-        "${@}"
+  IMG_URL="https://electricbricks.net/wp-content/uploads/2016/11/office-space-printer.jpg"
+  MEME_FILE=$(mktemp /tmp/smash.jpg)
+  OFFICE_SPACE=$(mktemp /tmp/office_space.jpg)
+  wget --quiet "${IMG_URL}" -O "${OFFICE_SPACE}"
 }
 
+parse-args() {
+  while getopts ":w" flag; do
+    case "$flag" in
+      w)
+        WHITEBAR=1
+        ;;
+      :)
+        printf "Invalid Flag"
+        exit 1
+        ;;
+      \?)
+        printf "Usage: smash [-w] MEME_TEXT"
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+}
+
+make_meme() {
+  local caption="${1}"
+
+  if [[ "${WHITEBAR}" = "1" ]]; then
+    convert "${OFFICE_SPACE}" \
+            -background white \
+            -fill black \
+            -size ${width}x100 \
+            label:"${caption}" \
+            +swap \
+            -gravity West \
+            -append "${MEME_FILE}"
+  else
+    convert "${OFFICE_SPACE}" \
+            -pointsize 72 \
+            -annotate +750+1100 \
+            "${caption}" \
+            "${MEME_FILE}"
+  fi
+
+}
+
+file-to-clipboard() {
+  osascript \
+    -e 'on run args' \
+    -e 'set the clipboard to (read (POSIX file (first item of args)) as JPEG picture)' \
+    -e end \
+    "${MEME_FILE}"
+}
+
+
 main() {
-    local caption="${*}"
-    local tmpfile
-    [[ -e /tmp/smash.jpg ]] && rm /tmp/smash.jpg
-    tmpfile=$(mktemp /tmp/smash.jpg)
-
-    convert "${OFFICE_SPACE}" -pointsize 72 -annotate +750+1100 "${caption}" "${tmpfile}"
-
-    file-to-clipboard "${tmpfile}"
+  parse-args "${@}"
+  setup-vars
+  make_meme "${1}"
+  file-to-clipboard
 }
 
 main "${@}"

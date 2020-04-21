@@ -1,0 +1,29 @@
+#!/usr/local/bin/guile \
+-e main -s
+!#
+
+(use-modules (ice-9 rdelim))
+(use-modules (ice-9 popen))
+(use-modules (ice-9 streams))
+(use-modules (ice-9 textual-ports))
+
+(define (create-pixel-data ppath)
+  (let* ((command (string-join `("convert" ,ppath "txt:/tmp/picdat.txt")))
+         (status (system command))
+         (port #f)
+         (pstream #f))
+    (when (zero? status)
+      (set! port (open-input-file "/tmp/picdat.txt"))
+      (set! pstream (port->stream port read-line)))
+
+    (if (eq? pstream #f)
+        (exit 1)
+        (stream->list pstream))))
+
+
+
+(define (main args)
+  (let ((ppath (cadr args)))
+    (define pdat (create-pixel-data ppath))
+    (display pdat)
+    (newline)))

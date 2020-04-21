@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-04-06 11:25:02
+/last updated/: 2020-04-20 10:37:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1347,8 +1347,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
   (use-package minibuffer
     :straight (:type built-in)
-    :general
-    ("C-g" #'minibuffer-keyboard-quit)
     :init
     (defun djm/minibuffer-setup-hook ()
       (general-setq gc-cons-threshold extended-gc-cons-threshold))
@@ -1951,28 +1949,6 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 *** Mode-line
 #+name: init-mode-line-block
 #+begin_src emacs-lisp
-;; (use-package emacs
-;;   :straight nil
-;;   :config
-;;   (general-setq mode-line-percent-position nil
-;;     mode-line-defining-kbd-macro
-;;     (propertize " Macro" 'face 'mode-line-emphasis))
-;;   (general-setq-default mode-line-format
-;;     '("%e"
-;;        mode-line-front-space
-;;        mode-line-mule-info
-;;        mode-line-client
-;;        mode-line-modified
-;;        mode-line-remote
-;;        mode-line-frame-identification
-;;        mode-line-buffer-identification
-;;        " "
-;;        mode-line-position
-;;        " "
-;;        mode-line-modes
-;;        " "
-;;        mode-line-misc-info
-;;        mode-line-end-spaces)))
 
 (defun radian-mode-line-buffer-modified-status ()
   "Return a mode line construct indicating buffer modification status.
@@ -1981,11 +1957,11 @@ otherwise. (Non-file-visiting buffers are never considered to be
 modified.) It is shown in the same color as the buffer name, i.e.
 `mode-line-buffer-id'."
   (propertize
-    (if (and (buffer-modified-p)
-          (buffer-file-name))
-      "[*]"
-      "   ")
-    'face 'mode-line-buffer-id))
+   (if (and (buffer-modified-p)
+            (buffer-file-name))
+       "[*]"
+     "   ")
+   'face 'mode-line-buffer-id))
 
 ;; Normally the buffer name is right-padded with whitespace until it
 ;; is at least 12 characters. This is a waste of space, so we
@@ -2034,7 +2010,7 @@ spaces."
             'fixedcase 'literal)))
 
 (general-setq mode-line-defining-kbd-macro
-  (propertize " Macro" 'face 'mode-line-emphasis))
+              (propertize " Macro" 'face 'mode-line-emphasis))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -4766,14 +4742,14 @@ This is a nifty package that allows me to define functions as local variables in
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package speed-type
     :straight t)
 #+end_src
 
 *** [[https://github.com/emacsmirror/2048-game][2048-Game]]
 #+name: init-2048-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package 2048-game
     :straight t)
 #+end_src
@@ -4807,13 +4783,12 @@ This is a nifty package that allows me to define functions as local variables in
 
 *** [[https://github.com/vermiculus/sx.el][Stack-Exchange]]
 #+name: init-stack-exchange-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package sx
     :straight t)
 #+end_src
 
 *** [[https://github.com/canatella/xwidget-plus][Xwidget-Plus]]
-
 #+name: init-xwidget-plus-block
 #+begin_src emacs-lisp
   (use-package xwidget-plus

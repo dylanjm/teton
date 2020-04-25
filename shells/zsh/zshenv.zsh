@@ -131,6 +131,11 @@ export MKL_NUM_THREADS=16
 export OMP_NUM_THREADS=16
 
 ###
+### Roswell
+###
+export ROSWELL_HOME="$XDG_CONFIG_HOME"
+
+###
 ### Rust/Cargo
 ###
 export CARGO_HOME="$XDG_CONFIG_HOME/cargo"

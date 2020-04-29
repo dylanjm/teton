@@ -15,7 +15,6 @@
     (when (zero? status)
       (set! port (open-input-file "/tmp/picdat.txt"))
       (set! pstream (port->stream port read-line)))
-
     (if (eq? pstream #f)
         (exit 1)
         (stream->list pstream))))

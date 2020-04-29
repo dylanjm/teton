@@ -28,6 +28,11 @@ alias et="emacsclient -t"
 [[ "$INSIDE_EMACS" = 'vterm' ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
+### Common Lisp
+###
+alias sbcl="rlwrap sbcl"
+
+###
 ### Navigation
 ###
 alias de="cd $HOME/Desktop"

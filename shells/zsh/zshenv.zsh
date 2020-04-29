@@ -179,6 +179,11 @@ export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 export SUBVERSION_HOME="$XDG_CONFIG_HOME/subversion"
 
 ###
+### Weechat
+###
+export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
+
+###
 ### Paths
 ###
 fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions

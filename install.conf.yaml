@@ -9,7 +9,7 @@
 - clean: ["~", "~/.config"]
 
 - shell:
-    - command: ./bootstrap/bootstrap-tools
+    - command: ./local/share/bootstrap/bootstrap-tools
       stdout: true
       stdin: true
       stderr: true
@@ -17,28 +17,28 @@
       quiet: false
 
 - link:
-    ~/.zshrc: shells/zsh/zshrc.zsh
-    ~/.zshenv: shells/zsh/zshenv.zsh
-    ~/.bashrc: shells/bash/bashrc.sh
-    ~/.bash_profile: shells/bash/bash_profile.sh
-    ~/.config/starship.toml: shells/bash/themes/starship.toml
-    ~/.config/fish: shells/fish
-    ~/.config/emacs: editors/emacs.d
-    ~/.gitconfig: git/gitconfig
-    ~/.gitignore: git/gitignore
-    ~/.latexmkrc: apps/latexmkrc
-    ~/.editorconfig: apps/editorconfig
-    ~/.mbsyncrc: apps/mbsyncrc
-    ~/.guile: apps/guile
-    ~/.config/alacritty: apps/alacritty
-    ~/.config/direnv: apps/direnv
-    ~/.qutebrowser: apps/qutebrowser
-    ~/.config/R: apps/R
-    ~/.config/python: apps/python
-    ~/.config/karabiner/karabiner.edn: apps/karabiner/karabiner.edn
-    ~/.config/yabai: apps/yabai
-    ~/.ledgerrc: apps/ledgerrc
-    ~/.local/bin: bin
+    ~/.zshrc: config/shells/zsh/zshrc.zsh
+    ~/.zshenv: config/shells/zsh/zshenv.zsh
+    ~/.bashrc: config/shells/bash/bashrc.sh
+    ~/.bash_profile: config/shells/bash/bash_profile.sh
+    ~/.config/starship.toml: config/shells/bash/themes/starship.toml
+    ~/.config/fish: config/shells/fish
+    ~/.config/emacs: config/emacs
+    ~/.gitconfig: config/git/gitconfig
+    ~/.gitignore: config/git/gitignore
+    ~/.latexmkrc: config/latexmkrc
+    ~/.editorconfig: config/editorconfig
+    ~/.mbsyncrc: config/mbsyncrc
+    ~/.guile: config/guile
+    ~/.config/alacritty: config/alacritty
+    ~/.config/direnv: config/direnv
+    ~/.qutebrowser: config/qutebrowser
+    ~/.config/R: config/R
+    ~/.config/python: config/python
+    ~/.config/karabiner/karabiner.edn: config/karabiner/karabiner.edn
+    ~/.config/yabai: config/yabai
+    ~/.ledgerrc: config/ledgerrc
+    ~/.local/bin: local/bin
 
 - shell:
     - command: git submodule update --init --recursive

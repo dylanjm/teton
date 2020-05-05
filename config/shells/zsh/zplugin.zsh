@@ -52,8 +52,8 @@ bindkey -M emacs '^N' history-substring-search-down
 zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid
 zinit $load zdharma/fast-syntax-highlighting
 
-# zinit ice wait'1b' atload"!_zsh_autosuggest_start" lucid
-# zinit $load zsh-users/zsh-autosuggestions
+zinit ice wait'1b' atload"!_zsh_autosuggest_start" lucid
+zinit $load zsh-users/zsh-autosuggestions
 
-zinit ice wait'1b' lucid
-zinit $load marlonrichert/zsh-autocomplete
+# zinit ice wait'1b' lucid
+# zinit $load marlonrichert/zsh-autocomplete

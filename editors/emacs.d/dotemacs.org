@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-04-22 15:46:05
+/last updated/: 2020-05-05 12:42:09
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -639,12 +639,6 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 
 *** Hooks, Macros & Advice
 
-#+name: init-macros-block
-#+begin_src emacs-lisp
-(fset 'insert-performance-action
-      (kmacro-lambda-form [?\C-s ?O ?u ?t ?p ?u ?t ?s ?\C-m ?\C-p ?\[ ?P ?e ?r ?f ?o ?r ?m ?a ?n ?c ?e ?M ?e ?t ?r ?i ?c ?O ?u ?t ?p ?u ?t ?s ?\] ?\C-m ?\[ ?\] ?\C-m ?\C-p ?\C-p ?\C-m ?\C-x ?\C-s] 0 "%d"))
-#+end_src
-
 This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
@@ -654,19 +648,19 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
 #+name: init-advice-block
 #+begin_src emacs-lisp
-  (defun arco/always-exit-minibuffer-first ()
-    (if-let ((minibuffer (active-minibuffer-window)))
-        (with-current-buffer (window-buffer minibuffer)
-          (minibuffer-keyboard-quit))
-      (funcall keyboard-quit)))
+(defun arco/always-exit-minibuffer-first ()
+  (if-let ((minibuffer (active-minibuffer-window)))
+      (with-current-buffer (window-buffer minibuffer)
+        (minibuffer-keyboard-quit))
+    (funcall keyboard-quit)))
 
-  (general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
+(general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
 #+end_src
 
 #+name: init-misc-settings-block
 #+begin_src emacs-lisp
-  (mapc (lambda (c)
-          (set-char-table-range auto-fill-chars c t)) "!-=+]};:'\",.?")
+(mapc (lambda (c)
+        (set-char-table-range auto-fill-chars c t)) "!-=+]};:'\",.?")
 #+end_src
 
 *** Keybindings & Aliases
@@ -680,16 +674,16 @@ Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][ra
 
 #+name: init-aliases-block
 #+begin_src emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (fset 'display-startup-echo-area-message 'ignore)
-  (fset 'view-hello-file 'ignore)
-  (fset 'custom-safe-themes 't)
+(fset 'yes-or-no-p 'y-or-n-p)
+(fset 'display-startup-echo-area-message 'ignore)
+(fset 'view-hello-file 'ignore)
+(fset 'custom-safe-themes 't)
 #+end_src
 
 #+name: init-aliases-block
 #+begin_src emacs-lisp
-  (defalias 'qr #'query-replace)
-  (defalias 'qrr #'query-replace-regexp)
+(defalias 'qr #'query-replace)
+(defalias 'qrr #'query-replace-regexp)
 #+end_src
 
 ** Built-In Defaults
@@ -1137,28 +1131,28 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Font-Core (Built-In)
 #+name: init-font-core-block
 #+begin_src emacs-lisp
-  (use-package font-core
-    :straight (:type built-in)
-    :init
-    (global-font-lock-mode))
+(use-package font-core
+  :straight (:type built-in)
+  :init
+  (global-font-lock-mode))
 #+end_src
 
 *** Frame (Built-In)
 
 #+name: init-frame-block
 #+begin_src emacs-lisp
-  (use-package frame
-    :straight (:type built-in)
-    :config
-    (general-setq window-divider-default-places t
-          window-divider-default-bottom-width 1
-          window-divider-default-right-width 1)
-    (blink-cursor-mode -1)
-    (tooltip-mode -1)
-    (mouse-wheel-mode -1)
-    (global-so-long-mode +1)
-    (unless (display-graphic-p)
-      (menu-bar-mode -1)))
+(use-package frame
+  :straight (:type built-in)
+  :config
+  (general-setq window-divider-default-places t
+                window-divider-default-bottom-width 1
+                window-divider-default-right-width 1)
+  (blink-cursor-mode -1)
+  (tooltip-mode -1)
+  ;;(mouse-wheel-mode -1)
+  (global-so-long-mode +1)
+  (unless (display-graphic-p)
+    (menu-bar-mode -1)))
 #+end_src
 
 *** Gnutls (Built-In)
@@ -1731,65 +1725,65 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Window (Built-In)
 #+name: init-window (built-in)-block
 #+begin_src emacs-lisp
-  (use-package window
-    :straight nil
-    :init
-    (general-setq display-buffer-alist
-                  '(;; top side window
-                    ("\\*\\(Flycheck\\|Package-Lint\\).*"
-                     (display-buffer-in-side-window)
-                     (window-height . 0.16)
-                     (side . bottom)
-                     (slot . 0)
-                     (window-parameters . ((no-other-window . t))))
-                    ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*"
-                     (display-buffer-in-side-window)
-                     (window-height . 0.16)
-                     (side . bottom)
-                     (slot . 1)
-                     (window-parameters . ((no-other-window . t))))
-                    ;; bottom side window
-                    (".*\\*Completions.*"
-                     (display-buffer-in-side-window)
-                     (window-height . 0.16)
-                     (side . bottom)
-                     (slot . 0)
-                     (window-parameters . ((no-other-window . t))))
-                    ("\\*e?shell.*"
-                     (display-buffer-in-side-window)
-                     (window-height . 0.16)
-                     (side . bottom)
-                     (slot . 1))
-                    ;; left side window
-                    ("\\*helpful.*"
-                     (display-buffer-in-side-window)
-                     (window-width . 0.30)       ; See the :hook
-                     (side . right)
-                     (slot . 0)
-                     (window-parameters . ((no-other-window . t))))
-                    ("\\*Help.*"
-                     (display-buffer-in-side-window)
-                     (window-width . 0.30)       ; See the :hook
-                     (side . right)
-                     (slot . 0)
-                     (window-parameters . ((no-other-window . t))))
-                    ;; right side window
-                    ("\\*Faces\\*"
-                     (display-buffer-in-side-window)
-                     (window-width . 0.25)
-                     (side . right)
-                     (slot . 0)
-                     (window-parameters . ((no-other-window . t)
-                                           (mode-line-format . (" "
-                                                                mode-line-buffer-identification)))))
-                    ("\\*Custom.*"
-                     (display-buffer-in-side-window)
-                     (window-width . 0.25)
-                     (side . right)
-                     (slot . 1))))
-    (general-setq window-combination-resize t
-                  even-window-sizes 'height-only
-                  window-sides-vertical nil))
+(use-package window
+  :straight nil
+  :init
+  (general-setq display-buffer-alist
+                '(;; top side window
+                  ("\\*\\(Flycheck\\|Package-Lint\\).*"
+                   (display-buffer-in-side-window)
+                   (window-height . 0.16)
+                   (side . bottom)
+                   (slot . 0)
+                   (window-parameters . ((no-other-window . t))))
+                  ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*"
+                   (display-buffer-in-side-window)
+                   (window-height . 0.16)
+                   (side . bottom)
+                   (slot . 1)
+                   (window-parameters . ((no-other-window . t))))
+                  ;; bottom side window
+                  (".*\\*Completions.*"
+                   (display-buffer-in-side-window)
+                   (window-height . 0.16)
+                   (side . bottom)
+                   (slot . 0)
+                   (window-parameters . ((no-other-window . t))))
+                  ("\\*e?shell.*"
+                   (display-buffer-in-side-window)
+                   (window-height . 0.16)
+                   (side . bottom)
+                   (slot . 1))
+                  ;; left side window
+                  ("\\*helpful.*"
+                   (display-buffer-in-side-window)
+                   (window-width . 0.30)       ; See the :hook
+                   (side . right)
+                   (slot . 0)
+                   (window-parameters . ((no-other-window . t))))
+                  ("\\*Help.*"
+                   (display-buffer-in-side-window)
+                   (window-width . 0.30)       ; See the :hook
+                   (side . right)
+                   (slot . 0)
+                   (window-parameters . ((no-other-window . t))))
+                  ;; right side window
+                  ("\\*Faces\\*"
+                   (display-buffer-in-side-window)
+                   (window-width . 0.25)
+                   (side . right)
+                   (slot . 0)
+                   (window-parameters . ((no-other-window . t)
+                                         (mode-line-format . (" "
+                                                              mode-line-buffer-identification)))))
+                  ("\\*Custom.*"
+                   (display-buffer-in-side-window)
+                   (window-width . 0.25)
+                   (side . right)
+                   (slot . 1))))
+  (general-setq window-combination-resize t
+                even-window-sizes 'height-only
+                window-sides-vertical nil))
 #+end_src
 
 *** Winner (Built-In)
@@ -1950,7 +1944,6 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 *** Mode-line
 #+name: init-mode-line-block
 #+begin_src emacs-lisp
-
 (defun radian-mode-line-buffer-modified-status ()
   "Return a mode line construct indicating buffer modification status.
 This is [*] if the buffer has been modified and whitespace
@@ -4293,7 +4286,8 @@ Lisp function does not specify a special indentation."
   :straight t
   :ghook 'common-lisp-hook
   :config
-  (general-setq inferior-lisp-program "/usr/local/bin/sbcl"))
+  (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
+                sly-mrepl-history-file-name (no-littering-expand-var-file-name "sly-mrepl-history")))
 #+end_src
 
 **** SLIME

@@ -30,7 +30,7 @@ alias et="emacsclient -t"
 ###
 ### Common Lisp
 ###
-alias sbcl="rlwrap sbcl"
+alias sbcl="rlwrap -p \"red\" -D 0 -H \"$XDG_DATA_HOME/sbcl_history\" sbcl"
 
 ###
 ### Navigation

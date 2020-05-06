@@ -16,15 +16,14 @@ source $ZSH/zplugin.zsh
 
 if [[ "$INSIDE_EMACS" == "vterm" ]]; then
   setopt PROMPT_SUBST
-  [[ ! -f $DOTFILES/shells/zsh/themes/p10k_vterm.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k_vterm.zsh
+  [[ ! -f $ZSH/themes/p10k_vterm.zsh ]] || source $ZSH/themes/p10k_vterm.zsh
   PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
 else
-  [[ ! -f $DOTFILES/shells/zsh/themes/p10k.zsh ]] || source $DOTFILES/shells/zsh/themes/p10k.zsh
+  [[ ! -f $ZSH/themes/p10k.zsh ]] || source $ZSH/themes/p10k.zsh
 fi
 
 # eval "$(direnv hook $0)"
 /usr/local/bin/gpgconf --launch gpg-agent
-
 
 # If zsh init ends with a failing command (like a conditional) the prompt will
 # show the "error" colour on first launch. To avoid this, we simply end with a

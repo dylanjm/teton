@@ -40,7 +40,7 @@ typeset -gi SAVEHIST=1000000000
 ###
 ### ZSH
 ###
-export ZSH="$DOTFILES/shells/zsh"
+export ZSH="$DOTFILES/config/shells/zsh"
 export _cache_dir="$XDG_CACHE_HOME/zsh/zcompdump"
 
 ###

@@ -13,8 +13,6 @@
 ### Emacs ###
 *~
 \#*\#
-/.emacs.desktop
-.ccls-cache/
 *.elc
 auto-save-list
 tramp
@@ -25,7 +23,6 @@ tramp
 
 # AUCTeX auto folder
 /auto/
-
 
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:

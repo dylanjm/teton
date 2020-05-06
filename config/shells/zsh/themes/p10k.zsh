@@ -55,7 +55,7 @@
       background_jobs         # presence of background jobs
       direnv                  # direnv status (https://direnv.net/)
       # virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
-      # anaconda                # conda environment (https://conda.io/)
+      anaconda                # conda environment (https://conda.io/)
       pyenv                   # python environment (https://github.com/pyenv/pyenv)
       #goenv                   # go environment (https://github.com/syndbg/goenv)
       #nodenv                  # node.js version from nodenv (https://github.com/nodenv/nodenv)
@@ -627,11 +627,11 @@
 
   #####################[ anaconda: conda environment (https://conda.io/) ]######################
   # # Anaconda environment color.
-  # typeset -g POWERLEVEL9K_ANACONDA_FOREGROUND=37
+  typeset -g POWERLEVEL9K_ANACONDA_FOREGROUND=37
   # # Don't show Python version next to the anaconda environment name.
-  # typeset -g POWERLEVEL9K_ANACONDA_SHOW_PYTHON_VERSION=false
+  typeset -g POWERLEVEL9K_ANACONDA_SHOW_PYTHON_VERSION=false
   # # Separate environment name from Python version only with a space.
-  # typeset -g POWERLEVEL9K_ANACONDA_{LEFT,RIGHT}_DELIMITER=
+  typeset -g POWERLEVEL9K_ANACONDA_{LEFT,RIGHT}_DELIMITER=
   # # Custom icon.
   # # typeset -g POWERLEVEL9K_ANACONDA_VISUAL_IDENTIFIER_EXPANSION='⭐'
 

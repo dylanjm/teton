@@ -1,3 +1,10 @@
 #!/usr/bin/env bash
 
-complete -W "Calvert_Cliffs-1_PROTOTYPE FUMEXII_Regate HBEP HbepR1 IFA_431 IFA_432 IFA_515_RodA1 IFA_519 IFA_534 IFA_535 IFA_562 IFA_597_3 IFA_636 IFA_677 LOCA_ANL_cladding_burst_tests LOCA_Hardy_cladding_test LOCA_IFA_650 LOCA_MT4_MT6A LOCA_ORNL_cladding_burst_tests LOCA_PUZRY_cladding_burst_tests LOCA_REBEKA_cladding_burst_tests LOCA_cladding_creep_tests OSIRIS_H09 OSIRIS_J12 RE_Ginna_Rodlets RIA_CABRI_REP_Na RIA_CABRI_REP_Na4 RIA_NSRR_FK Riso_AN2 Riso_AN3 Riso_AN4 Riso_AN8 Riso_GE7_ZX115 Riso_GEm_STR013 Riso_II3 Riso_II5 Super_Ramp Tribulation US_PWR_16_x_16" bisfetch
+_bisfetch_completions() {
+  mapfile -t COMPREPLY < <(compgen -W \
+                                   "$(find "$HOME/Documents/projects/bison/assessment/LWR/validation" \
+                                   -type d -mindepth 1 -maxdepth 1 -exec basename {} \;)" \
+                                   -- "${COMP_WORDS[1]}")
+}
+
+complete -F _bisfetch_completions bisfetch

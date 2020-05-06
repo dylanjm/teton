@@ -90,6 +90,13 @@ export _Z_DATA="$XDG_DATA_HOME/z"
 export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
 
 ###
+### Conda
+###
+export CONDA_ROOT="$XDG_DATA_HOME/conda"
+export CONDARC="$XDG_CONFIG_HOME/condarc"
+export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
+
+###
 ### FZF
 ###
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
@@ -146,14 +153,15 @@ export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 ###
 export PYENV_ROOT="$XDG_CONFIG_HOME/pyenv"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
-export PYLINTHOME="$XDG_DATA_HOME/pylint.d"
-export PYTHONSTARTUP="$XDG_CONFIG_HOME/python/pythonrc"
+export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
+export PYTHONSTARTUP="$XDG_CONFIG_HOME/pythonrc"
 export MPLCONFIGDIR="$XDG_DATA_HOME/matplotlib"
 
 ###
 ### GNU Parallel
 ###
-export PARALLEL_HOME="$XDG_CACHE_HOME/parallel"
+export PARALLEL_HOME="$XDG_DATA_HOME/parallel"
+#export PARALLEL_SHELL="/usr/local/bin/bash"
 
 ###
 ### Emacs-Anywhere
@@ -194,6 +202,7 @@ export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
 fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions
         /usr/local/share/zsh/site-functions
         $ZINIT[HOME_DIR]/completions
+        $DOTFILES/local/share/zsh_completions
         $ZSH/functions
         $ZINIT[PLUGINS_DIR]/zdharma---history-search-multi-word
         $ZINIT[PLUGINS_DIR]/zdharma---fast-syntax-highlighting)

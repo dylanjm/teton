@@ -1,182 +1,253 @@
 #!/usr/bin/env bash
+#
+#  ______  _________ _______  _______  _______ _________ _______
+# (  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
+# | (   ) )   ) (   | (    \/| (    \/| (    \/   ) (   | (    \/| )   ( |
+# | (__/ /    | |   | (_____ | (__    | (__       | |   | |      | (___) |
+# |  __ (     | |   (_____  )|  __)   |  __)      | |   | |      |  ___  |
+# | (  \ \    | |         ) || (      | (         | |   | |      | (   ) |
+# | )___) )___) (___/\____) || )      | (____/\   | |   | (____/\| )   ( |
+# |/ \___/ \_______/\_______)|/       (_______/   )_(   (_______/|/     \|
+#
+# bisfetch - A script to fetch remote assessment performance data
+#
+# Usage:
+#    bisfetch [-h] [-n] [-l INTEGER] [-f <folder>] <folder> ...
+#
+# Depends on:
+#    local BISON repo
+#    access to remote hpc
+#
+# Example:
+#    bisfetch -n -l 2 HBEP
+#
+# Submit issues to https://github.com/dylanm/teton/issues
+#
+# Copyright (c) 2020 Dylan McDowell ◌ git@djmcdowell.com
+
+# Notes ################################################################
+
+
+# Constants ############################################################
 
 readonly PROGNAME="$(basename "${0}")"
 readonly ARGS=("${@}")
+readonly BISON="${BISON_DIR:-$HOME/Documents/projects/bison}"
 
-NORMAL='\033[0m'
-BOLD='\033[1m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-MAGENTA='\033[1;4;35m'
-YELLOW='\033[1;33m'
+# Colors
+readonly NORMAL='\033[0m'
+readonly BOLD='\033[1m'
+readonly RED='\033[1;31m'
+readonly GREEN='\033[1;32m'
+readonly BLUE='\033[1;34m'
+readonly MAGENTA='\033[1;4;35m'
+readonly YELLOW='\033[1;33m'
 
-dry_run=0
-lookback=1
-folder=""
-BISON=${BISON_DIR:-$HOME/Documents/projects/bison}
+# Utilities ############################################################
 
-yellow() { echo "${YELLOW}$*${NORMAL}"; }
-green() { echo "${GREEN}$*${NORMAL}"; }
-blue() { echo "${BLUE}$*${NORMAL}"; }
-red() { echo "${RED}$*${NORMAL}"; }
 magenta() { echo "${MAGENTA}$*${NORMAL}"; }
-bold() { echo "${BOLD}$*${NORMAL}"; }
+yellow()  { echo "${YELLOW}$*${NORMAL}"; }
+green()   { echo "${GREEN}$*${NORMAL}"; }
+bold()    { echo "${BOLD}$*${NORMAL}"; }
+blue()    { echo "${BLUE}$*${NORMAL}"; }
+red()     { echo "${RED}$*${NORMAL}"; }
 
 foldernames() {
-    (
-        printf "IFA_677 RE_Ginna_Rodlets LOCA_ORNL_cladding_burst_tests IFA_519\n"
-        printf "OSIRIS_H09 Riso_II5 IFA_535 IFA_636\n"
-        printf "RIA_NSRR_FK IFA_432 LOCA_IFA_650 LOCA_MT4_MT6A\n"
-        printf "Riso_II3 Calvert_Cliffs-1_PROTOTYPE IFA_534 LOCA_Hardy_cladding_test\n"
-        printf "IFA_562 LOCA_REBEKA_cladding_burst_tests HBEP OSIRIS_J12\n"
-        printf "LOCA_PUZRY_cladding_burst_tests	FUMEXII_Regate Riso_AN3 IFA_515_RodA1\n"
-        printf "Riso_GEm_STR013 Riso_GE7_ZX115 Riso_AN4 IFA_431\n"
-        printf "LOCA_ANL_cladding_burst_tests RIA_CABRI_REP_Na4 HbepR1 RIA_CABRI_REP_Na\n"
-        printf "Tribulation LOCA_cladding_creep_tests IFA_597_3 US_PWR_16_x_16\n"
-        printf "Riso_AN8 Riso_AN2 Super_Ramp\n"
-    ) |
-        column -t
+  if [[ -z "${ALLOWED_FOLDERS+x}" ]]; then
+    ALLOWED_FOLDERS=$(find "${BISON}/assessment/LWR/validation" \
+                           -mindepth 1 -maxdepth 1 \
+                           -type d  -exec basename {} \; \
+                        | sort \
+                        | awk '{printf "%-35s", $0} !(NR%3) {printf "\n"}')
+  fi
+  echo "${ALLOWED_FOLDERS}"
+}
+
+bison_exists_p() {
+  if [[ ! -e "${BISON}" ]]; then
+    cat <<-EOM
+$(echo -e "$(red "ERROR"):")
+
+You must have a local copy of BISON to use this script.
+
+If you do have a local copy, run the following command:
+
+export BISON_DIR="<path/to/your/bison/folder>"
+EOM
+    exit 1
+  fi
+}
+
+folder_not_found() {
+  printf "%b\n\n" "$(red "ERROR: Folder '$folder' Not Found!")"
+  printf "%b\n\n" "$(green "NOTE"): Try using the lookback flag (-l) to fetch a previous nightly run."
+  printf "%b\n" "$(green Possible Folder Names Include):"
+  foldernames
+  exit 1
 }
 
 usage() {
-    cat <<-EOM
+  cat <<-EOM
         $(echo -e "$(red "
-         ______  _________ _______  _______  _______ _________ _______
-        (  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
-        | (   ) )   ) (   | (    \/| (    \/| (    \/   ) (   | (    \/| )   ( |
-        | (__/ /    | |   | (_____ | (__    | (__       | |   | |      | (___) |
-        |  __ (     | |   (_____  )|  __)   |  __)      | |   | |      |  ___  |
-        | (  \ \    | |         ) || (      | (         | |   | |      | (   ) |
-        | )___) )___) (___/\____) || )      | (____/\   | |   | (____/\| )   ( |
-        |/ \___/ \_______/\_______)|/       (_______/   )_(   (_______/|/     \|
-        ")")
+ ______  _________ _______  _______  _______ _________ _______
+(  ___ \ \__   __/(  ____ \(  ____ \(  ____ )\__   __/(  ____ \|\     /|
+| (   ) )   ) (   | (    \/| (    \/| (    \/   ) (   | (    \/| )   ( |
+| (__/ /    | |   | (_____ | (__    | (__       | |   | |      | (___) |
+|  __ (     | |   (_____  )|  __)   |  __)      | |   | |      |  ___  |
+| (  \ \    | |         ) || (      | (         | |   | |      | (   ) |
+| )___) )___) (___/\____) || )      | (____/\   | |   | (____/\| )   ( |
+|/ \___/ \_______/\_______)|/       (_______/   )_(   (_______/|/     \|
+")")
 
-        $(echo -e "$(blue "BIS")")on $(echo -e "$(blue "F")")etch:
+$(echo -e "$(bold "bisfetch (BISON Fetch)")"):
 
-        Script that fetches most recent nightly run data from HPC.
+       A script to fetch remote assessment performance data.
 
-        $(echo -e "$(yellow "USAGE")"):
-               $PROGNAME [-h] [-n] [-l num] [-f folder] [<folder> ...]
+$(echo -e "$(yellow "USAGE")"):
+       $PROGNAME [-h] [-n] [-l INTEGER] [-f folder] [<folder> ...]
 
-        $(echo -e "$(yellow "OPTIONS")"):
-               -h        - Show this message
-               -n        - Perform a dry-run
-               -l        - Look back a previous run; Defaults to 1 (most-recent)
-               -f        - Folder of interest; the flag is optional but a folder is required."
+$(echo -e "$(yellow "OPTIONS")"):
+       -h        - Show this message
+       -n        - Perform a dry-run
+       -l        - Look back a previous run; Defaults to 1 (most-recent)
+       -f        - Folder of interest; the flag is optional but a folder is required.
 
-        $(echo -e "$(yellow "ARGS")"):
-               <folder>        - Folder of interest from remote machine. To fetch all folders specify '*'
+$(echo -e "$(yellow "ARGS")"):
+       <folder>  - Folder of interest from remote machine. To fetch all folders specify '*'
 
-        $(echo -e "$(green "Possible folder names include")"):
-        $(foldernames)
+$(echo -e "$(yellow "EXAMPLES")"):
+
+To fetch the most recent data from IFA_677, the following commands are
+equivalent:
+
+       bisfetch IFA_677
+       bisfetch -f IFA_677
+
+To perform a dry-run and fetch the data that was output two runs ago:
+
+       bisfetch -n -l 2 IFA_677
+
+$(echo -e "$(green "Possible folder names include")"):
+$(foldernames)
 EOM
-    exit 0
+  exit 0
 }
 
 get_args() {
-    while getopts ":hnl:f:" flag; do
-        case "$flag" in
-        n)
-            dry_run=1
-            ;;
-        l)
-            lookback=${OPTARG}
-            ;;
-        h)
-            usage
-            ;;
-        f)
-            folder="${OPTARG}"
-            ;;
-        :)
-            echo "Invalid options: $OPTARG requires an argurment" 1>&2
-            exit 1
-            ;;
-        \?)
-            echo "Usage: bisfetch [-h] [-n] [-l num] [-f folder] [folder(s) ...]"
-            exit 1
-            ;;
-        esac
-    done
 
-    shift $((OPTIND - 1))
+  # instantiate vars
+  dry_run=0
+  lookback=1
+  folder=""
 
-    # Check to ensure folder is specified
-    if [ -z "$folder" ] && [ -z "$1" ]; then
-        printf "%b\n\n" "$(red "You must specify a folder of interest"):"
-        foldernames
+  # make sure bison folder exists
+  bison_exists_p
+
+  while getopts ":hnl:f:" flag; do
+    case "$flag" in
+      n)
+        dry_run=1
+        ;;
+      l)
+        lookback=${OPTARG}
+        ;;
+      h)
+        usage
+        exit 0
+        ;;
+      f)
+        folder="${OPTARG}"
+        ;;
+      :)
+        echo "Invalid options: $OPTARG requires an argurment" 1>&2
         exit 1
-    fi
+        ;;
+      \?)
+        echo "Usage: ${PROGNAME} [-h] [-n] [-l INTEGER] [-f folder] [folder(s) ...]"
+        exit 1
+        ;;
+    esac
+  done
 
-    # If no -f flag then assign folder to first ARG
-    [ -n "$1" ] && folder="$1"
+  shift $((OPTIND - 1))
+
+  # Check to ensure folder is specified
+  if [ -z "$folder" ] && [ -z "$1" ]; then
+    printf "%b\n\n" "$(red "You must specify a folder of interest"):"
+    foldernames
+    exit 1
+  fi
+
+  # If no -f flag then assign folder to first ARG
+  [ -n "$1" ] && folder="$1"
 }
 
+# Core #################################################################
+
 fetch_folder_files() {
-    # Find all *_out.csv files on Falcon1 for specific folder
-    # This is some bash-fu, but bassically we want to find the most recently
-    # modified folder of the type 'bison_XXXXXXXX'
-    # We then want to find all the *_out.csv files inside the folder specified at the
-    # command-line within the 'bison_XXXXXXXX' folder.
-    ssh falcon1 -qn \
-        'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d'\
-        '-regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
-        'sort -t\t -r -nk1,5 | ' \
-        'sed -n '"$lookback"'p | ' \
-        'cut -f2-); ' \
-        'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/*'\
-        '-type f -name "*_out.csv" -perm 660 -not -path "*/doc/*"'\
-        '-printf "%p\n" 2>/dev/null'
+  # Find all *_out.csv files on Falcon1 for specific folder
+  # This is some bash-fu, but bassically we want to find the most recently
+  # modified folder of the type 'bison_XXXXXXXX'
+  # We then want to find all the *_out.csv files inside the folder specified at the
+  # command-line within the 'bison_XXXXXXXX' folder.
+  ssh falcon1 -qn \
+      'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d'\
+      '-regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
+      'sort -t\t -r -nk1,5 | ' \
+      'sed -n '"$lookback"'p | ' \
+      'cut -f2-); ' \
+      'find /projects/bison/git/$newest/assessment/LWR/validation/'"$folder"'/*'\
+      '-type f -name "*_out.csv" -perm 660 -not -path "*/doc/*"'\
+      '-printf "%p\n" 2>/dev/null'
 }
 
 create_local_paths() {
-    # Modify remote paths to fit for local paths
-    for i in "${files[@]}"; do
-        echo "$i" |
-            sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
-    done
+  # Modify remote paths to fit for local paths
+  for i in "${files[@]}"; do
+    echo "$i" |
+      sed -E "s|/projects/bison/git/bison_[0-9]{8}|$BISON|g"
+  done
 }
 
 check_remote_files() {
-    # If ssh returned no results then error out.
-    if [[ -z "${files[0]}" ]]; then
-        printf "%b\n\n" "$(red "ERROR: Folder '$folder' Not Found!")"
-        printf "%b\n\n" "$(green "NOTE"): Try using the lookback flag (-l) to fetch a previous nightly run."
-        printf "%b\n" "$(yellow Possible Folder Names Include):"
-        foldernames
-        exit 1
-    else
-        printf "\n\t📁 %b:\n" \
-            "$(bold "Inspecting Nightly Folder") $(magenta "${files[0]:20:14}") $(bold "for Assessment") $(magenta "$folder")"
-    fi
+  # If ssh returned no results then error out.
+  if [[ -z "${files[0]}" ]]; then
+    folder_not_found
+  else
+    printf "\n📁 %b:\n" \
+           "$(bold "Inspecting Nightly Folder") $(magenta "${files[0]:20:14}") $(bold "for Assessment") $(magenta "$folder")"
+  fi
 }
 
 copy_files() {
-    for ((i = 0; i < ${#files[@]}; i++)); do
-        if [[ $dry_run == 0 ]]; then
-            printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-            printf "\t├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
-            printf "\t╰─ Fetching Remote File...\r"
+  for ((i = 0; i < ${#files[@]}; i++)); do
+    if [[ $dry_run == 0 ]]; then
+      printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+      printf "├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+      printf "╰─ Fetching Remote File...\r"
 
-            if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
-                printf "\t%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
-            else
-                printf "\t%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
-            fi
-        else
-            printf "\t╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-            printf "\t╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
-        fi
-    done
+      if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
+        printf "%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
+      else
+        printf "%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
+      fi
+    else
+      printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+      printf "╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+    fi
+  done
 }
+
+# Main #################################################################
 
 main() {
-    getargs "${@}"
-    mapfile -t files < <(fetch_folder_files)
-    mapfile -t local_paths < <(create_local_paths "${files[*]}")
-    check_remote_files
-    copy_files
+  get_args "${@}"
+  mapfile -t files < <(fetch_folder_files)
+  mapfile -t local_paths < <(create_local_paths "${files[*]}")
+  check_remote_files
+  copy_files
 }
 
-main "${ARGS[@]}"
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  main "${ARGS[@]}"
+fi

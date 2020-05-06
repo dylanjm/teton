@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Constants ############################################################
 _ME=$(basename "${0}")
 
 NORMAL='\033[0m'
@@ -8,12 +9,15 @@ GREEN='\033[1;32m'
 BLUE='\033[1;34m'
 YELLOW='\033[1;33m'
 
-yellow() { echo "${YELLOW}$*${NORMAL}"; }
-green() { echo "${GREEN}$*${NORMAL}"; }
-blue() { echo "${BLUE}$*${NORMAL}"; }
-red() { echo "${RED}$*${NORMAL}"; }
+# Utilities ############################################################
+
 magenta() { echo "${MAGENTA}$*${NORMAL}"; }
-bold() { echo "${BOLD}$*${NORMAL}"; }
+yellow()  { echo "${YELLOW}$*${NORMAL}"; }
+green()   { echo "${GREEN}$*${NORMAL}"; }
+bold()    { echo "${BOLD}$*${NORMAL}"; }
+blue()    { echo "${BLUE}$*${NORMAL}"; }
+red()     { echo "${RED}$*${NORMAL}"; }
+
 
 usage() {
   cat <<HEREDOC
@@ -60,6 +64,8 @@ get_args() {
   dirb=$(basename "$(dirname "$basedir")")
   maindir=$(dirname "$(dirname "$basedir")")/
 }
+
+# Core #################################################################
 
 get_ostat() {
   mapfile -t stat < <(ssh -qn falcon1 '/home/mcdodyla/.config/cargo/bin/fd -t f ' \

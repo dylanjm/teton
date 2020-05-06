@@ -53230,7 +53230,7 @@
 	<key>NSFontPanelAttributes</key>
 	<string>1, 0</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~/Documents/forked_github/iTerm2-Color-Schemes/schemes</string>
+	<string>~/teton/local/share/iterm2</string>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
 	<string>{712, 448}</string>
 	<key>NSQuotedKeystrokeBinding</key>
@@ -53277,11 +53277,11 @@
 	<key>NSWindow Frame NSColorPanel</key>
 	<string>3326 269 228 280 0 0 3840 2137 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>610 416 700 622 0 0 1920 1177 </string>
+	<string>-800 716 700 622 -900 0 900 1577 </string>
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>1 0 1918 1177 0 0 1920 1177 </string>
+	<string>-900 0 900 1577 -900 0 900 1577 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>1923 29 1910 1038 0 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -60487,6 +60487,7 @@
 	<key>NoSyncAllAppVersions</key>
 	<array>
 		<string>3.3.10beta3</string>
+		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
 		<string>3.3.3</string>
@@ -60519,7 +60520,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1047</integer>
+	<integer>1127</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61306,7 +61307,7 @@
 		</dict>
 	</dict>
 	<key>PrefsCustomFolder</key>
-	<string>/Users/mcdodj/teton/apps/iterm2</string>
+	<string>/Users/mcdodj/teton/local/share/iterm2</string>
 	<key>PreserveWindowSizeWhenTabBarVisibilityChanges</key>
 	<true/>
 	<key>Print In Black And White</key>
@@ -61324,17 +61325,17 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-04-06T15:23:31Z</date>
+	<date>2020-05-06T15:22:32Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>
-	<integer>1056680840</integer>
+	<integer>3081089692</integer>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>SeparateWindowTitlePerTab</key>
 	<false/>
 	<key>SmartPlacement</key>
-	<true/>
+	<false/>
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>
@@ -61358,7 +61359,7 @@
 	<key>URLHandlersByGuid</key>
 	<dict/>
 	<key>UseBorder</key>
-	<false/>
+	<true/>
 	<key>UseLionStyleFullscreen</key>
 	<false/>
 	<key>VisualIndicatorForEsc</key>
@@ -61368,7 +61369,7 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.10beta3</string>
+	<string>3.3.10beta4</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

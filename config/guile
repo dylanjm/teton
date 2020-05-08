@@ -1,3 +1,7 @@
 (use-modules (ice-9 readline))
 (use-modules (ice-9 pretty-print))
 (activate-readline)
+
+;; Local Variables:
+;; mode: scheme
+;; End:

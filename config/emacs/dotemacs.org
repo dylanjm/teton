@@ -1,10 +1,10 @@
 #+title: Arco Emacs
 #+author: Dylan McDowell
-#+property: header-args :tangle "~/teton/editors/emacs.d/init.el"
+#+property: header-args :tangle "~/teton/config/emacs/init.el"
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-05 12:42:09
+/last updated/: 2020-05-07 20:16:17
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -65,7 +65,7 @@ This document is my current emacs config which contains the code for my =early-i
 
 * Early-Init
 :properties:
-:header-args: :tangle "~/teton/editors/emacs.d/early-init.el"
+:header-args: :tangle "~/teton/config/emacs/early-init.el"
 :end:
 ** Header
 #+name: early-init-header-block
@@ -114,7 +114,7 @@ You'll see this modification in many config files around the internet. The idea 
     (setq file-name-handler-alist default-file-name-handler-alist
       load-prefer-newer nil
       gc-cons-threshold default-gc-cons-threshold
-      gc-cons-percentage 0.1))
+      gc-cons-percentage 0.2))
 
   (add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
 #+end_src
@@ -177,28 +177,28 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-  (eval-and-compile
-    (defvar straight-recipes-gnu-elpa-use-mirror t)
-    (defvar bootstrap-version 5)
-    (defvar bootstrap-file
-      (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+(eval-and-compile
+  (defvar straight-recipes-gnu-elpa-use-mirror t)
+  (defvar bootstrap-version 5)
+  (defvar bootstrap-file
+    (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
 
-  (setq-default straight-cache-autoloads t
-                straight-fix-org t
-                straight-recipe-overrides nil
-                straight-repository-branch "develop"
-                straight-use-package-by-default t
-                straight-check-for-modifications '(check-on-save find-when-checking))
+(setq-default straight-cache-autoloads t
+              straight-fix-org t
+              straight-recipe-overrides nil
+              straight-repository-branch "develop"
+              straight-use-package-by-default t
+              straight-check-for-modifications '(check-on-save find-when-checking))
 
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+       'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
 
-  (load bootstrap-file nil 'nomessage)
+(load bootstrap-file nil 'nomessage)
 #+end_src
 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
@@ -207,13 +207,13 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-  (setq-default use-package-verbose nil
-                use-package-always-defer t
-                use-package-compute-statistics nil
-                use-package-expand-minimally nil
-                use-package-enable-imenu-support nil)
+(setq-default use-package-verbose nil
+              use-package-always-defer t
+              use-package-compute-statistics nil
+              use-package-expand-minimally nil
+              use-package-enable-imenu-support t)
 
-  (straight-use-package 'use-package)
+(straight-use-package 'use-package)
 #+end_src
 
 ** Initial Demands
@@ -227,7 +227,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
-  :demand t :straight t
+  :demand t
+  :straight t
   :if (eq system-type 'darwin)
   :init
   (setq exec-path-from-shell-variables
@@ -248,20 +249,20 @@ Not super stoked on using this package, as I might replace it later with my own 
 
 #+name: init-no-littering-block
 #+begin_src emacs-lisp
-  (use-package no-littering
-    :demand t
-    :straight t
-    :init
-    (setq no-littering-etc-directory "~/.cache/emacs/etc/"
-          no-littering-var-directory "~/.cache/emacs/var/"))
+(use-package no-littering
+  :demand t
+  :straight t
+  :init
+  (setq no-littering-etc-directory "~/.cache/emacs/etc/"
+        no-littering-var-directory "~/.cache/emacs/var/"))
 #+end_src
 
 *** [[https://gitlab.com/jjzmajic/compdef][Compdef]]
 #+name: init-compdef-block
 #+begin_src emacs-lisp
-  (use-package compdef
-    :demand t
-    :straight (:host gitlab :repo "jjzmajic/compdef"))
+(use-package compdef
+  :demand t
+  :straight (:host gitlab :repo "jjzmajic/compdef"))
 #+end_src
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
@@ -1538,23 +1539,16 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :preface
   (defun arco/sh-prettify-mode-line ()
-    "Instead of \"Shell[bash]\", display mode name as \"Bash\"."
-    ;; Only do this for `sh-mode', not derived modes such as
-    ;; `pkgbuild-mode'.
     (setq mode-line-process nil)
     (when (eq major-mode 'sh-mode)
       (setq mode-name (capitalize (symbol-name sh-shell)))))
   :init
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
-  :config
+  (general-setq sh-indentation 2)
   (compdef
    :modes '(sh-mode shell-script-mode)
-   :capf '(sh-completion-at-point-function)
-   :company '(company-shell
-              company-shell-env
-              company-files
-              company-capf
-              company-dabbrev-code)))
+   :capf #'sh-completion-at-point-function
+   :company '(company-shell company-shell-env company-files company-dabbrev-code)))
 #+end_src
 
 *** Shell (Built-In)
@@ -1901,46 +1895,6 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 	  (configure-fonts frame))))
 #+end_src
 
-*** [[https://gitlab.com/protesilaos/modus-themes][Modus Theme]]
-
-#+name: init-modus-theme-block
-#+begin_src emacs-lisp :tangle no
-  (use-package modus-vivendi-theme
-    :straight t
-    :ghook ('emacs-startup-hook #'arco/load-modus-theme)
-    :preface
-    (defun arco/load-modus-theme ()
-      ;; (general-setq modus-vivendi-theme-slanted-constructs t
-      ;;               modus-vivendi-theme-proportional-fonts nil
-      ;;               modus-vivendi-theme-bold-constructs t
-      ;;               modus-vivendi-theme-scale-headings nil
-      ;;               modus-vivendi-theme-scale-1 1.05
-      ;;               modus-vivendi-theme-scale-2 1.1
-      ;;               modus-vivendi-theme-scale-3 1.15
-      ;;               modus-vivendi-theme-scale-4 1.2)
-      (load-theme 'modus-vivendi)
-      (if (daemonp)
-      (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-    (general-add-hook 'after-init-hook #'setup-main-fonts))
-      (when-let (frame (selected-frame))
-    (configure-fonts frame))))
-#+end_src
-
-#+name: init-modus-operandi-theme-block
-#+begin_src emacs-lisp :tangle no
-(use-package modus-operandi-theme
-  :straight t
-  :ghook ('after-init-hook #'arco/load-modus-theme)
-  :preface
-  (defun arco/load-modus-theme ()
-    (load-theme 'modus-operandi)
-    (if (daemonp)
-        (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-      (general-add-hook 'after-init-hook #'setup-main-fonts))
-    (when-let (frame (selected-frame))
-      (configure-fonts frame))))
-#+end_src
-
 *** Mode-line
 #+name: init-mode-line-block
 #+begin_src emacs-lisp
@@ -2055,18 +2009,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
         org-agenda-mode-hook)))
 #+end_src
 
-*** [[https://github.com/Fanael/persistent-scratch][Persistent-Scratch]]
-
-This is a cool package that I never knew I needed until I found out it existed. So many times I write some quick code to a scratch buffer and accidently lose it when closing Emacs. This will save it to a file for you periodically. It is a little finnicky about being consistent though. I probably need to configure it more.
-#+name: init-persistent-scratch-block
-#+begin_src emacs-lisp :tangle no
-  (use-package persistent-scratch
-    :straight t
-    :init
-    (general-setq persistent-scratch-autosave-interval 30)
-    (run-with-idle-timer 3 nil (lambda () (persistent-scratch-setup-default))))
-#+end_src
-
 *** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
 
 #+name: init-rainbow-mode-block
@@ -2081,23 +2023,25 @@ This is a cool package that I never knew I needed until I found out it existed. 
 *** [[https://gitlab.com/koral/gcmh/][GCMH]]
 #+name: init-gcmh-block
 #+begin_src emacs-lisp
-  (use-package gcmh
-    :straight t
-    :blackout t
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq gcmh-idle-delay 5
-                  gcmh-high-cons-threshold 200000)
-    (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect))
+(use-package gcmh
+  :blackout t
+  :straight t
+  :ghook 'emacs-startup-hook
+  :init
+  (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect)
+  :config
+  (general-setq gcmh-idle-delay 5
+                gcmh-high-cons-threshold 200000))
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 A nice way to restart emacs on the fly if you need to.
 #+name: init-restart-emacs-block
 #+begin_src emacs-lisp
-  (use-package restart-emacs
-    :straight t
-    :init (defalias 're #'restart-emacs))
+(use-package restart-emacs
+  :straight t
+  :init
+  (defalias 're #'restart-emacs))
 #+end_src
 
 ** System
@@ -2159,66 +2103,64 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
-  (use-package multi-libvterm
-    :straight (:host github :repo "suonlight/multi-libvterm")
-    :general
-    ("C-c x v" #'multi-libvterm-dedicated-toggle)
-    :config
-    (general-setq multi-libvterm-dedicated-window-height 25))
+(use-package multi-libvterm
+  :straight (:host github :repo "suonlight/multi-libvterm")
+  :general
+  ("C-c x v" #'multi-libvterm-dedicated-toggle)
+  :config
+  (general-setq multi-libvterm-dedicated-window-height 25))
 #+end_src
 
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
 #+name: init-vterm-block
 #+begin_src emacs-lisp
-  (use-package vterm
-    :straight t
-    :config
-    (general-setq vterm-term-environment-variable "eterm-color"
-                  vterm-kill-buffer-on-exit t
-                  vterm-shell "zsh"
-                  vterm-max-scrollback 10000))
+(use-package vterm
+  :straight t
+  :config
+  (general-setq vterm-term-environment-variable "eterm-color"
+                vterm-kill-buffer-on-exit t
+                vterm-shell "zsh"
+                vterm-max-scrollback 10000))
 #+end_src
 
 *** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
 #+name: init-eterm-256color-block
 #+begin_src emacs-lisp
-  (use-package eterm-256color
-    :straight t
-    :init
-    (general-add-hook 'term-mode-hook #'eterm-256color-mode)
-    (general-add-hook 'vterm-mode-hook #'eterm-256color-mode))
+(use-package eterm-256color
+  :straight t
+  :init
+  (general-add-hook 'term-mode-hook #'eterm-256color-mode)
+  (general-add-hook 'vterm-mode-hook #'eterm-256color-mode))
 #+end_src
 
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
 #+begin_src emacs-lisp
-  (use-package projectile
-    :blackout t
-    :straight t
-    :ghook 'emacs-startup-hook
-    :general
-    (:prefix "C-c p"
-     "s" #'projectile-switch-project
-     "c" #'projectile-compile-project
-     "f" #'projectile-find-file)
-    :preface
-    (defun projectile-project-find-function (dir)
-      (let* ((root (projectile-project-root dir)))
-        (and root (cons 'transient root))))
-    :config
-    (general-setq projectile-completion-system 'default
-                  projectile-enable-caching t
-                  projectile-switch-project-action 'projectile-dired
-                  projectile--mode-line "Projectile")
-    (general-pushnew 'projectile-project-find-function project-find-functions))
+(use-package projectile
+  :blackout t
+  :straight t
+  :ghook 'emacs-startup-hook
+  :general
+  (:prefix "C-c p"
+           "s" #'projectile-switch-project
+           "c" #'projectile-compile-project
+           "f" #'projectile-find-file)
+  :preface
+  (defun projectile-project-find-function (dir)
+    (let* ((root (projectile-project-root dir)))
+      (and root (cons 'transient root))))
+  :config
+  (general-setq projectile-completion-system 'default
+                projectile-enable-caching t
+                projectile-switch-project-action 'projectile-dired
+                projectile--mode-line "Projectile")
+  (general-pushnew 'projectile-project-find-function project-find-functions))
 #+end_src
-
-#+RESULTS: init-projectile-block
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
 #+name: init-direnv-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package direnv
     :straight t
     :ghook 'projectile-mode-hook)
@@ -2742,32 +2684,30 @@ A nice way to restart emacs on the fly if you need to.
 *** Dired-X (Built-In)
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
-  (use-package dired-x
-    :demand t
-    :straight (:type built-in)
-    :after (dired)
-    :ghook ('dired-mode-hook #'dired-omit-mode)
-    :general
-    ("C-x C-j" #'dired-jump
-     "s-j" #'dired-jump
-     "C-x 4 C-j" #'dired-jump-other-window
-     "s-J" #'dired-jump-other-window)
-    :config
-    (general-setq dired-x-hands-off-my-keys t
-                  dired-omit-verbose t
-                  dired-omit-files-p t
-                  dired-clean-up-buffers-too t
-                  dired-clean-confirm-killing-deleted-buffers t
-                  dired-bind-man nil
-                  dired-bind-info nil
-                  dired-omit-files (concat dired-omit-files
-                                           "\\|^.DS_Store\\'"
-                                           "\\|^.project\\(?:ile\\)?\\'"
-                                           "\\|^.\\(svn\\|git\\)\\'"
-                                           "\\|^.ccls-cache\\'"
-                                           "\\|^__pycache__\\'"
-                                           "\\|\\(?:\\.js\\)?\\.meta\\'"
-                                           "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
+(use-package dired-x
+  :demand t
+  :straight (:type built-in)
+  :after (dired)
+  :ghook ('dired-mode-hook #'dired-omit-mode)
+  :general
+  ("C-x C-j" #'dired-jump
+   "s-j" #'dired-jump
+   "C-x 4 C-j" #'dired-jump-other-window
+   "s-J" #'dired-jump-other-window)
+  :config
+  (general-setq dired-x-hands-off-my-keys t
+                dired-omit-verbose t
+                dired-omit-files-p t
+                dired-clean-up-buffers-too t
+                dired-clean-confirm-killing-deleted-buffers t
+                dired-bind-man nil
+                dired-bind-info nil
+                dired-omit-files (concat dired-omit-files
+                                         "\\|^.DS_Store\\'"
+                                         "\\|^.project\\(?:ile\\)?\\'"
+                                         "\\|^__pycache__\\'"
+                                         "\\|\\(?:\\.js\\)?\\.meta\\'"
+                                         "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
 #+end_src
 
 *** Find-Dired (Built-In)
@@ -3973,13 +3913,10 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package lsp-mode
   :straight t
-  :commands (lsp lsp-deferred)
-  :ghook ('(python-mode-hook) #'lsp-deferred)
+  :commands (lsp)
   :gfhook #'lsp-enable-which-key-integration
-  :company (company-lsp
-            company-capf
-            company-files
-            company-dabbrev-code)
+  :capf lsp-completion-at-point
+  :company company-lsp
   :init
   (defvar lsp-on-touch-time 0)
   (defun lsp-on-change-hack (start end length)
@@ -3994,6 +3931,7 @@ A nice way to restart emacs on the fly if you need to.
                 lsp-idle-delay 0.500
                 lsp-log-io nil
                 lsp-prefer-capf t
+                lsp-prefer-flymake nil
                 lsp-restart 'auto-restart
                 lsp-enable-file-watchers t))
 
@@ -4037,18 +3975,23 @@ A nice way to restart emacs on the fly if you need to.
   area."
     (not (flycheck-overlay-errors-at (point))))
 
-  (general-add-advice #'arco/disable-eldoc-on-flycheck
-                      :after-while 'eldoc-display-message-no-interference-p)
+  (general-add-advice
+   #'arco/disable-eldoc-on-flycheck
+   :after-while 'eldoc-display-message-no-interference-p)
+
   :config
   (general-setq flycheck-emacs-lisp-load-path 'inherit
                 flycheck-check-syntax-automatically '(save mode-enabled)
                 flycheck-display-errors-delay 0.25)
   (general-setq flycheck-flake8rc
-                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
-  (general-setq flycheck-pylintrc
+                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8"))
+                flycheck-pylintrc
                 (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
-  (general-setq flycheck-sh-shellcheck-executable "shellcheck"
-                flycheck-shellcheck-follow-sources t)
+  (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
+                flycheck-shellcheck-follow-sources t
+                flycheck-sh-bash-executable "/usr/local/bin/bash"
+                flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+  (general-pushnew 'zsh flycheck-shellcheck-supported-shells)
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
@@ -4087,43 +4030,6 @@ A nice way to restart emacs on the fly if you need to.
   :after ess)
 #+end_src
 
-*** [[https://github.com/kaz-yos/eval-in-repl][Eval-in-REPL]]
-#+name: init-eval-in-repl-block
-#+begin_src emacs-lisp :tangle no
-  (use-package eval-in-repl
-    :demand t :straight t
-    :config
-    (general-setq eir-always-split-script-window t
-                  eir-repl-placement 'right))
-
-  (use-package eval-in-repl-ielm
-    :straight nil
-    :requires eval-in-repl
-    :general
-    (:keymaps 'emacs-lisp-mode-map
-     "<C-return>" #'eir-eval-in-ielm)
-    (:keymaps 'lisp-interaction-mode-map
-     "<C-return>" #'eir-eval-in-ielm)
-    (:keymaps 'Info-mode-map
-     "<C-return>" #'eir-eval-in-ielm)
-    :config
-    (general-setq eir-ielm-eval-in-current-buffer t))
-
-  (use-package eval-in-repl-python
-    :straight nil
-    :requires eval-in-repl
-    :general
-    (:keymaps 'python-mode-map
-     "<C-return>" #'eir-eval-in-python))
-
-  (use-package eval-in-repl-shell
-    :straight nil
-    :requires eval-in-repl
-    :general
-    (:keymaps 'sh-mode-map
-     "<C-return>" #'eir-eval-in-shell))
-#+end_src
-
 ** Languages
 *** Bash
 **** [[https://github.com/dougm/bats-mode][BATS]]
@@ -4140,10 +4046,10 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package elisp-mode
   :blackout ((emacs-lisp-mode . "Elisp")
-              (lisp-interaction-mode . "Lisp-Interaction"))
+             (lisp-interaction-mode . "Lisp-Interaction"))
   :straight nil
   :mode (("\\.el\\'" . emacs-lisp-mode)
-          ("\\.Cask\\'" . emacs-lisp-mode))
+         ("\\.Cask\\'" . emacs-lisp-mode))
   :gfhook #'outline-minor-mode
   :config
   (general-setq emacs-lisp-docstring-fill-column 80))
@@ -4621,16 +4527,36 @@ This is a nifty package that allows me to define functions as local variables in
   :straight t)
 #+end_src
 
+**** Conda
+#+name: init-conda-block
+#+begin_src emacs-lisp :tangle no
+(use-package conda
+  :demand t
+  :straight t
+  :init
+  (general-setq conda-andaconda-home "/usr/local/Caskroom/miniconda/base")
+  (general-setq conda-env-home-directory "/usr/local/Caskroom/miniconda/base/envs")
+  :config
+  (conda-env-initialize-interactive-shells)
+  (conda-env-initialize-eshell))
+#+end_src
+
 *** C++
 **** [[https://github.com/MaskRay/emacs-ccls][CCLS]]
 #+name: init-ccls-block
 #+begin_src emacs-lisp
 (use-package ccls
   :straight t
-  :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) #'lsp)
-  :config
+  :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook)
+          #'(lambda () (require 'ccls) (lsp)))
+  :init
   (general-setq ccls-executable "/usr/local/bin/ccls"
-                ccls-sem-highlight-method 'font-lock)
+                ccls-sem-highlight-method 'overlay)
+  (general-setq ccls-initialization-options
+                '(:index (:comments 2) :completion (:detailedLabel t) :compilationDatabaseDirectory "test"))
+  :config
+  (general-setq company-lsp-cache-candidates nil
+                company-transformers nil)
   (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
 #+end_src
 

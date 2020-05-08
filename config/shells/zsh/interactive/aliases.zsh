@@ -33,16 +33,15 @@ alias dc="cd $HOME/Documents"
 alias dl="cd $HOME/Downloads"
 
 alias dot="cd $DOTFILES"
-alias dotapp="cd $DOTFILES/apps"
+alias dotconfig="cd $DOTFILES/config"
 alias dotshell="cd $ZSH"
-alias dotem="cd $DOTFILES/editors/emacs.d"
-alias dotbin='cd $DOTFILES/bin'
+alias dotem="cd $DOTFILES/config/emacs"
+alias dotbin='cd $DOTFILES/local/bin'
 
 alias cache='cd $XDG_CACHE_HOME'
 alias cachem='cd $XDG_CACHE_HOME/emacs'
 alias cachez='cd $XDG_CACHE_HOME/zsh'
 alias plugins='cd $XDG_CACHE_HOME/zsh/zplugin/plugins'
-
 alias org='cd $HOME/Documents/org-files'
 
 ###
@@ -63,10 +62,6 @@ alias refresh='source $HOME/.zshrc; echo "Reloaded .zshrc."'
 alias reload='exec $SHELL -l -i'
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
 alias bubu='brew update && brew upgrade && brew cleanup'
-alias padd="rename -e 's/\d+/sprintf(\"%02d\",$&)/e' --"
-alias rws="rename 's/ /_/g' --"
-alias modname="rename 's/_-_lang_en_vs[0-9]+//g' --"
-alias punc="rename -e 's/\&/and/g' -e 's/[^0-9A-Za-z_.-]//g' --"
 
 ###
 ### Ledger

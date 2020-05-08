@@ -1,3 +1,4 @@
+"""Pythonrc - Teton Dotfiles Python Config"""
 import readline
 import rlcompleter
 import atexit
@@ -7,10 +8,15 @@ import os
 readline.parse_and_bind('tab: complete')
 
 # history file
-histfile = os.path.join(os.environ['XDG_DATA_HOME'], 'python_history')
+HISTFILE = os.path.join(os.environ['XDG_DATA_HOME'], 'python_history')
 try:
-    readline.read_history_file(histfile)
+    readline.read_history_file(HISTFILE)
 except IOError:
     pass
-atexit.register(readline.write_history_file, histfile)
-del os, histfile, readline, rlcompleter
+atexit.register(readline.write_history_file, HISTFILE)
+del os, HISTFILE, readline, rlcompleter
+
+# Local Variables:
+# mode: python
+# coding: utf-8
+# End:

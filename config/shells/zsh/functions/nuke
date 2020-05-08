@@ -1,16 +1,26 @@
 #!/usr/bin/env zsh
 
-function nuke() {
-    read -r "response?Are you sure? [y/N] "
-    read -r "dry?Would you like to do a dry-run first? [y/N] "
+nuke() {
+    declare -i dry_run
+    while getopts ":n" flag; do
+        case "${flag}" in
+            n) dry_run=1
+               ;;
+            *) exit 1
+               ;;
+        esac
+    done
 
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-        if [[ "$dry" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-           git clean -dfxn -e .envrc && git submodule foreach --recursive git clean -dfxn
-        else
-            git clean -dfx -e .envrc && git submodule foreach --recursive git clean -dfx
-        fi
+    if [[ "${dry_run:-0}" == 1 ]]; then
+        git clean -dfxn \
+            && git submodule foreach --recursive git clean -dfxn
     else
-	    return 0
+        read -r "response?Are you sure? [y/N] "
+        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+            git clean -dfx \
+                && git submodule foreach --recursive git clean -dfx
+        else
+            return 0
+        fi
     fi
 }

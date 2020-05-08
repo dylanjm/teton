@@ -26,7 +26,7 @@ export LANG="en_US.UTF-8"
 export BROWSER='open'
 export DOTFILES="$HOME/teton"
 export ORG_FILES="$HOME/Documents/org-files"
-export EDITOR="$DOTFILES/bin/emc"
+export EDITOR="emacsclient -t -c"
 export EMACS="/Appplications/Emacs.app"
 
 ###
@@ -34,8 +34,8 @@ export EMACS="/Appplications/Emacs.app"
 ###
 export HISTFILE="$XDG_DATA_HOME/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
-typeset -gi HISTSIZE=1000000000
-typeset -gi SAVEHIST=1000000000
+export HISTSIZE=500000
+export SAVEHIST=$HISTSIZE
 
 ###
 ### ZSH

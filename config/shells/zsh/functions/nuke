@@ -1,26 +1,22 @@
 #!/usr/bin/env zsh
 
 nuke() {
-    declare -i dry_run
-    while getopts ":n" flag; do
-        case "${flag}" in
-            n) dry_run=1
-               ;;
-            *) exit 1
-               ;;
-        esac
-    done
+  local dry_run
+  zparseopts -E -- n=dry_run
 
-    if [[ "${dry_run:-0}" == 1 ]]; then
-        git clean -dfxn \
-            && git submodule foreach --recursive git clean -dfxn
-    else
-        read -r "response?Are you sure? [y/N] "
-        if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-            git clean -dfx \
-                && git submodule foreach --recursive git clean -dfx
-        else
-            return 0
-        fi
+  if [[ -z "${dry_run}" ]]; then
+    read -r "response?Are you sure? [y/N] "
+    if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      git clean -dfx \
+        && git submodule foreach --recursive git clean -dfx
     fi
+  else
+    git clean -dfxn \
+      && git submodule foreach --recursive git clean -dfxn
+  fi
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 #
+#    ad88                    88
+#   d8"                      88
+#   88                       88
+# MM88MMM 88,dPYba,,adPYba,  88,dPPYba,  ,adPPYba,
+#   88    88P'   "88"    "8a 88P'    "8a I8[    ""
+#   88    88      88      88 88       d8  `"Y8ba,
+#   88    88      88      88 88b,   ,a8" aa    ]8I
+#   88    88      88      88 8Y"Ybbd8"'  `"YbbdP"'
 #
 # fmbs - Script to fix duplicate UIDs created by mbsync.
 #

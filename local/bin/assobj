@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-#                      _     _
-#   __ _ ___ ___  ___ | |__ (_)
-#  / _' / __/ __|/ _ \| '_ \| |
-# | (_| \__ \__ \ (_) | |_) | |
-#  \__,_|___/___/\___/|_.__// |
-#                         |__/
+#                                            88          88
+#                                            88          ""
+#                                            88
+# ,adPPYYba, ,adPPYba, ,adPPYba,  ,adPPYba,  88,dPPYba,  88
+# ""     `Y8 I8[    "" I8[    "" a8"     "8a 88P'    "8a 88
+# ,adPPPPP88  `"Y8ba,   `"Y8ba,  8b       d8 88       d8 88
+# 88,    ,88 aa    ]8I aa    ]8I "8a,   ,a8" 88b,   ,a8" 88
+# `"8bbdP"Y8 `"YbbdP"' `"YbbdP"'  `"YbbdP"'  8Y"Ybbd8"'  88
+#                                                       ,88
+#                                                     888P"
 #
 # assobj - Assessment Objects
 #
@@ -56,14 +60,6 @@ bold()     { echo "${BOLD}$*${NORMAL}"; }
 
 usage() {
   cat <<-EOF
-$(echo -e "$(red "
-                      _     _
-   __ _ ___ ___  ___ | |__ (_)
-  / _' / __/ __|/ _ \| '_ \| |
- | (_| \__ \__ \ (_) | |_) | |
-  \__,_|___/___/\___/|_.__// |
-                         |__/
-")")
 $(echo -e "$(bold "assobj - Assessment Objects")")
 
 Script that maps assessment test objects to respective input file names.

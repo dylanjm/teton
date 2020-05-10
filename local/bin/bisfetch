@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 #
-#  .o8        o8o            .o88o.               .             oooo
-# "888        `"'            888 `"             .o8             `888
-#  888oooo.  oooo   .oooo.o o888oo   .ooooo.  .o888oo  .ooooo.   888 .oo.
-#  d88' `88b `888  d88(  "8  888    d88' `88b   888   d88' `"Y8  888P"Y88b
-#  888   888  888  `"Y88b.   888    888ooo888   888   888        888   888
-#  888   888  888  o.  )88b  888    888    .o   888 . 888   .o8  888   888
-#  `Y8bod8P' o888o 8""888P' o888o   `Y8bod8P'   "888" `Y8bod8P' o888o o888o
+# 88          88              ad88                             88
+# 88          ""             d8"               ,d              88
+# 88                         88                88              88
+# 88,dPPYba,  88 ,adPPYba, MM88MMM ,adPPYba, MM88MMM ,adPPYba, 88,dPPYba,
+# 88P'    "8a 88 I8[    ""   88   a8P_____88   88   a8"     "" 88P'    "8a
+# 88       d8 88  `"Y8ba,    88   8PP"""""""   88   8b         88       88
+# 88b,   ,a8" 88 aa    ]8I   88   "8b,   ,aa   88,  "8a,   ,aa 88       88
+# 8Y"Ybbd8"'  88 `"YbbdP"'   88    `"Ybbd8"'   "Y888 `"Ybbd8"' 88       88
 #
-# bisfetch - A script to fetch remote assessment performance data
+# bisfetch - BISON Fetch:
+#    A script to fetch remote assessment output data
 #
 # Usage:
 #    bisfetch [-h] [-n] [-l INTEGER] [-f <folder>] <folder> ...
@@ -47,20 +49,23 @@
 
 # Notes ################################################################
 
+# Settings #############################################################
+
+
 # Globals & Constants ##################################################
 
-readonly ME="$(basename "${0}")"
-readonly ARGS=("${@}")
-readonly BISON="${BISON_DIR:-$HOME/Documents/projects/bison}"
+ME="$(basename "${0}")"
+ARGS=("${@}")
+BISON="${BISON_DIR:-$HOME/Documents/projects/bison}"
 
 # Colors
-readonly NORMAL='\033[0m'
-readonly BOLD='\033[1m'
-readonly RED='\033[1;31m'
-readonly GREEN='\033[1;32m'
-readonly BLUE='\033[1;34m'
-readonly MAGENTA='\033[1;4;35m'
-readonly YELLOW='\033[1;33m'
+NORMAL='\033[0m'
+BOLD='\033[1m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+MAGENTA='\033[1;4;35m'
+YELLOW='\033[1;33m'
 
 # Flags
 DRYRUN=0
@@ -78,28 +83,29 @@ red() { echo "${RED}$*${NORMAL}"; }
 
 foldernames() {
   [[ -z "${ALLOWED_FOLDERS+x}" ]] && {
-	ALLOWED_FOLDERS=$(
-	  find "${BISON}/assessment/LWR/validation" \
-		   -mindepth 1 \
-		   -maxdepth 1 \
-		   -type d \
-		   -exec basename "{}" \; \
-		| sort \
-		| awk '{printf "%-35s", $0} !(NR%3) {printf "\n"}')
+    ALLOWED_FOLDERS=$(
+      find "${BISON}/assessment/LWR/validation" \
+           -mindepth 1 \
+           -maxdepth 1 \
+           -type d \
+           -exec basename "{}" \; \
+        | sort \
+        | awk '{printf "%-35s", $0} !(NR%3) {printf "\n"}')
   }
-  echo "${ALLOWED_FOLDERS}"
+  echo -e "${ALLOWED_FOLDERS}"
 }
 
 bison_exists_p() {
   [[ ! -e "${BISON}" ]] && {
-	cat <<-HEREDOC
+    cat <<-HEREDOC
 You must have a local copy of BISON to use this script.
-If you do have a local copy, run the following command:
+If you do have a local copy, add the following to your .bashrc:
 
-	 export BISON_DIR="<path/to/your/bison/folder>".
+export BISON_DIR="<path/to/your/bison/folder>"
 HEREDOC
-	exit 1
+    exit 1
   }
+  return 0
 }
 
 folder_not_found() {
@@ -152,38 +158,38 @@ HEREDOC
 
 get_args() {
   while getopts ":hnl:f:" flag; do
-	case "$flag" in
-	  n)
-		DRYRUN=1
-		;;
-	  l)
-		LOOKBACK=${OPTARG}
-		;;
-	  h)
-		usage
-		exit 0
-		;;
-	  f)
-		FOLDER="${OPTARG}"
-		;;
-	  :)
-		echo "Invalid options: $OPTARG requires an argurment" 1>&2
-		exit 1
-		;;
-	  \?)
-		echo "Usage: ${ME} [-h] [-n] [-l INTEGER] [-f folder] [folder(s) ...]"
-		exit 1
-		;;
-	esac
+    case "$flag" in
+      n)
+        DRYRUN=1
+        ;;
+      l)
+        LOOKBACK=${OPTARG}
+        ;;
+      h)
+        bison_exists_p && usage
+        exit 0
+        ;;
+      f)
+        FOLDER="${OPTARG}"
+        ;;
+      :)
+        printf "%s\n" "Invalid options: ${OPTARG} requires an argurment" 1>&2
+        exit 1
+        ;;
+      \?)
+        printf "%s\n" "Usage: ${ME} [-h] [-n] [-l INTEGER] [-f folder] [folder(s) ...]"
+        exit 1
+        ;;
+    esac
   done
 
   shift $((OPTIND - 1))
 
   # Check to ensure folder is specified
-  [[ -z "$FOLDER" ]] && [[ -z "$1" ]] && folder_not_found
+  [[ -z "${FOLDER}" ]] && [[ -z "${1}" ]] && folder_not_found
 
   # If no -f flag then assign folder to first ARG
-  [[ -n "$1" ]] && FOLDER="$1"
+  [[ -n "${1}" ]] && FOLDER="${1}"
 }
 
 # Core #################################################################
@@ -194,77 +200,73 @@ fetch_folder_files() {
   # modified folder of the type 'bison_XXXXXXXX'
   # We then want to find all the *_out.csv files inside the folder specified at the
   # command-line within the 'bison_XXXXXXXX' folder.
-  ssh falcon1 -qn \
-	  'newest=$(find /projects/bison/git/* -mindepth 0 -maxdepth 0 -type d' \
-	  '-regex ".*/bison_[0-9]+" -printf "%T@\t%f\n" | ' \
-	  'sort -t\t -r -nk1,5 | ' \
-	  'sed -n '"$LOOKBACK"'p | ' \
-	  'cut -f2-); ' \
-	  'find /projects/bison/git/$newest/assessment/LWR/validation/'"$FOLDER"'/*' \
-	  '-type f -name "*_out.csv" -perm 660 -not -path "*/doc/*"' \
-	  '-printf "%p\n" 2>/dev/null'
+
+  # shellcheck disable=SC2087
+  ssh falcon1 -q << EOF | sed 1,3d  # remove ssh storage message from output
+newest=\$(find /projects/bison/git/* \
+               -mindepth 0 \
+               -maxdepth 0 \
+               -type d \
+               -regex ".*/bison_[0-9]+" \
+               -printf "%T@\t%f\n" \
+               | sort -t"$(printf '\t')" -r -nk1,5 \
+               | sed -n "${LOOKBACK}"p \
+               | cut -f2-);
+
+find /projects/bison/git/\$newest/assessment/LWR/validation/${FOLDER}/* \
+     -type f \
+     -name "*_out.csv" \
+     -perm 660 \
+     -not -path "*/doc/*" \
+     -printf "%p\n" 2>/dev/null
+EOF
 }
 
 create_local_paths() {
-  local files="${1}"
+  [[ "${#files[@]}" == 0 ]] && folder_not_found
+
+  printf "\n📁 %b%b%b%b:\n" \
+         "$(bold "Inspecting Nightly Folder") " \
+         "$(magenta "${files[0]:20:14}") " \
+         "$(bold "for Assessment") " \
+         "$(magenta "$FOLDER")"
 
   # Modify remote paths to fit for local paths
+  # We need extglob for '+([0-9])' to match multiple numbers.
+  local i
+  shopt -s extglob
   for i in "${files[@]}"; do
-	echo "$i" \
-	  | sed -E "s|/projects/bison/git/bison_[0-9]{8}|${BISON}|g"
+    echo -e "${i/\/projects\/bison\/git\/bison_+([0-9])/${BISON}}"
   done
 }
 
-check_remote_files() {
-  local files="${1}"
-
-  # If ssh returned no results then error out.
-  if [[ "${#files[@]}" == 0 ]]; then
-	folder_not_found
-  else
-	printf "\n📁 %b%b%b%b:\n" \
-		   "$(bold "Inspecting Nightly Folder") " \
-		   "$(magenta "${files[0]:20:14}") " \
-		   "$(bold "for Assessment") " \
-		   "$(magenta "$FOLDER")"
-  fi
-}
-
 copy_files() {
-  local files="${1}"
-  local local_paths="${2}"
-
   for ((i = 0; i < ${#files[@]}; i++)); do
-	if [[ ${DRYRUN} == 0 ]]; then
-	  printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-	  printf "├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
-	  printf "╰─ Fetching Remote File...\r"
+    if [[ ${DRYRUN} == 0 ]]; then
+      printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+      printf "├─ %b %s\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+      printf "╰─ Fetching Remote File...\r"
 
-	  if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
-		printf "%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
-	  else
-		printf "%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
-	  fi
-	else
-	  printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
-	  printf "╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
-	fi
+      if scp -qp falcon1:"${files[i]}" "${local_paths[i]}" 2>/dev/null; then
+        printf "%b\n\n" "╰─ Fetching Remote File… $(green "Successful!")"
+      else
+        printf "%b\n\n" "╰─ Fetching Remote File… $(red "Error!")"
+      fi
+    else
+      printf "╭─ %b %s\n" "$(blue "Remote =>")" "${files[i]}"
+      printf "╰─ %b %s\n\n" "$(yellow "Local  =>")" "${local_paths[i]}"
+    fi
   done
 }
 
 # Main #################################################################
 
 main() {
-  declare -a files
-  declare -a local_paths
-
-  # make sure bison folder exists
-  bison_exists_p
+  bison_exists_p  # make sure bison folder exists
   get_args "${@}"
   mapfile -t files < <(fetch_folder_files)
-  check_remote_files "${files[*]}"
-  mapfile -t local_paths < <(create_local_paths "${files[*]}")
-  copy_files "${files[*]}" "${local_paths[*]}"
+  mapfile -t local_paths < <(create_local_paths)
+  copy_files
 }
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then

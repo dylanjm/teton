@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env bash
 
 for i in `ls $(brew --cellar python)/`; do
   ln -s $(brew --cellar python)/$i $HOME/.config/pyenv/versions/$i-brew;

@@ -1,7 +1,7 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 unsetopt GLOBAL_RCS
 typeset -gaU cdpath fpath mailpath module_path path manpath
-declare -A ZINIT
+declare -gA ZINIT
 typeset -g ZPLG_MOD_DEBUG=1
 
 ###
@@ -35,7 +35,69 @@ export EMACS="/Appplications/Emacs.app"
 export HISTFILE="$XDG_DATA_HOME/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=500000
-export SAVEHIST=$HISTSIZE
+export SAVEHIST="${HISTSIZE}"
+
+###
+### Atom
+###
+export ATOM_HOME="$XDG_CONFIG_HOME/atom"
+
+###
+### CCACHE
+###
+export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
+
+###
+### Conda
+###
+export CONDA_ROOT="$XDG_DATA_HOME/conda"
+export CONDARC="$XDG_CONFIG_HOME/condarc"
+export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
+
+###
+### Emacs-Anywhere
+###
+export EA_PATH="$XDG_DATA_HOME/emacs_anywhere"
+export EA_EDITOR="em"
+
+###
+### Exa
+###
+export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:sn=38;5;6:sb=38;5;14:df=38;5;6:ds=38;5;14:uu=38;5;10:un=38;5;8:gu=38;5;11:gn=38;5;8:lc=38;5;202:lm=38;5;211:ga=38;5;112:gm=38;5;11:gd=38;5;9:gv=38;5;91:gt=38;5;202:xx=38;5;102:da=38;5;12:in=38;5;5:bl=38;5;6:hd=38;5;250:lp=38;5;7:cc=38;5;208:b0=37;41;1:"
+
+###
+### FZF
+###
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
+
+###
+### Gnupg
+###
+export GPG_TTY=$(tty)
+export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
+export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
+
+###
+### Goku
+###
+export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
+
+###
+### Guile
+###
+export GUILE_AUTO_COMPILE=1
+export GUILE_HISTORY="$XDG_DATA_HOME/guile_history"
+
+###
+### Java
+###
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"
+
+###
+### Julia
+###
+export JULIA_NUM_THREADS=16
+export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
 
 ###
 ### ZSH
@@ -54,74 +116,18 @@ export ZINIT[COMPINIT_OPTS]="-C"
 export ZPFX="$ZINIT[HOME_DIR]/polaris"
 
 ###
-### ZSH-Auto-Suggestions
-###
-export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-export ZSH_AUTOSUGGEST_USE_ASYNC=true
-export ZSH_AUTOSUGGEST_MANUAL_REBIND=true
-
-###
 ### Less
 ###
 export LESS="-g -i -M -R -F -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="$XDG_DATA_HOME/lesshst"
-export LESS_TERMCAP_mb=$'\E[01;31m'             # begin blinking
-export LESS_TERMCAP_md=$'\E[01;31m'             # begin bold
-export LESS_TERMCAP_me=$'\E[0m'                 # end mode
-export LESS_TERMCAP_se=$'\E[0m'                 # end standout-mode
-export LESS_TERMCAP_so=$'\E[01;44;33m'          # begin standout-mode - info box
-export LESS_TERMCAP_ue=$'\E[0m'                 # end underline
-export LESS_TERMCAP_us=$'\E[01;32m'             # begin underline
-
-###
-### Exa
-###
-export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:sn=38;5;6:sb=38;5;14:df=38;5;6:ds=38;5;14:uu=38;5;10:un=38;5;8:gu=38;5;11:gn=38;5;8:lc=38;5;202:lm=38;5;211:ga=38;5;112:gm=38;5;11:gd=38;5;9:gv=38;5;91:gt=38;5;202:xx=38;5;102:da=38;5;12:in=38;5;5:bl=38;5;6:hd=38;5;250:lp=38;5;7:cc=38;5;208:b0=37;41;1:"
-
-###
-### Z
-###
-export _Z_DATA="$XDG_DATA_HOME/z"
-
-###
-### CCACHE
-###
-export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
-
-###
-### Conda
-###
-export CONDA_ROOT="$XDG_DATA_HOME/conda"
-export CONDARC="$XDG_CONFIG_HOME/condarc"
-export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
-
-###
-### FZF
-###
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
-
-###
-### Atom
-###
-export ATOM_HOME="$XDG_CONFIG_HOME/atom"
-
-###
-### Java
-###
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"
-
-###
-### Guile
-###
-export GUILE_AUTO_COMPILE=1
-export GUILE_HISTORY="$XDG_DATA_HOME/guile_history"
-
-###
-### Julia
-###
-export JULIA_NUM_THREADS=16
-export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
+export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking
+export LESS_TERMCAP_md=$'\E[01;31m'    # begin bold
+export LESS_TERMCAP_me=$'\E[0m'        # end mode
+export LESS_TERMCAP_se=$'\E[0m'        # end standout-mode
+export LESS_TERMCAP_so=$'\E[01;44;33m' # begin standout-mode - info box
+export LESS_TERMCAP_ue=$'\E[0m'        # end underline
+export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
 
 ###
 ### R
@@ -138,15 +144,10 @@ export MKL_NUM_THREADS=16
 export OMP_NUM_THREADS=16
 
 ###
-### Roswell
+### Parallel
 ###
-export ROSWELL_HOME="$XDG_CONFIG_HOME"
-
-###
-### Rust/Cargo
-###
-export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+export PARALLEL_HOME="$XDG_DATA_HOME/parallel"
+#export PARALLEL_SHELL="/usr/local/bin/bash"
 
 ###
 ### Python
@@ -158,33 +159,15 @@ export PYTHONSTARTUP="$XDG_CONFIG_HOME/pythonrc"
 export MPLCONFIGDIR="$XDG_DATA_HOME/matplotlib"
 
 ###
-### GNU Parallel
+### Roswell
 ###
-export PARALLEL_HOME="$XDG_DATA_HOME/parallel"
-#export PARALLEL_SHELL="/usr/local/bin/bash"
+export ROSWELL_HOME="$XDG_CONFIG_HOME"
 
 ###
-### Emacs-Anywhere
+### Rust/Cargo
 ###
-export EA_PATH="$XDG_DATA_HOME/emacs_anywhere"
-export EA_EDITOR="em"
-
-###
-### Terminfo
-###
-export TERMINFO="$XDG_CONFIG_HOME/terminfo"
-
-###
-### Gnupg
-###
-export GPG_TTY=$(tty)
-export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
-export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
-
-###
-### Goku
-###
-export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
+export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
+export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 
 ###
 ### Subversion
@@ -192,9 +175,26 @@ export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
 export SUBVERSION_HOME="$XDG_CONFIG_HOME/subversion"
 
 ###
+### Terminfo
+###
+export TERMINFO="$XDG_CONFIG_HOME/terminfo"
+
+###
 ### Weechat
 ###
 export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
+
+###
+### Z
+###
+export _Z_DATA="$XDG_DATA_HOME/z"
+
+###
+### ZSH-Auto-Suggestions
+###
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+export ZSH_AUTOSUGGEST_USE_ASYNC=true
+export ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 
 ###
 ### Paths

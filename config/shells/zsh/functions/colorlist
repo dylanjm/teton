@@ -1,7 +1,12 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
 colorlist (){
   for i in {0..255}; do
     print -Pn "%${i}F${(l:3::0:)i}%f " ${${(M)$((i%8)):#7}:+$'\n'};
   done
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

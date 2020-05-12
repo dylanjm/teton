@@ -56650,13 +56650,13 @@
 			<key>Name</key>
 			<string>Workstation Laptop</string>
 			<key>Non Ascii Font</key>
-			<string>FiraCodeNerdFontComplete-Regular 14</string>
+			<string>FiraCodeNerdFontComplete-Regular 13</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Iosevka-TermLig-SS09-Light-Extended 16</string>
+			<string>Iosevka-TermLig-SS09-Light-Extended 14</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
 			<key>Open Toolbelt</key>
@@ -60522,7 +60522,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1149</integer>
+	<integer>1159</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61327,7 +61327,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-05-07T15:28:10Z</date>
+	<date>2020-05-11T18:43:52Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>

@@ -2,29 +2,21 @@
 
 brew_shell() {
   local shell="${1}"
-  if test ! -e "/usr/local/bin/${shell}"; then
-    brew install "${shell}"
-  else
-    printf "%s already installed!\n" "${shell}"
-  fi
+  [[ ! -e "/usr/local/bin/${shell}" ]] && brew install "${shell}"
 }
 
 allowed_shells() {
   local shell="${1}"
-  if ! grep -Fxq "/usr/local/bin/${shell}" /etc/shells; then
+  ! grep -Fxq "/usr/local/bin/${shell}" /etc/shells && {
     echo "/usr/local/bin/${shell}" | sudo tee -a /etc/shells 1>/dev/null
-  else
-    printf "%s shell already in /etc/shells!\n" "${shell}"
-  fi
+  }
 }
 
 change_shell() {
   local shell="${1}"
-  if [ "$SHELL" != "/usr/local/bin/${shell}" ]; then
-    sudo chsh -s "/usr/local/bin/${shell}" "$USER"
-  else
-    printf "%s already default shell!\n" "${shell}"
-  fi
+  [[ "${SHELL}" != "/usr/local/bin/${shell}" ]] && {
+      sudo chsh -s "/usr/local/bin/${shell}" "$USER"
+  }
 }
 
 bootstrap_shell() {

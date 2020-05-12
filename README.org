@@ -1,9 +1,6 @@
-#+title: Teton
-
+#+HTML: <p align="center"><img src="assets/teton.png" /></p>
 [[https://github.com/dylanjm/teton/actions][file:https://github.com/dylanjm/teton/workflows/CI/badge.svg]]
 
-#+begin_src bash
-tree
-#+end_src
-
-#+RESULTS:
+** About
+** Installation
+** Features

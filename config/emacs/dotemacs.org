@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-07 20:16:17
+/last updated/: 2020-05-11 15:55:29
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -362,22 +362,22 @@ This function is a great way to conditional run functions at different intervals
 
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
-  (defmacro arco/run-at-active-interval (interval idle-interval &rest body)
-    "Every INTERVAL seconds, unless idle for > IDLE-INTERVAL seconds, run BODY.
+(defmacro arco/run-at-active-interval (interval idle-interval &rest body)
+  "Every INTERVAL seconds, unless idle for > IDLE-INTERVAL seconds, run BODY.
   Also, after IDLE-INTERVAL seconds of idle time, run BODY. This allows using an
   idle timer to quickly run BODY when Emacs becomes idle but also ensures that
   BODY is run periodically even if Emacs is actively being used."
-    (declare (indent 2))
-    `(progn
-       (run-at-time (current-time) ,interval
-                    (lambda ()
-                      (let* ((idle-time (current-idle-time))
-                             (idle-secs (when idle-time
-                                          (float-time idle-time))))
-                        (unless (and idle-secs
-                                     (> idle-secs ,idle-interval))
-                          ,@body))))
-       (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
+  (declare (indent 2))
+  `(progn
+     (run-at-time (current-time) ,interval
+                  (lambda ()
+                    (let* ((idle-time (current-idle-time))
+                           (idle-secs (when idle-time
+                                        (float-time idle-time))))
+                      (unless (and idle-secs
+                                   (> idle-secs ,idle-interval))
+                        ,@body))))
+     (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
 
 **** Screen-Capture
@@ -837,8 +837,9 @@ Let's add a few helpful units to the calculator.
 
 #+name: init-cl-lib-block
 #+begin_src emacs-lisp
-  (use-package cl-lib
-    :demand t :straight (:type built-in))
+(use-package cl-lib
+  :demand t
+  :straight (:type built-in))
 #+end_src
 
 *** Comint (Built-In)
@@ -1889,7 +1890,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   (defun arco/load-gruvbox-theme ()
     (load-theme 'gruvbox-dark-hard)
     (if (daemonp)
-	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+	    (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
 	  (general-add-hook 'after-init-hook #'setup-main-fonts))
     (when-let (frame (selected-frame))
 	  (configure-fonts frame))))
@@ -1965,29 +1966,29 @@ spaces."
 
 #+name: init-hide-mode-line-block
 #+begin_src emacs-lisp
-  (use-package hide-mode-line
-    :straight t
-    :commands (hide-mode-line-mode))
+(use-package hide-mode-line
+  :straight t
+  :commands (hide-mode-line-mode))
 #+end_src
 
 *** [[https://github.com/ubolonton/info-colors][Info-Colors]]
 
 #+name: init-info-colors-block
 #+begin_src emacs-lisp
-  (use-package info-colors
-    :straight (:host github :repo "ubolonton/info-colors")
-    :init
-    (general-add-hook 'Info-selection-hook #'info-colors-fontify-mode))
+(use-package info-colors
+  :straight (:host github :repo "ubolonton/info-colors")
+  :init
+  (general-add-hook 'Info-selection-hook #'info-colors-fontify-mode))
 #+end_src
 
 *** [[https://github.com/SpecialBomb/emacs-modern-fringes][Modern-Fringes]]
 #+name: init-modern-fringes-block
-#+begin_src emacs-lisp
-  (use-package modern-fringes
-    :straight (:host github :repo "SpecialBomb/emacs-modern-fringes")
-    :ghook 'emacs-startup-hook
-    :config
-    (modern-fringes-invert-arrows))
+#+begin_src emacs-lisp :tangle no
+(use-package modern-fringes
+  :straight (:host github :repo "SpecialBomb/emacs-modern-fringes")
+  :ghook 'emacs-startup-hook
+  :config
+  (modern-fringes-invert-arrows))
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
@@ -2048,9 +2049,9 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
 #+name: init-osx-trash-block
 #+begin_src emacs-lisp
-  (use-package osx-trash
-    :straight t
-    :ghook ('after-init-hook #'osx-trash-setup))
+(use-package osx-trash
+  :straight t
+  :ghook ('after-init-hook #'osx-trash-setup))
 #+end_src
 
 *** [[https://github.com/politza/pdf-tools][PDF-Tools]]
@@ -2066,38 +2067,19 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/manateelazycat/aweshell][Aweshell]]
 #+name: init-aweshell-block
 #+begin_src emacs-lisp
-  (use-package aweshell
-    :straight (:host github :repo "manateelazycat/aweshell")
-    :general
-    ("C-c x t" #'aweshell-dedicated-toggle)
-    (:keymaps 'eshell-mode-map
-     "C-d" #'aweshell-dedicated-close)
-    :config/el-patch
-    (el-patch-defun epe-remote-user ()
-      "Return remote user name."
-      (or (tramp-file-name-user (tramp-dissect-file-name default-directory)) "mcdodyla"))
-
-    (el-patch-defun aweshell-dedicated-close ()
-      "Close dedicated `aweshell' window."
-      (interactive)
-      (if (aweshell-dedicated-exist-p)
-          (let ((current-window (selected-window)))
-            ;; Remember height.
-            (aweshell-dedicated-select-window)
-            (delete-window aweshell-dedicated-window)
-            (if (aweshell-window-exist-p current-window)
-                (select-window current-window)))
-        (message "`AWESHELL DEDICATED' window is not exist.")))
-
-
-    (general-setq aweshell-complete-selection-key "C-f")
-    (general-setq eshell-highlight-prompt nil
-                  eshell-prompt-function #'epe-theme-pipeline
-                  epe-path-style 'fish)
-    (general-setq eshell-up-ignore-case nil
-                  eshell-up-print-parent-dir t)
-    (general-setq aweshell-use-exec-path-from-shell t
-                  aweshell-dedicated-window-height 25))
+(use-package aweshell
+  :straight (:host github :repo "manateelazycat/aweshell")
+  :general
+  ("C-c x t" #'aweshell-dedicated-toggle)
+  :config
+  (general-setq aweshell-complete-selection-key "C-f")
+  (general-setq eshell-highlight-prompt nil
+                eshell-prompt-function #'epe-theme-pipeline
+                epe-path-style 'fish)
+  (general-setq eshell-up-ignore-case nil
+                eshell-up-print-parent-dir t)
+  (general-setq aweshell-use-exec-path-from-shell t
+                aweshell-dedicated-window-height 25))
 #+end_src
 
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
@@ -2106,9 +2088,9 @@ A nice way to restart emacs on the fly if you need to.
 (use-package multi-libvterm
   :straight (:host github :repo "suonlight/multi-libvterm")
   :general
-  ("C-c x v" #'multi-libvterm-dedicated-toggle)
+  ("C-c x v" #'multi-vterm-dedicated-toggle)
   :config
-  (general-setq multi-libvterm-dedicated-window-height 25))
+  (general-setq multi-vterm-dedicated-window-height 25))
 #+end_src
 
 *** [[https://github.com/akermu/emacs-libvterm][Vterm]]
@@ -2216,77 +2198,77 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
 #+begin_src emacs-lisp
-  (use-package company
-    :blackout t
-    :straight t
-    :ghook ('emacs-startup-hook #'global-company-mode)
-    :general
-    ([remap completion-at-point] #'company-manual-begin
-     [remap complete-symbol] #'company-manual-begin)
-    (:keymaps 'company-active-map
-              "TAB"     #'company-complete-selection
-              "<tab>"   #'company-complete-selection
-              "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
-              "C-p"     #'company-select-previous-or-abort)
-    (:keymaps 'company-active-map
-              :predicate '(company-explicit-action-p)
-              "<return>" #'company-complete-selection
-              "RET"      #'company-complete-selection)
-    (:keymaps 'comint-mode-map
-              [remap indent-for-tab-command] #'company-manual-begin)
-    :preface
-    (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-    :config
+(use-package company
+  :blackout t
+  :straight t
+  :ghook ('emacs-startup-hook #'global-company-mode)
+  :general
+  ([remap completion-at-point] #'company-manual-begin
+   [remap complete-symbol] #'company-manual-begin)
+  (:keymaps 'company-active-map
+            "TAB"     #'company-complete-selection
+            "<tab>"   #'company-complete-selection
+            "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
+            "C-p"     #'company-select-previous-or-abort)
+  (:keymaps 'company-active-map
+            :predicate '(company-explicit-action-p)
+            "<return>" #'company-complete-selection
+            "RET"      #'company-complete-selection)
+  (:keymaps 'comint-mode-map
+            [remap indent-for-tab-command] #'company-manual-begin)
+  :preface
+  (general-unbind :keymaps 'company-active-map "C-w" "C-h")
+  :config
 
-    (defvar company-mode/enable-yas t
-      "Eanble yasnippet for all backends.")
+  (defvar company-mode/enable-yas t
+    "Eanble yasnippet for all backends.")
 
-    (defun company-mode/backend-with-yas (backend)
-      (if (or (not company-mode/enable-yas)
-              (and (listp backend) (member 'company-yasnippet backend)))
-          backend
-        (append (if (consp backend) backend (list backend))
-                '(:with company-yasnippet))))
-
-
-    (general-setq company-async-timeout 10
-                  company-dabbrev-other-buffers nil
-                  company-dabbrev-ignore-case nil
-                  company-dabbrev-downcase nil
-                  company-idle-delay 0.0
-                  company-minimum-prefix-length 1
-                  company-show-numbers t
-                  company-require-match #'company-explicit-action-p
-                  company-auto-complete-chars nil
-                  company-tooltip-limit 15
-                  company-tooltip-align-annotations t)
-
-    (general-setq company-global-modes '(not message-mode
-                                             help-mode
-                                             gud-mode
-                                             vterm-mode
-                                             term-mode))
-
-    (general-setq company-backends '(company-capf
-                                     company-files
-                                     (company-dabbrev-code company-keywords)
-                                     company-dabbrev))
-
-    (general-setq company-backends
-                  (mapcar #'company-mode/backend-with-yas company-backends))
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas)
+            (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
 
 
-    (general-setq company-frontends
-                  '(company-pseudo-tooltip-frontend
-                    company-echo-metadata-frontend)))
+  (general-setq company-async-timeout 10
+                company-dabbrev-other-buffers nil
+                company-dabbrev-ignore-case nil
+                company-dabbrev-downcase nil
+                company-idle-delay 0.0
+                company-minimum-prefix-length 1
+                company-show-numbers t
+                company-require-match #'company-explicit-action-p
+                company-auto-complete-chars nil
+                company-tooltip-limit 15
+                company-tooltip-align-annotations t)
+
+  (general-setq company-global-modes '(not message-mode
+                                           help-mode
+                                           gud-mode
+                                           vterm-mode
+                                           term-mode))
+
+  (general-setq company-backends '(company-capf
+                                   company-files
+                                   (company-dabbrev-code company-keywords)
+                                   company-dabbrev))
+
+  (general-setq company-backends
+                (mapcar #'company-mode/backend-with-yas company-backends))
+
+
+  (general-setq company-frontends
+                '(company-pseudo-tooltip-frontend
+                  company-echo-metadata-frontend)))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
 #+name: init-company-prescient-block
 #+begin_src emacs-lisp
-  (use-package company-prescient
-    :straight t
-    :ghook 'company-mode-hook)
+(use-package company-prescient
+  :straight t
+  :ghook 'company-mode-hook)
 #+end_src
 
 *** [[https://github.com/PythonNut/company-flx][Company-FLX]]
@@ -2457,8 +2439,8 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
 #+name: init-format-all-block
 #+begin_src emacs-lisp
-  (use-package format-all
-    :straight t)
+(use-package format-all
+  :straight t)
 #+end_src
 
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
@@ -3105,31 +3087,31 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
 #+name: init-ibuffer-ext-block
 #+begin_src emacs-lisp
-  (use-package ibuf-ext
-    :straight (:type built-in)
-    :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
-    :config (general-setq ibuffer-show-empty-filter-groups nil))
+(use-package ibuf-ext
+  :straight (:type built-in)
+  :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
+  :config (general-setq ibuffer-show-empty-filter-groups nil))
 #+end_src
 
 *** [[https://github.com/purcell/ibuffer-projectile][iBuffer-Projectile]]
 #+name: init-ibuffer-projectile-block
 #+begin_src emacs-lisp
-  (use-package ibuffer-projectile
-    :straight t
-    :preface
-    (defun djm/config-ibuffer-projectile ()
-      (ibuffer-projectile-set-filter-groups)
-      (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
-      (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*direnv*" "*straight-process*" "lsp" "flycheck") (buffer-name)))))
-      (unless (eq ibuffer-sorting-mode 'alphabetic)
-        (ibuffer-do-sort-by-alphabetic))
+(use-package ibuffer-projectile
+  :straight t
+  :preface
+  (defun djm/config-ibuffer-projectile ()
+    (ibuffer-projectile-set-filter-groups)
+    (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+    (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*direnv*" "*straight-process*" "lsp" "flycheck") (buffer-name)))))
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic))
 
-      (when (bound-and-true-p page-break-lines-mode)
-        (page-break-lines--update-display-tables)))
-    :init
-    (general-add-hook 'ibuffer-hook #'djm/config-ibuffer-projectile)
-    :config
-    (general-setq ibuffer-projectile-prefix ""))
+    (when (bound-and-true-p page-break-lines-mode)
+      (page-break-lines--update-display-tables)))
+  :init
+  (general-add-hook 'ibuffer-hook #'djm/config-ibuffer-projectile)
+  :config
+  (general-setq ibuffer-projectile-prefix ""))
 #+end_src
 
 *** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
@@ -3790,39 +3772,30 @@ A nice way to restart emacs on the fly if you need to.
     (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
 #+end_src
 
-*** [[https://github.com/mihaiolteanu/vuiet][Vuiet]]
-#+name: init-vuiet-block
-#+begin_src emacs-lisp
-(use-package vuiet
-  :straight (:host github :repo "mihaiolteanu/vuiet"))
-#+end_src
-
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
 #+name: init-simple-mpc-block
 #+begin_src emacs-lisp
-  (use-package simple-mpc
-    :straight t
-    :config ;; These are TAB separators <C-q TAB>
-    (general-setq simple-mpc-playlist-format "%artist%	%album%	%title%	%file%"
-                  simple-mpc-table-separator "	"))
-
+(use-package simple-mpc
+  :straight t
+  :config ;; These are TAB separators <C-q TAB>
+  (general-setq simple-mpc-playlist-format "%artist%	%album%	%title%	%file%"
+                simple-mpc-table-separator "	"))
 #+end_src
 
 *** [[https://github.com/hniksic/emacs-htmlize][HTMLize]]
 #+name: init-htmlize-block
 #+begin_src emacs-lisp
-  (use-package htmlize
-    :straight t
-    :after org
-    :config
-    (general-setq htmlize-ignore-face-size t))
+(use-package htmlize
+  :straight t
+  :config
+  (general-setq htmlize-ignore-face-size t))
 #+end_src
 
 *** [[https://github.com/flexibeast/ebuku][Ebuku]]
 #+name: init-ebuku-block
 #+begin_src emacs-lisp
-  (use-package ebuku
-    :straight t)
+(use-package ebuku
+  :straight t)
 #+end_src
 
 ** Version Control
@@ -4560,6 +4533,13 @@ This is a nifty package that allows me to define functions as local variables in
   (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
 #+end_src
 
+**** [[https://github.com/sonatard/clang-format][Clang-Format]]
+#+name: init-clang-format-block
+#+begin_src emacs-lisp
+(use-package clang-format
+  :straight t)
+#+end_src
+
 *** File Modes
 **** [[https://github.com/tequilasunset/apples-mode][Apple-Script]]
 #+name: init-apple-script-block
@@ -4602,8 +4582,8 @@ This is a nifty package that allows me to define functions as local variables in
 **** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
 #+name: init-json-mode-block
 #+begin_src emacs-lisp
-  (use-package json-mode
-    :straight t)
+(use-package json-mode
+  :straight t)
 #+end_src
 
 **** [[https://github.com/ledger/ledger-mode][Ledger-Mode]]
@@ -4648,113 +4628,109 @@ This is a nifty package that allows me to define functions as local variables in
 **** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
 #+begin_src emacs-lisp
-  (use-package ssh-config-mode
-    :straight t)
+(use-package ssh-config-mode
+  :straight t)
 #+end_src
 
 **** [[file:https:/github.com/rndusr/subed/][Subed (Subtitle Mode)]]
 #+name: init-subtitle-mode-block
 #+begin_src emacs-lisp :tangle no
-  (use-package subed
-    :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
-    :mode ("\\.srt$")
-    :defines subed--init-alist
-    :gfhook 'auto-fill-mode
-    :config
-    ;; Break lines at 40 characters
-    (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
+(use-package subed
+  :straight (:host github :repo "rndusr/subed" :files ("subed/*.el"))
+  :mode ("\\.srt$")
+  :defines subed--init-alist
+  :gfhook 'auto-fill-mode
+  :config
+  ;; Break lines at 40 characters
+  (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
 #+end_src
 
 **** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
 #+name: init-toml-mode-block
 #+begin_src emacs-lisp
-  (use-package toml-mode
-    :blackout "TOML" :straight t
-    :mode "Pipfile\\'")
+(use-package toml-mode
+  :blackout "TOML"
+  :straight t
+  :mode "Pipfile\\'")
 #+end_src
 
 **** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
 #+name: init-yaml-block
 #+begin_src emacs-lisp
-  (use-package yaml-mode
-    :straight t
-    :mode ("\\.yaml'" "\\.yml'"))
+(use-package yaml-mode
+  :straight t
+  :mode ("\\.yaml'" "\\.yml'"))
 #+end_src
 
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block
 #+begin_src emacs-lisp
-  (use-package speed-type
-    :straight t)
+(use-package speed-type
+  :straight t)
 #+end_src
 
 *** [[https://github.com/emacsmirror/2048-game][2048-Game]]
 #+name: init-2048-block
 #+begin_src emacs-lisp
-  (use-package 2048-game
-    :straight t)
+(use-package 2048-game
+  :straight t)
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-anywhere][Emacs-Anywhere]]
 #+name: init-emacs-anywhere-block
 #+begin_src emacs-lisp :tangle no
-  (use-package emacs_anywhere
-    :straight (:host github :repo "dylanjm/emacs-anywhere")
-    :init
-    (defun github-conversation-p (window-title)
-      (or (string-match-p "Pull Request" window-title)
-          (string-match-p "Issues" window-title)))
+(use-package emacs_anywhere
+  :straight (:host github :repo "dylanjm/emacs-anywhere")
+  :init
+  (defun github-conversation-p (window-title)
+    (or (string-match-p "Pull Request" window-title)
+        (string-match-p "Issues" window-title)))
 
-    (defun popup-handler (app-name window-title x y w h)
-      (set-frame-position (selected-frame) x (+ y (- h 300)))
-      (unless (zerop w)
-        (set-frame-size (selected-frame) w 400 5))
+  (defun popup-handler (app-name window-title x y w h)
+    (set-frame-position (selected-frame) x (+ y (- h 300)))
+    (unless (zerop w)
+      (set-frame-size (selected-frame) w 400 5))
 
-      (when (equal app-name "iTerm2")
-        ;; Tell Emacs Anywhere not to paste if launched from Terminal
-        (setq ea-paste nil)
-        (shell-script-mode))
+    (when (equal app-name "iTerm2")
+      ;; Tell Emacs Anywhere not to paste if launched from Terminal
+      (setq ea-paste nil)
+      (shell-script-mode))
 
-      (cond
-       ((github-conversation-p window-title) (gfm-mode))
-       (t (markdown-mode))))
+    (cond
+     ((github-conversation-p window-title) (gfm-mode))
+     (t (markdown-mode))))
 
-    (general-add-hook 'ea-popup-hook #'popup-handler))
+  (general-add-hook 'ea-popup-hook #'popup-handler))
 #+end_src
 
 *** [[https://github.com/vermiculus/sx.el][Stack-Exchange]]
 #+name: init-stack-exchange-block
 #+begin_src emacs-lisp
-  (use-package sx
-    :straight t)
+(use-package sx
+  :straight t)
 #+end_src
 
 *** [[https://github.com/canatella/xwidget-plus][Xwidget-Plus]]
 #+name: init-xwidget-plus-block
 #+begin_src emacs-lisp
-  (use-package xwidget-plus
-    :straight (:host github :repo "canatella/xwidget-plus")
-    :general
-    (:keymaps 'xwidget-webkit-mode-map
-    "v" #'xwidget-plus-follow-link))
+(use-package xwidget-plus
+  :straight (:host github :repo "canatella/xwidget-plus")
+  :general
+  (:keymaps 'xwidget-webkit-mode-map
+            "v" #'xwidget-plus-follow-link))
 #+end_src
 
 *** [[https://github.com/tarsius/keycast][Keycast]]
 #+name: init-keycast-block
 #+begin_src emacs-lisp
-  (use-package moody
-    :straight t)
-
-  (use-package keycast
-    :straight t
-    :after moody
-    :commands keycast-mode
-    :config
-    (general-setq keycast-window-predicate 'moody-window-active-p
-                  keycast-separator-width 1
-                  keycast-insert-after 'mode-line-buffer-identification
-                  keycast-remove-tail-elements nil))
+(use-package keycast
+  :straight t
+  :commands keycast-mode
+  :config
+  (general-setq keycast-separator-width 1
+                keycast-insert-after 'mode-line-buffer-identification
+                keycast-remove-tail-elements nil))
 #+end_src
 
 ** Footer

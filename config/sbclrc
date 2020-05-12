@@ -1,0 +1,9 @@
+;; -*- mode: common-lisp; -*-
+;;; The following lines added by ql:add-to-init-file:
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames ".local/share/quicklisp/setup.lisp"
+                                       (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)))
+
+(setf sb-impl::*default-external-format* :utf-8)

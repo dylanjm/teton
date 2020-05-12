@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+sudo true
+set -eo pipefail
+
+# shellcheck source=setup-xcode-clt.sh
+# source ./bootstrap/setup-xcode-clt.sh
+
+# shellcheck source=setup-homebrew.sh
+source ./config/bootstrap/setup-homebrew.sh
+
+# shellcheck source=setup-shell.sh
+source ./config/bootstrap/setup-shell.sh
+
+# shellcheck source=setup-fonts.sh
+# source ./bootstrap/setup-fonts.sh

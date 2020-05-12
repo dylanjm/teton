@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+#
+# MIT License
+#
+# Copyright (c) 2019-2020 Dylan McDowell
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
+case "$1" in
+  *.6pl|*.6pm|*.ABAP|*.ASM|*.BAS|*.C|*.CBL|*.COB|*.CPP|*.CPY|*.F|*.F03|*.F90|*.G|\
+    *.H|*.ICON|*.PRG|*.R|*.Rd|*.Rout|*.S|*.SAS|*.VBS|*.[1234567]|*.abap|*.abnf|\
+    *.ada|*.adb|*.adl|*.adlf|*.adls|*.adlx|*.ado|*.ads|*.agda|*.aheui|*.ahk|\
+    *.ahkl|*.aj|*.als|*.apl|*.applescript|*.arexx|*.as|*.asax|*.ascx|*.ashx|\
+    *.asm|*.asmx|*.aspx|*.asy|*.at|*.au3|*.aug|*.aux|*.awk|*.axd|*.b|*.bas|\
+    *.bash|*.bat|*.bb|*.bbc|*.bc|*.befunge|*.bf|*.bib|*.bmp|*.bmx|*.bnf|*.boa|\
+    *.boo|*.bpl|*.bro|*.bst|*.bug|*.c|*.c++|*.c++-objdump|*.c-objdump|*.cadl|\
+    *.camkes|*.capnp|*.cbl|*.cc|*.cdf|*.cdl|*.ceylon|*.cf|*.cfc|*.cfg|*.cfm|\
+    *.cfml|*.chai|*.chpl|*.ci|*.cirru|*.cl|*.clay|*.clj|*.cljs|*.cls|*.cmake|\
+    *.cmd|*.cob|*.coffee|*.cp|*.cpp|*.cpp-objdump|*.cps|*.cpsa|*.cpy|*.cr|\
+    *.crmsh|*.croc|*.cry|*.cs|*.csd|*.csh|*.css|*.css.in|*.cu|*.cuh|*.cw|*.cxx|\
+    *.cxx-objdump|*.cyp|*.cypher|*.d|*.d-objdump|*.darcspatch|*.dart|*.dasm|\
+    *.dasm16|*.dcl|*.decls|*.def|*.dg|*.di|*.diff|*.do|*.docker|*.dpatch|*.dpr|\
+    *.dtd|*.duby|*.duel|*.dyl|*.dylan|*.dylan-console|*.e|*.ebnf|*.ebuild|*.ec|\
+    *.ecl|*.eclass|*.edp|*.eg|*.eh|*.el|*.elm|*.eps|*.erl|*.erl-sh|*.es|\
+    *.escript|*.evoque|*.ex|*.exheres-0|*.exlib|*.exs|*.ezt|*.f|*.f03|*.f90|\
+    *.factor|*.fan|*.fancypack|*.feature|*.fhtml|*.fish|*.flo|*.flx|*.flxh|\
+    *.fnl|*.frag|*.frt|*.fs|*.fsi|*.fun|*.fy|*.g|*.gap|*.gd|*.gdc|*.gemspec|\
+    *.geo|*.gi|*.gif|*.go|*.golo|*.gradle|*.graph|*.groovy|*.gs|*.gsp|*.gst|\
+    *.gsx|*.h|*.h++|*.haml|*.handlebars|*.hbs|*.hdp|*.hh|*.hlsl|*.hlsli|*.hpp|\
+    *.hrl|*.hs|*.hsail|*.htm|*.html|*.hx|*.hxml|*.hxsl|*.hxx|*.hy|*.hyb|*.i|\
+    *.i6t|*.i7x|*.icl|*.icn|*.icon|*.idc|*.idl4|*.idr|*.ijs|*.ik|*.inc|*.inf|\
+    *.ini|*.ino|*.instances|*.intr|*.io|*.ipf|*.j|*.jade|*.jag|*.java|*.jbst|\
+    *.jcl|*.jl|*.jpg|*.js|*.js.in|*.jsgf|*.jsm|*.json|*.jsonld|*.jsp|*.juttle|\
+    *.kal|*.kid|*.kif|*.kk|*.kki|*.ksh|*.kt|*.lagda|*.lasso|*.lasso[89]|*.lcry|\
+    *.lean|*.less|*.lgt|*.lhs|*.lid|*.lidr|*.liquid|*.lisp|*.ll|*.load|*.logtalk|\
+    *.ls|*.lsl|*.lsp|*.lua|*.m|*.ma|*.mac|*.mak|*.man|*.mao|*.maql|*.mask|*.mc|\
+    *.md|*.mhtml|*.mi|*.mk|*.ml|*.mli|*.mll|*.mly|*.mm|*.mo|*.mod|*.monkey|*.moo|\
+    *.moon|*.mq4|*.mq5|*.mqh|*.msc|*.mt|*.mu|*.mxml|*.myt|*.n|*.nb|*.nbp|*.nc|\
+    *.ncl|*.ng2|*.ni|*.nim|*.nimrod|*.nit|*.nix|*.nl|*.nqp|*.ns2|*.nsh|*.nsi|\
+    *.objdump|*.objdump-intel|*.odin|*.ooc|*.opa|*.orc|*.p|*.p6|*.p6l|*.p6m|\
+    *.pan|*.pas|*.patch|*.pc|*.pcmk|*.php|*.php[345]|*.phtml|*.pig|*.pike|*.pl|\
+    *.pl6|*.plot|*.plt|*.pm|*.pm6|*.pmod|*.png|*.po|*.pony|*.pot|*.pov|*.pp|\
+    *.praat|*.prg|*.pro|*.proc|*.prolog|*.properties|*.proto|*.ps|*.ps1|*.psc|\
+    *.psi|*.psl|*.psm1|*.pug|*.pwn|*.pxd|*.pxi|*.py|*.py3tb|*.pypylog|*.pytb|\
+    *.pyw|*.pyx|*.qbs|*.qml|*.qvto|*.r|*.r3|*.rake|*.raw|*.rb|*.rbw|*.rbx|*.reb|\
+    *.red|*.reds|*.reg|*.rest|*.rex|*.rexx|*.rhtml|*.rkt|*.rktd|*.rktl|*.rl|\
+    *.rnc|*.robot|*.rpf|*.rq|*.rql|*.rs|*.rs.in|*.rsl|*.rss|*.rst|*.rtf|*.rts|\
+    *.run|*.rvt|*.rx|*.s|*.sage|*.sarl|*.sas|*.sass|*.sbl|*.sc|*.scala|*.scaml|\
+    *.scd|*.sce|*.sci|*.scm|*.sco|*.scss|*.sgf|*.sh|*.sh-session|*.shell-session|\
+    *.shen|*.sig|*.sil|*.sl|*.slim|*.sls|*.smali|*.sml|*.smv|*.snobol|*.sp|*.sparql|\
+    *.spec|*.spt|*.sql|*.sqlite3-console|*.ss|*.ssp|*.st|*.stan|*.sv|*.svg|\
+    *.svh|*.swg|*.swift|*.t|*.tac|*.tap|*.tasm|*.tcl|*.tcsh|*.tea|*.tex|*.tf|\
+    *.thrift|*.thy|*.tmpl|*.toc|*.todotxt|*.toml|*.tpl|*.treetop|*.ts|*.tst|\
+    *.tsx|*.tt|*.ttl|*.twig|*.txt|*.typoscript|*.u|*.u1|*.u2|*.udo|*.v|*.vala|\
+    *.vapi|*.vark|*.vb|*.vbs|*.vcl|*.vert|*.vhd|*.vhdl|*.vim|*.vm|*.vpr|*.wdiff|\
+    *.weechatlog|*.whiley|*.wlua|*.wsdl|*.wsf|*.x|*.x10|*.xhtml|*.xi|*.xm|*.xmi|\
+    *.xml|*.xpl|*.xq|*.xql|*.xqm|*.xquery|*.xqy|*.xsd|*.xsl|*.xslt|*.xtend|*.xtm|\
+    *.xul.in|*.yaml|*.yml|*.zep|*.zsh|*Config.in*|.Renviron|.Rhistory|.Rprofile|\
+    .bash_*|.bashrc|.exrc|.gvimrc|.htaccess|.vimrc|.zshrc|\
+    Dockerfile|GNUmakefile|Gemfile|Kconfig|Makefile|Makefile.*|PKGBUILD|Rakefile|\
+    SConscript|SConstruct|_exrc|_gvimrc|_vimrc|apache.conf|apache2.conf|\
+    autodelegate|autohandler|bash_*|bashrc|control|dhandler|external.in*|.envrc|\
+    gvimrc|makefile|nginx.conf|pacman.conf|sources.list|squid.conf|standard-modules.in|\
+    termcap|termcap.src|terminfo|terminfo.src|vimrc|xorg.conf|zshrc)
+        pygmentize -f terminal "$1";;
+
+    .zshenv|.gitconfig|.gitignore)
+        pygmentize -f terminal -l sh "$1";;
+
+    *)
+      if ! grep -E "#\!/.+[/ ](ba|z)?sh" "$1" >/dev/null; then
+        exit 1
+      fi
+      pygmentize -f terminal -l sh "$1"
+esac
+
+exit $?

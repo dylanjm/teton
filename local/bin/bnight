@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+#
+# 88                      88             88
+# 88                      ""             88           ,d
+# 88                                     88           88
+# 88,dPPYba,  8b,dPPYba,  88  ,adPPYb,d8 88,dPPYba, MM88MMM
+# 88P'    "8a 88P'   `"8a 88 a8"    `Y88 88P'    "8a  88
+# 88       d8 88       88 88 8b       88 88       88  88
+# 88b,   ,a8" 88       88 88 "8a,   ,d88 88       88  88,
+# 8Y"Ybbd8"'  88       88 88  `"YbbdP"Y8 88       88  "Y888
+#                             aa,    ,88
+#                              "Y8bbdP"
+#
+# bnight - BISON Nightly:
+#    A script to fetch nightly BISON performance data in batches.
+#
+# Usage:
+#    bnight [-h] [-t <string>]
+#
+# Depends on:
+#    BISON access
+#    Remote HPC access
+#    fd-find (https://github.com/sharkdp/fd)
+#
+# Example:
+#    bnight -t "2weeks"
+#
+# Submit issues to https://github.com/dylanm/teton/issues
+#
+# MIT License
+#
+# Copyright (c) 2019-2020 Dylan McDowell
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
+# Notes ################################################################
+
+# Constants ############################################################
+
+readonly _ME="$(basename "${0}")"
+
+NORMAL='\033[0m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+YELLOW='\033[1;33m'
+
+TIME="2weeks"
+
+# Utility ##############################################################
+
+magenta() { echo "${MAGENTA}$*${NORMAL}"; }
+yellow()  { echo "${YELLOW}$*${NORMAL}"; }
+green()   { echo "${GREEN}$*${NORMAL}"; }
+bold()    { echo "${BOLD}$*${NORMAL}"; }
+blue()    { echo "${BLUE}$*${NORMAL}"; }
+red()     { echo "${RED}$*${NORMAL}"; }
+
+usage() {
+  cat <<- EOM
+$(echo -e "$(bold "bnight - BISON Nightly")"):
+    A script to fetch nightly BISON performance data in batches.
+
+$(echo -e "$(yellow USAGE)"):
+    ${_ME} [-h] [-t <string>]
+
+$(echo -e "$(yellow FLAGS)"):
+    -h    - show this message
+    -t    - a string specifing --changed-within time given to fd command.
+            Defaults to '2weeks'.
+EOM
+}
+
+get_args() {
+  while getopts ":ht:" flag; do
+    case "$flag" in
+      h)
+        usage
+        exit 0
+        ;;
+      t)
+        TIME=${OPTARG}
+        ;;
+      *)
+        usage
+        exit 1
+        ;;
+    esac
+  done
+
+  shift $((OPTIND - 1))
+}
+
+fetch_data() {
+  ## read line at a time from find output on server
+  while read -r line; do
+    lpath=$(echo "$line" | sed -E 's|/projects/bison/git/./||g')
+    folder=$(printf "%-35b" "$(yellow "${line:22:14}")" | tr ' ' '.')
+    file=$(printf "%-80b" "$(blue "$(basename "${line}")")" | tr ' ' '.')
+
+    if [[ -e "$(pwd)/$lpath" ]]; then
+      status="${RED}skipping${NORMAL}"
+      printf "%s%s%b\n" "$folder" "$file" "$status"
+      continue
+    else
+      status="${GREEN}copying${NORMAL}"
+      printf "%s%s%b\n" "$folder" "$file" "$status"
+      rsync -aW --inplace --relative falcon1:"$line" "$(pwd)"
+    fi
+
+  done < <(ssh -qn falcon1 '$HOME/.config/cargo/bin/fd --type d --max-depth 1 "bison_[0-9]{8}$" /projects/bison/git --changed-within '"$TIME"' -exec printf "%s\n" "{}/assessment" |' \
+               'xargs -I{} $HOME/.config/cargo/bin/fd --no-ignore-vcs --type f -a -e csv -E "**/doc/**" -E "**/gold/**" -E "**/SM/**" ".*_metrics" {} |' \
+               'sed -E "s|/projects/bison/git/|/projects/bison/git/./|g"')
+}
+
+main() {
+  get_args "${@}"
+  fetch_data
+}
+
+main "${@}"
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

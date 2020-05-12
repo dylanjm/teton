@@ -1,0 +1,83 @@
+# -*- mode: gitignore; -*-
+# Created by https://www.gitignore.io/api/r,rust,julia,latex,macos,emacs,python
+# Edit at https://www.gitignore.io/?templates=r,rust,julia,latex,macos,emacs,python
+
+### macOS ###
+# General
+.DS_Store
+.envrc
+
+### ZSH ###
+*.zwc
+
+### Emacs ###
+*~
+\#*\#
+*.elc
+auto-save-list
+tramp
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# AUCTeX auto folder
+/auto/
+
+### LaTeX ###
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+*.dvi
+*.xdv
+*-converted-to.*
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+*.fdb_latexmk
+*.synctex
+*.synctex.gz
+*.pdfsync
+
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.python-version
+# End of https://www.gitignore.io/api/r,rust,julia,latex,macos,emacs,python

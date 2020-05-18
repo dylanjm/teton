@@ -54121,7 +54121,7 @@
 			<key>Screen</key>
 			<integer>-2</integer>
 			<key>Scrollback Lines</key>
-			<integer>1000</integer>
+			<integer>0</integer>
 			<key>Selected Text Color</key>
 			<dict>
 				<key>Blue Component</key>
@@ -60488,7 +60488,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.10beta3</string>
+		<string>3.3.7</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60501,7 +60501,7 @@
 		<string>3.3.2</string>
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60522,7 +60522,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1159</integer>
+	<integer>1164</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61327,7 +61327,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-05-11T18:43:52Z</date>
+	<date>2020-05-13T18:43:53Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>

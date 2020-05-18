@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/teton"

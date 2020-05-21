@@ -30,14 +30,18 @@
 EMACS_GIT_URL="https://git.savannah.gnu.org/git/emacs.git"
 BRANCH="feature/native-comp"
 
-SOURCE="${HOME}/Library/Caches/Homebrew/emacs"
-PREFIX="/usr/local/Cellar/emacs/28"
+SCRIPT_ROOT=$(realpath "$(dirname "$0")")
+TARGET_DIR="$HOME/.local/emacs"
+
+SOURCE="$TARGET_DIR/emacs-source"
+PREFIX="$TARGET_DIR/emacs-bin"
+
 INFO="${PREFIX}/share/info/emacs"
-NS_APP="${PREFIX}/Emacs.app"
+NS_APP="${PREFIX}/bin/Emacs.app"
 NS_APP_BIN="${NS_APP}/Contents/MacOS/Emacs"
 
 export CC="clang"
-export LDFLAGS="-L/usr/local/Cellar/gcc/9.3.0_1/lib/gcc/9 -Lusr/local/Cellar/gcc/9.3.0_1/lib/gcc/9/libgcc_ext.10.5.dylib"
+export LDFLAGS="-L/usr/local/Cellar/gcc/9.3.0_1/lib/gcc/9"
 export PKG_CONFIG_PATH="/usr/local/Cellar/imagemagick/7.0.10-11/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_3/lib/pkgconfig"
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
@@ -117,6 +121,7 @@ configure_build() {
     "--with-gnutls"
     "--with-threads"
     "--with-modules"
+    "--with-cairo"
     "--with-imagemagick"
     "--with-ns"
     "--enable-ns-self-contained"

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-20 21:41:53
+/last updated/: 2020-05-21 13:52:02
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -205,7 +205,7 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-(setq-default use-package-verbose nil
+(setq-default use-package-verbose t
               use-package-always-defer t
               use-package-compute-statistics nil
               use-package-expand-minimally nil
@@ -617,6 +617,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 **** Clipboard-Integration
 
 Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
+
 #+name: init-clipboard-integration-block
 #+begin_src emacs-lisp
 (unless (display-graphic-p)
@@ -639,7 +640,6 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 
   (general-setq interprogram-paste-function #'arco/clipboard-paste)
   (general-setq interprogram-cut-function #'arco/clipboard-copy))
-
 #+end_src
 
 *** Hooks, Macros & Advice
@@ -651,15 +651,8 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 #+end_src
 
 Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
-#+name: init-advice-block
+#+name: init-personal-advice-block
 #+begin_src emacs-lisp
-(defun arco/always-exit-minibuffer-first ()
-  (if-let ((minibuffer (active-minibuffer-window)))
-      (with-current-buffer (window-buffer minibuffer)
-        (minibuffer-keyboard-quit))
-    (funcall keyboard-quit)))
-
-(general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
 #+end_src
 
 #+name: init-misc-settings-block
@@ -701,7 +694,7 @@ I might set-up some abbreviations in the future. This is more a placeholder bloc
 (use-package abbrev
   :blackout t
   :straight (:type built-in)
-  :config
+  :init
   (general-setq abbrev-file-name (no-littering-expand-var-file-name "abbrevs")
                 only-global-abbrevs nil))
 #+end_src
@@ -714,7 +707,7 @@ Ignore those warnings from the old advice system.
 #+begin_src emacs-lisp
 (use-package advice
   :straight (:type built-in)
-  :config
+  :init
   (general-setq ad-redefinition-action 'accept))
 #+end_src
 
@@ -897,7 +890,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         ffap-machine-p-known 'reject
                         fill-column 82
                         frame-resize-pixelwise t
-                        frame-title-format '("Emacs")
+                        frame-title-format '("%b - Emacs")
                         highlight-nonselected-windows nil
                         history-delete-duplicates t
                         history-length 3000
@@ -1046,7 +1039,15 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-eshell-block
 #+begin_src emacs-lisp
 (use-package eshell
-  :straight (:type built-in))
+  :straight (:type built-in)
+  :config
+  (defun arco/eshell-narrow-output-regexp ()
+    (interactive)
+    (let ((regexp (read-regexp "Regexp to highlight")))
+      (narrow-to-region (eshell-beginning-of-output)
+                        (eshell-end-of-output))
+      (goto-char (point-min))
+      (highlight-regexp regexp 'hi-yellow))))
 #+end_src
 
 *** Eww (Built-In)
@@ -1126,8 +1127,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package font-core
   :straight (:type built-in)
-  :init
-  (global-font-lock-mode))
+  :ghook ('emacs-startup-hook #'global-font-lock-mode))
 #+end_src
 
 *** Frame (Built-In)
@@ -1339,6 +1339,13 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (defun djm/minibuffer-exit-hook ()
     (general-setq gc-cons-threshold default-gc-cons-threshold))
 
+  (defun arco/always-exit-minibuffer-first ()
+    (if-let ((minibuffer (active-minibuffer-window)))
+        (with-current-buffer (window-buffer minibuffer)
+          (minibuffer-keyboard-quit))
+      (funcall keyboard-quit)))
+
+  (general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
   (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
   (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
   (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
@@ -1377,7 +1384,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package newcomment
   :straight (:type built-in)
-  :config
+  :init
   (general-setq comment-empty-lines t
                 comment-fill-column 72
                 comment-multi-line t
@@ -1665,15 +1672,20 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
   (defun tramp-dired-switches ()
     (when (file-remote-p default-directory)
-      (setq dired-actual-switches "-al")))
-  :config
+      (setq dired-actual-switches "-la")))
+  :init
   (general-add-hook 'find-file-hook #'tramp-precious-flags)
   (general-add-hook 'dired-before-readin-hook #'tramp-dired-switches)
 
-  (general-setq tramp-default-method "ssh"
-                tramp-verbose 1
+  (general-setq tramp-ssh-controlmaster-options
+                (concat
+                 "-o ControlPath=/tmp/ssh-ControlPath-%%r%%h:%%p "
+                 "-o ControlMaster=auto -o ControlPersist=yes"))
+
+  (general-setq tramp-default-method "scp"
+                tramp-verbose 3
                 tramp-completion-reread-directory-timeout nil
-                tramp-use-ssh-control-master-options t
+                tramp-use-ssh-controlmaster-options nil
                 tramp-histfile-override nil
                 remote-file-name-inhibit-cache nil
                 tramp-chunksize 500
@@ -1827,12 +1839,12 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-custom-load-block
 #+begin_src emacs-lisp
-  (use-package cus-edit
-    :straight (:type built-in)
-    :init
-    (general-setq custom-file djm--custom-file)
-    (when (file-exists-p custom-file)
-      (load custom-file :noerror)))
+(use-package cus-edit
+  :straight (:type built-in)
+  :init
+  (general-setq custom-file djm--custom-file)
+  (when (file-exists-p custom-file)
+    (load custom-file :noerror)))
 #+end_src
 
 *** Secret File
@@ -2452,18 +2464,18 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
 #+begin_src emacs-lisp
-  (use-package editorconfig
-    :blackout t
-    :straight t
-    :ghook 'emacs-startup-hook
-    :init
-    (defun arco/hack-makefile-indentation (props)
-      (when (derived-mode-p 'makefile-mode)
-        (puthash 'indent_style "tab" props)))
-    :config
-    (general-setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
-    (general-add-hook
-     'editorconfig-hack-properties-functions #'arco/hack-makefile-indentation))
+(use-package editorconfig
+  :blackout t
+  :straight t
+  :ghook 'emacs-startup-hook
+  :init
+  (defun arco/hack-makefile-indentation (props)
+    (when (derived-mode-p 'makefile-mode)
+      (puthash 'indent_style "tab" props)))
+  :config
+  (general-setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
+  (general-add-hook 'editorconfig-hack-properties-functions
+                    #'arco/hack-makefile-indentation))
 #+end_src
 
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
@@ -2534,7 +2546,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package ws-butler
   :blackout t
   :straight t
-  :ghook ('emacs-startup-hook #'ws-butler-global-mode)
+  :ghook ('prog-mode-hook #'ws-butler-global-mode)
   :config
   (dolist (modes '(special-mode comint-mode term-mode eshell-mode vterm-mode))
     (general-pushnew modes ws-butler-global-exempt-modes)))
@@ -3373,7 +3385,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/jethrokuan/org-roam][Org-Roam]]
 #+name: init-org-roam-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package org-roam
   :straight (:host github :repo "jethrokuan/org-roam")
   :general

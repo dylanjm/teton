@@ -36,12 +36,6 @@ zinit $load zsh-users/zsh-completions
 zinit ice lucid
 zinit $load zdharma/history-search-multi-word
 
-# zinit ice lucid
-# zinit $load rupa/z
-#
-# zinit ice lucid
-# zinit $load changyuheng/fz
-
 zinit ice wait lucid
 zinit $load zsh-users/zsh-history-substring-search
 bindkey '^[[A' history-substring-search-up
@@ -54,6 +48,3 @@ zinit $load zdharma/fast-syntax-highlighting
 
 zinit ice wait'1b' atload"!_zsh_autosuggest_start" lucid
 zinit $load zsh-users/zsh-autosuggestions
-
-# zinit ice wait'1b' lucid
-# zinit $load marlonrichert/zsh-autocomplete

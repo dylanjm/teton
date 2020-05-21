@@ -1,0 +1,4 @@
+channels:
+  - https://mooseframework.org/conda/moose
+  - conda-forge
+  - defaults

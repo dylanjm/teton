@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-11 15:55:29
+/last updated/: 2020-05-20 10:20:52
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -90,33 +90,34 @@ You'll see this modification in many config files around the internet. The idea 
 
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
-  (defvar default-file-name-handler-alist file-name-handler-alist)
-  (defvar extended-gc-cons-threshold most-positive-fixnum)
-  (defvar default-gc-cons-threshold 200000)
+(defvar default-file-name-handler-alist file-name-handler-alist)
+(defvar extended-gc-cons-threshold most-positive-fixnum)
+(defvar default-gc-cons-threshold 2000000)
 
-  (setq-default auto-window-vscroll nil
-                bidi-display-reordering 'left-to-right
-                bidi-paragraph-direction 'left-to-right
-                command-line-ns-option-alist nil
-                frame-inhibit-implied-resize t
-                inhibit-default-init t
-                site-run-file nil
-                read-process-output-max (* 1024 1024)
-                load-prefer-newer t)
+;;Native Compilation Vars
+(setq comp-speed 3
+      comp-deferred-compilation t)
 
-  (setq file-name-handler-alist nil
-    gc-cons-threshold extended-gc-cons-threshold
-    gc-cons-percentage 0.7
-    package-enable-at-startup nil
-    package--init-file-ensured t)
+(setq-default auto-window-vscroll nil
+              bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right
+              command-line-ns-option-alist nil
+              frame-inhibit-implied-resize t
+              inhibit-default-init t
+              site-run-file nil
+              read-process-output-max (* 1024 1024))
 
-  (defun djm/return-vars-to-normal ()
-    (setq file-name-handler-alist default-file-name-handler-alist
-      load-prefer-newer nil
-      gc-cons-threshold default-gc-cons-threshold
-      gc-cons-percentage 0.2))
+(setq file-name-handler-alist nil
+      gc-cons-threshold extended-gc-cons-threshold
+      gc-cons-percentage 0.7
+      package-enable-at-startup nil)
 
-  (add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
+(defun djm/return-vars-to-normal ()
+  (setq file-name-handler-alist default-file-name-handler-alist
+        gc-cons-threshold default-gc-cons-threshold
+        gc-cons-percentage 0.5))
+
+(add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
 #+end_src
 
 *** Pre-Gui Optimization
@@ -125,27 +126,23 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-  (setq-default initial-frame-alist '((window-right-divider-width . 20)
-                                      (window-bottom-divider-width . 20)))
+(modify-all-frames-parameters '((vertical-scroll-bars . nil)
+                                (tool-bar-lines . 0)
+                                (ns-appearance . dark)))
 
-  (setq-default default-frame-alist '((ns-transparent-titlebar . t)
-                                      (tool-bar-lines . 0)
-                                      (ns-appearance . dark)
-                                      (font . "Iosevka-18:weight=ultra-light:width=expanded")))
+(advice-add 'x-apply-session-resources :override 'ignore)
 
-  (modify-all-frames-parameters '((vertical-scroll-bars)))
-
-  ;; Not sure if this is really needed anymore
-  (prefer-coding-system 'utf-8-unix)
-  (set-language-environment "UTF-8")
-  (set-keyboard-coding-system 'utf-8)
-  (set-clipboard-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-buffer-file-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (modify-coding-system-alist 'process "*" 'utf-8)
-  (set-file-name-coding-system 'utf-8)
+;;Not sure if this is really needed anymore
+(prefer-coding-system 'utf-8-unix)
+(set-language-environment "UTF-8")
+(set-keyboard-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+(set-file-name-coding-system 'utf-8)
 #+end_src
 
 ** Footer
@@ -271,9 +268,9 @@ Great package by the same author of Straight.el. It's similar to adding advice t
 
 #+name: init-el-patch-block
 #+begin_src emacs-lisp
-  (use-package el-patch
-    :demand t
-    :straight t)
+(use-package el-patch
+  :demand t
+  :straight t)
 #+end_src
 
 *** [[https://github.com/noctuid/general.el][General]]
@@ -282,8 +279,9 @@ Great package for managing key-bindings and other customizations.
 
 #+name: init-general-block
 #+begin_src emacs-lisp
-  (use-package general
-    :demand t :straight t)
+(use-package general
+  :demand t
+  :straight t)
 #+end_src
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
@@ -292,34 +290,36 @@ Similar to packages like minions, diminish, or delight. You can alter how your m
 
 #+name: init-blackout-block
 #+begin_src emacs-lisp
-  (use-package blackout
-    :demand t
-    :straight (:host github :repo "raxod502/blackout"))
+(use-package blackout
+  :demand t
+  :straight (:host github :repo "raxod502/blackout"))
 #+end_src
 
-*** [[https://github.com/magnars/dash.el][Dash]]
-
-Great Elisp library that I use throughout my config.
-
-#+name: init-dash-block
-#+begin_src emacs-lisp
-  (use-package dash
-    :demand t :straight t)
-#+end_src
-
-*** [[https://github.com/rejeep/f.el][F]]
+*** [[https://github.com/rejeep/f.el][Emacs-Lisp Libraries]]
 
 Great Elisp library used throughout my config
 
 #+name: init-f-block
 #+begin_src emacs-lisp
-  (use-package f
-    :demand t
-    :straight t)
+(use-package dash
+  :demand t
+  :straight t)
 
-  (use-package s
-    :demand t
-    :straight t)
+(use-package dash-functional
+  :demand t
+  :straight t)
+
+(use-package f
+  :demand t
+  :straight t)
+
+(use-package s
+  :demand t
+  :straight t)
+
+(use-package cl-lib
+  :demand t
+  :straight (:type built-in))
 #+end_src
 
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
@@ -328,8 +328,8 @@ We need to intercept the built-in org-version that ships with emacs. For some re
 
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
-  (straight-use-package
-   '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
+(straight-use-package
+ '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
 #+end_src
 
 ** Personal Configuration
@@ -339,20 +339,20 @@ Here are some of my personal variables that I will need to refer to at some poin
 
 #+name: init-variables-block
 #+begin_src emacs-lisp
-  (defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
-  (defvar djm--lisp-directory      (concat user-emacs-directory "lisp/"))
-  (defvar djm--straight-directory  (concat user-emacs-directory "straight/"))
-  (defvar djm--yasnippet-directory (concat user-emacs-directory "snippets/"))
+(defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
+(defvar djm--lisp-directory      (concat user-emacs-directory "lisp/"))
+(defvar djm--straight-directory  (concat user-emacs-directory "straight/"))
+(defvar djm--yasnippet-directory (concat user-emacs-directory "snippets/"))
 
-  (defvar djm--org-agenda-directory (getenv "ORG_FILES"))
+(defvar djm--org-agenda-directory (getenv "ORG_FILES"))
 
-  (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
-  (defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
+(defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
+(defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
 
-  (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
+(defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
 
-  (defconst EMACS28+ (> emacs-major-version 27))
-  (defconst IS-MAC (eq system-type 'darwin))
+(defconst EMACS28+ (> emacs-major-version 27))
+(defconst IS-MAC (eq system-type 'darwin))
 #+end_src
 
 *** Functions
@@ -668,9 +668,9 @@ Taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][ra
 
 #+name: init-personal-keybindings-block
 #+begin_src emacs-lisp
-  (general-define-key
-   "C-z" nil
-   "s-m" nil)
+(general-define-key
+ "C-z" nil
+ "s-m" nil)
 #+end_src
 
 #+name: init-aliases-block
@@ -694,12 +694,12 @@ I might set-up some abbreviations in the future. This is more a placeholder bloc
 
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
-  (use-package abbrev
-    :blackout t
-    :straight (:type built-in)
-    :config
-    (general-setq abbrev-file-name (no-littering-expand-var-file-name "abbrevs")
-                  only-global-abbrevs nil))
+(use-package abbrev
+  :blackout t
+  :straight (:type built-in)
+  :config
+  (general-setq abbrev-file-name (no-littering-expand-var-file-name "abbrevs")
+                only-global-abbrevs nil))
 #+end_src
 
 *** Advice (Built-In)
@@ -708,10 +708,10 @@ Ignore those warnings from the old advice system.
 
 #+name: init-advice-block
 #+begin_src emacs-lisp
-  (use-package advice
-    :straight (:type built-in)
-    :config
-    (general-setq ad-redefinition-action 'accept))
+(use-package advice
+  :straight (:type built-in)
+  :config
+  (general-setq ad-redefinition-action 'accept))
 #+end_src
 
 *** Align (Built-In)
@@ -719,10 +719,10 @@ Ignore those warnings from the old advice system.
 Align can be a pretty powerful tool, I just have to learn how to use it better.
 #+name: init-align-block
 #+begin_src emacs-lisp
-  (use-package align
-    :straight (:type built-in)
-    :general
-    ("C-x a a" #'align-regexp))
+(use-package align
+  :straight (:type built-in)
+  :general
+  ("C-x a a" #'align-regexp))
 #+end_src
 
 *** Ansi-Color (Built-In)
@@ -731,62 +731,62 @@ Here we can setup proper coloring for compile buffers.
 
 #+name: init-ansi-color-block
 #+begin_src emacs-lisp
-  (use-package ansi-color
-    :straight (:type built-in)
-    :ghook ('compilation-filter-hook #'compilation-ansi-color-process-output)
-    :functions (ansi-color-apply-on-region)
-    :preface
-    (defun compilation-ansi-color-process-output ()
-      (ansi-color-process-output nil)
-      (set (make-local-variable 'comint-last-output-start)
-           (point-marker)))
-    :config
-    (general-setq ansi-color-for-comint-mode t))
+(use-package ansi-color
+  :straight (:type built-in)
+  :ghook ('compilation-filter-hook #'compilation-ansi-color-process-output)
+  :functions (ansi-color-apply-on-region)
+  :preface
+  (defun compilation-ansi-color-process-output ()
+    (ansi-color-process-output nil)
+    (set (make-local-variable 'comint-last-output-start)
+         (point-marker)))
+  :config
+  (general-setq ansi-color-for-comint-mode t))
 #+end_src
 
 *** Auth-Source (Built-In)
 #+name: init-auth-source-block
 #+begin_src emacs-lisp
-  (use-package auth-source
-    :straight (:type built-in)
-    :config
-    (general-setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
-                                 ,(no-littering-expand-etc-file-name "authinfo"))
-                  auth-source-do-cache t))
+(use-package auth-source
+  :straight (:type built-in)
+  :config
+  (general-setq auth-sources `(,(no-littering-expand-etc-file-name "authinfo.gpg")
+                               ,(no-littering-expand-etc-file-name "authinfo"))
+                auth-source-do-cache t))
 #+end_src
 
 *** Autorevert (Built-In)
 
 #+name: init-autorevert-block
 #+begin_src emacs-lisp
-  (use-package autorevert
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'global-auto-revert-mode)
-    :config
-    (general-setq auto-revert-verbose nil
-                  auto-revert-check-vc-info t
-                  global-auto-revert-non-file-buffers t
-                  auto-revert-interval 1
-                  revert-without-query '(".*")
-                  auto-revert-use-notify nil))
+(use-package autorevert
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'global-auto-revert-mode)
+  :config
+  (general-setq auto-revert-verbose nil
+                auto-revert-check-vc-info t
+                global-auto-revert-non-file-buffers t
+                auto-revert-interval 1
+                revert-without-query '(".*")
+                auto-revert-use-notify nil))
 #+end_src
 
 *** Bookmark (Built-In)
 
 #+name: init-bookmark-block
 #+begin_src emacs-lisp
-  (use-package bookmark
-    :straight (:type built-in)
-    :config
-    (general-setq bookmark-save-flag +1))
+(use-package bookmark
+  :straight (:type built-in)
+  :config
+  (general-setq bookmark-save-flag +1))
 #+end_src
 
 *** Browse-Url (Built-In)
 
 #+name: init-browse-url-block
 #+begin_src emacs-lisp
-  (use-package browse-url
-    :straight (:type built-in))
+(use-package browse-url
+  :straight (:type built-in))
 #+end_src
 
 *** Calculator (Built-In)
@@ -795,78 +795,69 @@ Let's add a few helpful units to the calculator.
 
 #+name: init-calc-block
 #+begin_src emacs-lisp
-  (use-package calc
-    :straight (:type built-in)
-    :config
-    (general-setq math-additional-units
-                  '((GiB "1024 * MiB" "Giga Byte")
-                    (MiB "1024 * KiB" "Mega Byte")
-                    (KiB "1024 * B" "Kilo Byte")
-                    (B nil "Byte")
-                    (Gib "1024 * Mib" "Giga Bit")
-                    (Mib "1024 * Kib" "Mega Bit")
-                    (Kib "1024 * b" "Kilo Bit")
-                    (b "B / 8" "Bit"))))
+(use-package calc
+  :straight (:type built-in)
+  :config
+  (general-setq math-additional-units
+                '((GiB "1024 * MiB" "Giga Byte")
+                  (MiB "1024 * KiB" "Mega Byte")
+                  (KiB "1024 * B" "Kilo Byte")
+                  (B nil "Byte")
+                  (Gib "1024 * Mib" "Giga Bit")
+                  (Mib "1024 * Kib" "Mega Bit")
+                  (Kib "1024 * b" "Kilo Bit")
+                  (b "B / 8" "Bit"))))
 #+end_src
 
 *** Calendar (Built-In)
 
 #+name: init-calendar-block
 #+begin_src emacs-lisp :tangle no
-  (use-package calendar
-    :straight (:type built-in)
-    :ghook ('calendar-today-visible-hook #'calendar-mark-today)
-    :config
-    (general-setq calendar-longitude 43.492
-                  calendar-latitude -112.034
-                  calendar-location-name "Idaho Falls, Idaho"
-                  calendar-holiday-marker t))
+(use-package calendar
+  :straight (:type built-in)
+  :ghook ('calendar-today-visible-hook #'calendar-mark-today)
+  :config
+  (general-setq calendar-longitude 43.492
+                calendar-latitude -112.034
+                calendar-location-name "Idaho Falls, Idaho"
+                calendar-holiday-marker t))
 #+end_src
 
 *** Checkdoc (Built-In)
 
 #+name: init-checkdoc-block
 #+begin_src emacs-lisp
-  (use-package checkdoc
-    :straight (:type built-in)
-    :config
-    (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
-#+end_src
-
-*** CL-Lib (Built-In)
-
-#+name: init-cl-lib-block
-#+begin_src emacs-lisp
-(use-package cl-lib
-  :demand t
-  :straight (:type built-in))
+(use-package checkdoc
+  :straight (:type built-in)
+  :config
+  (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
 #+end_src
 
 *** Comint (Built-In)
 
 #+name: init-comint-block
 #+begin_src emacs-lisp
-  (use-package comint
-    :straight (:type built-in)
-    :config
-    (general-setq comint-prompt-read-only t
-                  comint-move-point-for-output t
-                  comint-scroll-show-maximum-output t
-                  comint-scroll-to-bottom-on-output t
-                  comint-scroll-to-botom-on-input t))
+(use-package comint
+  :straight (:type built-in)
+  :config
+  (general-setq comint-prompt-read-only t
+                comint-move-point-for-output t
+                comint-scroll-show-maximum-output t
+                comint-scroll-to-bottom-on-output t
+                comint-scroll-to-botom-on-input t))
 #+end_src
 
 *** Compile (Built-In)
 
 #+name: init-compile-block
 #+begin_src emacs-lisp
-  (use-package compile
-    :straight (:type built-in)
-    :config
-    (general-setq compilation-message-face 'compilation-base-face
-                  compilation-always-kill t
-                  compilation-ask-about-save nil
-                  compilation-scroll-output 'first-error))
+(use-package compile
+  :straight (:type built-in)
+  :config
+  (general-setq compilation-message-face 'compilation-base-face
+                compilation-always-kill t
+                compilation-ask-about-save nil
+                compilation-scroll-output 'first-error))
 #+end_src
 
 *** Conf-Mode (Built-In)
@@ -940,50 +931,50 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Dabbrev (Built-In)
 #+name: init-dabbrev-block
 #+begin_src emacs-lisp
-  (use-package dabbrev
-    :straight (:type built-in)
-    :commands (dabbrev-expand dabbrev-completion)
-    :config
-    (general-setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_"
-                  dabbrev-abbrev-skip-leading-regexp "\\$\\|\\*\\|/\\|="
-                  dabbrev-backward-only nil
-                  dabbrev-case-distinction nil
-                  dabbrev-case-fold-search t
-                  dabbrev-case-replace nil
-                  dabbrev-check-other-buffers t
-                  dabbrev-eliminate-newlines nil
-                  dabbrev-upcase-means-case-search t))
+(use-package dabbrev
+  :straight (:type built-in)
+  :commands (dabbrev-expand dabbrev-completion)
+  :config
+  (general-setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_"
+                dabbrev-abbrev-skip-leading-regexp "\\$\\|\\*\\|/\\|="
+                dabbrev-backward-only nil
+                dabbrev-case-distinction nil
+                dabbrev-case-fold-search t
+                dabbrev-case-replace nil
+                dabbrev-check-other-buffers t
+                dabbrev-eliminate-newlines nil
+                dabbrev-upcase-means-case-search t))
 #+end_src
 
 *** Delsel (Built-In)
 
 #+name: init-delsel-block
 #+begin_src emacs-lisp
-  (use-package delsel
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'delete-selection-mode))
+(use-package delsel
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
 *** Doc-View (Built-In)
 
 #+name: init-doc-view-block
 #+begin_src emacs-lisp
-  (use-package doc-view
-    :straight (:type built-in)
-    :config
-    (general-setq doc-view-continuous t))
+(use-package doc-view
+  :straight (:type built-in)
+  :config
+  (general-setq doc-view-continuous t))
 #+end_src
 
 *** Ediff (Built-In)
 
 #+name: init-ediff-block
 #+begin_src emacs-lisp
-  (use-package ediff
-    :straight (:type built-in)
-    :config
-    (general-setq ediff-window-setup-function #'ediff-setup-windows-plain
-                  ediff-diff-options "-w"
-                  ediff-split-window-function #'split-window-horizontally))
+(use-package ediff
+  :straight (:type built-in)
+  :config
+  (general-setq ediff-window-setup-function #'ediff-setup-windows-plain
+                ediff-diff-options "-w"
+                ediff-split-window-function #'split-window-horizontally))
 #+end_src
 
 *** Eldoc (Built-In)
@@ -1002,83 +993,79 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-electric-block
 #+begin_src emacs-lisp
-  (use-package electric
-    :straight (:type built-in)
-    :gfhook #'electric-indent-mode
-    :config
-    (general-setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
-                  electirc-pair-preserve-balance t
-                  electric-pair-pairs '((8216 . 8217)
-                                        (8220 . 8221)
-                                        (171 . 187))
-                  electric-pair-skip-self 'electric-pair-default-skip-self
-                  electric-pair-skip-whitespace nil
-                  electric-pair-skip-whitespace-chars '(9 10 32)
-                  electric-quote-context-sensitive t
-                  electric-quote-paragraph t
-                  electric-quote-string nil
-                  electric-quote-replace-double t)
-    (general-setq-default electric-indent-chars '(?\n ?\^?)))
-
+(use-package electric
+  :straight (:type built-in)
+  :gfhook #'electric-indent-mode
+  :config
+  (general-setq-default electric-indent-chars '(?\n ?\^?))
+  (general-setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
+                electirc-pair-preserve-balance t
+                electric-pair-pairs '((8216 . 8217) (8220 . 8221) (171 . 187))
+                electric-pair-skip-self 'electric-pair-default-skip-self
+                electric-pair-skip-whitespace nil
+                electric-pair-skip-whitespace-chars '(9 10 32)
+                electric-quote-context-sensitive t
+                electric-quote-paragraph t
+                electric-quote-string nil
+                electric-quote-replace-double t))
 #+end_src
 
 *** Epa (Built-In)
 
 #+name: init-epa-block
 #+begin_src emacs-lisp
-  (use-package epa
-    :straight (:type built-in)
-    :config
-    (general-setq epa-replace-original-text 'ask))
+(use-package epa
+  :straight (:type built-in)
+  :config
+  (general-setq epa-replace-original-text 'ask))
 #+end_src
 
 *** Epg (Built-In)
 
 #+name: init-epg-block
 #+begin_src emacs-lisp
-  (use-package epg
-    :straight (:type built-in)
-    :config
-    (general-setq epg-pinentry-mode 'loopback))
+(use-package epg
+  :straight (:type built-in)
+  :config
+  (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
 *** Ert (Built-In)
 #+name: init-ert-block
 #+begin_src emacs-lisp
-  (use-package ert
-    :straight (:type built-in))
+(use-package ert
+  :straight (:type built-in))
 #+end_src
 
 *** Eshell (Built-In)
 
 #+name: init-eshell-block
 #+begin_src emacs-lisp
-  (use-package eshell
-    :straight (:type built-in))
+(use-package eshell
+  :straight (:type built-in))
 #+end_src
 
 *** Eww (Built-In)
 
 #+name: init-web-browsing-block
 #+begin_src emacs-lisp
-  (use-package shr
-    :straight (:type built-in)
-    :commands (eww
-               eww-browse-url)
-    :config
-    (general-setq browse-url-browser-function 'eww-browse-url
-                  shr-use-fonts nil
-                  shr-use-colors nil
-                  shr-max-image-proportion 0.2
-                  shr-width (current-fill-column)))
+(use-package shr
+  :straight (:type built-in)
+  :commands (eww
+             eww-browse-url)
+  :config
+  (general-setq browse-url-browser-function 'eww-browse-url
+                shr-use-fonts t
+                shr-use-colors t
+                shr-max-image-proportion 0.2
+                shr-width (current-fill-column)))
 
-  (use-package shr-tag-pre-highlight
-    :demand t
-    :straight t
-    :after shr
-    :config
-    (add-to-list 'shr-external-rendering-functions
-                 '(pre . shr-tag-pre-highlight)))
+(use-package shr-tag-pre-highlight
+  :demand t
+  :straight t
+  :after shr
+  :config
+  (general-pushnew '(pre . shr-tag-pre-highlight) shr-external-rendering-functions))
 #+end_src
 
 *** Face-Remap (Built-In)
@@ -1094,40 +1081,40 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-files-block
 #+begin_src emacs-lisp
-  (use-package files
-    :straight (:type built-in)
-    :config
-    (general-setq-default auto-mode-case-fold nil
-                          auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
-                          backup-by-copying t
-                          backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
-                          confirm-kill-processes nil
-                          confirm-nonexistent-file-or-buffer nil
-                          create-lockfiles nil
-                          delete-old-versions t
-                          enable-local-variables :all
-                          find-file-suppress-same-file-warnings t
-                          find-file-visit-truename t
-                          insert-directory-program "gls"
-                          kept-new-versions 6
-                          large-file-warning-threshold 10000000000
-                          require-final-newline t
-                          select-enable-clipboard t
-                          version-control t
-                          view-read-only t))
+(use-package files
+  :straight (:type built-in)
+  :config
+  (general-setq-default auto-mode-case-fold nil
+                        auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
+                        backup-by-copying t
+                        backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
+                        confirm-kill-processes nil
+                        confirm-nonexistent-file-or-buffer nil
+                        create-lockfiles nil
+                        delete-old-versions t
+                        enable-local-variables :all
+                        find-file-suppress-same-file-warnings t
+                        find-file-visit-truename t
+                        insert-directory-program "gls"
+                        kept-new-versions 6
+                        large-file-warning-threshold 10000000000
+                        require-final-newline t
+                        select-enable-clipboard t
+                        version-control t
+                        view-read-only t))
 #+end_src
 
 *** Flyspell (Built-In)
 
 #+name: init-flyspell-block
 #+begin_src emacs-lisp
-  (use-package flyspell
-    :straight (:type built-in)
-    :config
-    (general-setq flyspell-abbrev-p t
-                  flyspell-use-global-abbrev-table-p t
-                  flyspell-issue-welcome-flag nil
-                  flyspell-issue-message-flag nil))
+(use-package flyspell
+  :straight (:type built-in)
+  :config
+  (general-setq flyspell-abbrev-p t
+                flyspell-use-global-abbrev-table-p t
+                flyspell-issue-welcome-flag nil
+                flyspell-issue-message-flag nil))
 #+end_src
 
 *** Font-Core (Built-In)
@@ -1151,7 +1138,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 window-divider-default-right-width 1)
   (blink-cursor-mode -1)
   (tooltip-mode -1)
-  ;;(mouse-wheel-mode -1)
   (global-so-long-mode +1)
   (unless (display-graphic-p)
     (menu-bar-mode -1)))
@@ -1160,35 +1146,34 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Gnutls (Built-In)
 #+name: init-gnutls-block
 #+begin_src emacs-lisp
-  (use-package gnutls
-    :straight (:type built-in)
-    :config
-    (general-setq gnutls-verify-error t
-          gnutls-min-prime-bits 2048
-          tls-checktrust gnutls-verify-error))
-
+(use-package gnutls
+  :straight (:type built-in)
+  :config
+  (general-setq gnutls-verify-error t
+                gnutls-min-prime-bits 2048
+                tls-checktrust gnutls-verify-error))
 #+end_src
 
 *** Goto-Addr (Built-In)
 
 #+name: init-goto-addr-block
 #+begin_src emacs-lisp
-  (use-package goto-addr
-    :straight (:type built-in)
-    :ghook ('text-mode-hook #'goto-address-mode)
-    :ghook ('prog-mode-hook #'goto-address-prog-mode))
+(use-package goto-addr
+  :straight (:type built-in)
+  :ghook ('text-mode-hook #'goto-address-mode)
+  :ghook ('prog-mode-hook #'goto-address-prog-mode))
 #+end_src
 
 *** Help (Built-In)
 
 #+name: init-help-block
 #+begin_src emacs-lisp
-  (use-package help
-    :straight (:type built-in)
-    :gfhook 'visual-line-mode
-    :config
-    (general-setq help-window-select 'always)
-    (general-add-advice 'help-window-display-message :override #'ignore))
+(use-package help
+  :straight (:type built-in)
+  :gfhook #'visual-line-mode
+  :config
+  (general-setq help-window-select 'always)
+  (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
 
 *** Hideshow (Built-In)
@@ -1203,25 +1188,25 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Hippie-Expand (Built-In)
 #+name: init-hippie-expand-block
 #+begin_src emacs-lisp
-  (use-package hippie-exp
-    :straight (:type built-in)
-    :after (dabbrev)
-    :general
-    ("M-/" #'hippie-expand)
-    :config
-    (general-setq hippie-expand-try-functions-list
-                  '(try-expand-dabbrev-visible
-                    try-expand-dabbrev
-                    try-expand-dabbrev-all-buffers
-                    try-expand-dabbrev-from-kill
-                    try-expand-list-all-buffers
-                    try-expand-list
-                    try-expand-line-all-buffers
-                    try-expand-line
-                    try-complete-file-name-partially
-                    try-complete-file-name
-                    try-expand-all-abbrevs)
-                  hippie-expand-verbose nil))
+(use-package hippie-exp
+  :straight (:type built-in)
+  :after (dabbrev)
+  :general
+  ("M-/" #'hippie-expand)
+  :config
+  (general-setq hippie-expand-try-functions-list
+                '(try-expand-dabbrev-visible
+                  try-expand-dabbrev
+                  try-expand-dabbrev-all-buffers
+                  try-expand-dabbrev-from-kill
+                  try-expand-list-all-buffers
+                  try-expand-list
+                  try-expand-line-all-buffers
+                  try-expand-line
+                  try-complete-file-name-partially
+                  try-complete-file-name
+                  try-expand-all-abbrevs)
+                hippie-expand-verbose nil))
 #+end_src
 
 *** iComplete (Built-In)
@@ -1250,9 +1235,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package ielm
   :straight (:type built-in)
-  :config
+  :init
   (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
-
+  :config
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*ielm*" eos)
                  (display-buffer-reuse-window display-buffer-in-side-window)
@@ -1264,138 +1249,147 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-imenu-block
 #+begin_src emacs-lisp
-  (use-package imenu
-    :straight (:type built-in))
+(use-package imenu
+  :straight (:type built-in))
 #+end_src
 
 *** iSearch (Built-In)
 
 #+name: init-isearch-block
 #+begin_src emacs-lisp
-  (use-package isearch
-    :straight (:type built-in)
-    :config
-    (general-setq lazy-highlight-initial-delay 0
-                  search-highlight t
-                  search-whitespace-regexp ".*?"
-                  isearch-lax-whitespace t
-                  isearch-regexp-lax-whitespace nil
-                  isearch-lazy-highlight t
-                  isearch-lazy-count t
-                  lazy-count-prefix-format "(%s/%s) "
-                  lazy-count-suffix-format nil
-                  isearch-yank-on-move 'shift
-                  isearch-allow-scroll 'unlimited))
+(use-package isearch
+  :straight (:type built-in)
+  :config
+  (general-setq lazy-highlight-initial-delay 0
+                search-highlight t
+                search-whitespace-regexp ".*?"
+                isearch-lax-whitespace t
+                isearch-regexp-lax-whitespace nil
+                isearch-lazy-highlight t
+                isearch-lazy-count t
+                lazy-count-prefix-format "(%s/%s) "
+                lazy-count-suffix-format nil
+                isearch-yank-on-move 'shift
+                isearch-allow-scroll 'unlimited))
 #+end_src
 
 *** iSpell (Built-In)
 
 #+name: init-ispell-block
 #+begin_src emacs-lisp
-  (use-package ispell
-    :straight (:type built-in)
-    :preface
-    (defun djm/fetch-hunspell-dictionary ()
-      (unless (file-exists-p "~/Library/Spelling/en_US.aff")
-        (shell-command "bash $DOTFILES/bootstrap/setup-dictionaries.sh")))
-    :config
-    (djm/fetch-hunspell-dictionary)
-    (general-setq ispell-dictionary "en_US"
-                  ispell-program-name (executable-find "hunspell")
-                  ispell-really-hunspell t
-                  ispell-silently-savep t)
-    (dolist (regions '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
-                       ("#\\+BEGIN_SRC" . "#\\+END_SRC")
-                       ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")))
-      (general-pushnew regions ispell-skip-region-alist)))
+(use-package ispell
+  :straight (:type built-in)
+  :preface
+  (defun djm/fetch-hunspell-dictionary ()
+    (unless (file-exists-p "~/Library/Spelling/en_US.aff")
+      (shell-command "bash $DOTFILES/bootstrap/setup-dictionaries.sh")))
+  :config
+  (djm/fetch-hunspell-dictionary)
+  (general-setq ispell-dictionary "en_US"
+                ispell-program-name (executable-find "hunspell")
+                ispell-really-hunspell t
+                ispell-silently-savep t)
+  (dolist (regions '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
+                     ("#\\+BEGIN_SRC" . "#\\+END_SRC")
+                     ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")))
+    (general-pushnew regions ispell-skip-region-alist)))
 #+end_src
 
 *** Make-Mode (Built-In)
 
 #+name: init-makefile-block
 #+begin_src emacs-lisp
-  (use-package make-mode
-    :straight (:type built-in)
-    :blackout ((makefile-automake-mode . "Makefile")
-               (makefile-gmake-mode . "Makefile")
-               (makefile-makepp-mode . "Makefile")
-               (makefile-bsdmake-mode . "Makefile")
-               (makefile-imake-mode . "Makefile"))
-    :init
-    (general-add-hook 'makefile-mode-hook '(lambda () (setq-local indent-tabs-mode t))))
+(use-package make-mode
+  :blackout ((makefile-automake-mode . "Makefile")
+             (makefile-gmake-mode . "Makefile")
+             (makefile-makepp-mode . "Makefile")
+             (makefile-bsdmake-mode . "Makefile")
+             (makefile-imake-mode . "Makefile"))
+  :straight (:type built-in)
+  :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
 #+end_src
 
 *** Message (Built-In)
 #+name: init-message-block
 #+begin_src emacs-lisp
-  (use-package message
-    :straight (:type built-in)
-    :config
-    (general-setq send-mail-function 'sendmail-send-it
-                  sendmail-program "/usr/local/bin/msmtp"
-                  mail-specify-envelope-from t
-                  message-sendmail-envelope-from 'header
-                  mail-envelope-from 'header))
+(use-package message
+  :straight (:type built-in)
+  :config
+  (general-setq send-mail-function 'sendmail-send-it
+                sendmail-program "/usr/local/bin/msmtp"
+                mail-specify-envelope-from t
+                message-sendmail-envelope-from 'header
+                mail-envelope-from 'header))
 #+end_src
 
 *** Minibuffer (Built-In)
 
 #+name: init-mini-buffer-block
 #+begin_src emacs-lisp
-  (use-package minibuffer
-    :straight (:type built-in)
-    :init
-    (defun djm/minibuffer-setup-hook ()
-      (general-setq gc-cons-threshold extended-gc-cons-threshold))
+(use-package minibuffer
+  :straight (:type built-in)
+  :init
+  (defun djm/minibuffer-setup-hook ()
+    (general-setq gc-cons-threshold extended-gc-cons-threshold))
 
-    (defun djm/minibuffer-exit-hook ()
-      (general-setq gc-cons-threshold default-gc-cons-threshold))
+  (defun djm/minibuffer-exit-hook ()
+    (general-setq gc-cons-threshold default-gc-cons-threshold))
 
-    (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
-    (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
-    (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-    :config
-    (general-setq completion-cycle-threshold 3
-                  completion-flex-nospace nil
-                  completion-pcm-complete-word-inserts-delimiters t
-                  completion-pcm-word-delimiters "-_./:| "
-                  completion-show-help nil
-                  completion-styles '(partial-completion substring initials flex)
-                  completion-category-overrides '((file (styles initials basic))
-                                                  (buffer (styles initials basic))
-                                                  (info-menu (styles basic)))
-                  completions-format 'vertical
-                  read-answer-short t
-                  read-buffer-completion-ignore-case t
-                  read-file-name-completion-ignore-case t
-                  resize-mini-windows t)
-    (file-name-shadow-mode +1)
-    (minibuffer-depth-indicate-mode +1)
-    (minibuffer-electric-default-mode))
+  (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
+  (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
+  (general-add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  :config
+  (general-setq completion-cycle-threshold 3
+                completion-flex-nospace nil
+                completion-pcm-complete-word-inserts-delimiters t
+                completion-pcm-word-delimiters "-_./:| "
+                completion-show-help nil
+                completion-styles '(partial-completion substring initials flex)
+                completion-category-overrides '((file (styles initials basic))
+                                                (buffer (styles initials basic))
+                                                (info-menu (styles basic)))
+                completions-format 'vertical
+                read-answer-short t
+                read-buffer-completion-ignore-case t
+                read-file-name-completion-ignore-case t
+                resize-mini-windows t)
+  (file-name-shadow-mode +1)
+  (minibuffer-depth-indicate-mode +1)
+  (minibuffer-electric-default-mode))
+#+end_src
+
+*** Mwheel (Built-In)
+#+name: init-mwheel (built-in)-block
+#+begin_src emacs-lisp
+(use-package mwheel
+  :straight (:type built-in)
+  :init
+  (general-setq mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control) . nil))
+                mouse-wheel-progressive-speed nil))
 #+end_src
 
 *** New-Comment (Built-In)
 #+name: init-new-comment-block
 #+begin_src emacs-lisp
-  (use-package newcomment
-    :straight (:type built-in)
-    :config
-    (general-setq comment-empty-lines t
-                  comment-fill-column nil
-                  comment-multi-line t
-                  comment-style 'multi-line))
+(use-package newcomment
+  :straight (:type built-in)
+  :config
+  (general-setq comment-empty-lines t
+                comment-fill-column 72
+                comment-multi-line t
+                comment-style 'multi-line))
 #+end_src
 
 *** NS-Win (Built-In)
 
 #+name: init-ns-win-block
 #+begin_src emacs-lisp
-  (use-package ns-win
-    :straight (:type built-in)
-    :config
-    (general-setq mac-command-modifier 'meta
-                  mac-option-modifier 'super
-                  mac-right-control-modifier 'hyper))
+(use-package ns-win
+  :straight (:type built-in)
+  :config
+  (general-setq mac-command-modifier 'meta
+                mac-option-modifier 'super
+                mac-right-control-modifier 'hyper))
 #+end_src
 
 *** Outline (Built-In)
@@ -1411,126 +1405,128 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-paren-block
 #+begin_src emacs-lisp
-  (use-package paren
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'show-paren-mode)
-    :config
-    (general-setq show-paren-delay 0
-                  show-paren-style 'parenthesis
-                  show-paren-when-point-in-periphery t
-                  show-paren-when-point-inside-paren nil))
+(use-package paren
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'show-paren-mode)
+  :config
+  (general-setq show-paren-delay 0
+                show-paren-style 'parenthesis
+                show-paren-when-point-in-periphery t
+                show-paren-when-point-inside-paren nil))
 #+end_src
 
 *** Pixel-Scroll (Built-In)
 
 #+name: init-pixel-scroll-block
 #+begin_src emacs-lisp
-  (use-package pixel-scroll
-    :straight (:type built-in)
-    :ghook 'emacs-startup-hook)
+(use-package pixel-scroll
+  :straight (:type built-in)
+  :ghook 'emacs-startup-hook
+  :init
+  (general-setq pixel-wait 1))
 #+end_src
 
 *** Proced (Built-In)
 #+name: init-proced (built-in)-block
 #+begin_src emacs-lisp
-  (use-package proced
-    :straight (:type built-in)
-    :commands proced
-    :config
-    (general-setq proced-auto-update-flag t
-                  proced-auto-update-interval 1
-                  proced-descend t
-                  proced-filter 'user))
+(use-package proced
+  :straight (:type built-in)
+  :commands proced
+  :config
+  (general-setq proced-auto-update-flag t
+                proced-auto-update-interval 1
+                proced-descend t
+                proced-filter 'user))
 #+end_src
 
 *** Prog-Mode (Built-In)
 
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
-  (use-package prog-mode
-    :straight (:type built-in)
-    :gfhook
-    #'display-fill-column-indicator-mode
-    #'show-paren-mode
-    #'prettify-symbols-mode
-    :config
-    (general-setq prettify-symbols-unprettify-at-point 'right)
-    (general-add-hook 'after-save-hook
-                      #'executable-make-buffer-file-executable-if-script-p))
+(use-package prog-mode
+  :straight (:type built-in)
+  :gfhook
+  #'display-fill-column-indicator-mode
+  #'show-paren-mode
+  #'prettify-symbols-mode
+  :config
+  (general-setq prettify-symbols-unprettify-at-point 'right)
+  (general-add-hook 'after-save-hook
+                    #'executable-make-buffer-file-executable-if-script-p))
 #+end_src
 
 *** Project (Built-In)
 #+name: init-project-block
 #+begin_src emacs-lisp
-  (use-package project
-    :straight (:type built-in)
-    :init
-    (general-setq project-vc-ignores '("__pycache__")
-                  project-find-functions nil))
+(use-package project
+  :straight (:type built-in)
+  :init
+  (general-setq project-vc-ignores '("__pycache__")
+                project-find-functions nil))
 #+end_src
 
 *** Re-Builder (Built-In)
 #+name: init-re-builder (built-in)-block
 #+begin_src emacs-lisp
-  (use-package re-builder
-    :straight (:type built-in)
-    :config
-    (general-setq reb-re-syntax 'read))
+(use-package re-builder
+  :straight (:type built-in)
+  :config
+  (general-setq reb-re-syntax 'read))
 #+end_src
 
 *** Recentf (Built-In)
 
 #+name: init-recentf-block
 #+begin_src emacs-lisp
-  (use-package recentf
-    :straight (:type built-in)
-    :ghook 'emacs-startup-hook
-    :general
-    ("C-x C-r" #'crux-recentf-find-file)
-    :config
-    (general-setq recentf-max-saved-items 2000
-                  recentf-max-menu-items 100
-                  recentf-auto-cleanup 'never)
-    (arco/run-at-active-interval (* 5 60) 10
-      (let ((inhibit-message t))
-        (recentf-save-list))))
+(use-package recentf
+  :straight (:type built-in)
+  :ghook 'emacs-startup-hook
+  :general
+  ("C-x C-r" #'crux-recentf-find-file)
+  :config
+  (general-setq recentf-max-saved-items 2000
+                recentf-max-menu-items 100
+                recentf-auto-cleanup 'never)
+  (arco/run-at-active-interval (* 5 60) 10
+    (let ((inhibit-message t))
+      (recentf-save-list))))
 #+end_src
 
 *** Savehist (Built-In)
 #+name: init-savehist-block
 #+begin_src emacs-lisp
-  (use-package savehist
-    :straight (:type built-in)
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq savehist-additional-variables '(mark-ring
-                                                  global-mark-ring
-                                                  search-ring
-                                                  kill-ring
-                                                  regexp-search-ring
-                                                  extended-command-history)
-                  savehist-autosave-interval nil
-                  savehist-save-minibuffer-history t))
+(use-package savehist
+  :straight (:type built-in)
+  :ghook 'emacs-startup-hook
+  :config
+  (general-setq savehist-autosave-interval nil
+                savehist-save-minibuffer-history t
+                savehist-additional-variables '(mark-ring
+                                                global-mark-ring
+                                                search-ring
+                                                kill-ring
+                                                regexp-search-ring
+                                                extended-command-history)))
 #+end_src
 
 *** Saveplace (Built-In)
 #+name: init-saveplace-block
 #+begin_src emacs-lisp
-  (use-package saveplace
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'save-place-mode))
+(use-package saveplace
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'save-place-mode))
 #+end_src
 
 *** Select (Built-In)
 #+name: init-select-block
 #+begin_src emacs-lisp
-  (use-package select
-    :straight (:type built-in)
-    :config
-    (general-setq select-enable-clipboard t
-                  x-select-request-type '(UTF8_STRING
-                                          COMPOUND_TEXT
-                                          TEXT STRING)))
+(use-package select
+  :straight (:type built-in)
+  :config
+  (general-setq select-enable-clipboard t
+                x-select-request-type '(UTF8_STRING
+                                        COMPOUND_TEXT
+                                        TEXT STRING)))
 #+end_src
 
 *** Shell-Script (Built-In)
@@ -1544,23 +1540,26 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (when (eq major-mode 'sh-mode)
       (setq mode-name (capitalize (symbol-name sh-shell)))))
   :init
+  (general-setq-default sh-indentation 2)
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
-  (general-setq sh-indentation 2)
   (compdef
    :modes '(sh-mode shell-script-mode)
    :capf #'sh-completion-at-point-function
-   :company '(company-shell company-shell-env company-files company-dabbrev-code)))
+   :company '(company-shell
+              company-files
+              company-shell-env
+              company-dabbrev-code)))
 #+end_src
 
 *** Shell (Built-In)
 #+name: init-shell-block
 #+begin_src emacs-lisp
-  (use-package shell
-    :straight (:type built-in)
-    :commands shell-command
-    :config
-    (general-setq ansi-color-for-comint-mode t
-                  shell-command-prompt-show-cwd t))
+(use-package shell
+  :straight (:type built-in)
+  :commands shell-command
+  :config
+  (general-setq ansi-color-for-comint-mode t
+                shell-command-prompt-show-cwd t))
 #+end_src
 
 *** Simple (Built-In)
@@ -1579,7 +1578,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 eval-expression-print-length nil
                 eval-expression-print-level nil
                 idle-update-delay 1
-                inhibit-point-motion-hooks t
                 kill-do-not-save-duplicates t
                 kill-ring-max 300
                 line-move-visual nil
@@ -1595,126 +1593,140 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 #+name: init-smerge-block
 #+begin_src emacs-lisp
-  (use-package smerge-mode
-    :straight (:type built-in)
-    :commands (smerge-mode))
+(use-package smerge-mode
+  :straight (:type built-in)
+  :commands (smerge-mode))
 #+end_src
 
 *** Subr-X (Built-In)
 #+name: init-subr-x-block
 #+begin_src emacs-lisp
-  (use-package subr-x
-    :straight (:type built-in)
-    :init
-    (defun display-buffer-fullframe (buffer alist)
-      (when-let* ((window (or (display-buffer-reuse-window buffer alist)
-                              (display-buffer-same-window buffer alist)
-                              (display-buffer-pop-up-window buffer alist)
-                              (display-buffer-use-some-window buffer alist))))
-        (delete-other-windows window)
-        window)))
+(use-package subr-x
+  :straight (:type built-in)
+  :init
+  (defun display-buffer-fullframe (buffer alist)
+    (when-let* ((window (or (display-buffer-reuse-window buffer alist)
+                            (display-buffer-same-window buffer alist)
+                            (display-buffer-pop-up-window buffer alist)
+                            (display-buffer-use-some-window buffer alist))))
+      (delete-other-windows window)
+      window)))
 #+end_src
 
 *** Subword (Built-In)
 
 #+name: init-subword-block
 #+begin_src emacs-lisp
-  (use-package subword
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'global-subword-mode))
+(use-package subword
+  :blackout t
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'global-subword-mode))
 #+end_src
 
 *** Term (Built-In)
 #+name: init-term-block
 #+begin_src emacs-lisp
-  (use-package term
-    :commands term
-    :config
-    (general-setq term-buffer-maximum-size 9999
-                  termp-completion-autolist t
-                  term-completion-recexact t
-                  term-scroll-to-bottom-on-output t))
+(use-package term
+  :straight (:type built-in)
+  :commands term
+  :config
+  (general-setq term-buffer-maximum-size 9999
+                termp-completion-autolist t
+                term-completion-recexact t
+                term-scroll-to-bottom-on-output t))
 #+end_src
 
 *** Time (Built-In)
 
 #+name: init-time-block
 #+begin_src emacs-lisp
-  (use-package time
-    :straight (:type built-in)
-    :ghook ('emacs-startup-hook #'display-time-mode)
-    :config
-    (general-setq-default display-time-24hr-format nil
-                          display-time-day-and-date t
-                          display-time-default-load-average nil))
+(use-package time
+  :straight (:type built-in)
+  :ghook ('emacs-startup-hook #'display-time-mode)
+  :config
+  (general-setq-default display-time-24hr-format nil
+                        display-time-day-and-date t
+                        display-time-default-load-average nil))
 #+end_src
 
 *** Tramp (Built-In)
 #+name: init-tramp-block
 #+begin_src emacs-lisp
-  (use-package tramp
-    :straight (:type built-in)
-    :config
-    (general-setq tramp-default-method "ssh"
-                  tramp-verbose 2
-                  tramp-completion-reread-directory-timeout nil
-                  tramp-use-ssh-control-master-options nil
-                  tramp-histfile-override nil
-                  vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                               vc-ignore-dir-regexp
-                                               tramp-file-name-regexp)
-                  tramp-use-ssh-controlmaster-options nil))
+(use-package tramp
+  :straight (:type built-in)
+  :preface
+  (defun tramp-precious-flags ()
+    (when (file-remote-p default-directory)
+      (set (make-local-variable 'file-precious-flag) t)))
+
+  (defun tramp-dired-switches ()
+    (when (file-remote-p default-directory)
+      (setq dired-actual-switches "-al")))
+  :config
+  (general-add-hook 'find-file-hook #'tramp-precious-flags)
+  (general-add-hook 'dired-before-readin-hook #'tramp-dired-switches)
+
+  (general-setq tramp-default-method "ssh"
+                tramp-verbose 1
+                tramp-completion-reread-directory-timeout nil
+                tramp-use-ssh-control-master-options t
+                tramp-histfile-override nil
+                remote-file-name-inhibit-cache nil
+                tramp-chunksize 500
+                vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                             vc-ignore-dir-regexp
+                                             tramp-file-name-regexp)))
 #+end_src
 
 *** Uniquify (Built-In)
 
 #+name: init-uniquify-block
 #+begin_src emacs-lisp
-  (use-package uniquify
-    :straight (:type built-in)
-    :config
-    (general-setq uniquify-ignore-buffers-re "^\\*"
-                  uniquify-buffer-name-style 'post-forward-angle-brackets
-                  uniquify-strip-common-suffix t
-                  uniquify-after-kill-buffer-p t
-                  uniquify-separator "/"))
+(use-package uniquify
+  :straight (:type built-in)
+  :config
+  (general-setq uniquify-ignore-buffers-re "^\\*"
+                uniquify-buffer-name-style 'post-forward-angle-brackets
+                uniquify-strip-common-suffix t
+                uniquify-after-kill-buffer-p t
+                uniquify-separator "/"))
 #+end_src
 
 *** VC-Hooks (Built-In)
 
 #+name: init-vc-hooks-block
 #+begin_src emacs-lisp
-  (use-package vc-hooks
-    :straight (:type built-in)
-    :config
-    (general-setq vc-follow-symlinks t
-                  vc-handled-backends '(Git)))
+(use-package vc-hooks
+  :straight (:type built-in)
+  :config
+  (general-setq vc-follow-symlinks t
+                vc-handled-backends nil))
 #+end_src
 
 *** View (Built-In)
 
 #+name: init-view-block
 #+begin_src emacs-lisp
-  (use-package view
-    :straight (:type built-in)
-    :config
-    (general-setq view-inhibit-help-message t))
+(use-package view
+  :straight (:type built-in)
+  :init
+  (general-setq view-inhibit-help-message t))
 #+end_src
 
 *** Warnings (Built-In)
 
 #+name: init-warnings-block
 #+begin_src emacs-lisp
-  (use-package warnings
-    :straight (:type built-in))
+(use-package warnings
+  :straight (:type built-in))
 #+end_src
 
 *** Whitespace (Built-In)
 
 #+name: init-whitespace-block
 #+begin_src emacs-lisp
-  (use-package whitespace
-    :straight (:type built-in))
+(use-package whitespace
+  :straight (:type built-in))
 #+end_src
 
 *** Window (Built-In)
@@ -1784,27 +1796,26 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Winner (Built-In)
 #+name: init-winner-block
 #+begin_src emacs-lisp
-  (use-package winner
-    :straight (:type built-in)
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq winner-boring-buffers
-                  '("*Completions*"
-                    "*Compile-Log*"
-                    "*inferior-lisp*"
-                    "*Fuzzy Completions*"
-                    "*Apropos*"
-                    "*Help*"
-                    "*Buffer List*"
-                    "*Ibuffer*")))
+(use-package winner
+  :straight (:type built-in)
+  :ghook 'emacs-startup-hook
+  :config
+  (general-setq winner-boring-buffers '("*Completions*"
+                                        "*Compile-Log*"
+                                        "*inferior-lisp*"
+                                        "*Fuzzy Completions*"
+                                        "*Apropos*"
+                                        "*Help*"
+                                        "*Buffer List*"
+                                        "*Ibuffer*")))
 #+end_src
 
 *** XRef (Built-In)
 
 #+name: init-xref-block
 #+begin_src emacs-lisp
-  (use-package xref
-    :straight (:type built-in))
+(use-package xref
+  :straight (:type built-in))
 #+end_src
 
 ** User Files
@@ -1846,19 +1857,17 @@ Sort of a standard package in most emacs-configs these days.
 
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
-  (use-package all-the-icons
-    :demand t
-    :straight t
-    :config
-    (general-setq all-the-icons-scale-factor 1)
-    (general-pushnew '("\\.db$"
-                       all-the-icons-faicon
-                       "database"
-                       :face all-the-icons-blue) all-the-icons-icon-alist)
-    (general-pushnew '("\\.edn$"
-                       all-the-icons-alltheicon
-                       "clojure"
-                       :face all-the-icons-green) all-the-icons-icon-alist))
+(use-package all-the-icons
+  :demand t
+  :straight t
+  :config
+  (general-setq all-the-icons-scale-factor 1)
+  (general-pushnew '("\\.db$" all-the-icons-faicon
+                     "database" :face all-the-icons-blue)
+                   all-the-icons-icon-alist)
+  (general-pushnew '("\\.edn$" all-the-icons-alltheicon
+                     "clojure" :face all-the-icons-green)
+                   all-the-icons-icon-alist))
 #+end_src
 
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
@@ -1890,76 +1899,22 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   (defun arco/load-gruvbox-theme ()
     (load-theme 'gruvbox-dark-hard)
     (if (daemonp)
-	    (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-	  (general-add-hook 'after-init-hook #'setup-main-fonts))
+        (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
+      (general-add-hook 'after-init-hook #'setup-main-fonts))
     (when-let (frame (selected-frame))
-	  (configure-fonts frame))))
+      (configure-fonts frame))))
 #+end_src
 
-*** Mode-line
-#+name: init-mode-line-block
+*** [[https://github.com/gexplorer/simple-modeline][Simple-Modeline]]
+#+name: init-simple-modeline-block
 #+begin_src emacs-lisp
-(defun radian-mode-line-buffer-modified-status ()
-  "Return a mode line construct indicating buffer modification status.
-This is [*] if the buffer has been modified and whitespace
-otherwise. (Non-file-visiting buffers are never considered to be
-modified.) It is shown in the same color as the buffer name, i.e.
-`mode-line-buffer-id'."
-  (propertize
-   (if (and (buffer-modified-p)
-            (buffer-file-name))
-       "[*]"
-     "   ")
-   'face 'mode-line-buffer-id))
-
-;; Normally the buffer name is right-padded with whitespace until it
-;; is at least 12 characters. This is a waste of space, so we
-;; eliminate the padding here. Check the docstrings for more
-;; information.
-(setq-default mode-line-buffer-identification
-  (propertized-buffer-identification "%b"))
-
-;; https://emacs.stackexchange.com/a/7542/12534
-(defun radian--mode-line-align (left right)
-  "Render a left/right aligned string for the mode line.
-LEFT and RIGHT are strings, and the return value is a string that
-displays them left- and right-aligned respectively, separated by
-spaces."
-  (let ((width (- (window-total-width) (length left))))
-    (format (format "%%s%%%ds" width) left right)))
-
-(defcustom radian-mode-line-left
-  '(;; Show [*] if the buffer is modified.
-     (:eval (radian-mode-line-buffer-modified-status))
-     " "
-     ;; Show the name of the current buffer.
-     mode-line-buffer-identification
-     " "
-     ;; Show the row and column of point.
-     mode-line-position
-     ;; Show the active major and minor modes.
-     " "
-     mode-line-modes)
-  "Composite mode line construct to be shown left-aligned."
-  :type 'sexp)
-
-(defcustom radian-mode-line-right
-  '(" " mode-line-misc-info)
-  "Composite mode line construct to be shown right-aligned."
-  :type 'sexp)
-
-;; Actually reset the mode line format to show all the things we just
-;; defined.
-(general-setq-default mode-line-format
-  '(:eval (replace-regexp-in-string
-            "%" "%%"
-            (radian--mode-line-align
-              (format-mode-line radian-mode-line-left)
-              (format-mode-line radian-mode-line-right))
-            'fixedcase 'literal)))
-
-(general-setq mode-line-defining-kbd-macro
-              (propertize " Macro" 'face 'mode-line-emphasis))
+(use-package simple-modeline
+  :straight t
+  :ghook 'emacs-startup-hook
+  :init
+  (general-setq simple-modeline-show-input-method nil
+                simple-modeline-show-encoding nil
+                simple-modeline-show-eol nil))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -2057,10 +2012,10 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/politza/pdf-tools][PDF-Tools]]
 #+name: init-pdf-tools-block
 #+begin_src emacs-lisp :tangle no
-  (use-package pdf-tools
-    :straight t
-    :config
-    (pdf-tools-install))
+(use-package pdf-tools
+  :straight t
+  :config
+  (pdf-tools-install))
 #+end_src
 
 ** Shells
@@ -2152,27 +2107,17 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/raxod502/prescient.el][Prescient]]
 #+name: init-prescient-block
 #+begin_src emacs-lisp
-  (use-package prescient
-    :straight t
-    :config (prescient-persist-mode +1))
+(use-package prescient
+  :straight t
+  :config
+  (prescient-persist-mode +1))
 #+end_src
 
 *** [[https://github.com/lewang/flx][FLX]]
 #+name: init-flx-block
 #+begin_src emacs-lisp
-  (use-package flx
-    :straight t)
-#+end_src
-
-*** [[https://github.com/raxod502/ctrlf][Ctrl-F]]
-#+name: init-ctrl-f-block
-#+begin_src emacs-lisp :tangle no
-  (use-package ctrlf
-    :straight (:host github :repo "raxod502/ctrlf")
-    :general
-    ([remap isearch-forward] #'ctrlf-forward)
-    :config
-    (ctrlf-mode))
+(use-package flx
+  :straight t)
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
@@ -2274,56 +2219,56 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/PythonNut/company-flx][Company-FLX]]
 #+name: init-company-flx-block
 #+begin_src emacs-lisp
-  (use-package company-flx
-    :straight t
-    :ghook 'company-mode-hook)
+(use-package company-flx
+  :straight t
+  :ghook 'company-mode-hook)
 #+end_src
 
 *** [[https://github.com/Alexander-Miller/company-shell][Company-Shell]]
 
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
-  (use-package company-shell
-    :demand t
-    :straight t
-    :after (company))
+(use-package company-shell
+  :demand t
+  :straight t
+  :after (company))
 #+end_src
 
 *** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
 #+name: init-company-auctex-block
 #+begin_src emacs-lisp
-  (use-package company-auctex
-    :straight t
-    :after (:all company auctex)
-    :ghook (TeX-mode-hook #'company-auctex-init))
+(use-package company-auctex
+  :straight t
+  :after (:all company auctex)
+  :ghook (TeX-mode-hook #'company-auctex-init))
 #+end_src
 
 *** [[https://github.com/vspinu/company-math][Company-Math]]
 #+name: init-company-math-block
 #+begin_src emacs-lisp
-  (use-package company-math
-    :straight t
-    :after (:all company auctex)
-    :ghook #'TeX-mode-hook
-    :config
-    (compdef
-     :modes #'TeX-mode
-     :capf #'pcomplete-completions-at-point
-     :company (company-math-symbols company-latex-commands)))
+(use-package company-math
+  :straight t
+  :after (:all company auctex)
+  :ghook #'TeX-mode-hook
+  :config
+  (compdef
+   :modes #'TeX-mode
+   :capf #'pcomplete-completions-at-point
+   :company (company-math-symbols company-latex-commands)))
 
 #+end_src
 
 *** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
 #+name: init-company-lsp-block
 #+begin_src emacs-lisp
-  (use-package company-lsp
-    :demand t
-    :straight t
-    :after (company lsp)
-    :ghook ('lsp-mode-hook #'arco/init-company-lsp)
-    :preface
-    (defun arco/init-company-lsp ()
-      (general-pushnew 'company-lsp company-backends)))
+(use-package company-lsp
+  :demand t
+  :straight t
+  :after (company lsp)
+  :ghook ('lsp-mode-hook #'arco/init-company-lsp)
+  :preface
+  (defun arco/init-company-lsp ()
+    (general-pushnew 'company-lsp company-backends)))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -2340,58 +2285,44 @@ A nice way to restart emacs on the fly if you need to.
                 yas-wrap-around-region t
                 yas-prompt-functions '(yas-completing-prompt)
                 yas-snippet-dirs `(,djm--yasnippet-directory)))
-
-  (use-package yasnippet-snippets
-    :disabled t
-    :straight t
-    :ghook ('yas-global-mode-hook #'yas-reload-all))
 #+end_src
 
 ** Documentation
-*** [[https://github.com/dash-docs-el/dash-docs][Dash-Docs]]
-#+name: init-dash-docs-block
-#+begin_src emacs-lisp :tangle no
-  (use-package dash-docs
-    :straight t
-    :commands (dash-docs-search
-               dash-docs-search-docset))
-#+end_src
-
 *** [[https://github.com/Wilfred/helpful][Helpful]]
 #+name: init-helpful-block
 #+begin_src emacs-lisp
-  (use-package helpful
-    :straight t
-    :gfhook 'visual-line-mode
-    :general
-    ([remap describe-function] #'helpful-callable
-     "C-h C"                   #'helpful-command
-     [remap describe-variable] #'helpful-variable
-     [remap describe-key]      #'helpful-key
-     "C-c C-d"                 #'helpful-at-point
-     "C-h x"                   #'helpful-macro))
+(use-package helpful
+  :straight t
+  :gfhook #'visual-line-mode
+  :general
+  ([remap describe-function] #'helpful-callable
+   "C-h C"                   #'helpful-command
+   [remap describe-variable] #'helpful-variable
+   [remap describe-key]      #'helpful-key
+   "C-c C-d"                 #'helpful-at-point
+   "C-h x"                   #'helpful-macro))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
 #+name: init-which-key-block
 #+begin_src emacs-lisp
-  (use-package which-key
-    :blackout t
-    :straight t
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq which-key-separator " "
-                  which-key-prefix-prefix "+")
-    (which-key-setup-side-window-bottom))
+(use-package which-key
+  :blackout t
+  :straight t
+  :ghook 'emacs-startup-hook
+  :config
+  (general-setq which-key-separator " "
+                which-key-prefix-prefix "+")
+  (which-key-setup-side-window-bottom))
 #+end_src
 
 *** [[https://github.com/jguenther/discover-my-major][Discover-My-Major]]
 #+name: init-discover-my-major-block
 #+begin_src emacs-lisp
-  (use-package discover-my-major
-    :straight t
-    :general
-    ("C-h C-m" #'discover-my-major))
+(use-package discover-my-major
+  :straight t
+  :general
+  ("C-h C-m" #'discover-my-major))
 #+end_src
 
 ** Editing Tools
@@ -2420,20 +2351,20 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/bbatsov/crux][Crux]]
 #+name: init-crux-block
 #+begin_src emacs-lisp
-  (use-package crux
-    :straight t
-    :general
-    ("C-c i d" #'crux-downcase-region
-     "C-c i u" #'crux-upcase-region
-     [remap move-beginning-of-line] #'crux-move-beginning-of-line
-     [remap kill-line] #'crux-smart-kill-line))
+(use-package crux
+  :straight t
+  :general
+  ("C-c i d" #'crux-downcase-region
+   "C-c i u" #'crux-upcase-region
+   [remap move-beginning-of-line] #'crux-move-beginning-of-line
+   [remap kill-line] #'crux-smart-kill-line))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff][Emacs-VDiff]]
 #+name: init-vdiff-block
 #+begin_src emacs-lisp
-  (use-package vdiff
-    :straight t)
+(use-package vdiff
+  :straight t)
 #+end_src
 
 *** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
@@ -2446,62 +2377,63 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/magnars/multiple-cursors.el][Multiple-Cursors]]
 #+name: init-multiple-cursors-block
 #+begin_src emacs-lisp
-  (use-package multiple-cursors
-    :straight t
-    :general
-    ("C->" #'mc/mark-next-like-this
-     "C-<" #'mc/mark-previous-like-this))
+(use-package multiple-cursors
+  :straight t
+  :general
+  ("C->" #'mc/mark-next-like-this
+   "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
 *** [[https://github.com/akicho8/string-inflection][String-Inflection]]
 #+name: init-string-inflection-block
 #+begin_src emacs-lisp
-  (use-package string-inflection
-    :straight t
-    :general
-    ("C-c i u" #'string-inflection-upcase
-     "C-c i t" #'string-inflection-toggle
-     "C-c i c" #'string-inflection-camelcase
-     "C-c i _" #'string-inflection-underscore
-     "C-c i a" #'string-inflection-all-cycle
-     "C-c i k" #'string-inflection-kebab-case
-     "C-c i l" #'string-inflection-lower-camelcase
-     "C-c i C" #'string-inflection-capital-underscore
-     "C-c i j" #'string-inflection-java-style-cycle
-     "C-c i r" #'string-inflection-ruby-style-cycle
-     "C-c i p" #'string-inflection-python-style-cycle))
+(use-package string-inflection
+  :straight t
+  :general
+  (:prefix "C-c i"
+           "u" #'string-inflection-upcase
+           "t" #'string-inflection-toggle
+           "c" #'string-inflection-camelcase
+           "_" #'string-inflection-underscore
+           "a" #'string-inflection-all-cycle
+           "k" #'string-inflection-kebab-case
+           "l" #'string-inflection-lower-camelcase
+           "C" #'string-inflection-capital-underscore
+           "j" #'string-inflection-java-style-cycle
+           "r" #'string-inflection-ruby-style-cycle
+           "p" #'string-inflection-python-style-cycle))
 #+end_src
 
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
 #+name: init-zop-to-char-block
 #+begin_src emacs-lisp
-  (use-package zop-to-char
-    :straight t
-    :general
-    ("M-z" #'zop-to-char
-     "M-Z" #'zop-up-to-char))
+(use-package zop-to-char
+  :straight t
+  :general
+  ("M-z" #'zop-to-char
+   "M-Z" #'zop-up-to-char))
 #+end_src
 
 ** Writing
 *** [[https://github.com/d12frosted/flyspell-correct][Flyspell-Correct]]
 #+name: init-flyspell-correct-block
 #+begin_src emacs-lisp :tangle no
-  (use-package flyspell-correct
-    :straight t)
+(use-package flyspell-correct
+  :straight t)
 #+end_src
 
 *** [[https://github.com/jorgenschaefer/typoel][Typo]]
 #+name: init-typo-block
 #+begin_src emacs-lisp :tangle no
-  (use-package typo
-    :straight t)
+(use-package typo
+  :straight t)
 #+end_src
 
 *** [[https://github.com/bnbeckwith/writegood-mode][Writegood]]
 #+name: init-writegood-block
 #+begin_src emacs-lisp :tangle no
-  (use-package writegood-mode
-    :straight t)
+(use-package writegood-mode
+  :straight t)
 #+end_src
 
 ** Minor Modes
@@ -2533,25 +2465,27 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
 #+name: init-highlight-indent-guides-block
 #+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :straight t
-    :ghook 'python-mode-hook 'yaml-mode-hook)
+(use-package highlight-indent-guides
+  :straight t
+  :ghook 'python-mode-hook 'yaml-mode-hook)
 #+end_src
 
 *** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
 #+name: init-hungry-delete-block
-#+begin_src emacs-lisp :tangle no
-  (use-package hungry-delete
-    :blackout t :straight t
-    :ghook 'emacs-lisp-mode-hook)
+#+begin_src emacs-lisp
+(use-package hungry-delete
+  :blackout t
+  :straight t
+  :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
 #+name: init-rainbow-delimiters-block
 #+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :blackout t :straight t
-    :ghook 'prog-mode-hook)
+(use-package rainbow-delimiters
+  :blackout t
+  :straight t
+  :ghook 'prog-mode-hook)
 #+end_src
 
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
@@ -2582,11 +2516,10 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook whitespace-modes
   :preface
-  (defconst whitespace-modes
-    '(prog-mode-hook
-      org-mode-hook
-      text-mode-hook
-      conf-mode-hook))
+  (defconst whitespace-modes '(prog-mode-hook
+                               org-mode-hook
+                               text-mode-hook
+                               conf-mode-hook))
   :config
   (general-setq show-trailing-whitespace t))
 #+end_src
@@ -2594,73 +2527,74 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/lewang/ws-butler][WS-Butler]]
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp
-  (use-package ws-butler
-    :blackout t :straight t
-    :ghook ('emacs-startup-hook #'ws-butler-global-mode)
-    :config
-    (dolist (modes '(special-mode comint-mode term-mode eshell-mode vterm-mode))
-      (general-pushnew modes ws-butler-global-exempt-modes)))
+(use-package ws-butler
+  :blackout t
+  :straight t
+  :ghook ('emacs-startup-hook #'ws-butler-global-mode)
+  :config
+  (dolist (modes '(special-mode comint-mode term-mode eshell-mode vterm-mode))
+    (general-pushnew modes ws-butler-global-exempt-modes)))
 #+end_src
 
 ** File Explorer
 *** Dired (Built-In)
 #+name: init-dired-block
 #+begin_src emacs-lisp
-  (use-package dired
-    :blackout "Dired"
-    :straight (:type built-in)
-    :gfhook '(hl-line-mode arco/dired-for-tramp)
-    :general
-    (:keymaps 'dired-mode-map
-     "h" #'dired-up-directory
-     "n" #'dired-next-line
-     "p" #'dired-previous-line
-     "f" #'find-file)
-    :init
-    (defun arco/dired-for-tramp ()
-      (when (file-remote-p dired-directory)
-        (setq-local dired-actual-switches "-alhF")))
-    :config
-    (general-setq dired-auto-revert-buffer t
-                  dired-dwim-target t
-                  dired-use-ls-dired t
-                  dired-ls-F-marks-symlinks t
-                  dired-hide-details-hide-symlink-targets nil
-                  dired-listing-switches "-AFhlv --group-directories-first"
-                  dired-recursive-deletes 'always
-                  dired-recursive-copies 'always
-                  dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
+(use-package dired
+  :blackout "Dired"
+  :straight (:type built-in)
+  :gfhook '(hl-line-mode arco/dired-for-tramp)
+  :general
+  (:keymaps 'dired-mode-map
+            "h" #'dired-up-directory
+            "n" #'dired-next-line
+            "p" #'dired-previous-line
+            "f" #'find-file)
+  :init
+  (defun arco/dired-for-tramp ()
+    (when (file-remote-p dired-directory)
+      (setq-local dired-actual-switches "-alhF")))
+  :config
+  (general-setq dired-auto-revert-buffer t
+                dired-dwim-target t
+                dired-use-ls-dired t
+                dired-ls-F-marks-symlinks t
+                dired-hide-details-hide-symlink-targets nil
+                dired-listing-switches "-AFhlv --group-directories-first"
+                dired-recursive-deletes 'always
+                dired-recursive-copies 'always
+                dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
 #+end_src
 
 *** Dired-Aux (Built-In)
 #+name: init-dired-aux-block
 #+begin_src emacs-lisp
-  (use-package dired-aux
-    :demand t
-    :straight (:type built-in)
-    :after (dired)
-    :general
-    (:keymaps 'dired-mode-map
-     "C-c +" #'dired-create-empty-file)
-    :config
-    (general-setq dired-isearch-filenames 'dwim
-                  dired-create-destination-dirs 'ask
-                  dired-vc-rename-file t))
+(use-package dired-aux
+  :demand t
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'dired-mode-map
+            "C-c +" #'dired-create-empty-file)
+  :config
+  (general-setq dired-isearch-filenames 'dwim
+                dired-create-destination-dirs 'ask
+                dired-vc-rename-file t))
 #+end_src
 
 *** WDired (Built-In)
 #+name: init-wdired-block
 #+begin_src emacs-lisp
-  (use-package wdired
-    :demand t
-    :straight (:type built-in)
-    :after (dired)
-    :general
-    (:keymaps 'dired-mode-map
-     "C-c C-e" #'wdired-change-to-wdired-mode)
-    :config
-    (general-setq wdired-create-parent-directories t
-                  wdired-allow-to-change-permissions t))
+(use-package wdired
+  :demand t
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'dired-mode-map
+            "C-c C-e" #'wdired-change-to-wdired-mode)
+  :config
+  (general-setq wdired-create-parent-directories t
+                wdired-allow-to-change-permissions t))
 #+end_src
 
 *** Dired-X (Built-In)
@@ -2668,6 +2602,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package dired-x
   :demand t
+  :blackout ((dired-omit-mode . ""))
   :straight (:type built-in)
   :after (dired)
   :ghook ('dired-mode-hook #'dired-omit-mode)
@@ -2695,28 +2630,28 @@ A nice way to restart emacs on the fly if you need to.
 *** Find-Dired (Built-In)
 #+name: init-find-dired-block
 #+begin_src emacs-lisp
-  (use-package find-dired
-    :straight (:type built-in)
-    :config
-    (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
-                  find-name-arg "-iname"))
+(use-package find-dired
+  :straight (:type built-in)
+  :config
+  (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
+                find-name-arg "-iname"))
 #+end_src
 
 *** Image-Dired (Built-In)
 #+name: init-image-dired-block
 #+begin_src emacs-lisp
-  (use-package image-dired
-    :demand t
-    :straight (:type built-in)
-    :after (dired)
-    :general
-    (:keymaps 'image-dired-thumbnail-mode-map
-     "<return>" #'image-dired-thumbnail-display-external)
-    :config
-    (general-setq image-dired-thumb-size 80
-                  image-dired-thumb-margin 2
-                  image-dired-thumb-relief 0
-                  image-dired-thumbs-per-row 4))
+(use-package image-dired
+  :demand t
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'image-dired-thumbnail-mode-map
+            "<return>" #'image-dired-thumbnail-display-external)
+  :config
+  (general-setq image-dired-thumb-size 80
+                image-dired-thumb-margin 2
+                image-dired-thumb-relief 0
+                image-dired-thumbs-per-row 4))
 #+end_src
 
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
@@ -2731,13 +2666,13 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
 #+name: init-dired-git-info-block
 #+begin_src emacs-lisp
-  (use-package dired-git-info
-    :straight t
-    :general
-    (:keymaps 'dired-mode-map
-     ":" #'dired-git-info-mode)
-    :config
-    (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
+(use-package dired-git-info
+  :straight t
+  :general
+  (:keymaps 'dired-mode-map
+            ":" #'dired-git-info-mode)
+  :config
+  (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
 #+end_src
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
@@ -2846,7 +2781,6 @@ A nice way to restart emacs on the fly if you need to.
                   peep-dired-enable-on-directories nil
                   peep-dired-ignored-extensions '("mkv" "webm" "mp4"
                                                   "mp3" "ogg" "iso")))
-
 #+end_src
 
 ** Navigation
@@ -2873,13 +2807,13 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/abo-abo/avy][Avy]]
 #+name: init-avy-block
 #+begin_src emacs-lisp :tangle no
-  (use-package avy
-    :straight t
-    :config
-    (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-                  avy-all-windows nil
-                  avy-timeout-seconds 0.3
-                  avy-style 'pre))
+(use-package avy
+  :straight t
+  :config
+  (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
+                avy-all-windows nil
+                avy-timeout-seconds 0.3
+                avy-style 'pre))
 #+end_src
 
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
@@ -2897,191 +2831,186 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuffer.el][iBuffer]]
 #+name: init-ibuffer-block
 #+begin_src emacs-lisp
-  (use-package ibuffer
-    :straight t
-    :commands (ibuffer
-               ibuffer-forward-line
-               ibuffer-backward-line)
-    :defines (ibuffer-show-empty-filter-groups
-              ibuffer-never-show-predicates)
-    :gfhook #'hl-line-mode
-    :general
-    ([remap list-buffers] #'ibuffer)
-    :config/el-patch
-    (general-setq ibuffer-expert t
-                  ibuffer-display-summary nil
-                  ibuffer-use-other-window nil
-                  ibuffer-show-empty-filter-groups nil
-                  ibuffer-movement-cycle nil
-                  ibuffer-default-sorting-mode 'filename/process
-                  ibuffer-title-face 'font-lock-doc-face
-                  ibuffer-use-header-line t
-                  ibuffer-default-shrink-to-minimum-size nil)
-    (general-setq ibuffer-formats
-                  '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
-    (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"
-                                                              "*git-auto-push*"
-                                                              "*Backtrace*"
-                                                              "*new*"
-                                                              "*Org*"
-                                                              "*helpful"
-                                                              "*Flycheck error messages*"
-                                                              "*Help*"))))
+(use-package ibuffer
+  :straight (:type built-in)
+  :gfhook #'hl-line-mode
+  :general
+  ([remap list-buffers] #'ibuffer)
+  :config/el-patch
+  (general-setq ibuffer-expert t
+                ibuffer-display-summary nil
+                ibuffer-use-other-window nil
+                ibuffer-show-empty-filter-groups nil
+                ibuffer-movement-cycle nil
+                ibuffer-default-sorting-mode 'filename/process
+                ibuffer-title-face 'font-lock-doc-face
+                ibuffer-use-header-line t
+                ibuffer-default-shrink-to-minimum-size nil)
+  (general-setq ibuffer-formats
+                '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
+  (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"
+                                                            "*git-auto-push*"
+                                                            "*Backtrace*"
+                                                            "*new*"
+                                                            "*Org*"
+                                                            "*helpful"
+                                                            "*Flycheck error messages*"
+                                                            "*Help*"))))
 
-    (define-ibuffer-column mode
-      (:inline t)
-      (with-current-buffer (current-buffer)
-        (let ((icon (all-the-icons-icon-for-buffer)))
-          (if (stringp icon)
-              icon
-            " "))))
+  (define-ibuffer-column mode
+    (:inline t)
+    (with-current-buffer (current-buffer)
+      (let ((icon (all-the-icons-icon-for-buffer)))
+        (if (stringp icon)
+            icon
+          " "))))
 
-    ;; Dim directory part of file path.
-    (define-ibuffer-column filename-and-process
-      (:name "Filename/Process")
-      (let ((proc (get-buffer-process buffer))
-            (filename (ibuffer-make-column-filename buffer mark)))
-        (if proc
-            (concat (propertize (format "(%s %s)" proc (process-status proc))
-                                'font-lock-face 'italic)
-                    (if (> (length filename) 0)
-                        (format " %s" filename)
-                      ""))
-          (propertize (f-abbrev filename) 'face 'dired-symlink))))
+  ;; Dim directory part of file path.
+  (define-ibuffer-column filename-and-process
+    (:name "Filename/Process")
+    (let ((proc (get-buffer-process buffer))
+          (filename (ibuffer-make-column-filename buffer mark)))
+      (if proc
+          (concat (propertize (format "(%s %s)" proc (process-status proc))
+                              'font-lock-face 'italic)
+                  (if (> (length filename) 0)
+                      (format " %s" filename)
+                    ""))
+        (propertize (f-abbrev filename) 'face 'dired-symlink))))
 
-    ;; Show buffer name in a consistent way.
-    (define-ibuffer-column name
-      (:inline t)
-      (let ((string (buffer-name)))
-        (if (not (seq-position string ?\n))
-            string
-          (replace-regexp-in-string
-           "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
-    
-    ;; Show a horizontal rule using page-break-lines instead of using dashes.
-    (el-patch-defun ibuffer-update-title-and-summary (format)
-      (ibuffer-assert-ibuffer-mode)
-      ;; Don't do funky font-lock stuff here
-      (let ((inhibit-modification-hooks t))
-        (if (get-text-property (point-min) 'ibuffer-title)
-            (delete-region (point-min)
-                           (next-single-property-change
-                            (point-min) 'ibuffer-title)))
-        (goto-char (point-min))
-        (add-text-properties
-         (point)
-         (progn
-           (let ((opos (point)))
-             ;; Insert the title names.
-             (dolist (element format)
-               (insert
-                (if (stringp element)
-                    element
-                  (pcase-let ((`(,sym ,min ,_max ,align) element))
-                    ;; Ignore a negative min when we're inserting the title
-                    (when (cl-minusp min)
-                      (setq min (- min)))
-                    (let* ((name (or (get sym 'ibuffer-column-name)
-                                     (error "Unknown column %s in ibuffer-formats" sym)))
-                           (len (length name))
-                           (hmap (get sym 'header-mouse-map))
-                           (strname (if (< len min)
-                                        (ibuffer-format-column name
-                                                               (- min len)
-                                                               align)
-                                      name)))
-                      (when hmap
-                        (setq
-                         strname
-                         (propertize strname 'mouse-face 'highlight 'keymap hmap)))
-                      strname)))))
-             (add-text-properties opos (point) '(ibuffer-title-header t))
-             (insert "\n")
-             ;; Add the underlines
-
-             (el-patch-swap (let ((str (save-excursion
-                                         (forward-line -1)
-                                         (beginning-of-line)
-                                         (buffer-substring (point) (line-end-position)))))
-                              (apply #'insert (mapcar
-                                               (lambda (c)
-                                                 (if (not (or (eq c ?\s)
-                                                              (eq c ?\n)))
-                                                     ?-
-                                                   ?\s))
-                                               str)))
-                            (insert ""))
-             (insert "\n"))
-           (point))
-         `(ibuffer-title t font-lock-face ,ibuffer-title-face))
-        ;; Now, insert the summary columns.
-        (goto-char (point-max))
-        (if (get-text-property (1- (point-max)) 'ibuffer-summary)
-            (delete-region (previous-single-property-change
-                            (point-max) 'ibuffer-summary)
-                           (point-max)))
-        (if ibuffer-display-summary
-            (add-text-properties
-             (point)
-             (progn
-               (insert "\n")
-               (dolist (element format)
-                 (insert
-                  (if (stringp element)
-                      (make-string (length element) ?\s)
-                    (pcase-let ((`(,sym ,min ,_max ,align) element))
-                      ;; Ignore a negative min when we're inserting the title.
-                      (when (cl-minusp min)
-                        (setq min (- min)))
-                      (let* ((summary
-                              (if (get sym 'ibuffer-column-summarizer)
-                                  (funcall (get sym 'ibuffer-column-summarizer)
-                                           (get sym 'ibuffer-column-summary))
-                                (make-string
-                                 (length (get sym 'ibuffer-column-name))
-                                 ?\s)))
-                             (len (length summary)))
-                        (if (< len min)
-                            (ibuffer-format-column summary
-                                                   (- min len)
-                                                   align)
-                          summary))))))
-               (point))
-             '(ibuffer-summary t)))))
-
-    ;; Change the way groups are rendered.
-    (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+  ;; Show buffer name in a consistent way.
+  (define-ibuffer-column name
+    (:inline t)
+    (let ((string (buffer-name)))
+      (if (not (seq-position string ?\n))
+          string
+        (replace-regexp-in-string
+         "\n" (propertize "^J" 'font-lock-face 'escape-glyph) string))))
+  
+  ;; Show a horizontal rule using page-break-lines instead of using dashes.
+  (el-patch-defun ibuffer-update-title-and-summary (format)
+    (ibuffer-assert-ibuffer-mode)
+    ;; Don't do funky font-lock stuff here
+    (let ((inhibit-modification-hooks t))
+      (if (get-text-property (point-min) 'ibuffer-title)
+          (delete-region (point-min)
+                         (next-single-property-change
+                          (point-min) 'ibuffer-title)))
+      (goto-char (point-min))
       (add-text-properties
        (point)
        (progn
-         (insert (el-patch-remove "[ ")
-                 display-name
-                 (el-patch-remove " ]"))
+         (let ((opos (point)))
+           ;; Insert the title names.
+           (dolist (element format)
+             (insert
+              (if (stringp element)
+                  element
+                (pcase-let ((`(,sym ,min ,_max ,align) element))
+                  ;; Ignore a negative min when we're inserting the title
+                  (when (cl-minusp min)
+                    (setq min (- min)))
+                  (let* ((name (or (get sym 'ibuffer-column-name)
+                                   (error "Unknown column %s in ibuffer-formats" sym)))
+                         (len (length name))
+                         (hmap (get sym 'header-mouse-map))
+                         (strname (if (< len min)
+                                      (ibuffer-format-column name
+                                                             (- min len)
+                                                             align)
+                                    name)))
+                    (when hmap
+                      (setq
+                       strname
+                       (propertize strname 'mouse-face 'highlight 'keymap hmap)))
+                    strname)))))
+           (add-text-properties opos (point) '(ibuffer-title-header t))
+           (insert "\n")
+           ;; Add the underlines
+
+           (el-patch-swap (let ((str (save-excursion
+                                       (forward-line -1)
+                                       (beginning-of-line)
+                                       (buffer-substring (point) (line-end-position)))))
+                            (apply #'insert (mapcar
+                                             (lambda (c)
+                                               (if (not (or (eq c ?\s)
+                                                            (eq c ?\n)))
+                                                   ?-
+                                                 ?\s))
+                                             str)))
+                          (insert ""))
+           (insert "\n"))
          (point))
-       `(ibuffer-filter-group-name
-         ,name
-         font-lock-face ,ibuffer-filter-group-name-face
-         keymap ,ibuffer-mode-filter-group-map
-         mouse-face highlight
-         help-echo ,(let ((echo '(if tooltip-mode
-                                     "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
-                                   "mouse-1: toggle marks  mouse-2: hide/show")))
-                      (if (> (length filter-string) 0)
-                          `(concat ,filter-string
-                                   (if tooltip-mode "\n" " ")
-                                   ,echo)
-                        echo))))
-      (insert "\n")
-      (when bmarklist
-        (put-text-property
-         (point)
-         (progn
-           (dolist (entry bmarklist)
-             (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
-           (point))
-         'ibuffer-filter-group
-         name))
-      (el-patch-add (insert "\n"))))
+       `(ibuffer-title t font-lock-face ,ibuffer-title-face))
+      ;; Now, insert the summary columns.
+      (goto-char (point-max))
+      (if (get-text-property (1- (point-max)) 'ibuffer-summary)
+          (delete-region (previous-single-property-change
+                          (point-max) 'ibuffer-summary)
+                         (point-max)))
+      (if ibuffer-display-summary
+          (add-text-properties
+           (point)
+           (progn
+             (insert "\n")
+             (dolist (element format)
+               (insert
+                (if (stringp element)
+                    (make-string (length element) ?\s)
+                  (pcase-let ((`(,sym ,min ,_max ,align) element))
+                    ;; Ignore a negative min when we're inserting the title.
+                    (when (cl-minusp min)
+                      (setq min (- min)))
+                    (let* ((summary
+                            (if (get sym 'ibuffer-column-summarizer)
+                                (funcall (get sym 'ibuffer-column-summarizer)
+                                         (get sym 'ibuffer-column-summary))
+                              (make-string
+                               (length (get sym 'ibuffer-column-name))
+                               ?\s)))
+                           (len (length summary)))
+                      (if (< len min)
+                          (ibuffer-format-column summary
+                                                 (- min len)
+                                                 align)
+                        summary))))))
+             (point))
+           '(ibuffer-summary t)))))
+
+  ;; Change the way groups are rendered.
+  (el-patch-defun ibuffer-insert-filter-group (name display-name filter-string format bmarklist)
+    (add-text-properties
+     (point)
+     (progn
+       (insert (el-patch-remove "[ ")
+               display-name
+               (el-patch-remove " ]"))
+       (point))
+     `(ibuffer-filter-group-name
+       ,name
+       font-lock-face ,ibuffer-filter-group-name-face
+       keymap ,ibuffer-mode-filter-group-map
+       mouse-face highlight
+       help-echo ,(let ((echo '(if tooltip-mode
+                                   "mouse-1: toggle marks in this group\nmouse-2: hide/show this filtering group"
+                                 "mouse-1: toggle marks  mouse-2: hide/show")))
+                    (if (> (length filter-string) 0)
+                        `(concat ,filter-string
+                                 (if tooltip-mode "\n" " ")
+                                 ,echo)
+                      echo))))
+    (insert "\n")
+    (when bmarklist
+      (put-text-property
+       (point)
+       (progn
+         (dolist (entry bmarklist)
+           (ibuffer-insert-buffer-line (car entry) (cdr entry) format))
+         (point))
+       'ibuffer-filter-group
+       name))
+    (el-patch-add (insert "\n"))))
 #+end_src
 
 *** [[https://github.com/emacs-mirror/emacs/blob/master/lisp/ibuf-ext.el][iBuffer-Extension]]
@@ -3090,7 +3019,8 @@ A nice way to restart emacs on the fly if you need to.
 (use-package ibuf-ext
   :straight (:type built-in)
   :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
-  :config (general-setq ibuffer-show-empty-filter-groups nil))
+  :config
+  (general-setq ibuffer-show-empty-filter-groups nil))
 #+end_src
 
 *** [[https://github.com/purcell/ibuffer-projectile][iBuffer-Projectile]]
@@ -3117,55 +3047,26 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://gitlab.com/ambrevar/emacs-windower][Windmove]]
 #+name: init-windmove-block
 #+begin_src emacs-lisp
-  (use-package windmove
-    :straight t
-    :general
-    ("C-c w j" #'windmove-left
-     "C-c w l" #'windmove-right
-     "C-c w n" #'windmove-down
-     "C-c w u" #'windmove-up))
+(use-package windmove
+  :straight t
+  :general
+  ("C-c w j" #'windmove-left
+   "C-c w l" #'windmove-right
+   "C-c w n" #'windmove-down
+   "C-c w u" #'windmove-up))
 #+end_src
 
 *** [[https://gitlab.com/ambrevar/emacs-windower][Windower]]
 #+name: init-windower-block
 #+begin_src emacs-lisp
-  (use-package windower
-    :straight (:host gitlab :repo "ambrevar/emacs-windower")
-    :general
-    ("C-c w o" #'windower-switch-to-last-buffer
-     "C-c w t" #'windower-toggle-split
-     "C-c w s" #'windower-swap
-     "C-c w m" #'windower-move-border
-     "C-c w a" #'windower-toggle-single))
-#+end_src
-
-*** [[https://github.com/wasamasa/eyebrowse][Eyebrowse]]
-#+name: init-eyebrowse-block
-#+begin_src emacs-lisp :tangle no
-  (use-package eyebrowse
-    :straight t
-    :ghook 'emacs-startup-hook
-    :preface
-    (defun arco/create-window-config (name)
-      (interactive
-       (list (let ((current-tags (--map (nth 2 it) (eyebrowse--get 'window-configs)))
-                   input)
-               (while (progn
-                        (setq input (read-string "Workspace name: " (ignore-errors (projectile-project-name))))
-                        (cond ((string-blank-p input)
-                               (message "Input must be non-empty.")
-                               (sit-for 1)
-                               t)
-                              ((-contains-p current-tags input)
-                               (message "Name must be unique")
-                               (sit-for 1)
-                               t))))
-               input)))
-      (eyebrowse-create-window-config)
-      (eyebrowse-rename-window-config (eyebrowse--get 'current-slot) name))
-    :config
-    (general-setq eyebrowse-mode-line-separator " "))
-
+(use-package windower
+  :straight (:host gitlab :repo "ambrevar/emacs-windower")
+  :general
+  ("C-c w o" #'windower-switch-to-last-buffer
+   "C-c w t" #'windower-toggle-split
+   "C-c w s" #'windower-swap
+   "C-c w m" #'windower-move-border
+   "C-c w a" #'windower-toggle-single))
 #+end_src
 
 ** Org
@@ -3174,7 +3075,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package org
   :straight nil
-  :mode ("\\.org\\'" . org-mode)
+  :mode (("\\.org\\'" . org-mode))
   :gfhook #'set-buffer-fixed-pitch
   :general
   ("C-c a" #'org-agenda
@@ -3220,9 +3121,7 @@ A nice way to restart emacs on the fly if you need to.
 
   ;; Startup Settings
   (general-setq org-startup-folded 'content
-                org-startup-with-inline-images t
-                org-startup-indented t
-                org-indent-mode t)
+                org-startup-with-inline-images t)
 
   ;; Fontify Settings
   (general-setq org-fontify-whole-heading-line t
@@ -3282,6 +3181,15 @@ A nice way to restart emacs on the fly if you need to.
                 org-yank-adjusted-subtrees t)
 
   (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
+#+end_src
+
+*** Org-Indent
+#+name: init-org-indent-block
+#+begin_src emacs-lisp
+(use-package org-indent
+  :blackout t
+  :straight nil
+  :ghook 'org-mode-hook)
 #+end_src
 
 *** Org-Agenda
@@ -3877,7 +3785,8 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :commands (with-editor-export-editor)
   :init
-  (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
+  (general-add-hook 'shell-mode-hook 'with-editor-export-editor)
+  (general-add-hook 'vterm-mode-hook 'with-editor-export-editor))
 #+end_src
 
 ** Language Server Support
@@ -3889,7 +3798,7 @@ A nice way to restart emacs on the fly if you need to.
   :commands (lsp)
   :gfhook #'lsp-enable-which-key-integration
   :capf lsp-completion-at-point
-  :company company-lsp
+  :company '(company-lsp company-files company-dabbrev)
   :init
   (defvar lsp-on-touch-time 0)
   (defun lsp-on-change-hack (start end length)
@@ -3921,20 +3830,6 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 ** Syntax & Linting
-*** [[https://github.com/raxod502/apheleia][Apheleia]]
-#+name: init-apheleia-block
-#+begin_src emacs-lisp :tangle no
-  (use-package apheleia
-    :straight (:host github :repo "raxod502/apheleia")
-    :init
-    (defun arco/save-buffer-reformat-maybe (func &optional arg)
-      "Make it so \\[save-buffer] with prefix arg inhibits reformatting."
-      (let ((apheleia-mode (and apheleia-mode (member arg '(nil 1)))))
-        (funcall func)))
-
-    (general-add-advice #'arco/save-buffer-reformat-maybe :around 'save-buffer))
-#+end_src
-
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
 #+begin_src emacs-lisp
@@ -3964,7 +3859,6 @@ A nice way to restart emacs on the fly if you need to.
                 flycheck-shellcheck-follow-sources t
                 flycheck-sh-bash-executable "/usr/local/bin/bash"
                 flycheck-sh-zsh-executable "/usr/local/bin/zsh")
-  (general-pushnew 'zsh flycheck-shellcheck-supported-shells)
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
@@ -4008,9 +3902,9 @@ A nice way to restart emacs on the fly if you need to.
 **** [[https://github.com/dougm/bats-mode][BATS]]
 #+name: init-bats-block
 #+begin_src emacs-lisp :tangle no
-  (use-package bats-mode
-    :straight t
-    :mode ("\\.bats$"))
+(use-package bats-mode
+  :straight t
+  :mode ("\\.bats$"))
 #+end_src
 
 *** LISP
@@ -4020,17 +3914,12 @@ A nice way to restart emacs on the fly if you need to.
 (use-package elisp-mode
   :blackout ((emacs-lisp-mode . "Elisp")
              (lisp-interaction-mode . "Lisp-Interaction"))
-  :straight nil
+  :straight (:type built-in)
   :mode (("\\.el\\'" . emacs-lisp-mode)
          ("\\.Cask\\'" . emacs-lisp-mode))
   :gfhook #'outline-minor-mode
   :config
   (general-setq emacs-lisp-docstring-fill-column 80))
-
-(use-package highlight-defined
-  :disabled
-  :straight t
-  :ghook 'emacs-lisp-mode-hook)
 #+end_src
 
 **** Fix Identation
@@ -4166,19 +4055,8 @@ Lisp function does not specify a special indentation."
   :ghook 'common-lisp-hook
   :config
   (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
-                sly-mrepl-history-file-name (no-littering-expand-var-file-name "sly-mrepl-history")))
-#+end_src
-
-**** SLIME
-#+name: init-slime-block
-#+begin_src emacs-lisp :tangle no
-(use-package slime
-  :straight t
-  :ghook 'common-lisp-hook
-  :init
-  (setq inferior-lisp-program "sbcl")
-  :config
-  (slime-setup '(slime-fancy slime-quicklisp slime-asdf)))
+                sly-mrepl-history-file-name
+                (no-littering-expand-var-file-name "sly-mrepl-history")))
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -4195,18 +4073,18 @@ This is a nifty package that allows me to define functions as local variables in
 **** [[https://github.com/jwiegley/emacs-async][Async]]
 #+name: init-async-block
 #+begin_src emacs-lisp
-  (use-package async
-    :straight t
-    :ghook ('dired-mode-hook #'dired-async-mode)
-    :blackout (dired-async-mode . ""))
+(use-package async
+  :blackout ((dired-async-mode . ""))
+  :straight t
+  :ghook ('dired-mode-hook #'dired-async-mode))
 #+end_src
 
 **** [[https://github.com/clojure-emacs/clojure-mode][Clojure-Mode]]
 #+name: init-clojure-mode-block
 #+begin_src emacs-lisp
-  (use-package clojure-mode
-    :straight t
-    :mode ("\\.edn$"))
+(use-package clojure-mode
+  :straight t
+  :mode ("\\.edn$"))
 #+end_src
 
 **** [[https://www.emacswiki.org/emacs/ParEdit][Paredit]]
@@ -4392,71 +4270,17 @@ This is a nifty package that allows me to define functions as local variables in
 **** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
 #+name: init-julia-block
 #+begin_src emacs-lisp
-  (use-package julia-mode
-    :straight t
-    :interpreter "/usr/local/bin/julia"
-    :config
-    ;; Borrow matlab.el's fontification of math operators
-    ;; From <https://ogbe.net/emacsconfig.html>
-    (dolist (mode '(julia-mode ess-julia-mode))
-      (font-lock-add-keywords
-       mode
-       `((,(let ((OR "\\|"))
-             (concat "\\(" ;; stolen `matlab.el' operators first
-                     "[<>!]=?" OR
-                     "\\.[/*^']" OR
-                     "==" OR
-                     "=>" OR
-                     "\\<xor\\>" OR
-                     "[-+*\\/^&|$]=?" OR ;; this has to come before next (updating operators)
-                     "[-!^&|*+\\/~:]" OR
-                     ;; more extra julia operators follow
-                     "[%$]" OR
-                     ;; bitwise operators
-                     ">>>" OR ">>" OR "<<" OR
-                     ">>>=" OR ">>" OR "<<" OR
-                     ;; comparison
-                     "[<>!]=?" OR
-                     "\\)"))
-          1 font-lock-type-face)))))
+(use-package julia-mode
+  :straight t
+  :interpreter "/usr/local/bin/julia")
 #+end_src
 
 **** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
 #+name: init-julia-repl-block
 #+begin_src emacs-lisp :tangle no
-  (use-package julia-repl
-    :straight t
-    :ghook 'julia-mode-hook
-    :config
-    (defun arco/set-julia-repl-env ()
-      (setenv "TERM" "xterm-256color"))
-    (general-add-hook
-     'inferior-julia-mode-hook #'arco/set-julia-repl-env))
-#+end_src
-
-**** [[https://github.com/gcv/julia-snail][Julia-Snail]]
-#+name: init-julia-snail-block
-#+begin_src emacs-lisp
-  (use-package julia-snail
-    :straight (:host github :repo "gcv/julia-snail")
-    :ghook 'julia-mode-hook
-    :config
-    (progn
-      ;; order matters, unfortunately:
-      (add-to-list 'display-buffer-alist
-                   ;; match buffers named "*julia" in general
-                   '("\\*julia"
-                     ;; actions:
-                     (display-buffer-reuse-window display-buffer-same-window)))
-      (add-to-list 'display-buffer-alist
-                   ;; when displaying buffers named "*julia" in REPL mode
-                   '((lambda (bufname _action)
-                       (and (string-match-p "\\*julia" bufname)
-                            (with-current-buffer bufname
-                              (bound-and-true-p julia-snail-repl-mode))))
-                     ;; actions:
-                     (display-buffer-reuse-window display-buffer-pop-up-window)))
-      ))
+(use-package julia-repl
+  :straight t
+  :ghook 'julia-mode-hook)
 #+end_src
 
 *** Python
@@ -4520,13 +4344,14 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package ccls
   :straight t
-  :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook)
-          #'(lambda () (require 'ccls) (lsp)))
+  :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) #'lsp-deferred)
   :init
   (general-setq ccls-executable "/usr/local/bin/ccls"
                 ccls-sem-highlight-method 'overlay)
   (general-setq ccls-initialization-options
-                '(:index (:comments 2) :completion (:detailedLabel t) :compilationDatabaseDirectory "test"))
+                '(:index (:comments 2)
+                         :completion (:detailedLabel t)
+                         :compilationDatabaseDirectory "test"))
   :config
   (general-setq company-lsp-cache-candidates nil
                 company-transformers nil)
@@ -4559,24 +4384,24 @@ This is a nifty package that allows me to define functions as local variables in
 **** CSV-Mode
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
-  (use-package csv-mode
-    :straight t
-    :commands (csv-mode
-               csv-align-mode))
+(use-package csv-mode
+  :straight t
+  :commands (csv-mode
+             csv-align-mode))
 #+end_src
 
 **** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
 #+name: init-gitconfig-mode-block
 #+begin_src emacs-lisp
-  (use-package gitconfig-mode
-    :straight t)
+(use-package gitconfig-mode
+  :straight t)
 #+end_src
 
 **** [[https://github.com/vkazanov/crontab-mode][Gitignore-Mode]]
 #+name: init-gitignore-mode-block
 #+begin_src emacs-lisp
-  (use-package gitignore-mode
-    :straight t)
+(use-package gitignore-mode
+  :straight t)
 #+end_src
 
 **** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
@@ -4605,14 +4430,14 @@ This is a nifty package that allows me to define functions as local variables in
 
 #+name: init-novel-block
 #+begin_src emacs-lisp :tangle no
-  (use-package nov
-    :straight (:host github :repo "wasamasa/nov.el")
-    :mode ("\\.epub\\'" . nov-mode)
-    :config
-    (defun arco/nov-font-setup ()
-      (face-remap-add-relative 'variable-pitch :family "Iosevka Etoile"
-                               :height 1.0))
-    (general-add-hook 'nove-mode-hook #'arco/nov-font-setup))
+(use-package nov
+  :straight (:host github :repo "wasamasa/nov.el")
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (defun arco/nov-font-setup ()
+    (face-remap-add-relative 'variable-pitch :family "Iosevka Etoile"
+                             :height 1.0))
+  (general-add-hook 'nove-mode-hook #'arco/nov-font-setup))
 #+end_src
 
 **** [[https://github.com/skuro/plantuml-mode][PlantUML-Mode]]

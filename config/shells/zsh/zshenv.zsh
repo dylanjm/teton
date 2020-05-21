@@ -35,7 +35,7 @@ export EMACS="/Appplications/Emacs.app"
 export HISTFILE="$XDG_DATA_HOME/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=500000
-export SAVEHIST="${HISTSIZE}"
+export SAVEHIST=500000
 
 ###
 ### Atom

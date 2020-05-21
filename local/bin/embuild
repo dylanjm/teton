@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+# Submit issues to https://github.com/dylanm/teton/issues
+#
+# MIT License
+#
+# Copyright (c) 2019-2020 Dylan McDowell
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
+# Notes ################################################################
+
+# Globals ##############################################################
+EMACS_GIT_URL="https://git.savannah.gnu.org/git/emacs.git"
+BRANCH="feature/native-comp"
+
+SCRIPT_ROOT=$(realpath "$(dirname "$0")")
+TARGET_DIR="$HOME/.local/emacs"
+
+SOURCE="$TARGET_DIR/emacs-source"
+PREFIX="$TARGET_DIR/emacs-bin"
+
+INFO="${PREFIX}/share/info/emacs"
+NS_APP="${PREFIX}/bin/Emacs.app"
+NS_APP_BIN="${NS_APP}/Contents/MacOS/Emacs"
+
+export CC="clang"
+export LDFLAGS="-L/usr/local/Cellar/gcc/9.3.0_1/lib/gcc/9"
+export PKG_CONFIG_PATH="/usr/local/Cellar/imagemagick/7.0.10-11/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_3/lib/pkgconfig"
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+
+# Utilities ############################################################
+function usage() {
+  cat <<-EOM
+FLAGS:
+    -B    specify git branch, default is master
+    -c    configure emacs build
+    -b    build emacs
+    -i    install emacs
+    -h    show this message
+
+ENVIRONMENT VARIABLES:
+    FEATURES    - configure Emacs build, override script's defaults
+                  e.g. FEATURES="--with-ns --disable-ns-self-contained"
+EOM
+  exit 0
+}
+
+parse_args() {
+  [[ $# -eq 0 ]] && usage
+  while getopts "B:cbih" opt; do
+    case "$opt" in
+      B)
+        BRANCH="$OPTARG"
+        ;;
+      c)
+        CONFIGURE=true
+        ;;
+      b)
+        BUILD=true
+        ;;
+      i)
+        INSTALL=true
+        ;;
+      h|*)
+        usage
+        break
+        ;;
+    esac
+  done
+}
+
+# Core #################################################################
+
+clone_emacs() {
+  [[ ! -d "${SOURCE}" ]] &&
+    git clone --depth 1 --branch "$BRANCH" "$EMACS_GIT_URL" "$SOURCE"
+  cd "${SOURCE}" || exit
+}
+
+apply_patch () {
+  patch -g 0 -f --strip=1 < <(curl -s "${1}" 2>/dev/null)
+}
+
+configure_build() {
+
+  apply_patch "https://raw.githubusercontent.com/daviderestivo/homebrew-emacs-head/master/patches/0003-Pdumper-size-increase.patch"
+  apply_patch "https://raw.githubusercontent.com/daviderestivo/homebrew-emacs-head/master/patches/0001-No-frame-refocus-cocoa.patch"
+  apply_patch "https://raw.githubusercontent.com/daviderestivo/homebrew-emacs-head/master/patches/0005-Xwidgets-webkit-in-cocoa-pdumper.patch"
+
+  [[ ! -x "$SOURCE/configure"  ]] && ./autogen.sh
+
+  _args=(
+    "-C"
+    "--enable-locallisppath=/usr/local/share/emacs/site-lisp"
+    "--infodir=${INFO}"
+    "--prefix=${PREFIX}"
+    "--without-x"
+    "--with-mailutils"
+    "--without-pop"
+    "--with-xml2"
+    "--with-json"
+    "--with-rsvg"
+    "--with-gnutls"
+    "--with-threads"
+    "--with-modules"
+    "--with-cairo"
+    "--with-imagemagick"
+    "--with-ns"
+    "--enable-ns-self-contained"
+    "--with-xpm"
+    "--with-jpeg"
+    "--with-tiff"
+    "--with-gif"
+    "--with-png"
+    "--with-libotf"
+    "--with-harfbuzz"
+    "--with-xwidgets"
+    "--with-nativecomp"
+  )
+
+  read -ra _features <<< "$FEATURES"
+  _args+=("${_features[@]}")
+
+  ./configure "${_args[@]}"
+}
+
+build() {
+  NCPU="$(sysctl -n hw.logicalcpu)"
+  [[ "${BYTE_COMPILE_EXTRA_FLAGS}" ]] &&
+    MAKE_FLAGS="$MAKE_FLAGS BYTE_COMPILE_EXTRA_FLAGS='$BYTE_COMPILE_EXTRA_FLAGS'"
+
+  eval /usr/local/bin/gmake -j"$NCPU" "$MAKE_FLAGS"
+  /usr/local/bin/gmake install
+}
+
+install() {
+  [[ ! -d "$PREFIX/bin" ]] && [[ ! -d "$SOURCE/nextstep/Emacs.app" ]] \
+    && echo "$PREFIX/bin or Emacs.app not found. Build emacs first." && usage
+
+  printf "%s\n" "Installing..."
+  cp -r "$SOURCE/nextstep/Emacs.app" "${NS_APP}"
+
+  rm /usr/local/bin/emacs /usr/local/bin/emacsclient
+  echo $'#!/bin/bash\nexec' "$NS_APP_BIN" '"$@"' >> /usr/local/bin/emacs &&
+    chmod -v +x /usr/local/bin/emacs
+
+  ln -sfv "$PREFIX/bin/emacsclient" /usr/local/bin/emacsclient
+  ln -s "$NS_APP" /Applications
+
+}
+
+# Main #################################################################
+main() {
+  parse_args "${@}"
+  clone_emacs
+  [[ $CONFIGURE ]] && mkdir -pv "$PREFIX" && configure_build
+  [[ $BUILD ]] && mkdir -pv "$PREFIX" && build
+  [[ $INSTALL ]] && install
+}
+
+main "${@}"
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

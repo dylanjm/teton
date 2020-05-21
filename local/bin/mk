@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+main() {
+  local method="opt"
+  while getopts ":m:" flags; do
+    case "${flags}" in
+      m)
+        method="${OPTARG}"
+        ;;
+      *)
+        exit 1
+        ;;
+    esac
+  done
+
+  until [[ -e Makefile ]] || [[ "$(pwd)" == '/' ]]; do
+    cd ..
+  done
+
+  printf "%s\n" "Building in ""$(pwd)""..."
+  METHOD="${method}" make -j 16 "${@}"
+}
+
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  main "${@}"
+fi
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

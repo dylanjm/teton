@@ -1,5 +1,17 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
-function convert_to_md() {
-    pandoc --ascii -f latex -t markdown-multiline_tables-simple_tables --atx-headers -o "$1" "$2";
+convert_to_md() {
+    local output="${1}"
+    local input="${2}"
+
+    pandoc --ascii \
+           -f latex \
+           -t markdown-multiline_tables-simple_tables \
+           --atx-headers \
+           -o "${output}" "${input}";
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-indentation: 2
+# End:

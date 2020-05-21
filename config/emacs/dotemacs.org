@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-20 10:20:52
+/last updated/: 2020-05-20 21:41:53
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -128,7 +128,8 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+begin_src emacs-lisp
 (modify-all-frames-parameters '((vertical-scroll-bars . nil)
                                 (tool-bar-lines . 0)
-                                (ns-appearance . dark)))
+                                (ns-appearance . dark)
+                                (font . "Iosevka Curly-18:autohint=false:hintstyle=hintslight:embeddedbitmap=false")))
 
 (advice-add 'x-apply-session-resources :override 'ignore)
 
@@ -524,26 +525,26 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
+(defconst arco/default-font "Iosevka Curly")
+(defconst arco/font-params "autohint=false:hintstyle=hintslight:embeddedbitmap=false")
+(defconst arco/variable-pitch-font "Iosevka Sparkle")
+
+(defun arco/set-face-attribute-font (family size)
+  "Set `default' face font to FAMILY at SIZE."
+  (set-face-attribute 'default nil :font (concat family
+                                                 "-"
+                                                 (number-to-string size)
+                                                 ":"
+                                                 arco/font-params)))
+
 (defun setup-main-fonts (frame)
   "Determine font-size based on FRAME."
   (select-frame frame)
   (when (display-graphic-p frame)
-    (let ((default-height)
-          (variable-pitch-height))
-      (when window-system
-        (if (> (x-display-pixel-width) 2000)
-            (progn
-              (setq variable-pitch-height 170)
-              (setq default-height 180))
-          (progn
-            (setq variable-pitch-height 135)
-            (setq default-height 140)))
-
-        (set-face-attribute 'default nil
-                            :family "Iosevka SS07"
-                            :weight 'ultra-light
-                            :width 'extra-expanded
-                            :height default-height)))))
+    (when window-system
+      (if (> (x-display-pixel-width) 2000)
+          (arco/set-face-attribute-font arco/default-font 18)
+        (arco/set-face-attribute-font arco/default-font 14)))))
 
 (defun configure-fonts (frame)
   "Set up fonts for FRAME.
@@ -577,6 +578,9 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   ;; 1234567890#%^*
   ;; ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
   ;; αβγδεζηθικλμνξοπρστυφχψω
+  (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
+  (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
+
   (dolist (script '(symbol mathematical))
     (set-fontset-font "fontset-default" script
                       (font-spec :family "XITS Math" :weight 'normal) nil nil))
@@ -924,7 +928,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         window-combination-resize t
                         window-resize-pixelwise t
                         word-wrap t
-                        x-underline-at-descent-line t
+                        x-underline-at-descent-line nil
                         underline-minimum-offset 0))
 #+end_src
 
@@ -3090,10 +3094,10 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq-local line-spacing 2
                         fill-column 100)
     (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Aile"
+                        :family "Iosevka Sparkle"
                         :inherit 'default)
     (set-face-attribute 'fixed-pitch nil
-                        :family "Iosevka SS07"
+                        :family "Iosevka Curly"
                         :inherit 'default)
     (variable-pitch-mode +1)
     (virtual-auto-fill-mode +1))

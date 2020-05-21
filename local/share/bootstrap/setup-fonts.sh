@@ -4,13 +4,8 @@ declare -a arr=(
   ###
   ### Iosevka Font - https://github.com/be5invis/Iosevka/releases
   ###
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/01-iosevka-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/02-iosevka-fixed-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/03-iosevka-term-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/iosevka-ss07-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-aile-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-etoile-3.0.0-rc.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.0-rc.1/ttc-iosevka-sparkle-3.0.0-rc.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.1/ttf-iosevka-curly-3.0.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.0.1/pkg-iosevka-sparkle-3.0.1.zip"
 
   ###
   ### Symbola
@@ -38,7 +33,7 @@ create_tmp_dir(){
   printf "%s\n" "${fonturl}"
   TMPFILE=$(mktemp)
   TMPDIR="/tmp/font-temp"
-  curl -s "${fonturl}" -L -o "${TMPFILE}" && unzip -q "${TMPFILE}" -d "${TMPDIR}"
+  curl "${fonturl}" -L -o "${TMPFILE}" && unzip -q "${TMPFILE}" -d "${TMPDIR}"
   rm "${TMPFILE}"
 }
 

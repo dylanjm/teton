@@ -53283,7 +53283,7 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-900 2 899 1575 -900 0 900 1577 </string>
+	<string>-900 0 900 1577 -900 0 900 1577 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>1923 29 1910 1038 0 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -56735,7 +56735,7 @@
 						<real>0.11372549086809158</real>
 					</dict>
 					<key>font</key>
-					<string>Iosevka-Aile 14</string>
+					<string>Iosevka-Sparkle 11</string>
 					<key>separator color 2</key>
 					<dict>
 						<key>Alpha Component</key>
@@ -56764,7 +56764,7 @@
 								<key>base: priority</key>
 								<real>4</real>
 								<key>format</key>
-								<string>H:mm:ss</string>
+								<string>H:mm</string>
 								<key>localize</key>
 								<integer>0</integer>
 								<key>shared text color</key>
@@ -56801,7 +56801,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -56826,13 +56826,13 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.001</real>
+								<real>1</real>
 								<key>base: priority</key>
-								<integer>5</integer>
+								<real>4</real>
 								<key>maxwidth</key>
 								<real>100</real>
 								<key>minwidth</key>
-								<real>0.0</real>
+								<real>10</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -56867,7 +56867,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -56892,15 +56892,15 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>0.001</real>
+								<real>1</real>
 								<key>base: priority</key>
 								<real>3</real>
 								<key>iTermStatusBarGitComponentPollingIntervalKey</key>
-								<real>10</real>
+								<real>30</real>
 								<key>maxwidth</key>
 								<real>100</real>
 								<key>minwidth</key>
-								<integer>0</integer>
+								<real>10</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -56935,7 +56935,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -56968,83 +56968,6 @@
 								<integer>1</integer>
 								<key>auto-rainbow style</key>
 								<integer>0</integer>
-								<key>background color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.12941177189350128</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.12549020349979401</real>
-									<key>Red Component</key>
-									<real>0.11372549086809158</real>
-								</dict>
-								<key>font</key>
-								<string>Iosevka-Aile 14</string>
-								<key>separator color 2</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.45490196347236633</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.51372551918029785</real>
-									<key>Red Component</key>
-									<real>0.57254904508590698</real>
-								</dict>
-							</dict>
-						</dict>
-					</dict>
-					<dict>
-						<key>class</key>
-						<string>iTermStatusBarSearchFieldComponent</string>
-						<key>configuration</key>
-						<dict>
-							<key>knobs</key>
-							<dict>
-								<key>base: compression resistance</key>
-								<integer>1</integer>
-								<key>base: priority</key>
-								<real>5</real>
-							</dict>
-							<key>layout advanced configuration dictionary value</key>
-							<dict>
-								<key>algorithm</key>
-								<integer>1</integer>
-								<key>auto-rainbow style</key>
-								<integer>0</integer>
-								<key>background color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.12941177189350128</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.12549020349979401</real>
-									<key>Red Component</key>
-									<real>0.11372549086809158</real>
-								</dict>
-								<key>font</key>
-								<string>Iosevka-Aile 14</string>
-								<key>separator color 2</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.45490196347236633</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.51372551918029785</real>
-									<key>Red Component</key>
-									<real>0.57254904508590698</real>
-								</dict>
 							</dict>
 						</dict>
 					</dict>
@@ -57056,7 +56979,7 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: priority</key>
-								<real>2</real>
+								<real>1</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57091,7 +57014,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57116,7 +57039,7 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: priority</key>
-								<real>2</real>
+								<real>1</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57151,7 +57074,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57176,7 +57099,7 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: priority</key>
-								<real>2</real>
+								<real>1</real>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57211,71 +57134,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
-								<key>separator color 2</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.45490196347236633</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.51372551918029785</real>
-									<key>Red Component</key>
-									<real>0.57254904508590698</real>
-								</dict>
-							</dict>
-						</dict>
-					</dict>
-					<dict>
-						<key>class</key>
-						<string>iTermStatusBarBatteryComponent</string>
-						<key>configuration</key>
-						<dict>
-							<key>knobs</key>
-							<dict>
-								<key>ShowPercentage</key>
-								<integer>1</integer>
-								<key>ShowTime</key>
-								<integer>1</integer>
-								<key>base: priority</key>
-								<real>2</real>
-								<key>shared text color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.011764706112444401</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.364705890417099</real>
-									<key>Red Component</key>
-									<real>0.83921569585800171</real>
-								</dict>
-							</dict>
-							<key>layout advanced configuration dictionary value</key>
-							<dict>
-								<key>algorithm</key>
-								<integer>1</integer>
-								<key>auto-rainbow style</key>
-								<integer>0</integer>
-								<key>background color</key>
-								<dict>
-									<key>Alpha Component</key>
-									<real>1</real>
-									<key>Blue Component</key>
-									<real>0.12941177189350128</real>
-									<key>Color Space</key>
-									<string>sRGB</string>
-									<key>Green Component</key>
-									<real>0.12549020349979401</real>
-									<key>Red Component</key>
-									<real>0.11372549086809158</real>
-								</dict>
-								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57300,23 +57159,21 @@
 							<key>knobs</key>
 							<dict>
 								<key>base: compression resistance</key>
-								<real>1</real>
+								<real>0.5</real>
 								<key>base: priority</key>
 								<real>1</real>
-								<key>path</key>
-								<string>username</string>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
 									<real>1</real>
 									<key>Blue Component</key>
-									<real>0.27058823529411763</real>
+									<real>0.27058824896812439</real>
 									<key>Color Space</key>
 									<string>sRGB</string>
 									<key>Green Component</key>
-									<real>0.28627450980392155</real>
+									<real>0.28627452254295349</real>
 									<key>Red Component</key>
-									<real>0.31372549019607843</real>
+									<real>0.31372550129890442</real>
 								</dict>
 							</dict>
 							<key>layout advanced configuration dictionary value</key>
@@ -57339,7 +57196,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -57366,23 +57223,21 @@
 								<key>abbreviate-localhost</key>
 								<string></string>
 								<key>base: compression resistance</key>
-								<real>1</real>
+								<real>0.5</real>
 								<key>base: priority</key>
 								<real>1</real>
-								<key>path</key>
-								<string>hostname</string>
 								<key>shared text color</key>
 								<dict>
 									<key>Alpha Component</key>
 									<real>1</real>
 									<key>Blue Component</key>
-									<real>0.27058823529411763</real>
+									<real>0.27058824896812439</real>
 									<key>Color Space</key>
 									<string>sRGB</string>
 									<key>Green Component</key>
-									<real>0.28627450980392155</real>
+									<real>0.28627452254295349</real>
 									<key>Red Component</key>
-									<real>0.31372549019607843</real>
+									<real>0.31372550129890442</real>
 								</dict>
 							</dict>
 							<key>layout advanced configuration dictionary value</key>
@@ -57405,7 +57260,7 @@
 									<real>0.11372549086809158</real>
 								</dict>
 								<key>font</key>
-								<string>Iosevka-Aile 14</string>
+								<string>Iosevka-Sparkle 11</string>
 								<key>separator color 2</key>
 								<dict>
 									<key>Alpha Component</key>
@@ -60490,7 +60345,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.10beta3</string>
+		<string>3.3.7</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60503,7 +60358,7 @@
 		<string>3.3.2</string>
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60524,7 +60379,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1181</integer>
+	<integer>1182</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61329,7 +61184,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-05-20T21:41:38Z</date>
+	<date>2020-05-21T21:41:39Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-21 21:02:18
+/last updated/: 2020-05-22 11:42:48
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -207,13 +207,12 @@ Use-Package is nearly ubiquitous in an Emacs config these days. Once you spend t
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
+(straight-use-package 'use-package)
 (setq-default use-package-verbose t
               use-package-always-defer t
-              use-package-compute-statistics nil
+              use-package-compute-statistics t
               use-package-expand-minimally nil
               use-package-enable-imenu-support t)
-
-(straight-use-package 'use-package)
 #+end_src
 
 ** Initial Demands
@@ -980,7 +979,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 (use-package electric
   :straight (:type built-in)
   :gfhook #'electric-indent-mode
-  :config
+  :gfhook #'electric-quote-mode
+  :init
   (general-setq-default electric-indent-chars '(?\n ?\^?))
   (general-setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
                 electirc-pair-preserve-balance t
@@ -3836,14 +3836,13 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/purcell/flycheck-package][Flycheck-Package]]
 #+name: init-flycheck-package-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flycheck-package
   :demand t
   :straight t
   :after (flycheck)
   :config
-  (flycheck-package-setup)
-  (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name))
+  (flycheck-package-setup))
 #+end_src
 
 *** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]
@@ -3868,17 +3867,6 @@ A nice way to restart emacs on the fly if you need to.
   :ghook 'flycheck-mode-hook
   :config
   (general-setq flycheck-popup-tip-error-prefix "‼ "))
-#+end_src
-
-*** [[https://github.com/polymode/polymode][Polymode]]
-#+name: init-polymode-block
-#+begin_src emacs-lisp :tangle no
-(use-package polymode
-  :straight t)
-
-(use-package poly-R
-  :straight t
-  :after ess)
 #+end_src
 
 ** Languages
@@ -4498,7 +4486,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 *** [[https://github.com/canatella/xwidget-plus][Xwidget-Plus]]
 #+name: init-xwidget-plus-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package xwidget-plus
   :straight (:host github :repo "canatella/xwidget-plus")
   :general

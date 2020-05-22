@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-21 13:52:02
+/last updated/: 2020-05-21 21:02:18
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -105,6 +105,7 @@ You'll see this modification in many config files around the internet. The idea 
               frame-inhibit-implied-resize t
               inhibit-default-init t
               site-run-file nil
+              load-prefer-newer t
               read-process-output-max (* 1024 1024))
 
 (setq file-name-handler-alist nil
@@ -115,9 +116,10 @@ You'll see this modification in many config files around the internet. The idea 
 (defun djm/return-vars-to-normal ()
   (setq file-name-handler-alist default-file-name-handler-alist
         gc-cons-threshold default-gc-cons-threshold
-        gc-cons-percentage 0.5))
+        gc-cons-percentage 0.5
+        load-prefer-newer nil))
 
-(add-hook 'emacs-startup-hook #'djm/return-vars-to-normal)
+(add-hook 'after-init-hook #'djm/return-vars-to-normal)
 #+end_src
 
 *** Pre-Gui Optimization
@@ -228,7 +230,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :demand t
   :straight t
   :if (eq system-type 'darwin)
-  :init
+  :config
   (setq exec-path-from-shell-variables
         '("BROWSER" "CCACHE_DIR" "CDPATH" "DOTFILES" "EA_EDITOR" "EA_PATH"
           "EDITOR" "EXA_COLORS" "FPATH" "GPG_TTY" "GNUPGHOME" "GUILE_HISTORY"
@@ -405,21 +407,6 @@ A quick work around function to easily snap screenshots of lecture videos while 
             (org-insert-link nil ,abb-fp nil)))))))
 #+end_src
 
-**** WGET-Thing-At-Point
-
-I needed this function to download a list of pdfs that were written as links in a textfile. It was pretty useful.
-
-#+name: init-wget-thing-at-point-block
-#+begin_src emacs-lisp
-  (defun wget-thing-at-point ()
-    (interactive)
-    (let* ((name (read-string "Name of File: " nil))
-           (dir (read-directory-name (format "Save %s to: " name)))
-           (fp (concat dir name))
-           (url (thing-at-point 'url)))
-      (url-copy-file url fp)))
-#+end_src
-
 **** Protect Buffers
 
 There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
@@ -485,23 +472,6 @@ This saves me tons of time tangling this config file. Code taken from [[https://
                          (float-time (time-subtract (current-time)
                                                     ',init-tangle-start-time)))
               (message "ERROR: %s as tangle failed." ,org-file)))))))
-#+end_src
-
-**** Run-Python-Tests
-#+name: init-run-python-tests-block
-#+begin_src emacs-lisp
-  (defun arco/run-python-tests ()
-    (interactive)
-    (cd (expand-file-name "~/Documents/College/OMSCS/cs7637-kbai/projects/KBAI-package-python/Project-Code-Python"))
-    (call-process-shell-command "python RavensProject.py")
-    (find-file-noselect "SetResults.csv")
-    (display-buffer "SetResults.csv"
-                    '((display-buffer-below-selected display-buffer-at-bottom)
-                      (inhibit-same-window . t)
-                      (window-height . 15)))
-    (with-current-buffer "SetResults.csv"
-      (csv-mode)
-      (csv-align-mode)))
 #+end_src
 
 **** Temp Buffers
@@ -581,24 +551,25 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
 
-  (dolist (script '(symbol mathematical))
-    (set-fontset-font "fontset-default" script
-                      (font-spec :family "XITS Math" :weight 'normal) nil nil))
+  (dolist (script '(mathematical))
+    (set-fontset-font t script "XITS Math" nil 'prepend))
 
   ;; Define a font set stack for symbols, greek and math characters
   (dolist (script '(symbol greek))
-    (set-fontset-font "fontset-default" script
-                      (font-spec :family "Symbola") nil 'append))
+    (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
+    (set-fontset-font t script (font-spec :family "XITS Math" nil 'prepend)))
 
   ;; Colored Emoji on OS X, prefer over everything else!
-  (set-fontset-font "fontset-default" 'unicode
-                    (font-spec :family "Symbola") nil nil)
-  (set-fontset-font "fontset-default" 'unicode
-                    (font-spec :family "Apple Color Emoji") nil 'prepend)
+  (dolist (script '(unicode
+                    unicode-bmp
+                    unicode-sip
+                    unicode-smp
+                    unicode-ssp))
+    (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
+    (set-fontset-font t script (font-spec :family "Apple Color Emoji") nil 'prepend))
 
   ;; Apple Symbols for everything else
-  (set-fontset-font "fontset-default" nil
-                    (font-spec :family "Apple Symbols") nil 'append))
+  (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 
 **** Clean-Up Yanked Text
@@ -612,6 +583,20 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
   (delete-trailing-whitespace))
 
 (general-add-advice #'insert-for-yank :after #'arco/yank-ws-cleanup)
+
+(defun arco/display-ansi-codes (buf &rest _)
+  (and (bufferp buf)
+       (string= (buffer-name buf) "*Shell Command Output*")
+       (with-current-buffer buf
+         (ansi-color-apply-on-region (point-min) (point-max)))))
+
+(general-add-advice #'display-message-or-buffer :before #'arco/display-ansi-codes)
+
+(defun arco/cleanup-completions-buffer ()
+  (when-let* ((buf (get-buffer "*Completions*")))
+    (kill-buffer buf)))
+
+(general-add-hook 'minibuffer-exit-hook #'arco/cleanup-completions-buffer)
 #+end_src
 
 **** Clipboard-Integration
@@ -794,6 +779,7 @@ Let's add a few helpful units to the calculator.
 #+begin_src emacs-lisp
 (use-package calc
   :straight (:type built-in)
+  :commands (quick-calc calc)
   :config
   (general-setq math-additional-units
                 '((GiB "1024 * MiB" "Giga Byte")
@@ -930,8 +916,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package dabbrev
   :straight (:type built-in)
-  :commands (dabbrev-expand dabbrev-completion)
-  :config
+  :commands (dabbrev-expand
+             dabbrev-completion)
+  :init
   (general-setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_"
                 dabbrev-abbrev-skip-leading-regexp "\\$\\|\\*\\|/\\|="
                 dabbrev-backward-only nil
@@ -1194,7 +1181,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package hippie-exp
   :straight (:type built-in)
-  :after (dabbrev)
   :general
   ("M-/" #'hippie-expand)
   :config
@@ -1218,6 +1204,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package icomplete
   :straight (:type built-in)
+  :ghook 'emacs-startup-hook
   :config
   (general-setq icomplete-delay-completions-threshold 0
                 icomplete-max-chars 0
@@ -1229,8 +1216,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 icomplete-with-completion-tables t
                 icomplete-in-buffer t)
 
-  (fido-mode -1)
-  (icomplete-mode +1))
+  (fido-mode -1))
 #+end_src
 
 *** iElm (Built-In)
@@ -1263,6 +1249,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package isearch
   :straight (:type built-in)
+  :general
+  ("C-s" #'isearch-forward)
   :config
   (general-setq lazy-highlight-initial-delay 0
                 search-highlight t
@@ -1311,6 +1299,13 @@ I bassically use this block to load all settings that don't have a loaded emacs 
              (makefile-imake-mode . "Makefile"))
   :straight (:type built-in)
   :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
+#+end_src
+
+*** Man-Mode (Built-In)
+#+name: init-man-mode-block
+#+begin_src emacs-lisp
+(use-package man
+  :straight (:type built-in))
 #+end_src
 
 *** Message (Built-In)
@@ -1397,7 +1392,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package ns-win
   :straight (:type built-in)
-  :config
+  :init
   (general-setq mac-command-modifier 'meta
                 mac-option-modifier 'super
                 mac-right-control-modifier 'hyper))
@@ -1533,7 +1528,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package select
   :straight (:type built-in)
-  :config
+  :init
   (general-setq select-enable-clipboard t
                 x-select-request-type '(UTF8_STRING
                                         COMPOUND_TEXT
@@ -1582,7 +1577,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :general
   ("C-x p" #'pop-to-mark-command)
-  :config
+  :init
   (general-setq blink-matching-paren t
                 column-number-mode t
                 delete-trailing-lines nil
@@ -1716,7 +1711,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :config
   (general-setq vc-follow-symlinks t
-                vc-handled-backends nil))
+                vc-handled-backends '(Git)))
 #+end_src
 
 *** View (Built-In)
@@ -1949,7 +1944,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 (use-package info-colors
   :straight (:host github :repo "ubolonton/info-colors")
   :init
-  (general-add-hook 'Info-selection-hook #'info-colors-fontify-mode))
+  (general-add-hook 'Info-selection-hook #'info-colors-fontify-node))
 #+end_src
 
 *** [[https://github.com/SpecialBomb/emacs-modern-fringes][Modern-Fringes]]
@@ -1963,11 +1958,13 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
+
 This package is great, but can be a little annoying. It can sometimes slow-down emacs a ton.
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
   (use-package page-break-lines
-    :blackout t :straight t
+    :blackout t
+    :straight t
     :ghook djm--page-break-line-hooks
     :preface
     (defconst djm--page-break-line-hooks
@@ -1985,10 +1982,10 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 
 #+name: init-rainbow-mode-block
 #+begin_src emacs-lisp
-
-  (use-package rainbow-mode
-    :blackout t :straight t
-    :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
+(use-package rainbow-mode
+  :blackout t
+  :straight t
+  :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
 #+end_src
 
 ** Meta
@@ -2002,8 +1999,8 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :init
   (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect)
   :config
-  (general-setq gcmh-idle-delay 5
-                gcmh-high-cons-threshold 200000))
+  (general-setq gcmh-idle-delay 15
+                gcmh-high-cons-threshold 1073741824))
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
@@ -2022,7 +2019,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package osx-trash
   :straight t
-  :ghook ('after-init-hook #'osx-trash-setup))
+  :ghook ('emacs-startup-hook #'osx-trash-setup))
 #+end_src
 
 *** [[https://github.com/politza/pdf-tools][PDF-Tools]]
@@ -2179,10 +2176,8 @@ A nice way to restart emacs on the fly if you need to.
             [remap indent-for-tab-command] #'company-manual-begin)
   :preface
   (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-  :config
 
-  (defvar company-mode/enable-yas t
-    "Eanble yasnippet for all backends.")
+  (defvar company-mode/enable-yas t)
 
   (defun company-mode/backend-with-yas (backend)
     (if (or (not company-mode/enable-yas)
@@ -2190,17 +2185,15 @@ A nice way to restart emacs on the fly if you need to.
         backend
       (append (if (consp backend) backend (list backend))
               '(:with company-yasnippet))))
-
-
+  :config
   (general-setq company-async-timeout 10
-                company-dabbrev-other-buffers nil
+                company-dabbrev-other-buffers t
                 company-dabbrev-ignore-case nil
                 company-dabbrev-downcase nil
-                company-idle-delay 0.0
+                company-idle-delay 0.1
                 company-minimum-prefix-length 1
                 company-show-numbers t
-                company-require-match #'company-explicit-action-p
-                company-auto-complete-chars nil
+                company-require-match nil
                 company-tooltip-limit 15
                 company-tooltip-align-annotations t)
 
@@ -2208,20 +2201,11 @@ A nice way to restart emacs on the fly if you need to.
                                            help-mode
                                            gud-mode
                                            vterm-mode
+                                           eshell-mode
                                            term-mode))
 
-  (general-setq company-backends '(company-capf
-                                   company-files
-                                   (company-dabbrev-code company-keywords)
-                                   company-dabbrev))
-
   (general-setq company-backends
-                (mapcar #'company-mode/backend-with-yas company-backends))
-
-
-  (general-setq company-frontends
-                '(company-pseudo-tooltip-frontend
-                  company-echo-metadata-frontend)))
+                (mapcar #'company-mode/backend-with-yas company-backends)))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -2245,9 +2229,9 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-company-shell-block
 #+begin_src emacs-lisp
 (use-package company-shell
-  :demand t
   :straight t
-  :after (company))
+  :commands (company-shell
+             company-shell-env))
 #+end_src
 
 *** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
@@ -2629,7 +2613,7 @@ A nice way to restart emacs on the fly if you need to.
    "s-J" #'dired-jump-other-window)
   :config
   (general-setq dired-x-hands-off-my-keys t
-                dired-omit-verbose t
+                dired-omit-verbose nil
                 dired-omit-files-p t
                 dired-clean-up-buffers-too t
                 dired-clean-confirm-killing-deleted-buffers t
@@ -2820,25 +2804,13 @@ A nice way to restart emacs on the fly if you need to.
                   aw-background t))
 #+end_src
 
-*** [[https://github.com/abo-abo/avy][Avy]]
-#+name: init-avy-block
-#+begin_src emacs-lisp :tangle no
-(use-package avy
-  :straight t
-  :config
-  (general-setq avy-keys '(?a ?s ?d ?e ?f ?g ?r ?v ?h ?j ?k ?l ?n ?m ?u)
-                avy-all-windows nil
-                avy-timeout-seconds 0.3
-                avy-style 'pre))
-#+end_src
-
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
 #+name: init-dumb-jump-block
 #+begin_src emacs-lisp
 (use-package dumb-jump
   :straight t
-  :commands (dumb-jump-mode)
-  :ghook 'prog-mode-hook
+  :commands (dumb-jump-mode
+             dumb-jump-go)
   :config
   (general-setq dumb-jump-prefer-searcher 'rg
                 dumb-jump-rg-search-args "--pcre2 --no-ignore"))
@@ -3331,18 +3303,6 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :after (org))
 
-(use-package ox-koma-letter
-  :straight nil
-  :after (org)
-  :config
-  (general-pushnew '("AUTO" "babel" nil) org-latex-packages-alist))
-
-(use-package ox-slack
-  :demand t
-  :straight t
-  :after (org)
-  :commands (org-slack-export-to-clipboard-as-slack))
-
 (use-package ox-jdf-report
   :demand t
   :straight (:host github :repo "dylanjm/ox-jdf")
@@ -3360,20 +3320,12 @@ A nice way to restart emacs on the fly if you need to.
                 org-superstar-special-todo-items t))
 #+end_src
 
-*** [[https://gitlab.com/jagrg/org-emms][Org-EMMS]]
-#+name: init-org-emms-block
-#+begin_src emacs-lisp
-(use-package org-emms
-  :straight t
-  :after (org))
-#+end_src
-
 *** [[https://github.com/jkitchin/org-ref][Org-Ref]]
 #+name: init-org-ref-block
-#+begin_src emacs-lisp
-  (use-package org-ref
-    :straight t
-    :commands (org-ref-insert-link))
+#+begin_src emacs-lisp :tangle no
+(use-package org-ref
+  :straight t
+  :commands (org-ref-insert-link))
 #+end_src
 
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
@@ -3529,7 +3481,7 @@ A nice way to restart emacs on the fly if you need to.
 ** Media
 *** [[https://www.gnu.org/software/emms/][EMMS]]
 #+name: init-emms-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package emms
     :straight t
     :commands (emms)
@@ -3801,8 +3753,7 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :commands (with-editor-export-editor)
   :init
-  (general-add-hook 'shell-mode-hook 'with-editor-export-editor)
-  (general-add-hook 'vterm-mode-hook 'with-editor-export-editor))
+  (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
 #+end_src
 
 ** Language Server Support
@@ -3851,7 +3802,9 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package flycheck
   :straight t
-  :ghook ('after-init-hook #'global-flycheck-mode)
+  :ghook ('emacs-startup-hook #'global-flycheck-mode)
+  :ghook ('prog-mode-hook #'flycheck-mode-on-safe)
+  :commands (flycheck-list-errors)
   :init
   (defun arco/disable-eldoc-on-flycheck (&rest _)
     "Disable ElDoc when point is on a Flycheck overlay.
@@ -3859,14 +3812,13 @@ A nice way to restart emacs on the fly if you need to.
   area."
     (not (flycheck-overlay-errors-at (point))))
 
-  (general-add-advice
-   #'arco/disable-eldoc-on-flycheck
-   :after-while 'eldoc-display-message-no-interference-p)
+  (general-add-advice #'arco/disable-eldoc-on-flycheck
+                      :after-while 'eldoc-display-message-no-interference-p)
 
   :config
   (general-setq flycheck-emacs-lisp-load-path 'inherit
                 flycheck-check-syntax-automatically '(save mode-enabled)
-                flycheck-display-errors-delay 0.25)
+                flycheck-display-errors-delay 0.1)
   (general-setq flycheck-flake8rc
                 (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8"))
                 flycheck-pylintrc
@@ -3875,7 +3827,23 @@ A nice way to restart emacs on the fly if you need to.
                 flycheck-shellcheck-follow-sources t
                 flycheck-sh-bash-executable "/usr/local/bin/bash"
                 flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+  (general-setq flycheck-global-modes '(not dir-locals-mode
+                                            text-mode
+                                            org-mode
+                                            vterm-mode))
   (general-pushnew 'sh-shellcheck flycheck-checkers))
+#+end_src
+
+*** [[https://github.com/purcell/flycheck-package][Flycheck-Package]]
+#+name: init-flycheck-package-block
+#+begin_src emacs-lisp
+(use-package flycheck-package
+  :demand t
+  :straight t
+  :after (flycheck)
+  :config
+  (flycheck-package-setup)
+  (setf (flycheck-checker-get 'emacs-lisp-package 'predicate) #'buffer-file-name))
 #+end_src
 
 *** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]
@@ -4183,16 +4151,6 @@ This is a nifty package that allows me to define functions as local variables in
     :straight t)
 #+end_src
 
-**** [[https://github.com/polymode/poly-markdown][Poly-Markdown]]
-#+name: init-poly-markdown
-#+begin_src emacs-lisp
-  (use-package poly-markdown
-    :straight t
-    :mode (("\\.md'" . poly-markdown-mode)
-           ("\\.Rmd'" . poly-markdown+r-mode)
-           ("\\.rmd'" . poly-markdown+r-mode)))
-#+end_src
-
 *** LaTeX
 **** AuCTeX
 #+name: init-auctex-block
@@ -4338,20 +4296,6 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package lsp-python-ms
   :straight t)
-#+end_src
-
-**** Conda
-#+name: init-conda-block
-#+begin_src emacs-lisp :tangle no
-(use-package conda
-  :demand t
-  :straight t
-  :init
-  (general-setq conda-andaconda-home "/usr/local/Caskroom/miniconda/base")
-  (general-setq conda-env-home-directory "/usr/local/Caskroom/miniconda/base/envs")
-  :config
-  (conda-env-initialize-interactive-shells)
-  (conda-env-initialize-eshell))
 #+end_src
 
 *** C++

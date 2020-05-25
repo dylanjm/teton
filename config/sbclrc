@@ -7,3 +7,10 @@
     (load quicklisp-init)))
 
 (setf sb-impl::*default-external-format* :utf-8)
+
+(let ((lib-fix-posix "/usr/local/Cellar/libfixposix/0.4.3/lib/libfixposix.dylib"))
+  (when (and (probe-file lib-fix-posix)
+             (ignore-errors (asdf:load-system "cffi")))
+    (push lib-fix-posix
+          (symbol-value (find-symbol (string '*foreign-library-directories*)
+                                     (find-package 'cffi))))))

@@ -7,11 +7,11 @@ typeset -g ZPLG_MOD_DEBUG=1
 ###
 ### XDG-Configuration
 ###
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_BIN_HOME="$HOME/.local/bin"
-export CACHE="$XDG_CACHE_HOME"
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_CACHE_HOME="${HOME}/.cache"
+export XDG_DATA_HOME="${HOME}/.local/share"
+export XDG_BIN_HOME="${HOME}/.local/bin"
+export CACHE="${XDG_CACHE_HOME}"
 
 ###
 ### LS_COLORS
@@ -32,7 +32,7 @@ export EMACS="/Appplications/Emacs.app"
 ###
 ### History
 ###
-export HISTFILE="$XDG_DATA_HOME/zsh_history"
+export HISTFILE="${XDG_DATA_HOME}/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=500000
 export SAVEHIST=500000
@@ -40,24 +40,24 @@ export SAVEHIST=500000
 ###
 ### Atom
 ###
-export ATOM_HOME="$XDG_CONFIG_HOME/atom"
+export ATOM_HOME="${XDG_CONFIG_HOME}/atom"
 
 ###
 ### CCACHE
 ###
-export CCACHE_DIR="$XDG_CACHE_HOME/ccache"
+export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 
 ###
 ### Conda
 ###
-export CONDA_ROOT="$XDG_DATA_HOME/conda"
-export CONDARC="$XDG_CONFIG_HOME/condarc"
+export CONDA_ROOT="${XDG_DATA_HOME}/conda"
+export CONDARC="${XDG_CONFIG_HOME}/condarc"
 export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
 
 ###
 ### Emacs-Anywhere
 ###
-export EA_PATH="$XDG_DATA_HOME/emacs_anywhere"
+export EA_PATH="${XDG_DATA_HOME}/emacs_anywhere"
 export EA_EDITOR="em"
 
 ###
@@ -120,7 +120,7 @@ export ZPFX="$ZINIT[HOME_DIR]/polaris"
 ###
 export LESS="-g -i -M -R -F -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
-export LESSHISTFILE="$XDG_DATA_HOME/lesshst"
+export LESSHISTFILE="${XDG_DATA_HOME}/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking
 export LESS_TERMCAP_md=$'\E[01;31m'    # begin bold
 export LESS_TERMCAP_me=$'\E[0m'        # end mode
@@ -132,12 +132,12 @@ export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
 ###
 ### R
 ###
-export R_USER="$XDG_CONFIG_HOME/R"
-export R_ENVIRON_USER="$XDG_CONFIG_HOME/R/Renviron"
-export R_PROFILE_USER="$XDG_CONFIG_HOME/R/Rprofile"
-export R_MAKEVARS_USER="$XDG_CONFIG_HOME/R/Makevars"
-export R_HISTFILE="$XDG_DATA_HOME/Rhistory"
-export R_LIBS_USER="$HOME/Library/R/3.6/library"
+export R_USER="${XDG_CONFIG_HOME}/R"
+export R_ENVIRON_USER="${XDG_CONFIG_HOME}/R/Renviron"
+export R_PROFILE_USER="${XDG_CONFIG_HOME}/R/Rprofile"
+export R_MAKEVARS_USER="${XDG_CONFIG_HOME}/R/Makevars"
+export R_HISTFILE="${XDG_DATA_HOME}/Rhistory"
+export R_LIBS_USER="${HOME}/Library/R/3.6/library"
 export R_HISTSIZE=100000
 export R_STARTUP_DEBUG=TRUE
 export MKL_NUM_THREADS=16

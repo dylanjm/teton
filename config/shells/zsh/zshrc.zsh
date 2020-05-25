@@ -19,11 +19,6 @@ source $ZSH/zplugin.zsh
 
 /usr/local/bin/gpgconf --launch gpg-agent
 
-# If zsh init ends with a failing command (like a conditional) the prompt will
-# show the "error" colour on first launch. To avoid this, we simply end with a
-# true command:
-true
-
 # >>> conda initialize >>>
 #!! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/usr/local/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -38,3 +33,8 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+# If zsh init ends with a failing command (like a conditional) the prompt will
+# show the "error" colour on first launch. To avoid this, we simply end with a
+# true command:
+true

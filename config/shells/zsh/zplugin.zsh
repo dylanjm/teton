@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-
 ###
 ### Check for zplugin install
 ###

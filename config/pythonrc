@@ -1,3 +1,4 @@
+# -*- mode: python; coding: utf-8 -*-
 """Pythonrc - Teton Dotfiles Python Config"""
 import readline
 import rlcompleter
@@ -15,8 +16,3 @@ except IOError:
     pass
 atexit.register(readline.write_history_file, HISTFILE)
 del os, HISTFILE, readline, rlcompleter
-
-# Local Variables:
-# mode: python
-# coding: utf-8
-# End:

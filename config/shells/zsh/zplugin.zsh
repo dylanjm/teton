@@ -3,8 +3,8 @@
 ### Check for zplugin install
 ###
 [[ ! -f "$ZINIT[BIN_DIR]/zinit.zsh" ]] && {
-    command mkdir -p "$ZINIT[HOME_DIR]"
-    git clone https://github.com/zdharma/zinit.git "$ZINIT[BIN_DIR]"
+  command mkdir -p "$ZINIT[HOME_DIR]"
+  git clone https://github.com/zdharma/zinit.git "$ZINIT[BIN_DIR]"
 }
 
 source "$ZINIT[BIN_DIR]/zinit.zsh"

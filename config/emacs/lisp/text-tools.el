@@ -1,46 +1,49 @@
+;;; text-tools.el --- dylanjm text-tools -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;;; Code:
+
 (defadvice dired-copy-filename-as-kill (after dired-filename-to-clipboard activate)
   (with-temp-buffer
     (insert (current-kill 0))
     (shell-command-on-region (point-min) (point-max)
-                             (cond
-                              ((eq system-type 'cygwin) "putclip")
-                              ((eq system-type 'darwin) "pbcopy")
-                              (t "xsel -ib")
-                              )))
+      (cond
+        ((eq system-type 'cygwin) "putclip")
+        ((eq system-type 'darwin) "pbcopy")
+        (t "xsel -ib")
+        )))
   (message "%s => clipboard" (current-kill 0)))
 
 (defun djm/remove-dir-and-ext-from-path (string)
+  "Get the pure basename of STRING."
   (file-name-nondirectory (file-name-sans-extension string)))
 
 (defun djm/replace-underscore-as-space (string)
+  "Replace all underscores in STRING with space."
   (replace-regexp-in-string "_" " " string))
 
 (defun djm/insert-markdown-link (&optional string)
   (interactive)
   (let (input-str output-str)
     (cond
-     (string
-      (setq input-str from to))
-
-     ((use-region-p)
-      (setq from (region-beginning))
-      (setq to (region-end))
-      (setq input-str (buffer-substring-no-properties from to)))
-
-     (t
-      (setq from (point-at-bol))
-      (setq to (point-at-eol))
-      (setq input-str (buffer-substring-no-properties from to))))
-
+      (string (setq input-str string))
+      ((use-region-p)
+        (setq from (region-beginning))
+        (setq to (region-end))
+        (setq input-str (buffer-substring-no-properties from to)))
+      (t
+        (setq from (point-at-bol))
+        (setq to (point-at-eol))
+        (setq input-str (buffer-substring-no-properties from to))))
     (setq output-str
-          (progn
-            (let* ((path input-str)
-                   (file (djm/remove-dir-and-ext-from-path path))
-                   (title (djm/replace-underscore-as-space file)))
-              (concat "[" title "]" "(" input-str ")"))))
-
+      (progn
+        (let* ((path input-str)
+                (file (djm/remove-dir-and-ext-from-path path))
+                (title (djm/replace-underscore-as-space file)))
+          (concat "[" title "]" "(" input-str ")"))))
     (if string
-        output-str
+      output-str
       (save-excursion
         (delete-region from to)
         (goto-char from)
@@ -117,6 +120,7 @@
 ;; Key Mapping for above function
 (defun my-eval-after-load-markdown-mode ()
   (define-key markdown-mode-map "\C-ci" 'markdown-to-dylanjm-image))
+
 (eval-after-load "markdown-mode" '(my-eval-after-load-markdown-mode))
 
 (with-current-buffer "*eww*"
@@ -126,58 +130,27 @@
   (interactive)
   (let (input-str output-str)
     (cond
-     (string
-      (setq input-str from to))
-
-     ((use-region-p)
-      (setq from (region-beginning))
-      (setq to (region-end))
-      (setq input-str (buffer-substring-no-properties from to)))
-
-     (t
-      (setq from (point-at-bol))
-      (setq to (point-at-eol))
-      (setq input-str (buffer-substring-no-properties from to))))
-
+      (string (setq input-str from to))
+      ((use-region-p)
+        (setq from (region-beginning))
+        (setq to (region-end))
+        (setq input-str (buffer-substring-no-properties from to)))
+      (t
+        (setq from (point-at-bol))
+        (setq to (point-at-eol))
+        (setq input-str (buffer-substring-no-properties from to))))
     (setq output-str
-          (progn
-            (let* ((path input-str)
-                   (file (djm/remove-dir-and-ext-from-path path))
-                   (title (djm/replace-underscore-as-space file)))
-              (concat "[" title "]" "(" input-str ")"))))
-
+      (progn
+        (let* ((path input-str)
+                (file (djm/remove-dir-and-ext-from-path path))
+                (title (djm/replace-underscore-as-space file)))
+          (concat "[" title "]" "(" input-str ")"))))
     (if string
-        output-str
+      output-str
       (save-excursion
         (delete-region from to)
         (goto-char from)
         (insert output-str)))))
 
-(defun djm/get-imbd-movie-title (url)
-  (let (movie-title)
-    (eww url)
-    (sit-for 5)
-    (bury-buffer "*eww*")
-    (with-current-buffer "*eww*"
-      (setq movie-title (plist-get eww-data :title)))
-    (kill-buffer "*eww*")
-    (message movie-title)))
-
-(defun djm/get-imdb-movie-url (&optional string)
-  (interactive)
-  (let (input-str output-str)
-    (cond
-     (string
-      (setq input-str string))
-     ((use-region-p)
-      (setq from (region-beginning))
-      (setq to (region-end))
-      (setq input-str (buffer-substring-no-properties from to)))
-     (t
-      (setq from (point-at-bol))
-      (setq to (point-at-eol))
-      (setq input-str (buffer-substring-no-properties from to))))
-    (setq output-str (format "https://www.imdb.com/title/tt%s/" input-str))
-    (djm/get-imbdb-movie-title output-str)))
-
-(djm/get-imdb-movie-url "0013427")
+(provide 'text-tools)
+;;; text-tools.el ends here

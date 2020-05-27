@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-24 19:03:52
+/last updated/: 2020-05-26 18:01:43
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -479,13 +479,13 @@ Sometimes I need a different scratch buffer to do some work on.
 
 #+name: init-temp-buffers-block
 #+begin_src emacs-lisp
-  (defun arco/new-scratch ()
-    "open up a guaranteed new scratch buffer"
-    (interactive)
-    (switch-to-buffer (cl-loop for num from 0
-                               for name = (format "blah-%03i" num)
-                               while (get-buffer name)
-                               finally return name)))
+(defun arco/new-scratch ()
+  "open up a guaranteed new scratch buffer"
+  (interactive)
+  (switch-to-buffer (cl-loop for num from 0
+                             for name = (format "blah-%03i" num)
+                             while (get-buffer name)
+                             finally return name)))
 #+end_src
 
 **** Font-Config
@@ -550,20 +550,13 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
 
-  (dolist (script '(mathematical))
-    (set-fontset-font t script "XITS Math" nil 'prepend))
-
   ;; Define a font set stack for symbols, greek and math characters
-  (dolist (script '(symbol greek))
-    (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
+  (dolist (script '(mathematical symbol greek))
+    (set-fontset-font t script (font-spec :family "Symbola") nil 'prepend)
     (set-fontset-font t script (font-spec :family "XITS Math" nil 'prepend)))
 
   ;; Colored Emoji on OS X, prefer over everything else!
-  (dolist (script '(unicode
-                    unicode-bmp
-                    unicode-sip
-                    unicode-smp
-                    unicode-ssp))
+  (dolist (script '(unicode unicode-bmp unicode-sip unicode-smp unicode-ssp))
     (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
     (set-fontset-font t script (font-spec :family "Apple Color Emoji") nil 'prepend))
 
@@ -817,10 +810,46 @@ Let's add a few helpful units to the calculator.
 
 *** Comint (Built-In)
 
+Added some functionality to kill buffers when their process ends. Code taken from
+https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close.
 #+name: init-comint-block
 #+begin_src emacs-lisp
 (use-package comint
   :straight (:type built-in)
+  :init
+  (defvar arco--kill-on-exit-comint-hook-has-run nil
+    "Whether or not `kill-on-exit-comint-hook' has run or not.
+We need this buffer-local var to prevent the hook from running
+   several times, as can happen for example when calling `shell'.")
+
+  (defun arco/kill-buffer-sentinel (process output)
+    "Process sentinel to auto kill associated buffer once PROCESS dies."
+    (unless (process-live-p process)
+      (kill-buffer (process-buffer process))))
+
+  (defun arco/add-kill-on-exit-sentinel ()
+    "Replace current process sentinel with a new sentinel composed
+of the current one and `my-kill-buffer-sentinel'."
+    (let* ((process (get-buffer-process (current-buffer)))
+           (og-sentinel (process-sentinel process))
+           (sentinel-list (-remove #'null
+                                   (list og-sentinel #'arco/kill-buffer-sentinel)))
+           (combined-sentinel (lambda (process line)
+                                (--each sentinel-list
+                                  (funcall it process line)))))
+      (setf (process-sentinel process) combined-sentinel)))
+
+  (defun arco/async-funcall (function &optional buffer args delay)
+    "Run FUNCTION with ARGS in the buffer after a short DELAY."
+    (run-at-time (or delay 0.2) nil
+                 `(lambda () (with-current-buffer ,buffer ,(cons function args)))))
+
+  (defun arco/kill-on-exit-comint-hook ()
+    (unless arco--kill-on-exit-comint-hook-has-run
+      (setq-local arco--kill-on-exit-comint-hook-has-run t)
+      (arco/async-funcall #'arco/add-kill-on-exit-sentinel (current-buffer))))
+
+  (general-add-hook 'comint-mode-hook #'arco/kill-on-exit-comint-hook)
   :config
   (general-setq comint-prompt-read-only t
                 comint-move-point-for-output t
@@ -1361,7 +1390,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 resize-mini-windows t)
   (file-name-shadow-mode +1)
   (minibuffer-depth-indicate-mode +1)
-  (minibuffer-electric-default-mode))
+  (minibuffer-electric-default-mode +1))
 #+end_src
 
 *** Mwheel (Built-In)
@@ -1574,11 +1603,10 @@ I bassically use this block to load all settings that don't have a loaded emacs 
       (when font-lock-mode
         (with-no-warnings
           (font-lock-fontify-buffer)))))
-
-  (general-add-hook 'sh-mode-hook #'sh-script-extra-font-lock-activate)
   :init
   (general-setq-default sh-indentation 2)
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
+  (general-add-hook 'sh-mode-hook #'sh-script-extra-font-lock-activate)
   (compdef
    :modes '(sh-mode shell-script-mode)
    :capf #'sh-completion-at-point-function
@@ -4424,7 +4452,8 @@ This is a nifty package that allows me to define functions as local variables in
   :mode ("\\.srt$")
   :defines subed--init-alist
   :gfhook 'auto-fill-mode
-  :config
+  :init
+  (general-add-hook 'subed-mode-hook 'subed-disable-sync-point-to-player)
   ;; Break lines at 40 characters
   (general-add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40))))
 #+end_src

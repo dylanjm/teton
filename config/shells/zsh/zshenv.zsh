@@ -24,8 +24,8 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export BROWSER='open'
-export DOTFILES="$HOME/teton"
-export ORG_FILES="$HOME/Documents/org-files"
+export DOTFILES="${HOME}/teton"
+export ORG_FILES="${HOME}/Documents/org-files"
 export EDITOR="emacsclient -t -c"
 export EMACS="/Appplications/Emacs.app"
 
@@ -80,13 +80,13 @@ export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
 ###
 ### Goku
 ###
-export GOKU_EDN_CONFIG_FILE="$XDG_CONFIG_HOME/karabiner/karabiner.edn"
+export GOKU_EDN_CONFIG_FILE="${XDG_CONFIG_HOME}/karabiner/karabiner.edn"
 
 ###
 ### Guile
 ###
 export GUILE_AUTO_COMPILE=1
-export GUILE_HISTORY="$XDG_DATA_HOME/guile_history"
+export GUILE_HISTORY="${XDG_DATA_HOME}/guile_history"
 
 ###
 ### Java
@@ -97,18 +97,18 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/
 ### Julia
 ###
 export JULIA_NUM_THREADS=16
-export JULIA_DEPOT_PATH="$XDG_CONFIG_HOME/julia"
+export JULIA_DEPOT_PATH="${XDG_CONFIG_HOME}/julia"
 
 ###
 ### ZSH
 ###
-export ZSH="$DOTFILES/config/shells/zsh"
-export _cache_dir="$XDG_CACHE_HOME/zsh/zcompdump"
+export ZSH="${DOTFILES}/config/shells/zsh"
+export _cache_dir="${XDG_CACHE_HOME}/zsh/zcompdump"
 
 ###
 ### Zplugin
 ###
-export ZINIT[HOME_DIR]="$XDG_CACHE_HOME/zsh/zinit"
+export ZINIT[HOME_DIR]="${XDG_CACHE_HOME}/zsh/zinit"
 export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
 export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
 export ZINIT[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
@@ -146,22 +146,18 @@ export OMP_NUM_THREADS=16
 ###
 ### Parallel
 ###
-export PARALLEL_HOME="$XDG_DATA_HOME/parallel"
+export PARALLEL_HOME="${XDG_DATA_HOME}/parallel"
 #export PARALLEL_SHELL="/usr/local/bin/bash"
 
 ###
 ### Python
 ###
-export PYENV_ROOT="$XDG_CONFIG_HOME/pyenv"
-export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
-export PYLINTHOME="$XDG_CACHE_HOME/pylint.d"
-export PYTHONSTARTUP="$XDG_CONFIG_HOME/pythonrc"
-export MPLCONFIGDIR="$XDG_DATA_HOME/matplotlib"
+export PYENV_ROOT="${XDG_CONFIG_HOME}/pyenv"
+export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
+export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
+export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
+export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
 
-###
-### Roswell
-###
-export ROSWELL_HOME="$XDG_CONFIG_HOME"
 
 ###
 ### Rust/Cargo
@@ -187,7 +183,7 @@ export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
 ###
 ### Z
 ###
-export _Z_DATA="$XDG_DATA_HOME/z"
+export _Z_DATA="${XDG_DATA_HOME}/z"
 
 ###
 ### ZSH-Auto-Suggestions

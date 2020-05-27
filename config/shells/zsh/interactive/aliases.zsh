@@ -14,35 +14,35 @@ alias -g DN='/dev/null'
 ###
 ### Emacs
 ###
-alias zconf="$EDITOR $ZSH &"
-alias econf="$EDITOR $DOTFILES/editors/emacs.d &"
+alias zconf="${EDITOR} ${ZSH} &"
+alias econf="${EDITOR} ${DOTFILES}/editors/emacs.d &"
 alias kemc="brew services restart emacs-head"
 alias et="emacsclient -t"
-[[ "$INSIDE_EMACS" = 'vterm' ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
+[[ "${INSIDE_EMACS}" == "vterm" ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
 ### Common Lisp
 ###
-alias sbcl="rlwrap -p \"red\" -D 0 -H \"$XDG_DATA_HOME/sbcl_history\" sbcl"
+alias sbcl="rlwrap -p \"red\" -D 0 -H \"${XDG_DATA_HOME}/sbcl_history\" sbcl"
 
 ###
 ### Navigation
 ###
-alias de="cd $HOME/Desktop"
-alias dc="cd $HOME/Documents"
-alias dl="cd $HOME/Downloads"
+alias de="cd ${HOME}/Desktop"
+alias dc="cd ${HOME}/Documents"
+alias dl="cd ${HOME}/Downloads"
 
-alias dot="cd $DOTFILES"
-alias dotconfig="cd $DOTFILES/config"
-alias dotshell="cd $ZSH"
-alias dotem="cd $DOTFILES/config/emacs"
-alias dotbin='cd $DOTFILES/local/bin'
+alias dot="cd ${DOTFILES}"
+alias dotconfig="cd ${DOTFILES}/config"
+alias dotshell="cd ${ZSH}"
+alias dotem="cd ${DOTFILES}/config/emacs"
+alias dotbin="cd ${DOTFILES}/local/bin"
 
-alias cache='cd $XDG_CACHE_HOME'
-alias cachem='cd $XDG_CACHE_HOME/emacs'
-alias cachez='cd $XDG_CACHE_HOME/zsh'
-alias plugins='cd $XDG_CACHE_HOME/zsh/zplugin/plugins'
-alias org='cd $HOME/Documents/org-files'
+alias cache="cd $XDG_CACHE_HOME"
+alias cachem="cd $XDG_CACHE_HOME/emacs"
+alias cachez="cd $XDG_CACHE_HOME/zsh"
+alias plugins="cd $XDG_CACHE_HOME/zsh/zplugin/plugins"
+alias org="cd $HOME/Documents/org-files"
 
 ###
 ### Commands
@@ -58,8 +58,8 @@ alias cat='bat'
 ###
 ### Misc
 ###
-alias refresh='source $HOME/.zshrc; echo "Reloaded .zshrc."'
-alias reload='exec $SHELL -l -i'
+alias refresh="source $HOME/.zshrc; echo 'Reloaded .zshrc.'"
+alias reload="exec ${SHELL} -l -i"
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
 alias bubu='brew update && brew upgrade && brew cleanup'
 

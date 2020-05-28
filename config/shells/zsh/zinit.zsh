@@ -30,10 +30,10 @@ zinit $load $ZSH/interactive
 zinit ice wait lucid
 zinit $load hlissner/zsh-autopair
 
-zinit ice wait blockf lucid
+zinit ice wait lucid blockf
 zinit $load zsh-users/zsh-completions
 
-zinit ice lucid
+zinit ice wait lucid
 zinit $load zdharma/history-search-multi-word
 
 zinit ice wait lucid

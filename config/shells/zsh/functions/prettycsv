@@ -1,7 +1,7 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
-function prettycsv {
-    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" |
-        column -t -s, |
-        less  -F -S -X -K
+prettycsv () {
+    perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" \
+        | column -t -s, \
+        | less  -F -S -X -K
 }

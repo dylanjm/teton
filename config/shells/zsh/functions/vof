@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 vof () {
   vterm_cmd find-file "$(realpath "$@")"
 }

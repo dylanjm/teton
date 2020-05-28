@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-unsetopt GLOBAL_RCS
+unsetopt GLOBAL_RCS  # Don’t source /etc/zshrc or other global zsh startup files.
 typeset -gaU cdpath fpath mailpath module_path path manpath
 declare -gA ZINIT
 typeset -g ZPLG_MOD_DEBUG=1
@@ -58,7 +58,6 @@ export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/c
 ### Emacs-Anywhere
 ###
 export EA_PATH="${XDG_DATA_HOME}/emacs_anywhere"
-export EA_EDITOR="em"
 
 ###
 ### Exa
@@ -74,7 +73,7 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 ### Gnupg
 ###
 export GPG_TTY=$(tty)
-export GNUPGHOME="$XDG_CONFIG_HOME/gnupg"
+export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 export SSH_AUTH_SOCK=$(/usr/local/bin/gpgconf --list-dirs agent-ssh-socket)
 
 ###
@@ -108,10 +107,10 @@ export _cache_dir="${XDG_CACHE_HOME}/zsh/zcompdump"
 ###
 ### Zplugin
 ###
-export ZINIT[HOME_DIR]="${XDG_CACHE_HOME}/zsh/zinit"
+export ZINIT[HOME_DIR]="${XDG_DATA_HOME}/zinit"
 export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
 export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
-export ZINIT[ZCOMPDUMP_PATH]="$XDG_CACHE_HOME/zsh/zcompdump"
+export ZINIT[ZCOMPDUMP_PATH]="${XDG_CACHE_HOME}/zcompdump"
 export ZINIT[COMPINIT_OPTS]="-C"
 export ZPFX="$ZINIT[HOME_DIR]/polaris"
 
@@ -147,7 +146,6 @@ export OMP_NUM_THREADS=16
 ### Parallel
 ###
 export PARALLEL_HOME="${XDG_DATA_HOME}/parallel"
-#export PARALLEL_SHELL="/usr/local/bin/bash"
 
 ###
 ### Python
@@ -158,27 +156,26 @@ export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
 export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
 export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
 
-
 ###
 ### Rust/Cargo
 ###
-export CARGO_HOME="$XDG_CONFIG_HOME/cargo"
-export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
+export CARGO_HOME="${XDG_DATA_HOME}/cargo"
+export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
 
 ###
 ### Subversion
 ###
-export SUBVERSION_HOME="$XDG_CONFIG_HOME/subversion"
+export SUBVERSION_HOME="${XDG_CONFIG_HOME}/subversion"
 
 ###
 ### Terminfo
 ###
-export TERMINFO="$XDG_CONFIG_HOME/terminfo"
+export TERMINFO="${XDG_CONFIG_HOME}/terminfo"
 
 ###
 ### Weechat
 ###
-export WEECHAT_HOME="$XDG_CONFIG_HOME/weechat"
+export WEECHAT_HOME="${XDG_CONFIG_HOME}/weechat"
 
 ###
 ### Z
@@ -195,7 +192,7 @@ export ZSH_AUTOSUGGEST_MANUAL_REBIND=true
 ###
 ### Paths
 ###
-fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions
+fpath+=(usr/local/Cellar/zsh/5.8/share/zsh/functions
         /usr/local/share/zsh/site-functions
         $ZINIT[HOME_DIR]/completions
         $DOTFILES/local/share/zsh_completions
@@ -205,7 +202,7 @@ fpath+=(usr/local/Cellar/zsh/5.7.1/share/zsh/functions
 
 module_path+=($ZINIT[BIN_DIR]/zmodules/Src)
 
-path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
+path=($CARGO_HOME/bin               # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZPFX/bin                     # Zplugin Installed Programs
@@ -220,8 +217,8 @@ path=($XDG_CONFIG_HOME/cargo/bin    # Rust CLI Utils
       /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 
-cdpath=($HOME/Documents/projects
-        $HOME/Documents/forked_github)
+# cdpath=($HOME/Documents/projects
+#         $HOME/Documents/forked_github)
 
 manpath=(/usr/share/man
          /usr/local/share/man
@@ -234,7 +231,5 @@ export MANPATH
 ###
 ### Personal Functions
 ###
-autoload -Uz time-shell nuke convert-to-md \
-         colorlist open-apps iterm-config _zpcompinit_fast \
-         bundle-name prettycsv pyenv knitit vterm_printf vterm_cmd \
-         imgtotxt vofa vofb vof vterm_prompt_end
+autoload -Uz time-shell nuke  _zpcompinit_fast knitit vterm_printf vterm_cmd \
+         vterm_prompt_end conda

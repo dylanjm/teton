@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-27 15:51:46
+/last updated/: 2020-05-28 10:19:26
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -12,7 +12,8 @@
     - [[#system-requirements][System Requirements]]
 - [[#early-init][Early-Init]]
     - [[#header][Header]]
-    - [[#preliminary-configuration][Preliminary Configuration]]
+    - [[#garbage-collection][Garbage Collection]]
+    - [[#pre-gui-optimization][Pre-Gui Optimization]]
     - [[#footer][Footer]]
 - [[#init][Init]]
     - [[#header-1][Header]]
@@ -80,11 +81,7 @@ This document is my current emacs config which contains the code for my =early-i
   ;;; Code:
 #+end_src
 
-** Preliminary Configuration
-
-You'll see a similar configuration in other dotfiles online. By default, Emac's runs it garbage collector when the
-
-*** Garbage Collection
+** Garbage Collection
 
 You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion. The FLX README suggest we do this to keep emacs running nice and smooth.
 
@@ -120,7 +117,7 @@ You'll see this modification in many config files around the internet. The idea 
 (add-hook 'after-init-hook #'djm/return-vars-to-normal)
 #+end_src
 
-*** Pre-Gui Optimization
+** Pre-Gui Optimization
 
 Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=, and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
 
@@ -161,7 +158,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 ** Header
 #+name: init-header-block
 #+begin_src emacs-lisp
-;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t-*-
+;;; init.el --- Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t -*-
 ;;;
 ;;; Commentary:
 ;;; Emacs `init.el' config by dylanjm.
@@ -1589,7 +1586,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
         (with-no-warnings
           (font-lock-fontify-buffer)))))
   :init
-  (general-setq-default sh-indentation 2)
+  (general-setq-default sh-basic-offset 2)
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
   (general-add-hook 'sh-mode-hook #'sh-script-extra-font-lock-activate)
   (compdef

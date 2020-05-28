@@ -1,6 +1,6 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
-function time-shell(){
+time-shell(){
   if [[ -e "$(command -v hyperfine)" ]]; then
     hyperfine -- '$SHELL -i -c exit'
   else

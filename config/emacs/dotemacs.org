@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-28 10:19:26
+/last updated/: 2020-05-28 15:05:53
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3783,7 +3783,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package lsp-mode
   :straight t
-  :commands (lsp)
+  :commands (lsp lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
   :capf lsp-completion-at-point
   :company '(company-lsp company-files company-dabbrev)
@@ -3795,6 +3795,9 @@ A nice way to restart emacs on the fly if you need to.
 
   ;; don't ping LSP lanaguage server too frequently
   (general-add-advice #'lsp-on-change-hack :around 'lsp-on-change)
+
+  (dolist (modes '(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook))
+    (general-add-hook modes #'lsp-deferred))
   :config
   (general-setq lsp-before-save-edits nil
                 lsp-client-packages '(lsp-clients clangd lsp-python-ms)
@@ -3807,7 +3810,9 @@ A nice way to restart emacs on the fly if you need to.
                 lsp-prefer-flymake nil
                 lsp-restart 'auto-restart
                 lsp-semantic-highlighting :immediate
-                lsp-enable-file-watchers t))
+                lsp-enable-file-watchers t)
+
+  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
 
 (use-package lsp-ui
   :straight t

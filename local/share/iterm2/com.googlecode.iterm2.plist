@@ -22,6 +22,8 @@
 	<false/>
 	<key>CheckTestRelease</key>
 	<true/>
+	<key>Command</key>
+	<string>/usr/local/bin/bash</string>
 	<key>Custom Color Presets</key>
 	<dict>
 		<key>3024 Day</key>
@@ -53283,7 +53285,7 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-900 0 900 1577 -900 0 900 1577 </string>
+	<string>297 28 570 1503 0 0 3840 1577 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>1923 29 1910 1038 0 0 3840 2137 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -56112,7 +56114,7 @@
 			<key>Columns</key>
 			<integer>80</integer>
 			<key>Command</key>
-			<string></string>
+			<string>/usr/local/bin/bash</string>
 			<key>Cursor Boost</key>
 			<real>0.0</real>
 			<key>Cursor Color</key>
@@ -60345,7 +60347,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60358,7 +60360,8 @@
 		<string>3.3.2</string>
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
-		<string>3.3.10beta3</string>
+		<string>3.3.11beta1</string>
+		<string>3.3.7</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60379,7 +60382,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1182</integer>
+	<integer>1225</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61184,11 +61187,11 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-05-21T21:41:39Z</date>
+	<date>2020-05-28T15:05:57Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>
-	<integer>3081089692</integer>
+	<integer>4234156065</integer>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>SeparateWindowTitlePerTab</key>
@@ -61228,7 +61231,7 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.10beta4</string>
+	<string>3.3.11beta1</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

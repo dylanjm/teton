@@ -40,7 +40,7 @@ export SAVEHIST=500000
 ###
 ### Atom
 ###
-export ATOM_HOME="${XDG_CONFIG_HOME}/atom"
+export ATOM_HOME="${XDG_DATA_HOME}/atom"
 
 ###
 ### CCACHE
@@ -96,7 +96,7 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/
 ### Julia
 ###
 export JULIA_NUM_THREADS=16
-export JULIA_DEPOT_PATH="${XDG_CONFIG_HOME}/julia"
+export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia"
 
 ###
 ### ZSH
@@ -150,7 +150,7 @@ export PARALLEL_HOME="${XDG_DATA_HOME}/parallel"
 ###
 ### Python
 ###
-export PYENV_ROOT="${XDG_CONFIG_HOME}/pyenv"
+export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
 export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
 export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
@@ -231,5 +231,13 @@ export MANPATH
 ###
 ### Personal Functions
 ###
-autoload -Uz time-shell nuke  _zpcompinit_fast knitit vterm_printf vterm_cmd \
-         vterm_prompt_end conda
+autoload -Uz time-shell \
+         nuke \
+         pyenv \
+         _zpcompinit_fast \
+         knitit \
+         vterm_printf \
+         vterm_cmd \
+         vterm_prompt_end \
+         conda \
+         colorlist

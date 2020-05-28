@@ -24,9 +24,6 @@ load=light
 zinit ice depth=1
 zinit $load romkatv/powerlevel10k
 
-zinit ice wait multisrc"*.zsh" lucid
-zinit $load $ZSH/interactive
-
 zinit ice wait lucid
 zinit $load hlissner/zsh-autopair
 
@@ -42,6 +39,9 @@ bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
+
+zinit ice wait multisrc"*.zsh" lucid
+zinit $load $ZSH/interactive
 
 zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid
 zinit $load zdharma/fast-syntax-highlighting

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 unsetopt GLOBAL_RCS  # Don’t source /etc/zshrc or other global zsh startup files.
-typeset -gaU cdpath fpath mailpath module_path path manpath
+typeset -gaU fpath module_path path
 declare -gA ZINIT
 typeset -g ZPLG_MOD_DEBUG=1
 
@@ -23,7 +23,6 @@ export LS_COLORS="ln=0;38;2;177;98;134:or=1;38;2;204;36;29;48;2;29;32;33:mi=1;38
 ###
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
-export BROWSER='open'
 export DOTFILES="${HOME}/teton"
 export ORG_FILES="${HOME}/Documents/org-files"
 export EDITOR="emacsclient -t -c"
@@ -50,9 +49,7 @@ export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 ###
 ### Conda
 ###
-export CONDA_ROOT="${XDG_DATA_HOME}/conda"
 export CONDARC="${XDG_CONFIG_HOME}/condarc"
-export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
 
 ###
 ### Emacs-Anywhere
@@ -117,7 +114,7 @@ export ZPFX="$ZINIT[HOME_DIR]/polaris"
 ###
 ### Less
 ###
-export LESS="-g -i -M -R -F -S -w -z-4"
+export LESS="-g -i -M -R -S -w -z-4 --tilde"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="${XDG_DATA_HOME}/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking
@@ -127,6 +124,7 @@ export LESS_TERMCAP_se=$'\E[0m'        # end standout-mode
 export LESS_TERMCAP_so=$'\E[01;44;33m' # begin standout-mode - info box
 export LESS_TERMCAP_ue=$'\E[0m'        # end underline
 export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
+export PYGMENTIZE_STYLE='paraiso-dark'
 
 ###
 ### R
@@ -217,16 +215,8 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 
-# cdpath=($HOME/Documents/projects
-#         $HOME/Documents/forked_github)
-
-manpath=(/usr/share/man
-         /usr/local/share/man
-         /usr/X11/share/man)
-
 export PATH
 export FPATH
-export MANPATH
 
 ###
 ### Personal Functions

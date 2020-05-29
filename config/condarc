@@ -2,3 +2,5 @@ channels:
   - https://mooseframework.org/conda/moose
   - conda-forge
   - defaults
+
+auto_activate_base: false

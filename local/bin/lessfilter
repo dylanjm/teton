@@ -24,72 +24,102 @@
 # SOFTWARE.
 #
 
-case "$1" in
-  *.6pl|*.6pm|*.ABAP|*.ASM|*.BAS|*.C|*.CBL|*.COB|*.CPP|*.CPY|*.F|*.F03|*.F90|*.G|\
-    *.H|*.ICON|*.PRG|*.R|*.Rd|*.Rout|*.S|*.SAS|*.VBS|*.[1234567]|*.abap|*.abnf|\
-    *.ada|*.adb|*.adl|*.adlf|*.adls|*.adlx|*.ado|*.ads|*.agda|*.aheui|*.ahk|\
-    *.ahkl|*.aj|*.als|*.apl|*.applescript|*.arexx|*.as|*.asax|*.ascx|*.ashx|\
-    *.asm|*.asmx|*.aspx|*.asy|*.at|*.au3|*.aug|*.aux|*.awk|*.axd|*.b|*.bas|\
-    *.bash|*.bat|*.bb|*.bbc|*.bc|*.befunge|*.bf|*.bib|*.bmp|*.bmx|*.bnf|*.boa|\
-    *.boo|*.bpl|*.bro|*.bst|*.bug|*.c|*.c++|*.c++-objdump|*.c-objdump|*.cadl|\
-    *.camkes|*.capnp|*.cbl|*.cc|*.cdf|*.cdl|*.ceylon|*.cf|*.cfc|*.cfg|*.cfm|\
-    *.cfml|*.chai|*.chpl|*.ci|*.cirru|*.cl|*.clay|*.clj|*.cljs|*.cls|*.cmake|\
-    *.cmd|*.cob|*.coffee|*.cp|*.cpp|*.cpp-objdump|*.cps|*.cpsa|*.cpy|*.cr|\
-    *.crmsh|*.croc|*.cry|*.cs|*.csd|*.csh|*.css|*.css.in|*.cu|*.cuh|*.cw|*.cxx|\
-    *.cxx-objdump|*.cyp|*.cypher|*.d|*.d-objdump|*.darcspatch|*.dart|*.dasm|\
-    *.dasm16|*.dcl|*.decls|*.def|*.dg|*.di|*.diff|*.do|*.docker|*.dpatch|*.dpr|\
-    *.dtd|*.duby|*.duel|*.dyl|*.dylan|*.dylan-console|*.e|*.ebnf|*.ebuild|*.ec|\
-    *.ecl|*.eclass|*.edp|*.eg|*.eh|*.el|*.elm|*.eps|*.erl|*.erl-sh|*.es|\
-    *.escript|*.evoque|*.ex|*.exheres-0|*.exlib|*.exs|*.ezt|*.f|*.f03|*.f90|\
-    *.factor|*.fan|*.fancypack|*.feature|*.fhtml|*.fish|*.flo|*.flx|*.flxh|\
-    *.fnl|*.frag|*.frt|*.fs|*.fsi|*.fun|*.fy|*.g|*.gap|*.gd|*.gdc|*.gemspec|\
-    *.geo|*.gi|*.gif|*.go|*.golo|*.gradle|*.graph|*.groovy|*.gs|*.gsp|*.gst|\
-    *.gsx|*.h|*.h++|*.haml|*.handlebars|*.hbs|*.hdp|*.hh|*.hlsl|*.hlsli|*.hpp|\
-    *.hrl|*.hs|*.hsail|*.htm|*.html|*.hx|*.hxml|*.hxsl|*.hxx|*.hy|*.hyb|*.i|\
-    *.i6t|*.i7x|*.icl|*.icn|*.icon|*.idc|*.idl4|*.idr|*.ijs|*.ik|*.inc|*.inf|\
-    *.ini|*.ino|*.instances|*.intr|*.io|*.ipf|*.j|*.jade|*.jag|*.java|*.jbst|\
-    *.jcl|*.jl|*.jpg|*.js|*.js.in|*.jsgf|*.jsm|*.json|*.jsonld|*.jsp|*.juttle|\
-    *.kal|*.kid|*.kif|*.kk|*.kki|*.ksh|*.kt|*.lagda|*.lasso|*.lasso[89]|*.lcry|\
-    *.lean|*.less|*.lgt|*.lhs|*.lid|*.lidr|*.liquid|*.lisp|*.ll|*.load|*.logtalk|\
-    *.ls|*.lsl|*.lsp|*.lua|*.m|*.ma|*.mac|*.mak|*.man|*.mao|*.maql|*.mask|*.mc|\
-    *.md|*.mhtml|*.mi|*.mk|*.ml|*.mli|*.mll|*.mly|*.mm|*.mo|*.mod|*.monkey|*.moo|\
-    *.moon|*.mq4|*.mq5|*.mqh|*.msc|*.mt|*.mu|*.mxml|*.myt|*.n|*.nb|*.nbp|*.nc|\
-    *.ncl|*.ng2|*.ni|*.nim|*.nimrod|*.nit|*.nix|*.nl|*.nqp|*.ns2|*.nsh|*.nsi|\
-    *.objdump|*.objdump-intel|*.odin|*.ooc|*.opa|*.orc|*.p|*.p6|*.p6l|*.p6m|\
-    *.pan|*.pas|*.patch|*.pc|*.pcmk|*.php|*.php[345]|*.phtml|*.pig|*.pike|*.pl|\
-    *.pl6|*.plot|*.plt|*.pm|*.pm6|*.pmod|*.png|*.po|*.pony|*.pot|*.pov|*.pp|\
-    *.praat|*.prg|*.pro|*.proc|*.prolog|*.properties|*.proto|*.ps|*.ps1|*.psc|\
-    *.psi|*.psl|*.psm1|*.pug|*.pwn|*.pxd|*.pxi|*.py|*.py3tb|*.pypylog|*.pytb|\
-    *.pyw|*.pyx|*.qbs|*.qml|*.qvto|*.r|*.r3|*.rake|*.raw|*.rb|*.rbw|*.rbx|*.reb|\
-    *.red|*.reds|*.reg|*.rest|*.rex|*.rexx|*.rhtml|*.rkt|*.rktd|*.rktl|*.rl|\
-    *.rnc|*.robot|*.rpf|*.rq|*.rql|*.rs|*.rs.in|*.rsl|*.rss|*.rst|*.rtf|*.rts|\
-    *.run|*.rvt|*.rx|*.s|*.sage|*.sarl|*.sas|*.sass|*.sbl|*.sc|*.scala|*.scaml|\
-    *.scd|*.sce|*.sci|*.scm|*.sco|*.scss|*.sgf|*.sh|*.sh-session|*.shell-session|\
-    *.shen|*.sig|*.sil|*.sl|*.slim|*.sls|*.smali|*.sml|*.smv|*.snobol|*.sp|*.sparql|\
-    *.spec|*.spt|*.sql|*.sqlite3-console|*.ss|*.ssp|*.st|*.stan|*.sv|*.svg|\
-    *.svh|*.swg|*.swift|*.t|*.tac|*.tap|*.tasm|*.tcl|*.tcsh|*.tea|*.tex|*.tf|\
-    *.thrift|*.thy|*.tmpl|*.toc|*.todotxt|*.toml|*.tpl|*.treetop|*.ts|*.tst|\
-    *.tsx|*.tt|*.ttl|*.twig|*.txt|*.typoscript|*.u|*.u1|*.u2|*.udo|*.v|*.vala|\
-    *.vapi|*.vark|*.vb|*.vbs|*.vcl|*.vert|*.vhd|*.vhdl|*.vim|*.vm|*.vpr|*.wdiff|\
-    *.weechatlog|*.whiley|*.wlua|*.wsdl|*.wsf|*.x|*.x10|*.xhtml|*.xi|*.xm|*.xmi|\
-    *.xml|*.xpl|*.xq|*.xql|*.xqm|*.xquery|*.xqy|*.xsd|*.xsl|*.xslt|*.xtend|*.xtm|\
-    *.xul.in|*.yaml|*.yml|*.zep|*.zsh|*Config.in*|.Renviron|.Rhistory|.Rprofile|\
-    .bash_*|.bashrc|.exrc|.gvimrc|.htaccess|.vimrc|.zshrc|\
-    Dockerfile|GNUmakefile|Gemfile|Kconfig|Makefile|Makefile.*|PKGBUILD|Rakefile|\
-    SConscript|SConstruct|_exrc|_gvimrc|_vimrc|apache.conf|apache2.conf|\
-    autodelegate|autohandler|bash_*|bashrc|control|dhandler|external.in*|.envrc|\
-    gvimrc|makefile|nginx.conf|pacman.conf|sources.list|squid.conf|standard-modules.in|\
-    termcap|termcap.src|terminfo|terminfo.src|vimrc|xorg.conf|zshrc)
-        pygmentize -f terminal "$1";;
-
-    .zshenv|.gitconfig|.gitignore)
-        pygmentize -f terminal -l sh "$1";;
-
-    *)
-      if ! grep -E "#\!/.+[/ ](ba|z)?sh" "$1" >/dev/null; then
-        exit 1
-      fi
-      pygmentize -f terminal -l sh "$1"
-esac
-
-exit $?
+for path in "$@"; do
+    # match by known filenames
+    filename=$(basename "$path")
+    case "$filename" in
+        .bashrc|bash.bashrc|.bash_aliases|.bash_environment|.bash_profile|\
+        .bash_login|.bash_logout|.profile|.zshrc|.zprofile|.zshrc|.zlogin|\
+        .zlogout|zshrc|zprofile|zshrc|zlogin|zlogout|.cshrc|.cshdirs|\
+        csh.cshrc|csh.login|csh.logout|.tcshrc|.kshrc|ksh.kshrc)
+            # shell lexer
+            pygmentize -f 256 -O style=$PYGMENTIZE_STYLE -l sh "$path"
+            ;;
+        .htaccess|apache.conf|apache2.conf|Dockerfile|Kconfig|external.in*|\
+        standard-modules.in|nginx.conf|pacman.conf|squid.conf|termcap|\
+        termcap.src|terminfo|terminfo.src|control|sources.list|CMakeLists.txt|\
+        Makefile|makefile|Makefile.*|GNUmakefile|SConstruct|SConscript|\
+        .Rhistory|.Rprofile|.Renviron|Rakefile|Gemfile|PKGBUILD|autohandler|\
+        dhandler|autodelegate|.vimrc|.exrc|.gvimrc|vimrc|exrc|gvimrc|todo.txt)
+            # filename recognized
+            pygmentize -f 256 -O style=$PYGMENTIZE_STYLE "$path"
+            ;;
+        *)
+            ext=$([[ "$filename" = *.* ]] && echo ".${filename##*.}" || echo '')
+            case "$ext" in
+                .as|.mxml|.bc|.g|.gd|.gi|.gap|.nb|.cdf|.nbp|.ma|.mu|.at|.run|\
+                .apl|.adl|.adls|.adlf|.adlx|.cadl|.odin|.c-objdump|.s|\
+                .cpp-objdump|.c++-objdump|.cxx-objdump|.d-objdump|.S|.hsail|\
+                .ll|.asm|.ASM|.objdump-intel|.objdump|.tasm|.au3|.ahk|.ahkl|\
+                .bb|.decls|.bmx|.bas|.monkey|.BAS|.bst|.bib|.abap|.ABAP|.cbl|\
+                .CBL|.cob|.COB|.cpy|.CPY|.gdc|.maql|.p|.cls|.c|.h|.idc|.cpp|\
+                .hpp|.c++|.h++|.cc|.hh|.cxx|.hxx|.C|.H|.cp|.CPP|.ino|.clay|\
+                .cu|.cuh|.ec|.eh|.mq4|.mq5|.mqh|.nc|.pike|.pmod|.swg|.i|.vala|\
+                .vapi|.capnp|.chpl|.icl|.dcl|.cf|.docker|.ini|.cfg|.inf|\
+                .pc|.properties|.reg|.tf|.pypylog|.cr|.csd|.orc|.sco|.css|\
+                .less|.sass|.scss|.croc|.d|.di|.smali|.jsonld|.json|.yaml|\
+                .yml|.dpatch|.darcspatch|.diff|.patch|.wdiff|.boo|.aspx|.asax|\
+                .ascx|.ashx|.asmx|.axd|.cs|.fs|.fsi|.n|.vb|.als|.bro|.crmsh|\
+                .pcmk|.msc|.pan|.proto|.pp|.rsl|.sbl|.thrift|.rpf|\
+                .dylan-console|.dylan|.dyl|.intr|.lid|.hdp|.ecl|.e|.elm|.ex|\
+                .exs|.erl|.hrl|.es|.escript|.erl-sh|.aheui|.befunge|.bf|.b|\
+                .camkes|.idl4|.cdl|.cw|.factor|.fan|.flx|.flxh|.frt|.f|.F|\
+                .f03|.f90|.F03|.F90|.PRG|.prg|.go|.abnf|.bnf|.jsgf|.cyp|\
+                .cypher|.asy|.vert|.frag|.geo|.plot|.plt|.ps|.eps|.pov|.inc|\
+                .agda|.cry|.hs|.idr|.kk|.kki|.lagda|.lcry|.lhs|.lidr|.hx|\
+                .hxsl|.hxml|.sv|.svh|.v|.vhdl|.vhd|.dtd|.haml|.html|.htm|\
+                .xhtml|.xslt|.pug|.jade|.scaml|.xml|.xsl|.rss|.xsd|.wsdl|\
+                .wsf|.xpl|.pro|.ipf|.nsi|.nsh|.spec|.i6t|.ni|.i7x|.t|.io|\
+                .ijs|.coffee|.dart|.eg|.js|.jsm|.juttle|.kal|.lasso|\
+                .lasso[89]|.ls|.mask|.j|.ts|.tsx|.jl|.aj|.ceylon|.clj|\
+                .cljs|.golo|.gs|.gsx|.gsp|.vark|.gst|.groovy|.gradle|.ik|\
+                .java|.kt|.pig|.scala|.xtend|.cpsa|.cl|.lisp|.el|.hy|.lsp|.nl|\
+                .kif|.rkt|.rktd|.rktl|.scm|.ss|.shen|.xtm|.cmake|.mak|.mk|\
+                .[1234567]|.man|.md|.css.in|.js.in|.xul.in|.rst|.rest|.tex|\
+                .aux|.toc|.m|.sci|.sce|.tst|.ml|.mli|.mll|.mly|.opa|.sml|.sig|\
+                .fun|.bug|.jag|.mo|.stan|.def|.mod|.mt|.ncl|.nim|.nimrod|.nit|\
+                .nix|.cps|.x|.xi|.xm|.xmi|.mm|.swift|.ooc|.psi|.psl|.G|.ebnf|\
+                .rl|.treetop|.tt|.adb|.ads|.ada|.pas|.dpr|.pwn|.sp|.pl|.pm|\
+                .nqp|.p6|.6pl|.p6l|.pl6|.6pm|.p6m|.pm6|.php|.php[345]|.zep|\
+                .praat|.proc|.psc|.lgt|.logtalk|.prolog|.pyx|.pxd|.pxi|.dg|\
+                .py3tb|.py|.pyw|.sc|.tac|.sage|.pytb|.qvto|.Rout|.Rd|.R|.rq|\
+                .sparql|.ttl|.r|.r3|.reb|.red|.reds|.txt|.rnc|.graph|\
+                .instances|.robot|.fy|.fancypack|.rb|.rbw|.rake|.gemspec|\
+                .rbx|.duby|.rs|.rs.in|.SAS|.sas|.applescript|.chai|.ezt|\
+                .mac|.hyb|.jcl|.lsl|.lua|.wlua|.moo|.moon|.rexx|.rex|.rx|\
+                .arexx|.sh|.ksh|.bash|.ebuild|.eclass|.exheres-0|.exlib|.zsh|\
+                .sh-session|.shell-session|.bat|.cmd|.fish|.load|.ps1|.psm1|\
+                .tcsh|.csh|.ns2|.st|.smv|.snobol|.rql|.sql|.sqlite3-console|\
+                .do|.ado|.scd|.tcl|.rvt|.ng2|.tmpl|.spt|.cfc|.cfm|.cfml|\
+                .evoque|.kid|.handlebars|.hbs|.phtml|.jsp|.liquid|.mao|.mhtml|\
+                .mc|.mi|.myt|.rhtml|.tpl|.ssp|.tea|.twig|.vm|.fhtml|.sls|\
+                .feature|.tap|.awk|.vim|.pot|.po|.weechatlog|.todotxt|.thy|\
+                .lean|.rts|.u|.vcl|.bpl|.sil|.vpr|.cirru|.duel|.jbst|.qml|\
+                .qbs|.slim|.xqy|.xquery|.xq|.xql|.xqm|.whiley|.x10)
+                    # extension recognized
+                    pygmentize -f 256 -O style=$PYGMENTIZE_STYLE "$path"
+                    ;;
+                *)
+                    # parse the shebang script header if it exists
+                    lexer=$(head -n 1 "$path" |grep "^#\!" |awk -F" " \
+'match($1, /\/(\w*)$/, a) {if (a[1]!="env") {print a[1]} else {print $2}}')
+                    case "$lexer" in
+                        node|nodejs)
+                            # workaround for lack of Node.js lexer alias
+                            pygmentize -f 256 -O style=$PYGMENTIZE_STYLE \
+                                -l js "$path"
+                            ;;
+                        "")
+                            exit 1
+                            ;;
+                        *)
+                            pygmentize -f 256 -O style=$PYGMENTIZE_STYLE \
+                                -l $lexer "$path"
+                            ;;
+                    esac
+                    ;;
+            esac
+            ;;
+    esac
+done
+exit 0

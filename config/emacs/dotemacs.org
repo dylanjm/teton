@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-05-28 15:05:53
+/last updated/: 2020-05-29 16:37:24
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -89,7 +89,7 @@ You'll see this modification in many config files around the internet. The idea 
 #+begin_src emacs-lisp
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (defvar extended-gc-cons-threshold most-positive-fixnum)
-(defvar default-gc-cons-threshold 2000000)
+(defvar default-gc-cons-threshold (* 100 1024 1024))
 
 ;; Native Compilation Vars
 ;; (setq comp-speed 3
@@ -106,15 +106,21 @@ You'll see this modification in many config files around the internet. The idea 
               read-process-output-max (* 1024 1024))
 
 (setq file-name-handler-alist nil
+      package-enable-at-startup nil
       gc-cons-threshold extended-gc-cons-threshold
       package-enable-at-startup nil)
 
-(defun djm/return-vars-to-normal ()
-  (setq file-name-handler-alist default-file-name-handler-alist
-        gc-cons-threshold default-gc-cons-threshold
-        load-prefer-newer nil))
+(defun arco/return-gc-to-default ()
+  (setq-default gc-cons-threshold default-gc-cons-threshold))
 
-(add-hook 'after-init-hook #'djm/return-vars-to-normal)
+(defun arco/reset-file-handler-alist-h ()
+  (dolist (handler file-name-handler-alist)
+    (add-to-list 'default-file-name-handler-alist handler))
+  (setq file-name-handler-alist default-file-name-handler-alist))
+
+(add-hook 'emacs-startup-hook #'arco/reset-file-handler-alist-h)
+(add-hook 'after-init-hook #'arco/return-gc-to-default)
+(advice-add #'package--ensure-init-file :override #'ignore)
 #+end_src
 
 ** Pre-Gui Optimization
@@ -175,18 +181,17 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-(eval-and-compile
+(eval-when-compile
   (defvar straight-recipes-gnu-elpa-use-mirror t)
   (defvar bootstrap-version 5)
   (defvar bootstrap-file
-    (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
-
-(setq-default straight-cache-autoloads t
-              straight-fix-org t
-              straight-recipe-overrides nil
-              straight-repository-branch "develop"
-              straight-use-package-by-default t
-              straight-check-for-modifications '(check-on-save find-when-checking))
+    (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+  (setq-default straight-cache-autoloads t
+                straight-fix-org t
+                straight-recipe-overrides nil
+                straight-repository-branch "develop"
+                straight-use-package-by-default t
+                straight-check-for-modifications '(check-on-save find-when-checking)))
 
 (unless (file-exists-p bootstrap-file)
   (with-current-buffer
@@ -205,12 +210,13 @@ Use-Package is nearly ubiquitous in an Emacs config these days.
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-(straight-use-package 'use-package)
-(setq-default use-package-verbose t
-              use-package-always-defer t
-              use-package-compute-statistics t
-              use-package-expand-minimally nil
-              use-package-enable-imenu-support t)
+(eval-when-compile
+  (setq-default use-package-verbose t
+                use-package-always-defer t
+                use-package-compute-statistics t
+                use-package-expand-minimally nil
+                use-package-enable-imenu-support t)
+  (straight-use-package 'use-package))
 #+end_src
 
 ** Initial Demands
@@ -229,12 +235,9 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :if (eq system-type 'darwin)
   :config
   (setq exec-path-from-shell-variables
-        '("BROWSER" "CCACHE_DIR" "CDPATH" "DOTFILES" "EA_EDITOR" "EA_PATH"
-          "EDITOR" "EXA_COLORS" "FPATH" "GPG_TTY" "GNUPGHOME" "GUILE_HISTORY"
-          "HISTFILE" "IPYTHONDIR" "JAVA_HOME" "JULIA_DEPOT_PATH"
-          "JULIA_NUM_THREADS" "LANG" "LC_ALL" "LS_COLORS" "MANPATH" "MPD_HOST"
-          "MPD_PORT" "MPLCONFIGDIR" "ORG_FILES" "PATH" "PYENV_ROOT" "PYLINTHOME"
-          "PYTHONSTARTUP" "R_ENVIRON_USER" "TERMINFO" "XDG_BIN_HOME"
+        '("EDITOR" "FPATH" "GPG_TTY" "GNUPGHOME"
+          "PATH" "PYENV_ROOT" "PYLINTHOME"
+          "PYTHONSTARTUP" "TERMINFO" "XDG_BIN_HOME"
           "XDG_CACHE_HOME" "XDG_CONFIG_HOME" "XDG_DATA_HOME" "ZSH")
         exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
@@ -1305,8 +1308,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
              (makefile-makepp-mode . "Makefile")
              (makefile-bsdmake-mode . "Makefile")
              (makefile-imake-mode . "Makefile"))
-  :straight (:type built-in)
-  :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
+  :straight (:type built-in))
+  ;;:gfhook #'(lambda () (setq-local indent-tabs-mode t)))
 #+end_src
 
 *** Man-Mode (Built-In)
@@ -1614,7 +1617,8 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+name: init-simple-block
 #+begin_src emacs-lisp
 (use-package simple
-  :blackout (visual-line-mode . "")
+  :blackout ((visual-line-mode . "")
+             (auto-fill-mode . ""))
   :straight (:type built-in)
   :general
   ("C-x p" #'pop-to-mark-command)
@@ -1752,7 +1756,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :straight (:type built-in)
   :config
   (general-setq vc-follow-symlinks t
-                vc-handled-backends '(Git)))
+                vc-handled-backends nil))
 #+end_src
 
 *** View (Built-In)
@@ -1949,11 +1953,11 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
   :preface
   (defun arco/load-gruvbox-theme ()
-    (load-theme 'gruvbox-dark-hard)
-    (if (daemonp)
-        (general-add-hook 'after-make-frame-functions #'setup-main-fonts)
-      (general-add-hook 'after-init-hook #'setup-main-fonts))
+    (load-theme 'gruvbox-dark-hard t)
+    (when (daemonp)
+      (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
     (when-let (frame (selected-frame))
+      (setup-main-fonts frame)
       (configure-fonts frame))))
 #+end_src
 

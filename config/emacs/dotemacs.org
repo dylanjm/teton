@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-02 15:48:04
+/last updated/: 2020-06-02 17:47:15
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -121,6 +121,7 @@ You'll see this modification in many config files around the internet. The idea 
 (add-hook 'emacs-startup-hook #'arco/reset-file-handler-alist-h)
 (add-hook 'after-init-hook #'arco/return-gc-to-default)
 (advice-add #'package--ensure-init-file :override #'ignore)
+(add-hook 'after-init-hook #'(lambda () (message "After Init Hook Finishing")))
 #+end_src
 
 ** Pre-Gui Optimization
@@ -1007,7 +1008,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :blackout t
   :straight (:type built-in)
   :ghook ('prog-mode-hook #'turn-on-eldoc-mode)
-  :config
+  :init
   (general-setq eldoc-idle-delay 0.2
                 eldoc-echo-area-use-multiline-p nil))
 #+end_src
@@ -1083,7 +1084,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 shr-width (current-fill-column)))
 
 (use-package shr-tag-pre-highlight
-  :demand t
+  :disabled t
   :straight t
   :after shr
   :config
@@ -1105,7 +1106,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package files
   :straight (:type built-in)
-  :config
+  :init
   (general-setq-default auto-mode-case-fold nil
                         auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
                         backup-by-copying t
@@ -1153,13 +1154,11 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package frame
   :straight (:type built-in)
-  :config
+  :init
   (general-setq window-divider-default-places t
                 window-divider-default-bottom-width 1
                 window-divider-default-right-width 1)
   (blink-cursor-mode -1)
-  (tooltip-mode -1)
-  (global-so-long-mode +1)
   (unless (display-graphic-p)
     (menu-bar-mode -1)))
 #+end_src
@@ -1201,7 +1200,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 (use-package help
   :straight (:type built-in)
   :gfhook #'visual-line-mode
-  :config
+  :init
   (general-setq help-window-select 'always)
   (general-add-advice 'help-window-display-message :override #'ignore))
 #+end_src
@@ -1263,9 +1262,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package ielm
   :straight (:type built-in)
-  :init
-  (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
   :config
+  (general-add-hook 'inferior-emacs-lisp-mode-hook #'hs-minor-mode)
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*ielm*" eos)
                  (display-buffer-reuse-window display-buffer-in-side-window)
@@ -1286,10 +1284,11 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-isearch-block
 #+begin_src emacs-lisp
 (use-package isearch
+  :no-require t
   :straight (:type built-in)
   :general
   ("C-s" #'isearch-forward)
-  :config
+  :init
   (general-setq lazy-highlight-initial-delay 0
                 search-highlight t
                 search-whitespace-regexp ".*?"
@@ -1364,8 +1363,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-mini-buffer-block
 #+begin_src emacs-lisp
 (use-package minibuffer
+  :no-require t
   :straight (:type built-in)
-  :init
+  :preface
   (defun djm/minibuffer-setup-hook ()
     (general-setq gc-cons-threshold extended-gc-cons-threshold))
 
@@ -1378,6 +1378,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
           (minibuffer-keyboard-quit))
       (funcall keyboard-quit)))
 
+  :init
   (general-add-advice #'arco/always-exit-minibuffer-first :around 'keyboard-quit)
   (general-add-hook 'minibuffer-setup-hook #'djm/minibuffer-setup-hook)
   (general-add-hook 'minibuffer-exit-hook #'djm/minibuffer-exit-hook)
@@ -1396,10 +1397,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 read-answer-short t
                 read-buffer-completion-ignore-case t
                 read-file-name-completion-ignore-case t
-                resize-mini-windows t)
-  (file-name-shadow-mode +1)
-  (minibuffer-depth-indicate-mode +1)
-  (minibuffer-electric-default-mode +1))
+                resize-mini-windows t))
 #+end_src
 
 *** Mwheel (Built-In)
@@ -1490,13 +1488,14 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
 (use-package prog-mode
+  :no-require t
   :straight (:type built-in)
   :gfhook
   #'display-fill-column-indicator-mode
   #'show-paren-mode
   #'prettify-symbols-mode
   #'turn-on-auto-fill
-  :config
+  :init
   (general-setq prettify-symbols-unprettify-at-point 'right)
   (general-add-hook 'after-save-hook
                     #'executable-make-buffer-file-executable-if-script-p))
@@ -1768,7 +1767,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package uniquify
   :straight (:type built-in)
-  :config
+  :init
   (general-setq uniquify-ignore-buffers-re "^\\*"
                 uniquify-buffer-name-style 'post-forward-angle-brackets
                 uniquify-strip-common-suffix t
@@ -1782,7 +1781,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package vc-hooks
   :straight (:type built-in)
-  :config
+  :init
   (general-setq vc-follow-symlinks t
                 vc-handled-backends nil))
 #+end_src
@@ -1888,7 +1887,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Winner (Built-In)
 #+name: init-winner-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package winner
   :straight (:type built-in)
   :ghook 'emacs-startup-hook
@@ -1951,8 +1950,8 @@ Sort of a standard package in most emacs-configs these days.
 #+name: init-all-the-icons-block
 #+begin_src emacs-lisp
 (use-package all-the-icons
-  :demand t
   :straight t
+  :commands (all-the-icons-icon-for-buffer)
   :config
   (general-setq all-the-icons-scale-factor 1)
   (general-pushnew '("\\.db$" all-the-icons-faicon
@@ -2218,20 +2217,33 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
-  (use-package selectrum
-    :straight (:host github
-               :repo "raxod502/selectrum"
-               :files ("*.el"))
-    :ghook 'emacs-startup-hook
-    :config
-    (general-setq selectrum-num-candidates-displayed 20))
+(use-package selectrum
+  :straight (:host github
+                   :repo "raxod502/selectrum"
+                   :files ("*.el"))
+  :ghook 'emacs-startup-hook
+  :config
+  (general-setq selectrum-num-candidates-displayed 20))
 
 
-    (use-package selectrum-prescient
-      :straight (:host github
-                 :repo "raxod502/prescient.el"
-                 :files ("selectrum-prescient.el"))
-      :ghook 'selectrum-mode-hook)
+(use-package selectrum-prescient
+  :straight (:host github
+                   :repo "raxod502/prescient.el"
+                   :files ("selectrum-prescient.el"))
+  :ghook 'selectrum-mode-hook)
+#+end_src
+
+*** [[https://github.com/oantolin/async-completing-read][Async-Completing-Read]]
+#+name: init-async-completing-read-block
+#+begin_src emacs-lisp :tangle no
+(use-package async-completing-read
+  :demand t
+  :straight (:host github :repo "oantolin/async-completing-read")
+  :after (selectrum)
+  :functions (async-completing-read)
+  :init
+  (general-setq acr-completing-read-function #'selectrum-completing-read)
+  (general-setq completing-read-function #'async-completing-read))
 #+end_src
 
 ** Autocompletion
@@ -2356,7 +2368,7 @@ A nice way to restart emacs on the fly if you need to.
   :blackout ((yas-global-mode . "")
              (yas-minor-mode . ""))
   :straight t
-  :ghook ('(prog-mode-hook org-mode-hook text-mode-hook) #'yas-global-mode)
+  :ghook ('(prog-mode-hook org-mode-hook) #'yas-global-mode)
   :general ("C-;" #'yas-expand)
   :config
   (general-setq yas-verbosity 1
@@ -3956,7 +3968,7 @@ A nice way to restart emacs on the fly if you need to.
   :mode (("\\.el\\'" . emacs-lisp-mode)
          ("\\.Cask\\'" . emacs-lisp-mode))
   :gfhook #'outline-minor-mode
-  :config
+  :init
   (general-setq emacs-lisp-docstring-fill-column 80))
 #+end_src
 
@@ -4588,7 +4600,9 @@ This is a nifty package that allows me to define functions as local variables in
 
 #+name: init-footer-block
 #+begin_src emacs-lisp
-  (provide 'init)
+(add-hook 'emacs-startup-hook #'(lambda () (message "Emacs Startup Hook Finishing")))
+(message "Done parsing init.el")
+(provide 'init)
   ;;; init.el ends here
 #+end_src
 

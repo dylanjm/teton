@@ -276,4 +276,5 @@ fi
 # Local Variables:
 # mode: sh-script
 # sh-indentation: 2
+# sh-basic-offset: 2
 # End:

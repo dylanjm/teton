@@ -21,14 +21,6 @@ window:
     columns: 120
     lines: 50
 
-  # Window position (changes require restart)
-  #
-  # Specified in number of pixels.
-  # If the position is not set, the window manager will handle the placement.
-  #position:
-  #  x: 0
-  #  y: 0
-
   # Window padding (changes require restart)
   #
   # Blank space added around the window in pixels. This padding is scaled
@@ -140,7 +132,7 @@ colors:
 
   # Bright colors
   bright:
-    black:   '0x32302f'
+    black:   '#787878'
     red:     '0xfb4933'
     green:   '0xb8bb26'
     yellow:  '0xfabd2f'

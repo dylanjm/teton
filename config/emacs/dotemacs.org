@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-01 19:58:52
+/last updated/: 2020-06-02 15:48:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -103,7 +103,7 @@ You'll see this modification in many config files around the internet. The idea 
               inhibit-default-init t
               site-run-file nil
               load-prefer-newer t
-              read-process-output-max (* 1024 1024))
+              read-process-output-max (* 1024 1024 3))
 
 (setq file-name-handler-alist nil
       package-enable-at-startup nil
@@ -131,7 +131,10 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+begin_src emacs-lisp
 ;; Some nice UI tweaks that improve performance when specified
 ;; in early-init.el
-(modify-all-frames-parameters '((vertical-scroll-bars . nil)
+(modify-all-frames-parameters '((width . 72)
+                                (height . 40)
+                                (internal-border-width . 15)
+                                (vertical-scroll-bars . nil)
                                 (tool-bar-lines . 0)
                                 (ns-appearance . dark)
                                 (font . "Iosevka Curly-18")))
@@ -924,6 +927,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         inhibit-startup-echo-area-message t
                         inhibit-startup-screen t
                         indent-tabs-mode nil
+                        line-spacing 0
                         resize-mini-windows 'grow-only
                         max-mini-window-height 0.20
                         ring-bell-function #'ignore
@@ -942,7 +946,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         window-combination-resize t
                         window-resize-pixelwise t
                         word-wrap t
-                        x-underline-at-descent-line nil
+                        x-underline-at-descent-line t
                         underline-minimum-offset 0))
 #+end_src
 
@@ -1158,6 +1162,15 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (global-so-long-mode +1)
   (unless (display-graphic-p)
     (menu-bar-mode -1)))
+#+end_src
+
+*** Fringe (Built-In)
+#+name: init-fringe-block
+#+begin_src emacs-lisp
+(use-package fringe
+  :straight (:type built-in)
+  :init
+  (fringe-mode '(0 . 0)))
 #+end_src
 
 *** Gnutls (Built-In)
@@ -1612,7 +1625,8 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
    :company '(company-shell
               company-files
               company-shell-env
-              company-dabbrev-code)))
+              company-dabbrev-code
+              company-capf)))
 #+end_src
 
 *** Shell (Built-In)
@@ -1797,6 +1811,15 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package whitespace
   :straight (:type built-in))
+#+end_src
+
+*** Wid-Edit (Built-In)
+#+name: init-wid-edit (built-in)-block
+#+begin_src emacs-lisp
+(use-package wid-edit
+  :straight (:type built-in)
+  :init
+  (general-setq widget-image-enable nil))
 #+end_src
 
 *** Window (Built-In)
@@ -2323,11 +2346,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package company-lsp
   :demand t
   :straight t
-  :after (company lsp)
-  :ghook ('lsp-mode-hook #'arco/init-company-lsp)
-  :preface
-  (defun arco/init-company-lsp ()
-    (general-pushnew 'company-lsp company-backends)))
+  :after (company lsp))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -3130,23 +3149,6 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq org-archive-location "~/Documents/org-files/archive.org::"
                 org-directory "~/Documents/org-files")
 
-  ;; LaTeX Settings
-  ;; (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-  ;;               org-latex-remove-logfiles t
-  ;;               org-latex-prefer-user-labels t
-  ;;               bibtex-dialect 'biblatex)
-
-  ;; ;; (dolist (ext '("lof" "lot" "tex"
-  ;; ;;                "aux" "idx" "log"
-  ;; ;;                "out" "toc" "nav"
-  ;; ;;                "snm" "vrb" "dvi"
-  ;; ;;                "fdb_latexmk" "blg"
-  ;; ;;                "brf" "fls" "entoc"
-  ;; ;;                "ps" "spl" "bbl"
-  ;; ;;                "bcf" "run.xml"))
-  ;; ;;   (general-pushnew ext org-latex-logfiles-extensions))
-
-
   ;; Startup Settings
   (general-setq org-startup-folded 'content
                 org-startup-with-inline-images t)
@@ -3337,6 +3339,26 @@ A nice way to restart emacs on the fly if you need to.
                 org-export-with-smart-quotes t
                 org-html-html5-fancy t
                 org-html-postamble nil))
+
+(use-package ox-latex
+  :straight nil
+  :config
+  ;; LaTeX Settings
+  (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
+                org-latex-remove-logfiles t
+                org-latex-prefer-user-labels t
+                bibtex-dialect 'biblatex)
+
+  (dolist (ext '("lof" "lot" "tex"
+                 "aux" "idx" "log"
+                 "out" "toc" "nav"
+                 "snm" "vrb" "dvi"
+                 "fdb_latexmk" "blg"
+                 "brf" "fls" "entoc"
+                 "ps" "spl" "bbl"
+                 "bcf" "run.xml"))
+    (general-pushnew ext org-latex-logfiles-extensions)))
+
 
 (use-package ox-gfm
   :demand t
@@ -3804,48 +3826,40 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :commands (lsp lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
-  :capf lsp-completion-at-point
-  :company '(company-lsp company-files company-dabbrev)
+  :capf #'lsp-completion-at-point
+  :company '(company-lsp company-files company-dabbrev-code company-dabbrev)
   :init
-  (defvar lsp-on-touch-time 0)
-  (defun lsp-on-change-hack (start end length)
-    (when (> (- (float-time (current-time)) lsp-on-touch-time) 30)
-      (setq lsp-on-touch-time (float-time (current-time)))))
-
-  ;; don't ping LSP lanaguage server too frequently
-  (general-add-advice #'lsp-on-change-hack :around 'lsp-on-change)
-
-  (dolist (modes '(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook))
+  (dolist (modes '(c-mode-hook
+                   c++-mode-hook
+                   objc-mode-hook
+                   cuda-mode-hook
+                   python-mode-hook))
     (general-add-hook modes #'lsp-deferred))
   :config
+  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
   (general-setq lsp-before-save-edits nil
                 lsp-client-packages '(lsp-clients clangd lsp-python-ms)
                 lsp-diagnostic-package :none
                 lsp-enable-snippet t
-                lsp-eldoc-render-all t
+                lsp-eldoc-render-all nil
                 lsp-idle-delay 0.500
                 lsp-log-io nil
                 lsp-prefer-capf t
                 lsp-prefer-flymake nil
                 lsp-restart 'auto-restart
                 lsp-semantic-highlighting :immediate
-                lsp-enable-file-watchers t)
-
-  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
+                lsp-enable-file-watchers t))
 
 (use-package lsp-ui
   :straight t
   :if (display-graphic-p)
   :ghook 'lsp-mode-hook
-  :init
+  :config
   (general-setq lsp-ui-doc-enable t
-                lsp-ui-imenu-enable nil
+                lsp-ui-imenu-enable t
                 lsp-ui-peek-enable t
                 lsp-ui-flycheck-enable t
-                lsp-ui-sideline-enable nil))
-
-(use-package lsp-ui-doc
-  :straight nil)
+                lsp-ui-sideline-enable t))
 #+end_src
 
 ** Syntax & Linting
@@ -3854,8 +3868,8 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package flycheck
   :straight t
-  :ghook ('prog-mode-hook #'global-flycheck-mode)
-  :ghook ('prog-mode-hook #'flycheck-mode-on-safe)
+  :ghook (#'prog-mode-hook #'global-flycheck-mode)
+  :ghook (#'prog-mode-hook #'flycheck-mode-on-safe)
   :commands (flycheck-list-errors)
   :init
   (defun arco/disable-eldoc-on-flycheck (&rest _)
@@ -3866,16 +3880,15 @@ A nice way to restart emacs on the fly if you need to.
 
   (general-add-advice #'arco/disable-eldoc-on-flycheck
                       :after-while 'eldoc-display-message-no-interference-p)
-
-  (general-setq flycheck-emacs-lisp-load-path 'inherit)
-
   :config
+  (defvar arco--flake8rc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
+  (defvar arco--pylintrc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
+  (general-setq flycheck-emacs-lisp-load-path 'inherit)
   (general-setq flycheck-check-syntax-automatically '(save idle-change mode-enabled)
                 flycheck-display-errors-delay 0.1)
-  (general-setq flycheck-flake8rc
-                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8"))
-                flycheck-pylintrc
-                (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
+  (general-setq flycheck-flake8rc arco--flake8rc
+                flycheck-pylintrc arco--pylintrc)
+
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
                 flycheck-shellcheck-follow-sources t
                 flycheck-sh-bash-executable "/usr/local/bin/bash"
@@ -4318,7 +4331,8 @@ This is a nifty package that allows me to define functions as local variables in
       (setq-local flycheck-python-pycompile-executable executable)
       (setq-local flycheck-python-pylint-executable "pylint")
       (setq-local flycheck-python-flake8-executable "flake8")))
-
+  :init
+  (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe)
   :config
   (general-setq python-shell-interpreter "ipython"
                 python-shell-interpreter-args "-i --simple-prompt --no-color-info"
@@ -4326,10 +4340,7 @@ This is a nifty package that allows me to define functions as local variables in
                 python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
                 python-indent-guess-indent-offset-verbose nil
                 python-indent-offset 4
-                comment-inline-offset 2
-                tab-width 4)
-
-  (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe))
+                comment-inline-offset 2))
 #+end_src
 
 **** Conda
@@ -4355,7 +4366,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** C++
 **** [[https://github.com/MaskRay/emacs-ccls][CCLS]]
 #+name: init-ccls-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ccls
   :straight t
   :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) #'lsp-deferred)

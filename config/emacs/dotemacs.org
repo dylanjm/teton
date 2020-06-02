@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-01 16:34:49
+/last updated/: 2020-06-01 19:58:52
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -185,12 +185,18 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
   (defvar straight-recipes-gnu-elpa-use-mirror t)
   (defvar bootstrap-version 5)
   (defvar bootstrap-file
-    (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+    (expand-file-name "straight/repos/straight.el/bootstrap.el"
+                      user-emacs-directory))
+  (defvar indent-file
+    (expand-file-name "straight/repos/straight.el/indent" user-emacs-directory))
   (setq-default straight-cache-autoloads t
                 straight-fix-org t
+                straight-fix-flycheck t
                 straight-recipe-overrides nil
                 straight-repository-branch "develop"
                 straight-use-package-by-default t
+                straight-check-for-modifications '(check-on-save find-when-checking)
+                straight-vc-git-default-clone-depth 1
                 straight-check-for-modifications '(check-on-save find-when-checking))
 
   (unless (file-exists-p bootstrap-file)
@@ -200,7 +206,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
          'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
-
   (load bootstrap-file nil 'nomessage))
 #+end_src
 
@@ -253,8 +258,8 @@ Not super stoked on using this package, as I might replace it later with my own 
   :demand t
   :straight t
   :init
-  (setq no-littering-etc-directory "~/.cache/emacs/etc/"
-        no-littering-var-directory "~/.cache/emacs/var/"))
+  (setq no-littering-etc-directory "~/.cache/emacs/"
+        no-littering-var-directory "~/.local/share/emacs/"))
 #+end_src
 
 *** [[https://gitlab.com/jjzmajic/compdef][Compdef]]
@@ -707,8 +712,15 @@ Here we can setup proper coloring for compile buffers.
     (ansi-color-process-output nil)
     (set (make-local-variable 'comint-last-output-start)
          (point-marker)))
-  :config
+  :init
   (general-setq ansi-color-for-comint-mode t))
+#+end_src
+
+*** Artist-Mode (Built-In)
+#+name: init-artist-mode-block
+#+begin_src emacs-lisp
+(use-package artist
+  :straight (:type built-in))
 #+end_src
 
 *** Auth-Source (Built-In)
@@ -808,8 +820,9 @@ https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close.
 #+name: init-comint-block
 #+begin_src emacs-lisp
 (use-package comint
+  :no-require t
   :straight (:type built-in)
-  :init
+  :config
   (defvar arco--kill-on-exit-comint-hook-has-run nil
     "Whether or not `kill-on-exit-comint-hook' has run or not.
 We need this buffer-local var to prevent the hook from running
@@ -880,6 +893,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-cus-start-block
 #+begin_src emacs-lisp
 (use-package cus-start
+  :no-require t
   :straight (:type built-in)
   :init
   (general-setq-default auto-save-list-file-prefix nil
@@ -1676,7 +1690,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Term (Built-In)
 #+name: init-term-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package term
   :straight (:type built-in)
   :commands term
@@ -1786,7 +1800,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Window (Built-In)
-#+name: init-window (built-in)-block
+#+name: init-window-block
 #+begin_src emacs-lisp
 (use-package window
   :straight nil
@@ -2118,6 +2132,16 @@ A nice way to restart emacs on the fly if you need to.
                 vterm-max-scrollback 10000))
 #+end_src
 
+*** [[https://github.com/dieggsy/eterm-256color][Eterm-256color]]
+#+name: init-eterm-256color-block
+#+begin_src emacs-lisp :tangle no
+(use-package eterm-256color
+  :straight t
+  :init
+  (general-add-hook 'term-mode-hook #'eterm-256color-mode)
+  (general-add-hook 'vterm-mode-hook #'eterm-256color-mode))
+#+end_src
+
 ** Project Management
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
@@ -2387,6 +2411,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-crux-block
 #+begin_src emacs-lisp
 (use-package crux
+  :no-require t
   :straight t
   :general
   ("C-c i d" #'crux-downcase-region
@@ -3845,7 +3870,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq flycheck-emacs-lisp-load-path 'inherit)
 
   :config
-  (general-setq flycheck-check-syntax-automatically '(save mode-enabled)
+  (general-setq flycheck-check-syntax-automatically '(save idle-change mode-enabled)
                 flycheck-display-errors-delay 0.1)
   (general-setq flycheck-flake8rc
                 (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8"))

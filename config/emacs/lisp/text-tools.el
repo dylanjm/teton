@@ -23,32 +23,6 @@
   "Replace all underscores in STRING with space."
   (replace-regexp-in-string "_" " " string))
 
-(defun djm/insert-markdown-link (&optional string)
-  (interactive)
-  (let (input-str output-str)
-    (cond
-      (string (setq input-str string))
-      ((use-region-p)
-        (setq from (region-beginning))
-        (setq to (region-end))
-        (setq input-str (buffer-substring-no-properties from to)))
-      (t
-        (setq from (point-at-bol))
-        (setq to (point-at-eol))
-        (setq input-str (buffer-substring-no-properties from to))))
-    (setq output-str
-      (progn
-        (let* ((path input-str)
-                (file (djm/remove-dir-and-ext-from-path path))
-                (title (djm/replace-underscore-as-space file)))
-          (concat "[" title "]" "(" input-str ")"))))
-    (if string
-      output-str
-      (save-excursion
-        (delete-region from to)
-        (goto-char from)
-        (insert output-str)))))
-
 (defun djm/insert-markdown-link-at-region ()
   (interactive)
   (save-excursion
@@ -117,36 +91,28 @@
       (when style
         (insert "\n    style=width:50%")))))
 
-;; Key Mapping for above function
-(defun my-eval-after-load-markdown-mode ()
-  (define-key markdown-mode-map "\C-ci" 'markdown-to-dylanjm-image))
-
-(eval-after-load "markdown-mode" '(my-eval-after-load-markdown-mode))
-
-(with-current-buffer "*eww*"
-  (message "Source: %s" (buffer-local-value 'eww-current-title (get-buffer "*eww*"))))
 
 (defun djm/insert-markdown-link (&optional string)
   (interactive)
-  (let (input-str output-str)
+  (let (input-str output-str from to)
     (cond
-      (string (setq input-str from to))
-      ((use-region-p)
-        (setq from (region-beginning))
-        (setq to (region-end))
-        (setq input-str (buffer-substring-no-properties from to)))
-      (t
-        (setq from (point-at-bol))
-        (setq to (point-at-eol))
-        (setq input-str (buffer-substring-no-properties from to))))
+     (string (setq input-str string))
+     ((use-region-p)
+      (setq from (region-beginning))
+      (setq to (region-end))
+      (setq input-str (buffer-substring-no-properties from to)))
+     (t
+      (setq from (point-at-bol))
+      (setq to (point-at-eol))
+      (setq input-str (buffer-substring-no-properties from to))))
     (setq output-str
-      (progn
-        (let* ((path input-str)
-                (file (djm/remove-dir-and-ext-from-path path))
-                (title (djm/replace-underscore-as-space file)))
-          (concat "[" title "]" "(" input-str ")"))))
+          (progn
+            (let* ((path input-str)
+                   (file (djm/remove-dir-and-ext-from-path path))
+                   (title (djm/replace-underscore-as-space file)))
+              (concat "[" title "]" "(" input-str ")"))))
     (if string
-      output-str
+        output-str
       (save-excursion
         (delete-region from to)
         (goto-char from)

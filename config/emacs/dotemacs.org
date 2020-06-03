@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-02 17:47:15
+/last updated/: 2020-06-02 20:18:28
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -121,7 +121,6 @@ You'll see this modification in many config files around the internet. The idea 
 (add-hook 'emacs-startup-hook #'arco/reset-file-handler-alist-h)
 (add-hook 'after-init-hook #'arco/return-gc-to-default)
 (advice-add #'package--ensure-init-file :override #'ignore)
-(add-hook 'after-init-hook #'(lambda () (message "After Init Hook Finishing")))
 #+end_src
 
 ** Pre-Gui Optimization
@@ -554,6 +553,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   ;; 1234567890#%^*
   ;; ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
   ;; αβγδεζηθικλμνξοπρστυφχψω
+  (set-frame-parameter (selected-frame)
+                       'internal-border-width 15)
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
 
@@ -745,7 +746,7 @@ Here we can setup proper coloring for compile buffers.
 (use-package autorevert
   :straight (:type built-in)
   :ghook ('emacs-startup-hook #'global-auto-revert-mode)
-  :config
+  :init
   (general-setq auto-revert-verbose nil
                 auto-revert-check-vc-info t
                 global-auto-revert-non-file-buffers t
@@ -826,7 +827,7 @@ https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close.
 (use-package comint
   :no-require t
   :straight (:type built-in)
-  :config
+  :init
   (defvar arco--kill-on-exit-comint-hook-has-run nil
     "Whether or not `kill-on-exit-comint-hook' has run or not.
 We need this buffer-local var to prevent the hook from running
@@ -874,7 +875,7 @@ of the current one and `my-kill-buffer-sentinel'."
 #+begin_src emacs-lisp
 (use-package compile
   :straight (:type built-in)
-  :config
+  :init
   (general-setq compilation-message-face 'compilation-base-face
                 compilation-always-kill t
                 compilation-ask-about-save nil
@@ -1239,7 +1240,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** iComplete (Built-In)
 #+name: init-icomplete-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package icomplete
   :straight (:type built-in)
   :ghook 'emacs-startup-hook
@@ -1451,7 +1452,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package paren
   :straight (:type built-in)
-  :ghook ('emacs-startup-hook #'show-paren-mode)
+  :ghook ('prog-mode-hook #'show-paren-mode)
   :config
   (general-setq show-paren-delay 0
                 show-paren-style 'parenthesis
@@ -1722,9 +1723,9 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :straight (:type built-in)
   :ghook ('emacs-startup-hook #'display-time-mode)
   :config
-  (general-setq-default display-time-24hr-format nil
-                        display-time-day-and-date t
-                        display-time-default-load-average nil))
+  (general-setq display-time-24hr-format nil
+                display-time-day-and-date t
+                display-time-default-load-average nil))
 #+end_src
 
 *** Tramp (Built-In)
@@ -2076,11 +2077,10 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 (use-package gcmh
   :blackout t
   :straight t
-  :ghook 'emacs-startup-hook
+  :ghook 'after-init-hook
   :init
   (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect)
   (general-add-hook 'suspend-hook #'gcmh-idle-garbage-collect)
-  :config
   (general-setq gcmh-idle-delay 10))
 #+end_src
 
@@ -2171,7 +2171,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package projectile
   :blackout t
   :straight t
-  :ghook 'emacs-startup-hook
+  ;;:ghook 'emacs-startup-hook
   :general
   (:prefix "C-c p"
            "s" #'projectile-switch-project
@@ -2218,18 +2218,14 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
 (use-package selectrum
-  :straight (:host github
-                   :repo "raxod502/selectrum"
-                   :files ("*.el"))
+  :straight (:host github :repo "raxod502/selectrum" :files ("*.el"))
   :ghook 'emacs-startup-hook
   :config
-  (general-setq selectrum-num-candidates-displayed 20))
+  (general-setq selectrum-num-candidates-displayed 15))
 
 
 (use-package selectrum-prescient
-  :straight (:host github
-                   :repo "raxod502/prescient.el"
-                   :files ("selectrum-prescient.el"))
+  :straight (:host github :repo "raxod502/prescient.el")
   :ghook 'selectrum-mode-hook)
 #+end_src
 
@@ -2557,6 +2553,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-highlight-indent-guides-block
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
+  :blackout t
   :straight t
   :ghook 'python-mode-hook 'yaml-mode-hook)
 #+end_src
@@ -2892,7 +2889,6 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package ibuffer
   :straight (:type built-in)
-  :gfhook #'hl-line-mode
   :general
   ([remap list-buffers] #'ibuffer)
   :config/el-patch
@@ -3076,6 +3072,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-ibuffer-ext-block
 #+begin_src emacs-lisp
 (use-package ibuf-ext
+  :no-require t
   :straight (:type built-in)
   :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
   :config
@@ -3087,6 +3084,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package ibuffer-projectile
   :straight t
+  :after (ibuffer)
   :preface
   (defun djm/config-ibuffer-projectile ()
     (ibuffer-projectile-set-filter-groups)
@@ -3851,7 +3849,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
   (general-setq lsp-before-save-edits nil
                 lsp-client-packages '(lsp-clients clangd lsp-python-ms)
-                lsp-diagnostic-package :none
+                lsp-diagnostic-package :auto
                 lsp-enable-snippet t
                 lsp-eldoc-render-all nil
                 lsp-idle-delay 0.500
@@ -3895,11 +3893,14 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (defvar arco--flake8rc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
   (defvar arco--pylintrc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
+  (defvar arco--mypy-config (f-expand (format "%s/%s/%s" (getenv "XDG_CONFIG_HOME") "mypy" "config")))
   (general-setq flycheck-emacs-lisp-load-path 'inherit)
   (general-setq flycheck-check-syntax-automatically '(save idle-change mode-enabled)
                 flycheck-display-errors-delay 0.1)
+
   (general-setq flycheck-flake8rc arco--flake8rc
-                flycheck-pylintrc arco--pylintrc)
+                flycheck-pylintrc arco--pylintrc
+                flycheck-python-mypy-config arco--mypy-config)
 
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
                 flycheck-shellcheck-follow-sources t
@@ -3958,6 +3959,14 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 *** LISP
+**** Lisp Mode
+#+name: init-lisp mode-block
+#+begin_src emacs-lisp
+(use-package lisp-mode
+  :straight (:type built-in)
+  :gfhook #'cl-font-lock-built-in-mode)
+#+end_src
+
 **** Elisp-Mode (Built-In)
 #+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
@@ -4600,8 +4609,6 @@ This is a nifty package that allows me to define functions as local variables in
 
 #+name: init-footer-block
 #+begin_src emacs-lisp
-(add-hook 'emacs-startup-hook #'(lambda () (message "Emacs Startup Hook Finishing")))
-(message "Done parsing init.el")
 (provide 'init)
   ;;; init.el ends here
 #+end_src

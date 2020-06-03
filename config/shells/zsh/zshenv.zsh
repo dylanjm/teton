@@ -153,6 +153,7 @@ export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
 export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
 export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
 export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
+export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy_cache"
 
 ###
 ### Rust/Cargo

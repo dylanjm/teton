@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-02 20:18:28
+/last updated/: 2020-06-02 20:49:50
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2186,7 +2186,8 @@ A nice way to restart emacs on the fly if you need to.
                 projectile-enable-caching t
                 projectile-switch-project-action 'projectile-dired
                 projectile--mode-line "Projectile")
-  (general-pushnew 'projectile-project-find-function project-find-functions))
+  (general-pushnew 'projectile-project-find-function project-find-functions)
+  (projectile-global-mode +1))
 #+end_src
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
@@ -3859,7 +3860,11 @@ A nice way to restart emacs on the fly if you need to.
                 lsp-restart 'auto-restart
                 lsp-semantic-highlighting :immediate
                 lsp-enable-file-watchers t))
+#+end_src
 
+*** LSP-UI
+#+name: init-lsp-ui-block
+#+begin_src emacs-lisp
 (use-package lsp-ui
   :straight t
   :if (display-graphic-p)

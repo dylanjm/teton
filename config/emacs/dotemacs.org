@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-03 11:25:47
+/last updated/: 2020-06-03 17:27:21
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -243,6 +243,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :config
   (setq exec-path-from-shell-variables '("EDITOR" "FPATH" "GPG_TTY" "GNUPGHOME"
                                          "PATH" "PYENV_ROOT" "PYLINTHOME"
+                                         "MYPY_CACHE_DIR"
                                          "PYTHONSTARTUP" "TERMINFO" "XDG_BIN_HOME"
                                          "XDG_CACHE_HOME" "XDG_CONFIG_HOME"
                                          "XDG_DATA_HOME" "ZSH")
@@ -3816,7 +3817,7 @@ A nice way to restart emacs on the fly if you need to.
   :commands (lsp lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
   :capf #'lsp-completion-at-point
-  :company '(company-lsp company-files company-dabbrev-code company-dabbrev)
+  :company (company-lsp company-files company-dabbrev-code company-dabbrev)
   :init
   (dolist (modes '(c-mode-hook
                    c++-mode-hook
@@ -3846,13 +3847,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package lsp-ui
   :straight t
   :if (display-graphic-p)
-  :ghook 'lsp-mode-hook
-  :config
-  (general-setq lsp-ui-doc-enable t
-                lsp-ui-imenu-enable t
-                lsp-ui-peek-enable t
-                lsp-ui-flycheck-enable t
-                lsp-ui-sideline-enable t))
+  :ghook 'lsp-mode-hook)
 #+end_src
 
 ** Syntax & Linting
@@ -4151,7 +4146,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package python
   :straight (:type built-in)
-  :capf #'python-completion-at-point
+  :capf #'python-completion-complete-at-point
   :preface
   (defun arco/python-use-correct-flycheck-exe ()
     "Use the correct Python executable for flycheck."
@@ -4222,6 +4217,14 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package clang-format
   :straight t)
+#+end_src
+
+*** MOOSE
+**** Hit-Formatter
+#+name: init-hit-formatter-block
+#+begin_src emacs-lisp
+(use-package moose-hit-format
+  :straight (:host github :repo "dylanjm/moose-hit-format.el" :files ("*")))
 #+end_src
 
 *** File Modes

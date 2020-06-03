@@ -177,7 +177,7 @@ get_args() {
         exit 1
         ;;
       \?)
-        printf "%s\n" "Usage: ${ME} [-h] [-n] [-l INTEGER] [-f folder] [folder(s) ...]"
+        bison_exists_p && usage
         exit 1
         ;;
     esac

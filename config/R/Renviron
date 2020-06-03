@@ -1,10 +1,11 @@
+#-*-mode: sh;-*-
 R_USER=~/.config/R
 R_ENVIRON_USER=~/.config/R/Renviron
 R_PROFILE_USER=~/.config/R/Rprofile
 R_MAKEVARS_USER=~/.config/R/Makevars
 R_HISTFILE=~/.local/share/Rhistory
 R_LIBS_USER=~/Library/R/3.6/library
-PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_2/lib/pkgconfig"
+PKG_CONFIG_PATH="/opt/X11/lib/pkgconfig:/usr/local/opt/cairo/lib/pkgconfig"
 
 LC_ALL="en_US.UTF-8"
 R_GSCMD="/usr/local/bin/gs"

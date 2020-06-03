@@ -50,6 +50,7 @@ export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 ### Conda
 ###
 export CONDARC="${XDG_CONFIG_HOME}/condarc"
+export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
 
 ###
 ### Emacs-Anywhere

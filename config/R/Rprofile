@@ -1,3 +1,4 @@
+#-*-mode: R;-*-
 options(Ncpus = 28)
 options(dependencies = TRUE)
 options(showWarnCalls = TRUE)

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-02 20:49:50
+/last updated/: 2020-06-03 11:25:47
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -23,7 +23,6 @@
     - [[#built-in-defaults][Built-In Defaults]]
     - [[#user-files][User Files]]
     - [[#themes--aesthetics][Themes & Aesthetics]]
-    - [[#meta][Meta]]
     - [[#system][System]]
     - [[#shells][Shells]]
     - [[#project-management][Project Management]]
@@ -83,7 +82,7 @@ This document is my current emacs config which contains the code for my =early-i
 
 ** Garbage Collection
 
-You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion. The FLX README suggest we do this to keep emacs running nice and smooth.
+You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion and language-server requirements.
 
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
@@ -242,11 +241,11 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :straight t
   :if (eq system-type 'darwin)
   :config
-  (setq exec-path-from-shell-variables
-        '("EDITOR" "FPATH" "GPG_TTY" "GNUPGHOME"
-          "PATH" "PYENV_ROOT" "PYLINTHOME"
-          "PYTHONSTARTUP" "TERMINFO" "XDG_BIN_HOME"
-          "XDG_CACHE_HOME" "XDG_CONFIG_HOME" "XDG_DATA_HOME" "ZSH")
+  (setq exec-path-from-shell-variables '("EDITOR" "FPATH" "GPG_TTY" "GNUPGHOME"
+                                         "PATH" "PYENV_ROOT" "PYLINTHOME"
+                                         "PYTHONSTARTUP" "TERMINFO" "XDG_BIN_HOME"
+                                         "XDG_CACHE_HOME" "XDG_CONFIG_HOME"
+                                         "XDG_DATA_HOME" "ZSH")
         exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 #+end_src
@@ -261,8 +260,8 @@ Not super stoked on using this package, as I might replace it later with my own 
   :demand t
   :straight t
   :init
-  (setq no-littering-etc-directory "~/.cache/emacs/"
-        no-littering-var-directory "~/.local/share/emacs/"))
+  (setq no-littering-etc-directory "~/.local/share/emacs/"
+        no-littering-var-directory "~/.cache/emacs/"))
 #+end_src
 
 *** [[https://gitlab.com/jjzmajic/compdef][Compdef]]
@@ -339,8 +338,10 @@ We need to intercept the built-in org-version that ships with emacs. For some re
 
 #+name: ini-org-plus-contrib-block
 #+begin_src emacs-lisp
-(straight-use-package
- '(org :host github :repo "emacs-straight/org-mode" :local-repo "org"))
+(straight-use-package '(org
+                        :host github
+                        :repo "emacs-straight/org-mode"
+                        :local-repo "org"))
 #+end_src
 
 ** Personal Configuration
@@ -1020,7 +1021,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+begin_src emacs-lisp
 (use-package electric
   :straight (:type built-in)
-  :ghook ('prog-mode-hook '(electric-indent-mode electric-quote-mode))
+  :ghook ('prog-mode-hook #'electric-indent-mode)
   :init
   (general-setq-default electric-indent-chars '(?\n ?\^?))
   (general-setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit
@@ -1938,10 +1939,15 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 *** [[https://github.com/luisgerhorst/virtual-auto-fill][Virtual-Auto-Fill]]
 #+name: init-virtual-auto-fill-block
 #+begin_src emacs-lisp
-  (use-package virtual-auto-fill
-    :blackout t
-    :straight (:host github :repo "luisgerhorst/virtual-auto-fill")
-    :commands (virtual-auto-fill-mode))
+(use-package virtual-auto-fill
+  :blackout t
+  :straight (:host github :repo "luisgerhorst/virtual-auto-fill")
+  :ghook arco--virtual-auto-fill-hooks
+  :commands (virtual-auto-fill-mode)
+  :preface
+  (defconst arco--virtual-auto-fill-hooks '(org-mode-hook
+                                            text-mode-hook
+                                            markdown-mode-hook)))
 #+end_src
 
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
@@ -2029,35 +2035,24 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   (general-add-hook 'Info-selection-hook #'info-colors-fontify-node))
 #+end_src
 
-*** [[https://github.com/SpecialBomb/emacs-modern-fringes][Modern-Fringes]]
-#+name: init-modern-fringes-block
-#+begin_src emacs-lisp :tangle no
-(use-package modern-fringes
-  :straight (:host github :repo "SpecialBomb/emacs-modern-fringes")
-  :ghook 'emacs-startup-hook
-  :config
-  (modern-fringes-invert-arrows))
-#+end_src
-
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
 
 This package is great, but can be a little annoying. It can sometimes slow-down emacs a ton.
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
-  (use-package page-break-lines
-    :blackout t
-    :straight t
-    :ghook djm--page-break-line-hooks
-    :preface
-    (defconst djm--page-break-line-hooks
-      '(ibuffer-mode-hook
-        text-mode-hook
-        comint-mode-hook
-        compilation-mode-hook
-        ledger-report-mode-hook
-        help-mode-hook
-        helpful-mode-hook
-        org-agenda-mode-hook)))
+(use-package page-break-lines
+  :blackout t
+  :straight t
+  :ghook djm--page-break-line-hooks
+  :preface
+  (defconst djm--page-break-line-hooks '(ibuffer-mode-hook
+                                         text-mode-hook
+                                         comint-mode-hook
+                                         compilation-mode-hook
+                                         ledger-report-mode-hook
+                                         help-mode-hook
+                                         helpful-mode-hook
+                                         org-agenda-mode-hook)))
 #+end_src
 
 *** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
@@ -2067,10 +2062,14 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 (use-package rainbow-mode
   :blackout t
   :straight t
-  :ghook '(prog-mode-hook text-mode-hook org-mode-hook))
+  :ghook arco--rainbow-mode-hooks
+  :preface
+  (defconst arco--rainbow-mode-hooks '(elisp-mode-hook
+                                       shell-script-mode-hook
+                                       python-mode-hook)))
 #+end_src
 
-** Meta
+** System
 *** [[https://gitlab.com/koral/gcmh/][GCMH]]
 #+name: init-gcmh-block
 #+begin_src emacs-lisp
@@ -2094,7 +2093,6 @@ A nice way to restart emacs on the fly if you need to.
   (defalias 're #'restart-emacs))
 #+end_src
 
-** System
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
 #+name: init-osx-trash-block
 #+begin_src emacs-lisp
@@ -2208,13 +2206,6 @@ A nice way to restart emacs on the fly if you need to.
   (prescient-persist-mode +1))
 #+end_src
 
-*** [[https://github.com/lewang/flx][FLX]]
-#+name: init-flx-block
-#+begin_src emacs-lisp
-(use-package flx
-  :straight t)
-#+end_src
-
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
@@ -2228,19 +2219,6 @@ A nice way to restart emacs on the fly if you need to.
 (use-package selectrum-prescient
   :straight (:host github :repo "raxod502/prescient.el")
   :ghook 'selectrum-mode-hook)
-#+end_src
-
-*** [[https://github.com/oantolin/async-completing-read][Async-Completing-Read]]
-#+name: init-async-completing-read-block
-#+begin_src emacs-lisp :tangle no
-(use-package async-completing-read
-  :demand t
-  :straight (:host github :repo "oantolin/async-completing-read")
-  :after (selectrum)
-  :functions (async-completing-read)
-  :init
-  (general-setq acr-completing-read-function #'selectrum-completing-read)
-  (general-setq completing-read-function #'async-completing-read))
 #+end_src
 
 ** Autocompletion
@@ -3986,131 +3964,6 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq emacs-lisp-docstring-fill-column 80))
 #+end_src
 
-**** Fix Identation
-[[https://stackoverflow.com/questions/22166895/customize-elisp-plist-indentation][Found on StackOverflow by the great @raxod502.]]
-[[https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/lisp-hacks.el][Chris Barrett's very similar fix to the same problem]]
-[[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][Noctuid approach to fixing this problem.]]
-[[https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94][Fuco1 Solution]]
-[[https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el][Org Style Guide]]
-
-#+name: init-elisp-identation-block
-#+begin_src emacs-lisp :tangle no
-;; https://emacs.stackexchange.com/questions/10230/how-to-indent-keywords-aligned
-;; https://github.com/Fuco1/.emacs.d/blob/af82072196564fa57726bdbabf97f1d35c43b7f7/site-lisp/redef.el#L20-L94
-(defun fuco1/lisp-indent-function (indent-point state)
-  "This function is the normal value of the variable `lisp-indent-function'.
-The function `calculate-lisp-indent' calls this to determine
-if the arguments of a Lisp function call should be indented specially.
-
-INDENT-POINT is the position at which the line being indented begins.
-Point is located at the point to indent under (for default indentation);
-STATE is the `parse-partial-sexp' state for that position.
-
-If the current line is in a call to a Lisp function that has a non-nil
-property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
-it specifies how to indent.  The property value can be:
-
-- `defun', meaning indent `defun'-style
-  (this is also the case if there is no property and the function
-  has a name that begins with \"def\", and three or more arguments);
-
-- an integer N, meaning indent the first N arguments specially
-  (like ordinary function arguments), and then indent any further
-  arguments like a body;
-
-- a function to call that returns the indentation (or nil).
-  `lisp-indent-function' calls this function with the same two arguments
-  that it itself received.
-
-This function returns either the indentation to use, or nil if the
-Lisp function does not specify a special indentation."
-  (let ((normal-indent (current-column))
-         (orig-point (point)))
-    (goto-char (1+ (elt state 1)))
-    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-    (cond
-      ;; car of form doesn't seem to be a symbol, or is a keyword
-      ((and (elt state 2)
-         (or (not (looking-at "\\sw\\|\\s_"))
-           (looking-at ":")))
-        (if (not (> (save-excursion (forward-line 1) (point))
-                   calculate-lisp-indent-last-sexp))
-          (progn (goto-char calculate-lisp-indent-last-sexp)
-            (beginning-of-line)
-            (parse-partial-sexp (point)
-              calculate-lisp-indent-last-sexp 0 t)))
-        ;; Indent under the list or under the first sexp on the same
-        ;; line as calculate-lisp-indent-last-sexp.  Note that first
-        ;; thing on that line has to be complete sexp since we are
-        ;; inside the innermost containing sexp.
-        (backward-prefix-chars)
-        (current-column))
-      ((and (save-excursion
-              (goto-char indent-point)
-              (skip-syntax-forward " ")
-              (not (looking-at ":")))
-         (save-excursion
-           (goto-char orig-point)
-           (looking-at ":")))
-        (save-excursion
-          (goto-char (+ 2 (elt state 1)))
-          (current-column)))
-      (t
-        (let ((function (buffer-substring (point)
-                          (progn (forward-sexp 1) (point))))
-               method)
-          (setq method (or (function-get (intern-soft function)
-                             'lisp-indent-function)
-                         (get (intern-soft function) 'lisp-indent-hook)))
-          (cond ((or (eq method 'defun)
-                   (and (null method)
-                     (> (length function) 3)
-                     (string-match "\\`def" function)))
-                  (lisp-indent-defform state indent-point))
-            ((integerp method)
-              (lisp-indent-specform method state
-                indent-point normal-indent))
-            (method
-              (funcall method indent-point state))))))))
-
-;; https://github.com/abo-abo/oremacs/blob/github/modes/ora-elisp-style-guide.el
-(require 'cl-indent)
-
-(defun noct:lispy-indent-setup ()
-  "Make indentation settings compliant with lispy's."
-  (interactive)
-  (setq-local lisp-indent-function #'common-lisp-indent-function)
-  ;; TODO this is bad for actual common lisp (and not buffer-local)
-  (put 'if 'common-lisp-indent-function 2)
-  (put 'defface 'common-lisp-indent-function 1)
-  (put 'define-minor-mode 'common-lisp-indent-function 1)
-  (put 'define-derived-mode 'common-lisp-indent-function 3)
-  (put 'cl-flet 'common-lisp-indent-function
-    (get 'flet 'common-lisp-indent-function))
-  (put 'cl-labels 'common-lisp-indent-function
-    (get 'labels 'common-lisp-indent-function))
-  ;; additional
-  (put 'cl-macrolet 'common-lisp-indent-function (get 'flet 'common-lisp-indent-function))
-  (aggressive-indent-mode -1))
-
-(defun noct:elisp-indent-setup ()
-  (when (eq major-mode 'emacs-lisp-mode)
-    (cond ((when (buffer-file-name)
-             (string-match
-               ".*lispy/"
-               (file-name-directory (buffer-file-name))))
-            (noct:lispy-indent-setup))
-
-      (t
-        (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
-        (put 'cl-macrolet 'lisp-indent-function
-          (get 'flet 'common-lisp-indent-function))
-        (put 'cl-macrolet 'fuco1/lisp-indent-function
-          (get 'flet 'common-lisp-indent-function))))))
-
-(general-add-hook '(find-file-hook emacs-lisp-mode-hook) #'noct:elisp-indent-setup)
-#+end_src
-
 **** [[https://github.com/joaotavora/sly][SLY]]
 #+name: init-sly-block
 #+begin_src emacs-lisp
@@ -4129,16 +3982,16 @@ This is a nifty package that allows me to define functions as local variables in
 
 #+name: init-firestarter-block
 #+begin_src emacs-lisp
-  (use-package firestarter
-    :straight t
-    :ghook 'before-save-hook)
+(use-package firestarter
+  :straight t
+  :ghook 'before-save-hook)
 #+end_src
 
 **** [[https://github.com/jwiegley/emacs-async][Async]]
 #+name: init-async-block
 #+begin_src emacs-lisp
 (use-package async
-  :blackout ((dired-async-mode . ""))
+  :blackout (dired-async-mode . "")
   :straight t
   :ghook ('dired-mode-hook #'dired-async-mode))
 #+end_src
@@ -4149,51 +4002,6 @@ This is a nifty package that allows me to define functions as local variables in
 (use-package clojure-mode
   :straight t
   :mode ("\\.edn$"))
-#+end_src
-
-**** [[https://www.emacswiki.org/emacs/ParEdit][Paredit]]
-#+name: init-paredit-block
-#+begin_src emacs-lisp :tangle no
-(use-package paredit
-  :straight t
-  :ghook (paredit-modes #'enable-paredit-mode)
-  :commands (enable-paredit-mode)
-  :preface
-  (defvar paredit-modes '(emacs-lisp-mode-hook
-                          eval-expression-minibuffer-setup-hook
-                          ielm-mode-hook lisp-mode-hook
-                          lisp-interaction-mode-hook
-                          scheme-mode-hook)))
-#+end_src
-
-**** [[https://github.com/abo-abo/lispy][Lispy]]
-#+name: init-lispy-block
-#+begin_src emacs-lisp :tangle no
-(use-package lispy
-  :straight t)
-#+end_src
-
-**** [[https://github.com/DogLooksGood/parinfer-mode][Parinfer]]
-#+name: init-parinfer-block
-#+begin_src emacs-lisp :tangle no
-(use-package parinfer
-  :straight t
-  :ghook parinfer-modes
-  :general
-  (:keymaps 'prog-mode-map
-            "C-," #'parinfer-toggle-mode)
-  :preface
-  (defvar parinfer-modes '(clojure-mode-hook
-                           emacs-lisp-mode-hook
-                           common-lisp-mode-hook
-                           scheme-mode-hook
-                           lisp-mode-hook))
-  :init
-  (general-setq parinfer-extensions '(defaults pretty-parens
-                                       lispy
-                                       paredit
-                                       smart-tab
-                                       smart-yank)))
 #+end_src
 
 **** [[https://gitlab.com/jaor/geiser][Geiser]]

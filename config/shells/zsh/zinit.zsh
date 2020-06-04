@@ -40,8 +40,11 @@ bindkey '^[[B' history-substring-search-down
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
 
-zinit ice wait multisrc"*.zsh" lucid
+zinit ice wait multisrc"*.zsh" lucid blockf
 zinit $load $ZSH/interactive
+
+# zinit ice wait lucid
+# zinit $load marlonrichert/zsh-autocomplete
 
 zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid
 zinit $load zdharma/fast-syntax-highlighting

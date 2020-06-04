@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-03 17:27:21
+/last updated/: 2020-06-04 11:07:03
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1753,10 +1753,11 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                  "-o ControlMaster=auto -o ControlPersist=yes"))
 
   (general-setq tramp-default-method "scp"
+                tramp-terminal-type "tramp"
                 tramp-verbose 3
                 tramp-completion-reread-directory-timeout nil
                 tramp-use-ssh-controlmaster-options nil
-                tramp-histfile-override nil
+                tramp-histfile-override "/tmp/tramp_history"
                 remote-file-name-inhibit-cache nil
                 tramp-chunksize 500
                 vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"

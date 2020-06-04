@@ -46,6 +46,8 @@ fi
 # Group matches and describe.
 zstyle ':completion:*:*:*:*:*' menu select
 
+zstyle ':autocomplete:list-choices:*' max-lines 40%
+
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
 zstyle ':completion:*:default' list-prompt '%S%M matches%s'

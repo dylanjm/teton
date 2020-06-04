@@ -50,7 +50,7 @@ export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 ### Conda
 ###
 export CONDARC="${XDG_CONFIG_HOME}/condarc"
-export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:$XDG_DATA_HOME/conda/envs"
+export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:${XDG_DATA_HOME}/conda/envs"
 
 ###
 ### Emacs-Anywhere
@@ -100,7 +100,6 @@ export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia"
 ### ZSH
 ###
 export ZSH="${DOTFILES}/config/shells/zsh"
-export _cache_dir="${XDG_CACHE_HOME}/zsh/zcompdump"
 
 ###
 ### Zplugin
@@ -115,7 +114,7 @@ export ZPFX="$ZINIT[HOME_DIR]/polaris"
 ###
 ### Less
 ###
-export LESS="-g -i -M -R -S -w -z-4 --tilde"
+export LESS="-g -i -M -R -F -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="${XDG_DATA_HOME}/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking

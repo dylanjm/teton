@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-04 11:07:03
+/last updated/: 2020-06-08 11:28:40
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -763,6 +763,8 @@ Here we can setup proper coloring for compile buffers.
 #+begin_src emacs-lisp
 (use-package bookmark
   :straight (:type built-in)
+  :general
+  ("H-b" #'bookmark-jump)
   :config
   (general-setq bookmark-save-flag +1))
 #+end_src
@@ -2326,7 +2328,6 @@ A nice way to restart emacs on the fly if you need to.
    :modes #'TeX-mode
    :capf #'pcomplete-completions-at-point
    :company (company-math-symbols company-latex-commands)))
-
 #+end_src
 
 *** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
@@ -2334,8 +2335,16 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package company-lsp
   :demand t
+  :requires company
   :straight t
-  :after (company lsp))
+  :after (company lsp)
+  :config
+  (push 'company-lsp company-backends)
+
+  ;; Disable client-side cache because the LSP server does a better job.
+  (setq company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -3829,8 +3838,8 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
   (general-setq lsp-before-save-edits nil
-                lsp-client-packages '(lsp-clients clangd lsp-python-ms)
-                lsp-diagnostic-package :auto
+                lsp-client-packages '(lsp-clients clangd lsp-pyls)
+                lsp-diagnostic-package :flycheck
                 lsp-enable-snippet t
                 lsp-eldoc-render-all nil
                 lsp-idle-delay 0.500
@@ -3848,7 +3857,19 @@ A nice way to restart emacs on the fly if you need to.
 (use-package lsp-ui
   :straight t
   :if (display-graphic-p)
-  :ghook 'lsp-mode-hook)
+  :ghook 'lsp-mode-hook
+  :config
+  (general-setq lsp-ui-doc-enable t
+                lsp-ui-doc-use-childframe t
+                lsp-ui-doc-position 'top
+                lsp-ui-doc-include-signature t
+                lsp-ui-sideline-enable nil
+                lsp-ui-flycheck-enable t
+                lsp-ui-flycheck-list-position 'right
+                lsp-ui-flycheck-live-reporting t
+                lsp-ui-peek-enable t
+                lsp-ui-peek-list-width 60
+                lsp-ui-peek-peek-height 25))
 #+end_src
 
 ** Syntax & Linting
@@ -3873,6 +3894,7 @@ A nice way to restart emacs on the fly if you need to.
   (defvar arco--flake8rc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
   (defvar arco--pylintrc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
   (defvar arco--mypy-config (f-expand (format "%s/%s/%s" (getenv "XDG_CONFIG_HOME") "mypy" "config")))
+
   (general-setq flycheck-emacs-lisp-load-path 'inherit)
   (general-setq flycheck-check-syntax-automatically '(save idle-change mode-enabled)
                 flycheck-display-errors-delay 0.1)
@@ -3882,12 +3904,14 @@ A nice way to restart emacs on the fly if you need to.
                 flycheck-python-mypy-config arco--mypy-config)
 
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
-                flycheck-shellcheck-follow-sources t
-                flycheck-sh-bash-executable "/usr/local/bin/bash"
-                flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+                flycheck-shellcheck-supported-shells '(bash sh)
+                flycheck-shellcheck-follow-sources t)
+  ;;flycheck-sh-bash-executable "/usr/local/bin/shellcheck"
+  ;;flycheck-sh-zsh-executable "/usr/local/bin/zsh")
   (general-setq flycheck-global-modes '(not dir-locals-mode
                                             text-mode
                                             org-mode
+                                            org-agenda-mode
                                             vterm-mode))
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
@@ -4188,7 +4212,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package lsp-python-ms
   :straight t)
 #+end_src

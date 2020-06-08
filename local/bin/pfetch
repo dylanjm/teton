@@ -117,9 +117,11 @@ get_args() {
 
 get_ostat() {
   mapfile -t stat < <(ssh -qn falcon1 \
-                          '/home/mcdodyla/.config/cargo/bin/fd -t f ' \
+                          '/home/mcdodyla/.config/cargo/bin/fd '\
+                          '-t f ' \
                           '-g "**/*.txt" ' \
                           '-E "**/positions.txt" ' \
+                          '-E "**/gold/**" ' \
                           '-E "**/moose/**" --no-ignore ' \
                           '--exec printf "%s\n" {} \;' \
                           ''"${basedir}"'')
@@ -130,17 +132,36 @@ skip_file() {
   local folder="${1}"
   local file="${2}"
   local status
+
+  file="${file//_performance_metrics.csv/}"
+
+  padlimit="$(tput cols)"
+  pad=$(printf '%*s' "$padlimit")
+  pad=${pad// /-}
+  padlength=$(($padlimit - ${#folder}))
   status="$(red "skipping")"
-  printf "%s%s%b\n" "${folder}" "${file}" "${status}"
-  return
+  printf '%s' "${folder}"
+  printf '%*.*s' 0 $((padlength - ${#file} - ${#status})) "$pad"
+  printf '%s' "${file}"
+  printf '.....%b\n' "${status}"
 }
 
 display_copy() {
   local folder="${1}"
   local file="${2}"
   local status
-  status=$(green "copying")
-  printf "%s%s%b\n" "$folder" "$file" "$status"
+  status="$(green "copying")"
+  file="${file//_performance_metrics.csv/}"
+
+  padlimit="$(tput cols)"
+  pad=$(printf '%*s' "$padlimit")
+  pad=${pad// /-}
+  padlength=$(($padlimit - ${#folder}))
+  status="$(red "skipping")"
+  printf '%s' "${folder}"
+  printf '%*.*s' 0 $((padlength - ${#file} - ${#status})) "$pad"
+  printf '%s' "${file}"
+  printf '.....%b\n' "${status}"
 }
 
 main() {
@@ -151,22 +172,24 @@ main() {
     fpath=${lpath//*\/assessment\//} # truncated output path
 
     # alignment and color for output.
-    folder=$(printf "%-100b" "$(yellow "$(dirname "$fpath")")" | tr ' ' '.')
-    file=$(printf "%-80b" "$(blue "$(basename "$line")")" | tr ' ' '.')
+    folder=$(printf '%b' "$(yellow "$(dirname "$fpath")")")
+    file=$(printf '%b' "$(blue "$(basename "$line")")")
 
-    [[ -e "$(pwd)/$lpath" ]] && skip_file "${folder}" "${file}"
-
-    display_copy "${folder}" "${file}"
-    [[ ${DRY_RUN:-0} == 0 ]] && {
-      rsync -a --inplace --relative falcon1:"$line" "$(pwd)"
-    }
+    if [[ -e "$(pwd)/$lpath" ]]; then
+      skip_file "${folder}" "${file}"
+    else
+      display_copy "${folder}" "${file}"
+      [[ ${DRY_RUN:-0} == 0 ]] &&
+        rsync -a --inplace --relative falcon1:"$line" "$(pwd)"
+    fi
 
     # The output of our ssh command has to have a './' where we want rsync
     # to copy the relative file-path.
-  done < <(ssh -qn falcon1 '/home/mcdodyla/.config/cargo/bin/fd -t f ' \
+  done < <(ssh -qn falcon1 '/home/mcdodyla/.config/cargo/bin/fd ' \
+               '-t f ' \
                '-g "**/*_metrics.csv" ' \
-               '-E "**/moose/**" --no-ignore '"${basedir}"' |' \
-               'sed -re "s|(^.+/)'"$dirb"'|\1./'"$dirb"'|g"')
+               '-E "**/moose/**" --no-ignore '"${basedir}"'' \
+               '| sed -re "s|(^.+/)'"$dirb"'|\1./'"$dirb"'|g"')
 }
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then

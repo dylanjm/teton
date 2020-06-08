@@ -14,7 +14,7 @@ bootstrap-bundle() {
   while true; do
     read -r -p "Do you wish to install programs from Brewfile? [Yes/No] " yn
     case "${yn}" in
-      [Yy]* ) brew bundle --file="$(pwd)/local/share/bootstrap/Brewfile"
+      [Yy]* ) brew bundle --file="~/teton/local/share/bootstrap/Brewfile"
               break
               ;;
       [Nn]* ) break
@@ -35,3 +35,4 @@ main
 # mode: sh-script
 # sh-indentation: 2
 # End:
+

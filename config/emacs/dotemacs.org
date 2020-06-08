@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-08 11:28:40
+/last updated/: 2020-06-08 14:46:30
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2006,6 +2006,18 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
     (when-let (frame (selected-frame))
       (setup-main-fonts frame)
       (configure-fonts frame))))
+
+;; (use-package vscode-dark-plus-theme
+;;   :straight t
+;;   :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
+;;   :preface
+;;   (defun arco/load-gruvbox-theme ()
+;;     (load-theme 'vscode-dark-plus t)
+;;     (when (daemonp)
+;;       (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+;;     (when-let (frame (selected-frame))
+;;       (setup-main-fonts frame)
+;;       (configure-fonts frame))))
 #+end_src
 
 *** [[https://github.com/gexplorer/simple-modeline][Simple-Modeline]]

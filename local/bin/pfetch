@@ -157,7 +157,6 @@ display_copy() {
   pad=$(printf '%*s' "$padlimit")
   pad=${pad// /-}
   padlength=$(($padlimit - ${#folder}))
-  status="$(red "skipping")"
   printf '%s' "${folder}"
   printf '%*.*s' 0 $((padlength - ${#file} - ${#status})) "$pad"
   printf '%s' "${file}"

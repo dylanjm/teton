@@ -56678,7 +56678,7 @@
 			<key>Screen</key>
 			<integer>-1</integer>
 			<key>Scrollback Lines</key>
-			<integer>0</integer>
+			<integer>10000</integer>
 			<key>Selected Text Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -57300,7 +57300,7 @@
 			<key>Unicode Version</key>
 			<integer>8</integer>
 			<key>Unlimited Scrollback</key>
-			<true/>
+			<false/>
 			<key>Use Bold Font</key>
 			<true/>
 			<key>Use Bright Bold</key>
@@ -60347,7 +60347,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.10beta3</string>
+		<string>3.3.7</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60361,7 +60361,7 @@
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
 		<string>3.3.11beta1</string>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60384,7 +60384,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1259</integer>
+	<integer>1284</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61189,7 +61189,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-05-29T15:05:58Z</date>
+	<date>2020-06-08T15:30:42Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>

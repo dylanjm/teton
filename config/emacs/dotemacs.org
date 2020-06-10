@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-08 16:38:36
+/last updated/: 2020-06-09 22:01:00
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -360,12 +360,41 @@ Here are some of my personal variables that I will need to refer to at some poin
 (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
 (defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
 (defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
+(defvar arco--emacs-pdumper-dumped t)
+(defvar arco--emacs-pdumper-dump-file (no-littering-expand-var-file-name "emacs.pdmp"))
+(defvar arco--emacs-pdumper-excluded-packages '(org-superstar
+                                                org-bullets
+                                                org-download
+                                                org-plus-contrib))
+(defvar arco--emacs-pdumper-buffer-name "*arco-emacs-dumper*")
+
 
 (defconst EMACS28+ (> emacs-major-version 27))
 (defconst IS-MAC (eq system-type 'darwin))
 #+end_src
 
 *** Functions
+**** Portable-Dumper
+#+name: init-portable-dumper-block
+#+begin_src emacs-lisp
+(defun arco/emacs-dump ()
+  (interactive)
+  (split-window-below)
+  (other-window 0)
+  (switch-to-buffer arco--emacs-pdumper-buffer-name)
+  (read-only-mode)
+  (local-set-key (kbd "q") (lambda () (interactive)
+                             (kill-this-buffer)
+                             (delete-window)))
+  (make-process
+   :name "arco-emacs-dumper"
+   :buffer arco--emacs-pdumper-buffer-name
+   :command
+   (list "/usr/local/bin/emacs"
+         "--dump-file" arco--emacs-pdumper-dump-file
+         "--batch"
+         "--eval" (format "(dump-emacs-portable %s)" arco--emacs-pdumper-dump-file))))
+#+end_src
 **** Active-Intervals
 
 This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config. Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]

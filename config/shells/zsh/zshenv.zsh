@@ -223,6 +223,7 @@ export FPATH
 ### Personal Functions
 ###
 autoload -Uz time-shell \
+         brew \
          nuke \
          pyenv \
          _zpcompinit_fast \

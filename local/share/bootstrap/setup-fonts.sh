@@ -20,11 +20,11 @@ declare -a arr=(
 
 move_font() {
   local fontname="${1}"
-  if [[ -e "$HOME/Library/Fonts/$(basename "${fontname}")" ]]; then
+  if [[ -e "${HOME}/Library/Fonts/$(basename "${fontname}")" ]]; then
     printf "Skipping %s\n" "$(basename "${fontname}")"
   else
     printf "Installing %s to ~/Library/Fonts\n" "$(basename "${fontname}")"
-    cp "${fontname}" "$HOME/Library/Fonts/"
+    cp "${fontname}" "${HOME}/Library/Fonts/"
   fi
 }
 

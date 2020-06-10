@@ -126,7 +126,6 @@ parse-args() {
         ;;
       w)
         WHITEBAR=1
-        shift $((OPTIND - 1))
         ;;
       :)
         printf "Invalid Flag"
@@ -138,6 +137,8 @@ parse-args() {
         ;;
     esac
   done
+  shift $((OPTIND - 1))
+  _MESSAGE="${@}"
 }
 
 # Core #################################################################
@@ -182,7 +183,7 @@ file-to-clipboard() {
 main() {
   parse-args "${@}"
   setup-vars
-  make_meme "${1}"
+  make_meme "${_MESSAGE}"
   file-to-clipboard
 }
 

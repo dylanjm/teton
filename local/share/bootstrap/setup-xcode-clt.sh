@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-function install-clt () {
+install-clt () {
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 
   PROD=$(softwareupdate -l |
@@ -15,7 +15,7 @@ function install-clt () {
   rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 }
 
-function bootstrap-xcode-clt () {
+bootstrap-xcode-clt () {
   # Check for xcode-CLT
   [[ ! -d "$(xcode-select -p)" ]] && install-clt && return 0
   printf "command line tools already installed!\n"

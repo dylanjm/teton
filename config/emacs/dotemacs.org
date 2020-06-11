@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-09 22:01:00
+/last updated/: 2020-06-10 10:47:19
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -374,27 +374,6 @@ Here are some of my personal variables that I will need to refer to at some poin
 #+end_src
 
 *** Functions
-**** Portable-Dumper
-#+name: init-portable-dumper-block
-#+begin_src emacs-lisp
-(defun arco/emacs-dump ()
-  (interactive)
-  (split-window-below)
-  (other-window 0)
-  (switch-to-buffer arco--emacs-pdumper-buffer-name)
-  (read-only-mode)
-  (local-set-key (kbd "q") (lambda () (interactive)
-                             (kill-this-buffer)
-                             (delete-window)))
-  (make-process
-   :name "arco-emacs-dumper"
-   :buffer arco--emacs-pdumper-buffer-name
-   :command
-   (list "/usr/local/bin/emacs"
-         "--dump-file" arco--emacs-pdumper-dump-file
-         "--batch"
-         "--eval" (format "(dump-emacs-portable %s)" arco--emacs-pdumper-dump-file))))
-#+end_src
 **** Active-Intervals
 
 This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config. Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
@@ -470,44 +449,44 @@ This saves me tons of time tangling this config file. Code taken from [[https://
 
 #+name: init-async-tangle-func-block
 #+begin_src emacs-lisp
-  (defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
-    "The Configuration File.")
+(defvar *config-file* (expand-file-name "dotemacs.org" user-emacs-directory)
+  "The Configuration File.")
 
-  (defvar *config-last-change* (nth 5 (file-attributes *config-file*))
-    "Last modification time of the configuration file.")
+(defvar *config-last-change* (nth 5 (file-attributes *config-file*))
+  "Last modification time of the configuration file.")
 
-  (defvar *show-async-tangle-results* nil
-    "Keeps *emacs* async buffers arround for later inspection.")
+(defvar *show-async-tangle-results* nil
+  "Keeps *emacs* async buffers arround for later inspection.")
 
-  (defun djm/config-updated ()
-    "Checks if the configuration file has been updated since the last time."
-    (time-less-p *config-last-change*
-                 (nth 5 (file-attributes *config-file*))))
+(defun djm/config-updated ()
+  "Checks if the configuration file has been updated since the last time."
+  (time-less-p *config-last-change*
+               (nth 5 (file-attributes *config-file*))))
 
-  (defun djm/config-tangle ()
-    "Tangle the org file asynchronously."
-    (when (djm/config-updated)
-      (setq *config-last-change*
-            (nth 5 (file-attributes *config-file*)))
-      (djm/async-babel-tangle *config-file*)))
+(defun djm/config-tangle ()
+  "Tangle the org file asynchronously."
+  (when (djm/config-updated)
+    (setq *config-last-change*
+          (nth 5 (file-attributes *config-file*)))
+    (djm/async-babel-tangle *config-file*)))
 
-  (defun djm/async-babel-tangle (org-file)
-    "Tangles org-file async"
-    (let ((init-tangle-start-time (current-time))
-          (file (buffer-file-name))
-          (async-quiet-switch "-q"))
-      (async-start
-       `(lambda ()
-          (require 'org)
-          (org-babel-tangle-file ,org-file))
-       (unless *show-async-tangle-results*
-         `(lambda (result)
-            (if result
-                (message "SUCCESS: %s successfully tangled (%.2fs)."
-                         ,org-file
-                         (float-time (time-subtract (current-time)
-                                                    ',init-tangle-start-time)))
-              (message "ERROR: %s as tangle failed." ,org-file)))))))
+(defun djm/async-babel-tangle (org-file)
+  "Tangles org-file async"
+  (let ((init-tangle-start-time (current-time))
+        (file (buffer-file-name))
+        (async-quiet-switch "-q"))
+    (async-start
+     `(lambda ()
+        (require 'org)
+        (org-babel-tangle-file ,org-file))
+     (unless *show-async-tangle-results*
+       `(lambda (result)
+          (if result
+              (message "SUCCESS: %s successfully tangled (%.2fs)."
+                       ,org-file
+                       (float-time (time-subtract (current-time)
+                                                  ',init-tangle-start-time)))
+            (message "ERROR: %s as tangle failed." ,org-file)))))))
 #+end_src
 
 **** Temp Buffers
@@ -668,8 +647,7 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 
 #+name: init-misc-settings-block
 #+begin_src emacs-lisp
-(mapc (lambda (c)
-        (set-char-table-range auto-fill-chars c t)) "!-=+]};:'\",.?")
+(mapc #'(lambda (c) (set-char-table-range auto-fill-chars c t)) "!-=+]};:'\",.?")
 #+end_src
 
 *** Keybindings & Aliases

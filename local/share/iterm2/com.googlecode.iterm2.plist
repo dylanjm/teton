@@ -53289,9 +53289,9 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-900 0 900 1577 -900 0 900 1577 </string>
+	<string>3840 -95 1080 1897 3840 -95 1080 1897 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>1923 29 1910 1038 0 0 3840 2137 </string>
+	<string>-900 0 900 1577 -900 0 900 1577 </string>
 	<key>NeverWarnAboutMeta</key>
 	<true/>
 	<key>NeverWarnAboutMeta_selection</key>
@@ -57294,7 +57294,7 @@
 			<key>Thin Strokes</key>
 			<integer>3</integer>
 			<key>Title Components</key>
-			<integer>128</integer>
+			<integer>450</integer>
 			<key>Transparency</key>
 			<real>0.0</real>
 			<key>Triggers</key>
@@ -60351,7 +60351,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60365,7 +60365,7 @@
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
 		<string>3.3.11beta1</string>
-		<string>3.3.10beta3</string>
+		<string>3.3.7</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60388,7 +60388,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1286</integer>
+	<integer>1289</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61198,7 +61198,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-06-09T15:30:43Z</date>
+	<date>2020-06-10T15:30:44Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>
@@ -61238,7 +61238,7 @@
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WindowNumber</key>
-	<false/>
+	<true/>
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>

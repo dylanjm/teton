@@ -108,11 +108,10 @@ EOM
 
 setup-vars() {
   local office_space
-
   # If these files already exist then it won't work.
   [[ -e /tmp/office_space.jpg ]] && rm /tmp/office_space.jpg
   [[ -e /tmp/smash.jpg ]]        && rm /tmp/smash.jpg
-
+  # download image to temporary file.
   office_space=$(mktemp /tmp/office_space.jpg)
   wget --quiet "${IMG_URL}" -O "${office_space}"
 }
@@ -125,6 +124,7 @@ parse-args() {
         exit 0
         ;;
       w)
+        # This flag changes the meme format
         WHITEBAR=1
         ;;
       :)
@@ -144,6 +144,7 @@ parse-args() {
 # Core #################################################################
 
 make_meme() {
+  # Depending on flags, create meme and store it in /tmp/smash.jpg
   local caption
   local memefile
   local office_space
@@ -171,6 +172,7 @@ make_meme() {
 }
 
 file-to-clipboard() {
+  # Use an applescript to read the meme jpeg into the system clipbaord.
   local memefile="/tmp/smash.jpg"
   osascript \
     -e 'on run args' \
@@ -193,5 +195,5 @@ fi
 
 # Local Variables:
 # mode: sh-script
-# sh-indentation: 2
+# sh-basic-offset: 2
 # End:

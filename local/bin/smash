@@ -181,7 +181,6 @@ file-to-clipboard() {
     "${memefile}"
 }
 
-
 main() {
   parse-args "${@}"
   setup-vars

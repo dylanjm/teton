@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-10 10:47:19
+/last updated/: 2020-06-11 11:08:55
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1506,7 +1506,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   #'display-fill-column-indicator-mode
   #'show-paren-mode
   #'prettify-symbols-mode
-  #'turn-on-auto-fill
   :init
   (general-setq prettify-symbols-unprettify-at-point 'right)
   (general-add-hook 'after-save-hook
@@ -2898,6 +2897,10 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package ibuffer
   :straight (:type built-in)
+  :gfhook #'hl-line-mode
+  :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
+  :defines (ibuffer-show-empty-filter-groups
+            ibuffer-never-show-predicates)
   :general
   ([remap list-buffers] #'ibuffer)
   :config/el-patch
@@ -2912,14 +2915,15 @@ A nice way to restart emacs on the fly if you need to.
                 ibuffer-default-shrink-to-minimum-size nil)
   (general-setq ibuffer-formats
                 '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
-  (general-setq ibuffer-never-show-predicates (list (rx (or "*magit-"
-                                                            "*git-auto-push*"
-                                                            "*Backtrace*"
-                                                            "*new*"
-                                                            "*Org*"
-                                                            "*helpful"
-                                                            "*Flycheck error messages*"
-                                                            "*Help*"))))
+  (general-setq ibuffer-never-show-predicates
+                (list (rx (or "*magit-"
+                              "*git-auto-push*"
+                              "*Backtrace*"
+                              "*new*"
+                              "*Org*"
+                              "*helpful"
+                              "*Flycheck error messages*"
+                              "*Help*"))))
 
   (define-ibuffer-column mode
     (:inline t)
@@ -3092,7 +3096,9 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-ibuffer-projectile-block
 #+begin_src emacs-lisp
 (use-package ibuffer-projectile
+  :demand t
   :straight t
+  :commands (ibuffer-projectile-set-filter-groups)
   :after (ibuffer)
   :preface
   (defun djm/config-ibuffer-projectile ()

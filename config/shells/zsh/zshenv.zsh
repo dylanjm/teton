@@ -33,6 +33,7 @@ export EMACS="/Appplications/Emacs.app"
 ###
 export HISTFILE="${XDG_DATA_HOME}/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
+export HIST_IGNORE="(ls|cd|lx|exit|..|...|....|.....|pwd|rm)"
 export HISTSIZE=500000
 export SAVEHIST=500000
 

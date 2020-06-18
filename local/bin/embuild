@@ -31,18 +31,18 @@ EMACS_GIT_URL="https://git.savannah.gnu.org/git/emacs.git"
 BRANCH="feature/native-comp"
 
 SCRIPT_ROOT=$(realpath "$(dirname "$0")")
-TARGET_DIR="$HOME/.local/emacs"
+TARGET_DIR="${HOME}/.local/src"
 
-SOURCE="$TARGET_DIR/emacs-source"
-PREFIX="$TARGET_DIR/emacs-bin"
+SOURCE="${TARGET_DIR}/emacs"
+PREFIX="${HOME}/.local/emacs"
 
 INFO="${PREFIX}/share/info/emacs"
-NS_APP="${PREFIX}/bin/Emacs.app"
+NS_APP="${PREFIX}/Emacs.app"
 NS_APP_BIN="${NS_APP}/Contents/MacOS/Emacs"
 
 export CC="clang"
 export LDFLAGS="-L/usr/local/Cellar/gcc/9.3.0_1/lib/gcc/9"
-export PKG_CONFIG_PATH="/usr/local/Cellar/imagemagick/7.0.10-11/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_3/lib/pkgconfig"
+export PKG_CONFIG_PATH="/usr/local/Cellar/harfbuzz/2.6.6_1/lib/pkgconfig:/usr/local/Cellar/imagemagick/7.0.10-18/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/Cellar/cairo/1.16.0_3/lib/pkgconfig:${PKG_CONFIG_PATH}"
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 
@@ -109,7 +109,7 @@ configure_build() {
 
   _args=(
     "-C"
-    "--enable-locallisppath=/usr/local/share/emacs/site-lisp"
+    "--enable-locallisppath=${PREFIX}/share/emacs/site-lisp"
     "--infodir=${INFO}"
     "--prefix=${PREFIX}"
     "--without-x"
@@ -123,6 +123,8 @@ configure_build() {
     "--with-modules"
     "--with-cairo"
     "--with-imagemagick"
+    "--with-pdumper=yes"
+    "--with-dumping=pdumper"
     "--with-ns"
     "--enable-ns-self-contained"
     "--with-xpm"
@@ -134,6 +136,7 @@ configure_build() {
     "--with-harfbuzz"
     "--with-xwidgets"
     "--with-nativecomp"
+    "--without-compress-install"
   )
 
   read -ra _features <<< "$FEATURES"
@@ -144,6 +147,7 @@ configure_build() {
 
 build() {
   NCPU="$(sysctl -n hw.logicalcpu)"
+  BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 3)"'
   [[ "${BYTE_COMPILE_EXTRA_FLAGS}" ]] &&
     MAKE_FLAGS="$MAKE_FLAGS BYTE_COMPILE_EXTRA_FLAGS='$BYTE_COMPILE_EXTRA_FLAGS'"
 

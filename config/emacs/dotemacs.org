@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-11 11:08:55
+/last updated/: 2020-06-17 11:40:07
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -91,8 +91,8 @@ You'll see this modification in many config files around the internet. The idea 
 (defvar default-gc-cons-threshold (* 100 1024 1024))
 
 ;; Native Compilation Vars
-;; (setq comp-speed 3
-;;       comp-deferred-compilation t)
+(setq comp-speed 3
+      comp-deferred-compilation t)
 
 (setq-default auto-window-vscroll nil
               bidi-display-reordering 'left-to-right
@@ -3861,7 +3861,8 @@ A nice way to restart emacs on the fly if you need to.
                    python-mode-hook))
     (general-add-hook modes #'lsp-deferred))
   :config
-  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd")
+  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"
+                lsp-clients-clangd-args '("-j=6" "-background-index"))
   (general-setq lsp-before-save-edits nil
                 lsp-client-packages '(lsp-clients clangd lsp-pyls)
                 lsp-diagnostic-package :flycheck
@@ -4224,7 +4225,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** Conda
 #+name: init-conda-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package conda
   :straight t
   :init

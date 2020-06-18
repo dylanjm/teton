@@ -8,7 +8,7 @@
 #
 
 # Return if requirements are not found.
-if [[ "$TERM" == 'dumb' ]]; then
+if [[ "${TERM}" == 'dumb' ]]; then
   return 1
 fi
 
@@ -32,7 +32,7 @@ unsetopt list_beep
 ###
 
 # Use caching to make completion for commands such as dpkg and apt usable.
-zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zsh/zcompcache"
+zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
 
 # Case-insensitive (all), partial-word, and then substring completion.
 if zstyle -t ':prezto:module:completion:*' case-sensitive; then
@@ -63,14 +63,13 @@ zstyle ':completion:*:warnings'     format ' %B%F{red}-- no matches found --%f%b
 zstyle ':completion:*:descriptions' format ' %B%F{yellow}-- %d --%f%b'
 zstyle ':completion:*:messages'     format ' %B%F{purple} -- %d --%f%b'
 
-
 # Show completions in cdpath
-zstyle ':completion:*:complete:(cd|pushd):*' tag-order 'local-direcories named-directories'
+zstyle ':completion:*:complete:(cd|pushd):*' tag-order 'local-directories named-directories'
 
 # Fuzzy match mistyped completions.
 zstyle ':completion:*' completer _complete _match _approximate _correct
 zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 1 numeric
+zstyle ':completion:*:approximate:*' max-errors 2 numeric
 
 # Increase the number of errors based on the length of the typed word. But make
 # sure to cap (at 7) the max-errors to avoid hanging.

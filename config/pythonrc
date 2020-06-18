@@ -10,6 +10,7 @@ readline.parse_and_bind('tab: complete')
 
 # history file
 HISTFILE = os.path.join(os.environ['XDG_DATA_HOME'], 'python_history')
+os.environ['MPLCONFIGDIR'] = os.path.join(os.environ['XDG_DATA_HOME'], 'matplotlib')
 try:
     readline.read_history_file(HISTFILE)
 except IOError:

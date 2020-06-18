@@ -7,6 +7,7 @@ alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../../'
 alias -g G='| grep'
+alias -g P='| pbcopy'
 alias -g WC='| wc -l'
 alias -g TF='| tail -f'
 alias -g DN='/dev/null'
@@ -15,7 +16,7 @@ alias -g DN='/dev/null'
 ### Emacs
 ###
 alias zconf="${EDITOR} ${ZSH} &"
-alias econf="${EDITOR} ${DOTFILES}/editors/emacs.d &"
+alias econf="${EDITOR} ${DOTFILES}/config/emacs &"
 alias kemc="brew services restart emacs-head"
 alias et="emacsclient -t"
 [[ "${INSIDE_EMACS}" == "vterm" ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
@@ -40,8 +41,6 @@ alias dotbin="cd ${DOTFILES}/local/bin"
 
 alias cache="cd $XDG_CACHE_HOME"
 alias cachem="cd $XDG_CACHE_HOME/emacs"
-alias cachez="cd $XDG_CACHE_HOME/zsh"
-alias plugins="cd $XDG_CACHE_HOME/zsh/zplugin/plugins"
 alias org="cd $HOME/Documents/org-files"
 
 ###
@@ -58,7 +57,7 @@ alias cat='bat'
 ###
 ### Misc
 ###
-alias refresh="source $HOME/.zshrc; echo 'Reloaded .zshrc.'"
+alias refresh="source ${HOME}/.zshrc; echo 'Reloaded .zshrc.'"
 alias reload="exec ${SHELL} -l -i"
 alias mypic='wget https://uninformedpriors.org/img/dylan.png'
 alias bubu='brew update && brew upgrade && brew cleanup'
@@ -101,4 +100,5 @@ alias bis='cd ~/Documents/projects/bison'
 alias bisd='cd ~/Documents/projects/bison_data'
 alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
 alias moose='cd ~/Documents/projects/moose'
+alias libmesh='cd ~/Documents/projects/libmesh'
 alias papers='cd ~/Documents/projects/papers'

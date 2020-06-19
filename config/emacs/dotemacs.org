@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-17 11:40:07
+/last updated/: 2020-06-18 16:03:20
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -241,12 +241,43 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :straight t
   :if (eq system-type 'darwin)
   :config
-  (setq exec-path-from-shell-variables '("EDITOR" "FPATH" "GPG_TTY" "GNUPGHOME"
-                                         "PATH" "PYENV_ROOT" "PYLINTHOME"
+  (setq exec-path-from-shell-variables '("XDG_CONFIG_HOME" "XDG_CACHE_HOME"
+                                         "XDG_DATA_HOME" "XDG_BIN_HOME" "CACHE"
+                                         "LC_ALL" "LANG" "DOTFILES" "ORG_FILES"
+                                         "EDITOR" "EMACS" "HISTFILE" "HIST_STAMPS"
+                                         "HIST_IGNORE" "HISTSIZE" "SAVEHIST" "ATOM_HOME"
+                                         "CCACHE_DIR" "CONDARC" "CONDA_ENVS_PATH" "EA_PATH"
+                                         "FZF_DEFAULT_COMMAND" "GPG_TTY" "GNUPGHOME"
+                                         "SSH_AUTH_SOCK" "GOKU_EDN_CONFIG_FILE"
+                                         "GUILE_AUTO_COMPILE" "GUILE_HISTORY"
+                                         "JAVA_HOME" "JULIA_NUM_THREADS"
+                                         "JULIA_DEPOT_PATH"
+                                         "ZSH"
+                                         "PYGMENTIZE_STYLE"
+                                         "R_USER"
+                                         "R_ENVIRON_USER"
+                                         "R_PROFILE_USER"
+                                         "R_MAKEVARS_USER"
+                                         "R_HISTFILE"
+                                         "R_LIBS_USER"
+                                         "R_HISTSIZE"
+                                         "R_STARTUP_DEBUG"
+                                         "MKL_NUM_THREADS"
+                                         "OMP_NUM_THREADS"
+                                         "PARALLEL_HOME"
+                                         "PYENV_ROOT"
+                                         "IPYTHONDIR"
+                                         "PYLINTHOME"
+                                         "PYTHONSTARTUP"
+                                         "MPLCONFIGDIR"
                                          "MYPY_CACHE_DIR"
-                                         "PYTHONSTARTUP" "TERMINFO" "XDG_BIN_HOME"
-                                         "XDG_CACHE_HOME" "XDG_CONFIG_HOME"
-                                         "XDG_DATA_HOME" "ZSH")
+                                         "CARGO_HOME"
+                                         "RUSTUP_HOME"
+                                         "TERMINFO"
+                                         "WEECHAT_HOME"
+                                         "_Z_DATA"
+                                         "PATH" "MANPATH" "FPATH"
+                                         )
         exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 #+end_src
@@ -2348,23 +2379,6 @@ A nice way to restart emacs on the fly if you need to.
    :company (company-math-symbols company-latex-commands)))
 #+end_src
 
-*** [[https://github.com/tigersoldier/company-lsp][Company-LSP]]
-#+name: init-company-lsp-block
-#+begin_src emacs-lisp
-(use-package company-lsp
-  :demand t
-  :requires company
-  :straight t
-  :after (company lsp)
-  :config
-  (push 'company-lsp company-backends)
-
-  ;; Disable client-side cache because the LSP server does a better job.
-  (setq company-transformers nil
-        company-lsp-async t
-        company-lsp-cache-candidates nil))
-#+end_src
-
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -3850,52 +3864,36 @@ A nice way to restart emacs on the fly if you need to.
 (use-package lsp-mode
   :straight t
   :commands (lsp lsp-deferred)
+  :ghook ('(c-mode-hook
+            c++-mode-hook
+            objc-mode-hook
+            cuda-mode-hook
+            python-mode-hook)
+          #'lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
-  :capf #'lsp-completion-at-point
-  :company (company-lsp company-files company-dabbrev-code company-dabbrev)
-  :init
-  (dolist (modes '(c-mode-hook
-                   c++-mode-hook
-                   objc-mode-hook
-                   cuda-mode-hook
-                   python-mode-hook))
-    (general-add-hook modes #'lsp-deferred))
   :config
-  (general-setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"
-                lsp-clients-clangd-args '("-j=6" "-background-index"))
-  (general-setq lsp-before-save-edits nil
-                lsp-client-packages '(lsp-clients clangd lsp-pyls)
-                lsp-diagnostic-package :flycheck
-                lsp-enable-snippet t
+  (general-setq lsp-client-packages '(lsp-clients lsp-ccls lsp-python-ms)
+                lsp-diagnostic-package 'flycheck
                 lsp-eldoc-render-all nil
-                lsp-idle-delay 0.500
-                lsp-log-io nil
-                lsp-prefer-capf t
-                lsp-prefer-flymake nil
-                lsp-restart 'auto-restart
-                lsp-enable-semantic-highlighting t
-                lsp-enable-file-watchers t))
+                lsp-eldoc-enable-hover nil
+                lsp-eldoc-hook nil
+                lsp-enable-semantic-highlighting t))
 #+end_src
 
 *** LSP-UI
 #+name: init-lsp-ui-block
 #+begin_src emacs-lisp
 (use-package lsp-ui
-  :straight t
+  :demand t
+  :after lsp-mode
   :if (display-graphic-p)
+  :straight t
+  :commands (lsp-ui-mode)
   :ghook 'lsp-mode-hook
   :config
-  (general-setq lsp-ui-doc-enable t
-                lsp-ui-doc-use-childframe t
-                lsp-ui-doc-position 'top
-                lsp-ui-doc-include-signature t
-                lsp-ui-sideline-enable nil
-                lsp-ui-flycheck-enable t
+  (general-setq lsp-ui-doc-position 'top
                 lsp-ui-flycheck-list-position 'right
-                lsp-ui-flycheck-live-reporting t
-                lsp-ui-peek-enable t
-                lsp-ui-peek-list-width 60
-                lsp-ui-peek-peek-height 25))
+                lsp-ui-imenu-kind-position 'right))
 #+end_src
 
 ** Syntax & Linting
@@ -3931,14 +3929,15 @@ A nice way to restart emacs on the fly if you need to.
 
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
                 flycheck-shellcheck-supported-shells '(bash sh)
-                flycheck-shellcheck-follow-sources t)
-  ;;flycheck-sh-bash-executable "/usr/local/bin/shellcheck"
-  ;;flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+                flycheck-shellcheck-follow-sources t
+                flycheck-sh-bash-executable "/usr/local/bin/bash"
+                flycheck-sh-zsh-executable "/usr/local/bin/zsh")
   (general-setq flycheck-global-modes '(not dir-locals-mode
                                             text-mode
                                             org-mode
                                             org-agenda-mode
                                             vterm-mode))
+  (flycheck-add-next-checker 'python-mypy 'python-flake8 'python-pyline)
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
@@ -3964,7 +3963,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flycheck-popup-tip
   :blackout t
   :straight t
@@ -4198,6 +4197,7 @@ This is a nifty package that allows me to define functions as local variables in
 (use-package python
   :straight (:type built-in)
   :capf #'python-completion-complete-at-point
+  :company (company-capf company-files company-dabbrev-code)
   :preface
   (defun arco/python-use-correct-flycheck-exe ()
     "Use the correct Python executable for flycheck."
@@ -4205,12 +4205,10 @@ This is a nifty package that allows me to define functions as local variables in
       (save-excursion
         (goto-char (point-min))
         (save-match-data
-          (when (or (looking-at "#!/usr/bin/env \\(python[^ \n]+\\)")
-                    (looking-at "#!\\([^ \n]+/python[^ \n]+\\)"))
+          (when (or (looking-at "#!/usr/bin/env \\(python[2-3]*[^ \n]+\\)")
+                    (looking-at "#!\\([^ \n]+/python[2-3]*[^ \n]+\\)"))
             (setq executable (substring-no-properties (match-string 1))))))
-      (setq-local flycheck-python-pycompile-executable executable)
-      (setq-local flycheck-python-pylint-executable "pylint")
-      (setq-local flycheck-python-flake8-executable "flake8")))
+      (setq-local flycheck-python-pycompile-executable executable)))
   :init
   (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe)
   :config
@@ -4220,27 +4218,36 @@ This is a nifty package that allows me to define functions as local variables in
                 python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
                 python-indent-guess-indent-offset-verbose nil
                 python-indent-offset 4
-                comment-inline-offset 2))
+                comment-inline-offset 2)
+  (setenv "PYTHONPATH" (expand-file-name "~/Documents/projects/moose/python")))
 #+end_src
 
-**** Conda
+**** [[https://github.com/necaris/conda.el][Conda]]
 #+name: init-conda-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package conda
+  :demand t
+  :after (python)
   :straight t
-  :init
-  (general-add-hook 'python-mode-hook #'conda-env-initialize-interactive-shells)
-  (general-add-hook 'python-mode-hook #'conda-env-initialize-eshell)
   :config
-  (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/")
-  (conda-env-autoactivate-mode t))
+  (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/"
+                conda-env-home-directory "/usr/local/Caskroom/miniconda/base/"
+                conda-env-subdirectory "envs"))
 #+end_src
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package lsp-python-ms
-  :straight t)
+  :demand t
+  :after lsp-mode
+  :straight t
+  :ghook ('python-mode-hook #'(lambda () (require 'lsp-python-ms)))
+  :init
+  (general-setq lsp-python-ms-auto-install-server t)
+  :config
+  (general-setq lsp-python-ms-extra-paths
+                (expand-file-name "~/Documents/projects/moose/python")))
 #+end_src
 
 *** C++
@@ -4253,10 +4260,6 @@ This is a nifty package that allows me to define functions as local variables in
   :init
   (general-setq ccls-executable "/usr/local/bin/ccls"
                 ccls-sem-highlight-method 'overlay)
-  (general-setq ccls-initialization-options
-                '(:index (:comments 2)
-                         :completion (:detailedLabel t)
-                         :compilationDatabaseDirectory "test"))
   :config
   (general-setq company-lsp-cache-candidates nil
                 company-transformers nil)
@@ -4271,7 +4274,7 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** MOOSE
-**** Hit-Formatter
+**** [[https://github.com/dylanjm/moose-hit-format.el][Hit-Formatter]]
 #+name: init-hit-formatter-block
 #+begin_src emacs-lisp
 (use-package moose-hit-format

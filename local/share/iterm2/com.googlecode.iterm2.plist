@@ -53207,6 +53207,8 @@
 	<true/>
 	<key>DoubleClickPerformsSmartSelection</key>
 	<true/>
+	<key>EnableAPIServer</key>
+	<true/>
 	<key>EnableDivisionView</key>
 	<false/>
 	<key>EnableProxyIcon</key>
@@ -53289,9 +53291,9 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>3840 -95 1080 1897 3840 -95 1080 1897 </string>
+	<string>3840 0 1920 1057 3840 0 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>-900 0 900 1577 -900 0 900 1577 </string>
+	<string>3840 -95 1080 1897 3840 -95 1080 1897 </string>
 	<key>NeverWarnAboutMeta</key>
 	<true/>
 	<key>NeverWarnAboutMeta_selection</key>
@@ -56118,7 +56120,7 @@
 			<key>Columns</key>
 			<integer>80</integer>
 			<key>Command</key>
-			<string>/usr/local/bin/bash</string>
+			<string>/usr/local/bin/zsh -il</string>
 			<key>Cursor Boost</key>
 			<real>0.0</real>
 			<key>Cursor Color</key>
@@ -56163,7 +56165,7 @@
 			<key>Cursor Type</key>
 			<integer>1</integer>
 			<key>Custom Command</key>
-			<string>No</string>
+			<string>Yes</string>
 			<key>Custom Directory</key>
 			<string>No</string>
 			<key>Default Bookmark</key>
@@ -60351,7 +60353,7 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.10beta3</string>
+		<string>3.3.7</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
 		<string>3.3.8beta5</string>
@@ -60365,7 +60367,7 @@
 		<string>3.3.10beta1</string>
 		<string>3.3.10beta2</string>
 		<string>3.3.11beta1</string>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
@@ -60381,14 +60383,14 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {3840, 1600}}</string>
 		<key>topLeft</key>
-		<string>{1243, 906}</string>
+		<string>{1576, 906}</string>
 	</dict>
 	<key>NoSyncHaveUsedCopyMode</key>
 	<true/>
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1289</integer>
+	<integer>1314</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -61140,6 +61142,8 @@
 	<false/>
 	<key>OpenNoWindowsAtStartup</key>
 	<false/>
+	<key>OpenTmuxWindowsIn</key>
+	<integer>0</integer>
 	<key>OptionClickMovesCursor</key>
 	<true/>
 	<key>PMPrintingExpandedStateForPrint2</key>
@@ -61198,17 +61202,19 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-06-10T15:30:44Z</date>
+	<date>2020-06-18T15:53:41Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>
 	<integer>4234156065</integer>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
+	<key>SavePasteHistory</key>
+	<true/>
 	<key>SeparateWindowTitlePerTab</key>
 	<false/>
 	<key>SmartPlacement</key>
-	<false/>
+	<true/>
 	<key>SoundForEsc</key>
 	<false/>
 	<key>SplitPaneDimmingAmount</key>

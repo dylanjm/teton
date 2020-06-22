@@ -15,7 +15,7 @@ case "${INSIDE_EMACS:-}" in
   "vterm")
     setopt PROMPT_SUBST
     [[ ! -f "${ZSH}/themes/p10k_vterm.zsh" ]] || source "${ZSH}/themes/p10k_vterm.zsh"
-    PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+    PROMPT="$PROMPT'%{$(vterm_prompt_end)%}'"
     ;;
 esac
 

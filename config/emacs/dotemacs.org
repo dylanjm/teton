@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-18 16:03:20
+/last updated/: 2020-06-22 14:55:59
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -559,7 +559,7 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (when (display-graphic-p frame)
     (when window-system
       (if (> (x-display-pixel-width) 2000)
-          (arco/set-face-attribute-font arco/default-font 18)
+          (arco/set-face-attribute-font arco/default-font 16)
         (arco/set-face-attribute-font arco/default-font 14)))))
 
 (defun configure-fonts (frame)
@@ -714,6 +714,7 @@ I might set-up some abbreviations in the future. This is more a placeholder bloc
 (use-package abbrev
   :blackout t
   :straight (:type built-in)
+  :ghook 'emacs-startup-hook
   :init
   (general-setq abbrev-file-name (no-littering-expand-var-file-name "abbrevs")
                 only-global-abbrevs nil))
@@ -787,12 +788,11 @@ Here we can setup proper coloring for compile buffers.
   :straight (:type built-in)
   :ghook ('emacs-startup-hook #'global-auto-revert-mode)
   :init
-  (general-setq auto-revert-verbose nil
-                auto-revert-check-vc-info t
+  (general-setq auto-revert-use-notify t
+                auto-revert-avoid-polling t
+                auto-revert-verbose nil
                 global-auto-revert-non-file-buffers t
-                auto-revert-interval 1
-                revert-without-query '(".*")
-                auto-revert-use-notify nil))
+                revert-without-query '(".*")))
 #+end_src
 
 *** Bookmark (Built-In)
@@ -2190,7 +2190,7 @@ A nice way to restart emacs on the fly if you need to.
   :general
   ("C-c x v" #'multi-vterm-dedicated-toggle)
   :init
-  (general-setq multi-vterm-dedicated-window-height 15
+  (general-setq multi-vterm-dedicated-window-height 25
                 multi-vterm-dedicated-window nil))
 #+end_src
 
@@ -2401,7 +2401,6 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package helpful
   :straight t
-  :gfhook #'visual-line-mode
   :general
   ([remap describe-function] #'helpful-callable
    "C-h C"                   #'helpful-command
@@ -3853,8 +3852,13 @@ A nice way to restart emacs on the fly if you need to.
 (use-package with-editor
   :straight t
   :commands (with-editor-export-editor)
+  :general
+  ([remap async-shell-command] #'with-editor-async-shell-command
+   [remap shell-command] #'with-editor-shell-command)
   :init
-  (general-add-hook 'shell-mode-hook 'with-editor-export-editor))
+  (general-add-hook 'shell-mode-hook 'with-editor-export-editor)
+  (general-add-hook 'term-exec-hook 'with-editor-export-editor)
+  (general-add-hook 'eshell-mode-hook 'with-editor-export-editor))
 #+end_src
 
 ** Language Server Support
@@ -3873,7 +3877,7 @@ A nice way to restart emacs on the fly if you need to.
   :gfhook #'lsp-enable-which-key-integration
   :config
   (general-setq lsp-client-packages '(lsp-clients lsp-ccls lsp-python-ms)
-                lsp-diagnostic-package 'flycheck
+                lsp-diagnostic-package :flycheck
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
                 lsp-eldoc-hook nil
@@ -3937,7 +3941,7 @@ A nice way to restart emacs on the fly if you need to.
                                             org-mode
                                             org-agenda-mode
                                             vterm-mode))
-  (flycheck-add-next-checker 'python-mypy 'python-flake8 'python-pyline)
+  (flycheck-add-next-checker 'python-mypy 'python-flake8 'python-pylint)
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 

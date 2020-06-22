@@ -25,7 +25,7 @@ export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export DOTFILES="${HOME}/teton"
 export ORG_FILES="${HOME}/Documents/org-files"
-export EDITOR="emacsclient -t -c"
+export EDITOR="/usr/local/bin/emacsclient -t -c"
 export EMACS="/Appplications/Emacs.app"
 
 ###
@@ -224,13 +224,12 @@ export FPATH
 ### Personal Functions
 ###
 autoload -Uz time-shell \
+         _zpcompinit_fast \
          brew \
          nuke \
          pyenv \
-         _zpcompinit_fast \
          knitit \
          vterm_printf \
          vterm_cmd \
          vterm_prompt_end \
-         conda \
          colorlist

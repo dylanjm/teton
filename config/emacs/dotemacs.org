@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-22 14:55:59
+/last updated/: 2020-06-22 16:07:13
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -945,6 +945,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :init
   (general-setq-default auto-save-list-file-prefix nil
                         auto-save-list-file-name nil
+                        auto-save-no-message t
                         auto-window-vscroll nil
                         bidi-paragraph-separate-re "^"
                         bidi-paragraph-start-re "^"

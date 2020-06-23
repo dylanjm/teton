@@ -18,7 +18,7 @@ main() {
   done
 
   printf "%s\n" "Building in ""$(pwd)""..."
-  METHOD="${method}" make -j 16 "${@}"
+  make -j 16 "${@}"
 }
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then

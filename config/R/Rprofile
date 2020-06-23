@@ -1,5 +1,5 @@
 #-*-mode: R;-*-
-options(Ncpus = 28)
+options(Ncpus = 16)
 options(dependencies = TRUE)
 options(showWarnCalls = TRUE)
 options(showErrorCalls = TRUE)

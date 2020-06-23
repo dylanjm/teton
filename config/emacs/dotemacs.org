@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-22 16:07:13
+/last updated/: 2020-06-22 21:16:45
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3882,6 +3882,8 @@ A nice way to restart emacs on the fly if you need to.
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
                 lsp-eldoc-hook nil
+                lsp-enable-file-watchers t
+                lsp-file-watch-threshold 60000
                 lsp-enable-semantic-highlighting t))
 #+end_src
 
@@ -4258,16 +4260,20 @@ This is a nifty package that allows me to define functions as local variables in
 *** C++
 **** [[https://github.com/MaskRay/emacs-ccls][CCLS]]
 #+name: init-ccls-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package ccls
   :straight t
-  :ghook ('(c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) #'lsp-deferred)
+  :ghook ('(c-mode-hook
+            c++-mode-hook
+            objc-mode-hook
+            cuda-mode-hook
+            python-mode-hook)
+          #'(lambda () (require 'ccls) (lsp-deferred)))
   :init
   (general-setq ccls-executable "/usr/local/bin/ccls"
                 ccls-sem-highlight-method 'overlay)
   :config
-  (general-setq company-lsp-cache-candidates nil
-                company-transformers nil)
+  (general-setq company-transformers nil)
   (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
 #+end_src
 

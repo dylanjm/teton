@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+git_repo_delete(){
+  curl -vL \
+    -H "Authorization: token $GITHUB_SECRET" \
+    -H "Content-Type: application/json" \
+    -X DELETE https://api.github.com/repos/dylanjm/"$1" \
+    | jq .
+}
+
+git_user_repos(){
+  curl -vL \
+       -H "Authorization: token $GITHUB_SECRET" \
+       -H "Content-Type: application/json" \
+       -X GET https://api.github.com/users/dylanjm/repos \
+       | jq .
+}
+
+main(){
+  #git_user_repos
+  git_repo_delete "${1}"
+}
+
+main "${@}"

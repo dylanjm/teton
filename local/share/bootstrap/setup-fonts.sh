@@ -4,8 +4,9 @@ declare -a arr=(
   ###
   ### Iosevka Font - https://github.com/be5invis/Iosevka/releases
   ###
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.1/ttf-iosevka-curly-3.0.1.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.0.1/pkg-iosevka-sparkle-3.0.1.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-curly-3.2.2.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-term-curly-3.2.2.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/pkg-iosevka-sparkle-3.2.2.zip"
 
   ###
   ### Symbola

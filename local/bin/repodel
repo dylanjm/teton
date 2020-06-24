@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source <( gpg --decrypt "${XDG_DATA_HOME}/env.zsh.gpg")
+
 git_repo_delete(){
   curl -vL \
     -H "Authorization: token $GITHUB_SECRET" \
@@ -17,8 +19,7 @@ git_user_repos(){
 }
 
 main(){
-  #git_user_repos
-  git_repo_delete "${1}"
+  echo "$GITHUB_SECRET"
 }
 
 main "${@}"

@@ -77,6 +77,15 @@ setopt hist_beep                 # Beep when accessing non-existent history.
 setopt append_history            # Default
 setopt inc_append_history        # this is default, but set for share_history
 
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey '^[[A' up-line-or-beginning-search
+bindkey '^[[B' down-line-or-beginning-search
+bindkey -M emacs '^P' up-line-or-beginning-search
+bindkey -M emacs '^N' down-line-or-beginning-search
 
 ## History wrapper
 ## https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh

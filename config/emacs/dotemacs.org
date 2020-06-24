@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-23 16:05:23
+/last updated/: 2020-06-24 09:51:19
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -390,14 +390,7 @@ Here are some of my personal variables that I will need to refer to at some poin
 (defvar djm--org-agenda-directory (getenv "ORG_FILES"))
 (defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
 (defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
-(defvar djm--auto-save-file-cache "~/.cache/emacs/var/backups/")
-(defvar arco--emacs-pdumper-dumped t)
-(defvar arco--emacs-pdumper-dump-file (no-littering-expand-var-file-name "emacs.pdmp"))
-(defvar arco--emacs-pdumper-excluded-packages '(org-superstar
-                                                org-bullets
-                                                org-download
-                                                org-plus-contrib))
-(defvar arco--emacs-pdumper-buffer-name "*arco-emacs-dumper*")
+(defvar djm--auto-save-file-cache "~/.cache/emacs/backups/")
 
 
 (defconst EMACS28+ (> emacs-major-version 27))
@@ -459,19 +452,19 @@ There are certain buffers I don't want to delete on accident. Code taken from [[
 
 #+name: init-protected-buffers-func-block
 #+begin_src emacs-lisp
-  (defvar *protected-buffers* '("*scratch*" "*Messages*"))
+(defvar *protected-buffers* '("*scratch*" "*Messages*"))
 
-  (defun arco/protected-buffers ()
-    "Protects some buffers from being killed."
-    (dolist (buffer *protected-buffers*)
-      (if (get-buffer buffer)
-          (with-current-buffer buffer
-            (emacs-lock-mode 'kill))
-        (get-buffer-create buffer)
+(defun arco/protected-buffers ()
+  "Protects some buffers from being killed."
+  (dolist (buffer *protected-buffers*)
+    (if (get-buffer buffer)
         (with-current-buffer buffer
-          (emacs-lock-mode 'kill)))))
+          (emacs-lock-mode 'kill))
+      (get-buffer-create buffer)
+      (with-current-buffer buffer
+        (emacs-lock-mode 'kill)))))
 
-  (general-add-hook 'emacs-startup-hook #'arco/protected-buffers)
+(general-add-hook 'emacs-startup-hook #'arco/protected-buffers)
 #+end_src
 
 **** Async Tangle
@@ -530,7 +523,7 @@ Sometimes I need a different scratch buffer to do some work on.
   "open up a guaranteed new scratch buffer"
   (interactive)
   (switch-to-buffer (cl-loop for num from 0
-                             for name = (format "blah-%03i" num)
+                             for name = (format "scratch-%03i" num)
                              while (get-buffer name)
                              finally return name)))
 #+end_src
@@ -706,8 +699,6 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 
 ** Built-In Defaults
 *** Abbrev (Built-In)
-
-I might set-up some abbreviations in the future. This is more a placeholder block until then.
 
 #+name: init-abbrev-block
 #+begin_src emacs-lisp

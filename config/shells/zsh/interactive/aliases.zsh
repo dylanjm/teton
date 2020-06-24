@@ -38,10 +38,9 @@ alias dotconfig="cd ${DOTFILES}/config"
 alias dotshell="cd ${ZSH}"
 alias dotem="cd ${DOTFILES}/config/emacs"
 alias dotbin="cd ${DOTFILES}/local/bin"
-
+alias dotboo="cd ${DOTFILES}/local/share/bootstrap"
 alias cache="cd $XDG_CACHE_HOME"
-alias cachem="cd $XDG_CACHE_HOME/emacs"
-alias org="cd $HOME/Documents/org-files"
+alias org="cd ${HOME}/Documents/org-files"
 
 ###
 ### Commands

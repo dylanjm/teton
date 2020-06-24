@@ -1,40 +1,40 @@
 # -*- mode: gitconfig; -*-
 [user]
-	name = Dylan McDowell
-	email = dylanjm@users.noreply.github.com
+  name = Dylan McDowell
+  email = dylanjm@users.noreply.github.com
 [core]
-	pager = diff-so-fancy | less --tabs=1,5 -RFX
-	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  pager = diff-so-fancy | less --tabs=1,5 -RFX
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
   excludesfile = ~/.config/git/ignore
   editor = /usr/local/bin/emacsclient -t -c
 [github]
-	user = dylanjm
+  user = dylanjm
 [rebase]
-	autoSquash = true
+  autoSquash = true
 [push]
-	default = current
+  default = current
 [branch]
-	autoSetupRebase = always
+  autoSetupRebase = always
 [color]
-	ui = auto
-	advice = auto
+  ui = auto
+  advice = auto
 [color "branch"]
-	current = yellow bold
-	local = green bold
-	remote = blue bold
+  current = yellow bold
+  local = green bold
+  remote = blue bold
 [color "diff"]
-	meta = yellow bold
-	frag = magenta
-	old = red
-	new = green bold
-	whitespace = red reverse
+  meta = yellow bold
+  frag = magenta
+  old = red
+  new = green bold
+  whitespace = red reverse
 [color "status"]
-	added = green bold
-	changed = yellow bold
-	untracked = red bold
+  added = green bold
+  changed = yellow bold
+  untracked = red bold
 [color "grep"]
-	filename = magenta bold
-	lineNumber = green bold
-	match = red bold
+  filename = magenta bold
+  lineNumber = green bold
+  match = red bold
 [column]
-	ui = auto
+  ui = auto

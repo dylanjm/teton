@@ -47,7 +47,7 @@ readonly YELLOW='\033[1;33m'
 declare -i USE_PARALLEL
 declare -i PROCS
 
-export PARALLEL_HOME="$HOME/.cache/parallel"
+export PARALLEL_HOME="${HOME}/.cache/parallel"
 
 # Utilities ############################################################
 
@@ -110,7 +110,7 @@ get_constructed_objects() {
 }
 
 get_input_files() {
-  mapfile -t INPUT_FILES < <(fd -e i . "$BISON/assessment/LWR" --exec printf "%s\n" "{}";)
+  mapfile -t INPUT_FILES < <(fd -e i . "${BISON}/assessment/LWR" --exec printf "%s\n" "{}";)
 }
 
 main() {

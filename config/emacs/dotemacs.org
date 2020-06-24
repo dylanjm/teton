@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-22 21:16:45
+/last updated/: 2020-06-23 16:05:23
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2137,6 +2137,15 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   (general-setq gcmh-idle-delay 10))
 #+end_src
 
+*** [[https://github.com/lastquestion/explain-pause-mode][Explain-Pause-Mode]]
+#+name: init-explain-pause-mode-block
+#+begin_src emacs-lisp
+(use-package explain-pause-mode
+  :blackout t
+  :straight (:host github :repo "lastquestion/explain-pause-mode")
+  :ghook 'emacs-startup-hook)
+#+end_src
+
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
 A nice way to restart emacs on the fly if you need to.
 #+name: init-restart-emacs-block
@@ -3877,14 +3886,17 @@ A nice way to restart emacs on the fly if you need to.
           #'lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
   :config
-  (general-setq lsp-client-packages '(lsp-clients lsp-ccls lsp-python-ms)
-                lsp-diagnostic-package :flycheck
+  (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
+                ;;lsp-diagnostic-package :flycheck
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
                 lsp-eldoc-hook nil
                 lsp-enable-file-watchers t
                 lsp-file-watch-threshold 60000
-                lsp-enable-semantic-highlighting t))
+                lsp-enable-semantic-highlighting t)
+  (flycheck-add-next-checker 'lsp 'python-flake8)
+  (flycheck-add-next-checker 'python-flake8 'python-mypy)
+  (flycheck-add-next-checker 'python-flake8 'python-pylint))
 #+end_src
 
 *** LSP-UI
@@ -3913,19 +3925,10 @@ A nice way to restart emacs on the fly if you need to.
   :ghook (#'prog-mode-hook #'flycheck-mode-on-safe)
   :commands (flycheck-list-errors)
   :init
-  (defun arco/disable-eldoc-on-flycheck (&rest _)
-    "Disable ElDoc when point is on a Flycheck overlay.
-  This prevents ElDoc and Flycheck from fighting over the echo
-  area."
-    (not (flycheck-overlay-errors-at (point))))
-
-  (general-add-advice #'arco/disable-eldoc-on-flycheck
-                      :after-while 'eldoc-display-message-no-interference-p)
-  :config
   (defvar arco--flake8rc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
   (defvar arco--pylintrc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "pylintrc")))
   (defvar arco--mypy-config (f-expand (format "%s/%s/%s" (getenv "XDG_CONFIG_HOME") "mypy" "config")))
-
+  :config
   (general-setq flycheck-emacs-lisp-load-path 'inherit)
   (general-setq flycheck-check-syntax-automatically '(save idle-change mode-enabled)
                 flycheck-display-errors-delay 0.1)
@@ -3944,7 +3947,6 @@ A nice way to restart emacs on the fly if you need to.
                                             org-mode
                                             org-agenda-mode
                                             vterm-mode))
-  (flycheck-add-next-checker 'python-mypy 'python-flake8 'python-pylint)
   (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
@@ -3970,7 +3972,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package flycheck-popup-tip
   :blackout t
   :straight t
@@ -4203,21 +4205,9 @@ This is a nifty package that allows me to define functions as local variables in
 #+begin_src emacs-lisp
 (use-package python
   :straight (:type built-in)
-  :capf #'python-completion-complete-at-point
+  :compdef python-mode
+  :capf python-completion-complete-at-point
   :company (company-capf company-files company-dabbrev-code)
-  :preface
-  (defun arco/python-use-correct-flycheck-exe ()
-    "Use the correct Python executable for flycheck."
-    (let ((executable python-shell-interpreter))
-      (save-excursion
-        (goto-char (point-min))
-        (save-match-data
-          (when (or (looking-at "#!/usr/bin/env \\(python[2-3]*[^ \n]+\\)")
-                    (looking-at "#!\\([^ \n]+/python[2-3]*[^ \n]+\\)"))
-            (setq executable (substring-no-properties (match-string 1))))))
-      (setq-local flycheck-python-pycompile-executable executable)))
-  :init
-  (general-add-hook 'python-mode-hook #'arco/python-use-correct-flycheck-exe)
   :config
   (general-setq python-shell-interpreter "ipython"
                 python-shell-interpreter-args "-i --simple-prompt --no-color-info"
@@ -4231,7 +4221,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/necaris/conda.el][Conda]]
 #+name: init-conda-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package conda
   :demand t
   :after (python)
@@ -4266,8 +4256,7 @@ This is a nifty package that allows me to define functions as local variables in
   :ghook ('(c-mode-hook
             c++-mode-hook
             objc-mode-hook
-            cuda-mode-hook
-            python-mode-hook)
+            cuda-mode-hook)
           #'(lambda () (require 'ccls) (lsp-deferred)))
   :init
   (general-setq ccls-executable "/usr/local/bin/ccls"

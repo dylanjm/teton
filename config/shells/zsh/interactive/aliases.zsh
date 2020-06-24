@@ -15,10 +15,10 @@ alias -g DN='/dev/null'
 ###
 ### Emacs
 ###
-alias zconf="${EDITOR} ${ZSH} &"
-alias econf="${EDITOR} ${DOTFILES}/config/emacs &"
+alias zconf="${EDITOR} ${ZSH}"
+alias econf="${EDITOR} ${DOTFILES}/config/emacs"
 alias kemc="brew services restart emacs-head"
-alias et="emacsclient -t"
+alias em="/usr/local/bin/emacsclient -t -c"
 [[ "${INSIDE_EMACS}" == "vterm" ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
@@ -29,8 +29,8 @@ alias sbcl="rlwrap -p \"red\" -D 0 -H \"${XDG_DATA_HOME}/sbcl_history\" sbcl"
 ###
 ### Navigation
 ###
-alias de="cd ${HOME}/Desktop"
-alias dc="cd ${HOME}/Documents"
+alias dtop="cd ${HOME}/Desktop"
+alias docs="cd ${HOME}/Documents"
 alias dl="cd ${HOME}/Downloads"
 
 alias dot="cd ${DOTFILES}"
@@ -53,13 +53,14 @@ alias lxg='exa -lah --icons --time=changed --time-style long-iso --git --sort=mo
 alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified'
 alias bc='eva'
 alias cat='bat'
+alias cam='conda activate moose'
+alias cdm='conda deactivate'
 
 ###
 ### Misc
 ###
 alias refresh="source ${HOME}/.zshrc; echo 'Reloaded .zshrc.'"
 alias reload="exec ${SHELL} -l -i"
-alias mypic='wget https://uninformedpriors.org/img/dylan.png'
 alias bubu='brew update && brew upgrade && brew cleanup'
 
 ###

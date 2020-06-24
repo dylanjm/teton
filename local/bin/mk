@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
 
 main() {
-  local method="opt"
-  while getopts ":m:" flags; do
-    case "${flags}" in
-      m)
-        method="${OPTARG}"
-        ;;
-      *)
-        exit 1
-        ;;
-    esac
-  done
-
   until [[ -e Makefile ]] || [[ "$(pwd)" == '/' ]]; do
     cd ..
   done

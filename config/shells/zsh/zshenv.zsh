@@ -149,6 +149,7 @@ export PARALLEL_HOME="${XDG_DATA_HOME}/parallel"
 ###
 ### Python
 ###
+export PYTHONPATH="$HOME/Documents/projects/moose/python:$PYTHONPATH"
 export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
 export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
@@ -188,6 +189,11 @@ export _Z_DATA="${XDG_DATA_HOME}/z"
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 export ZSH_AUTOSUGGEST_USE_ASYNC=true
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=true
+
+###
+### MOOSE
+###
+export MOOSE_DIR="$HOME/Documents/projects/moose"
 
 ###
 ### Paths

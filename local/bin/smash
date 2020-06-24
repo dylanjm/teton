@@ -55,15 +55,17 @@
 # Constants
 readonly _ME="$(basename "${0}")"
 readonly IMG_URL="https://electricbricks.net/wp-content/uploads/2016/11/office-space-printer.jpg"
+readonly DL_TEMP="/tmp/office_space.jpg"
+readonly FINAL_IMG="/tmp/smash.jpg"
 
 # Colors
-NORMAL='\033[0m'
-BOLD='\033[1m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-MAGENTA='\033[1;4;35m'
-YELLOW='\033[1;33m'
+readonly NORMAL='\033[0m'
+readonly BOLD='\033[1m'
+readonly RED='\033[1;31m'
+readonly GREEN='\033[1;32m'
+readonly BLUE='\033[1;34m'
+readonly MAGENTA='\033[1;4;35m'
+readonly YELLOW='\033[1;33m'
 
 # Flags
 WHITEBAR=0
@@ -109,10 +111,10 @@ EOM
 setup-vars() {
   local office_space
   # If these files already exist then it won't work.
-  [[ -e /tmp/office_space.jpg ]] && rm /tmp/office_space.jpg
-  [[ -e /tmp/smash.jpg ]]        && rm /tmp/smash.jpg
+  [[ -e "${DL_TEMP}" ]]   && rm "${DL_TEMP}"
+  [[ -e "${FINAL_IMG}" ]] && rm "${FINAL_IMG}"
   # download image to temporary file.
-  office_space=$(mktemp /tmp/office_space.jpg)
+  office_space=$(mktemp "${DL_TEMP}")
   wget --quiet "${IMG_URL}" -O "${office_space}"
 }
 
@@ -138,7 +140,7 @@ parse-args() {
     esac
   done
   shift $((OPTIND - 1))
-  _MESSAGE="${@}"
+  _MESSAGE="${*}"
 }
 
 # Core #################################################################
@@ -150,8 +152,8 @@ make_meme() {
   local office_space
 
   caption="${*}"
-  memefile=$(mktemp /tmp/smash.jpg)
-  office_space="/tmp/office_space.jpg"
+  memefile=$(mktemp "${FINAL_IMG}")
+  office_space="${DL_TEMP}"
 
   if [[ ${WHITEBAR:-0} == 1 ]]; then
     convert "${office_space}" \

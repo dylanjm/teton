@@ -24,26 +24,23 @@ load=light
 zinit ice depth=1
 zinit $load romkatv/powerlevel10k
 
+zinit ice wait lucid blockf
+zinit $load marlonrichert/zsh-autocomplete
+
+zinit wait lucid light-mode for \
+  id-as'fzf/completion' https://github.com/junegunn/fzf/blob/master/shell/completion.zsh \
+  id-as'fzf/key-bindings' https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zsh
+
 zinit ice wait lucid
 zinit $load hlissner/zsh-autopair
 
-zinit ice wait lucid blockf
+zinit ice wait lucid blockf atpull'zinit creinstall -q .'
 zinit $load zsh-users/zsh-completions
 
-zinit ice wait lucid
-zinit $load zdharma/history-search-multi-word
-
-zinit ice wait lucid
-zinit $load zsh-users/zsh-history-substring-search
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-
-zinit ice wait multisrc"*.zsh" lucid blockf
+zinit ice wait multisrc"{aliases,general}.zsh" lucid blockf
 zinit $load $ZSH/interactive
 
-zinit ice wait'1a' atinit'_zpcompinit_fast; zpcdreplay' lucid
+zinit ice wait'1a' atinit'_zpcompinit_fast; zicdreplay' lucid
 zinit $load zdharma/fast-syntax-highlighting
 
 zinit ice wait'1b' atload"!_zsh_autosuggest_start" lucid

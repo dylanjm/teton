@@ -33,7 +33,7 @@ export EMACS="/Appplications/Emacs.app"
 ###
 export HISTFILE="${XDG_DATA_HOME}/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
-export HIST_IGNORE="(ls|cd|lx|exit|..|...|....|.....|pwd|rm)"
+export HISTORY_IGNORE='(cd ..|l[alsx]#( *)#|less *|rm *)'
 export HISTSIZE=500000
 export SAVEHIST=500000
 
@@ -66,7 +66,7 @@ export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:
 ###
 ### FZF
 ###
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git"'
+export FZF_DEFAULT_COMMAND='fd -HI -E=".git" --color=always'
 
 ###
 ### Gnupg
@@ -225,6 +225,10 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
 
 export PATH
 export FPATH
+
+export MANPATH="/usr/local/share/man${MANPATH+:$MANPATH}:"
+export INFOPATH="/usr/local/share/info:${INFOPATH}"
+export HELPDIR="${MANPATH}"
 
 ###
 ### Personal Functions

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-24 09:51:19
+/last updated/: 2020-06-24 11:03:59
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -465,6 +465,16 @@ There are certain buffers I don't want to delete on accident. Code taken from [[
         (emacs-lock-mode 'kill)))))
 
 (general-add-hook 'emacs-startup-hook #'arco/protected-buffers)
+#+end_src
+
+**** Eval-To-Kill-Ring
+#+name: init-eval-to-kill-ring-block
+#+begin_src emacs-lisp
+(defun arco/eval-to-kill-ring ()
+  (interactive)
+  (kill-new
+   (with-output-to-string
+     (princ (call-interactively 'eval-expression)))))
 #+end_src
 
 **** Async Tangle
@@ -3118,7 +3128,14 @@ A nice way to restart emacs on the fly if you need to.
   (defun djm/config-ibuffer-projectile ()
     (ibuffer-projectile-set-filter-groups)
     (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
-    (add-to-list 'ibuffer-filter-groups '("System" (predicate . (-contains? '("*direnv*" "*straight-process*" "lsp" "flycheck") (buffer-name)))))
+    (add-to-list 'ibuffer-filter-groups
+                 '("System"
+                   (predicate . (-contains? '("*direnv*"
+                                              "*straight-process*"
+                                              "*explain-pause-log*"
+                                              "lsp"
+                                              "flycheck")
+                                            (buffer-name)))))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic))
 

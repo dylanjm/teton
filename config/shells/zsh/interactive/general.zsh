@@ -8,7 +8,7 @@ zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
 # Treat these characters as part of a word.
-WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
+export WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
 autoload -Uz select-word-style
 select-word-style shell
 
@@ -38,8 +38,6 @@ unsetopt BG_NICE          # Don't run all background jobs at a lower priority.
 unsetopt HUP              # Don't kill jobs on shell exit.
 unsetopt CHECK_JOBS       # Don't report on jobs when shell exit.
 
-zstyle ":history-search-multi-word" page-size "15"
-
 ###
 ### Directory
 ###
@@ -56,8 +54,21 @@ setopt chase_links          # fully resolve file-path.
 unsetopt clobber            # do not overwrite existing files with > and >>.
                             # use >! and >>! to bypass.
 
-alias d='dirs -v'
-for index ({1..9}) alias "$index"="cd +${index}"; unset index
+for index ({1..9}); do
+  alias "$index"="cd +${index}"
+done
+unset index
+
+###
+### Completion
+###
+zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':autocomplete:list-choices:*' min-input 3
+zstyle ':autocomplete:list-choices:*' max-lines 40%
+zstyle ':autocomplete:space:*' magic correct-word expand-history
+zstyle ':autocomplete:tab:*' completion select
+zstyle ':autocomplete:*:no-matches-at-all' message ''
 
 ###
 ### History
@@ -76,16 +87,12 @@ setopt hist_verify               # Do not execute immediately upon history expan
 setopt hist_beep                 # Beep when accessing non-existent history.
 setopt append_history            # Default
 setopt inc_append_history        # this is default, but set for share_history
+setopt hist_fcntl_lock
 
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
-bindkey -M emacs '^P' up-line-or-beginning-search
-bindkey -M emacs '^N' down-line-or-beginning-search
+# bindkey -M emacs "^P" up-line-or-history-search
+# bindkey -M emacs "^N" down-line-or-menu-select
+bindkey '^U' backward-kill-line
+bindkey '^[_' redo
 
 ## History wrapper
 ## https://github.com/ohmyzsh/ohmyzsh/blob/master/lib/history.zsh

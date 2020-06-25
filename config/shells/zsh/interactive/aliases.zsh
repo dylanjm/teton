@@ -11,6 +11,7 @@ alias -g P='| pbcopy'
 alias -g WC='| wc -l'
 alias -g TF='| tail -f'
 alias -g DN='/dev/null'
+alias -g d='dirs -v'
 
 ###
 ### Emacs

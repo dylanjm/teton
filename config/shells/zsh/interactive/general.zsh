@@ -68,7 +68,10 @@ zstyle ':autocomplete:list-choices:*' min-input 3
 zstyle ':autocomplete:list-choices:*' max-lines 40%
 zstyle ':autocomplete:space:*' magic correct-word expand-history
 zstyle ':autocomplete:tab:*' completion select
+zstyle ':autocomplete:*:too-many-matches' message ''
+zstyle ':autocomplete:*:no-matches-yet' message ''
 zstyle ':autocomplete:*:no-matches-at-all' message ''
+
 
 ###
 ### History

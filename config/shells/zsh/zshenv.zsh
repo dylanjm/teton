@@ -66,7 +66,22 @@ export EXA_COLORS="tr=38;5;3:tw=38;5;1:tx=38;5;2:su=38;5;5:sf=38;5;5:xa=38;5;15:
 ###
 ### FZF
 ###
-export FZF_DEFAULT_COMMAND='fd -HI -E=".git" --color=always'
+export FZF_DEFAULT_COMMAND='fd -uu -L --type f --exclude .git --color=always'
+export FZF_DEFAULT_OPTS='
+  --ansi
+  --inline-info
+  --height 40%
+  --reverse
+  --border
+  --exact
+  --multi
+  --no-sort
+  --color fg:#ebdbb2,bg:#282828,hl:#fabd2f,fg+:#ebdbb2,bg+:#3c3836,hl+:#fabd2f
+  --color info:#83a598,prompt:#bdae93,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54
+'
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 
 ###
 ### Gnupg

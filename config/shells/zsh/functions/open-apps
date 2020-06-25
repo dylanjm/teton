@@ -3,3 +3,8 @@
 function open-apps () {
     osascript -e 'tell application "System Events" to get name of (processes where background only is false)'
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-basic-offset: 2
+# End:

@@ -1,21 +1,21 @@
 #!/usr/bin/env zsh
 
-nuke() {
+function nuke() {
   local dry_run
   zparseopts -E n=dry_run
   if [[ -n "${dry_run}" ]]; then
-    git clean -dfxn \
-      && git submodule foreach --recursive git clean -dfxn
+    git clean -dfxn &&
+      git submodule foreach --recursive git clean -dfxn
   else
     read -r "response?Are you sure? [y/N] "
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-      git clean -e .dir-locals.el -e compile_commands.json -dfx \
-        && git submodule foreach --recursive git clean -dfx
+      git clean -e .dir-locals.el -e compile_commands.json -dfx &&
+        git submodule foreach --recursive git clean -dfx
     fi
   fi
 }
 
 # Local Variables:
 # mode: sh-script
-# sh-indentation: 2
+# sh-basic-offset: 2
 # End:

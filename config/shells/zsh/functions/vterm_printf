@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-vterm_printf(){
+function vterm_printf(){
   if [ -n "${TMUX}" ]; then
     # tell tmux to pass the escape sequences through
     # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
@@ -12,3 +12,8 @@ vterm_printf(){
     printf "\e]%s\e\\" "$1"
   fi
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-basic-offset: 2
+# End:

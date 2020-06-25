@@ -8,3 +8,8 @@ pyenv() {
     fi
     pyenv "${@}"
 }
+
+# Local Variables:
+# mode: sh-script
+# sh-basic-offset: 2
+# End:

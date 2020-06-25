@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 brew() {
   # check if pyenv is available
   # edit: fixed redirect issue in earlier version

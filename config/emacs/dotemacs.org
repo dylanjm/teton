@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-24 11:03:59
+/last updated/: 2020-06-25 18:40:06
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3133,7 +3133,10 @@ A nice way to restart emacs on the fly if you need to.
                    (predicate . (-contains? '("*direnv*"
                                               "*straight-process*"
                                               "*explain-pause-log*"
-                                              "lsp"
+                                              "*lsp"
+                                              "*ccls*"
+                                              "*mspyls*"
+                                              "*mspyls::stderr*"
                                               "flycheck")
                                             (buffer-name)))))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -3895,7 +3898,7 @@ A nice way to restart emacs on the fly if you need to.
   :gfhook #'lsp-enable-which-key-integration
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
-                ;;lsp-diagnostic-package :flycheck
+                lsp-diagnostic-package :flycheck
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
                 lsp-eldoc-hook nil
@@ -3956,17 +3959,6 @@ A nice way to restart emacs on the fly if you need to.
                                             org-agenda-mode
                                             vterm-mode))
   (general-pushnew 'sh-shellcheck flycheck-checkers))
-#+end_src
-
-*** [[https://github.com/purcell/flycheck-package][Flycheck-Package]]
-#+name: init-flycheck-package-block
-#+begin_src emacs-lisp :tangle no
-(use-package flycheck-package
-  :demand t
-  :straight t
-  :after (flycheck)
-  :config
-  (flycheck-package-setup))
 #+end_src
 
 *** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]

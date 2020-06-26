@@ -1,12 +1,12 @@
 #!/usr/bin/env zsh
 
 pyenv() {
-    unset -f pyenv
-    eval "$(command pyenv init -)"
-    if [[ -n "${ZSH_PYENV_LAZY_VIRTUALENV}" ]]; then
-        eval "$(command pyenv virtualenv-init -)"
-    fi
-    pyenv "${@}"
+  unset -f pyenv
+  eval "$(command pyenv init -)"
+  if [[ -n "${ZSH_PYENV_LAZY_VIRTUALENV}" ]]; then
+    eval "$(command pyenv virtualenv-init -)"
+  fi
+  pyenv "${@}"
 }
 
 # Local Variables:

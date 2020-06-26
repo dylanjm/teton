@@ -193,6 +193,14 @@ export TERMINFO="${XDG_DATA_HOME}/terminfo"
 export WEECHAT_HOME="${XDG_CONFIG_HOME}/weechat"
 
 ###
+### Zoxide
+###
+export _ZO_DATA_DIR="${XDG_DATA_HOME}/zoxide"
+export _ZO_ECHO=1
+export _ZO_EXCLUDE_DIRS=()
+export _ZO_MAXAGE=15
+
+###
 ### Z
 ###
 export _Z_DATA="${XDG_DATA_HOME}/z"
@@ -218,7 +226,8 @@ fpath+=(/usr/local/Cellar/zsh/5.8/share/zsh/functions
 
 module_path+=($ZINIT[BIN_DIR]/zmodules/Src)
 
-path=($CARGO_HOME/bin               # Rust CLI Utils
+path=(/usr/local/Caskroom/miniconda/base/bin
+      $CARGO_HOME/bin               # Rust CLI Utils
       $PYENV_ROOT/bin               # Pyenv CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $ZPFX/bin                     # Zplugin Installed Programs

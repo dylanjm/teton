@@ -20,9 +20,10 @@ for index ({1..9}) alias "$index"="cd +${index}"; unset index
 alias tconf="${EDITOR} ${DOTFILES}"
 alias zconf="${EDITOR} ${ZSH}"
 alias econf="${EDITOR} ${DOTFILES}/config/emacs"
-alias kemc="brew services restart emacs-head"
+alias kemc="brew services restart emacs-head@27"
 alias em="/usr/local/bin/emacsclient -t -c"
-[[ "${INSIDE_EMACS}" == "vterm" ]] && alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
+[[ "${INSIDE_EMACS}" == "vterm" ]] &&
+  alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
 ### Common Lisp
@@ -42,7 +43,6 @@ alias dotshell="cd ${ZSH}"
 alias dotem="cd ${DOTFILES}/config/emacs"
 alias dotbin="cd ${DOTFILES}/local/bin"
 alias dotsha="cd ${DOTFILES}/local/share"
-alias dotboo="cd ${DOTFILES}/local/share/bootstrap"
 alias cache="cd ${XDG_CACHE_HOME}"
 alias org="cd ${HOME}/Documents/org-files"
 

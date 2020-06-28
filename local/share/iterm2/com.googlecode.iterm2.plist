@@ -53291,7 +53291,7 @@
 	<key>NSWindow Frame UKCrashReporter</key>
 	<string>4219 1553 592 584 3840 0 3840 2137 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>3840 0 1920 1057 3840 0 1920 1057 </string>
+	<string>3840 14 1914 1043 3840 0 1920 1057 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>3840 -95 1080 1897 3840 -95 1080 1897 </string>
 	<key>NeverWarnAboutMeta</key>
@@ -55765,7 +55765,7 @@
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Iosevka-Term-Curly 16</string>
+			<string>Iosevka-Curly 16</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
 			<key>Open Toolbelt</key>
@@ -59452,13 +59452,13 @@
 	</array>
 	<key>NoSyncAllAppVersions</key>
 	<array>
-		<string>3.3.7</string>
+		<string>3.3.10beta3</string>
 		<string>3.3.10beta4</string>
 		<string>3.3.5</string>
-		<string>3.3.11beta1</string>
+		<string>3.3.10beta2</string>
 		<string>3.3.8beta5</string>
 		<string>3.3.3</string>
-		<string>3.3.10beta3</string>
+		<string>3.3.12beta2</string>
 		<string>3.3.1</string>
 		<string>3.3.6</string>
 		<string>3.3.8beta4</string>
@@ -59466,16 +59466,16 @@
 		<string>3.3.9beta1</string>
 		<string>3.3.10beta1</string>
 		<string>3.3.2</string>
+		<string>3.3.11beta1</string>
 		<string>3.3.12beta1</string>
-		<string>3.3.10beta2</string>
-		<string>3.3.12beta2</string>
+		<string>3.3.7</string>
 	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
+		<string>FiraCode Nerd Font</string>
 		<string>Iosevka SS09</string>
 		<string>Menlo</string>
 		<string>Iosevka Term Curly</string>
-		<string>Iosevka Curly</string>
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
@@ -59491,7 +59491,7 @@
 	<key>NoSyncInstallationId</key>
 	<string>41679764-4F02-4BFA-A017-670D4B8BF0BD</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>1343</integer>
+	<integer>1437</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -60303,7 +60303,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2020-06-24T14:38:40Z</date>
+	<date>2020-06-26T15:48:47Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateGroupIdentifier</key>

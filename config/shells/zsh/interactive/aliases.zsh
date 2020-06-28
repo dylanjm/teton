@@ -13,6 +13,9 @@ alias -g TF='| tail -f'
 alias -g DN='/dev/null'
 alias -g d='dirs -v'
 for index ({1..9}) alias "$index"="cd +${index}"; unset index
+alias -L run-help > /dev/null && unalias run-help
+autoload -Uz  run-help    run-help-git  run-help-ip   run-help-openssl \
+              run-help-p4 run-help-sudo run-help-svk  run-help-svn
 
 #########
 # Emacs #
@@ -33,6 +36,7 @@ alias sbcl="rlwrap -p \"red\" -D 0 -H \"${XDG_DATA_HOME}/sbcl_history\" sbcl"
 ###
 ### Navigation
 ###
+alias cd='z'
 alias dtop="cd ${HOME}/Desktop"
 alias docs="cd ${HOME}/Documents"
 alias dl="cd ${HOME}/Downloads"

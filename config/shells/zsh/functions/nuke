@@ -2,12 +2,16 @@
 
 function nuke() {
   local dry_run
-  zparseopts -E n=dry_run
+  zparseopts -E n=dry_run f=force
   if [[ -n "${dry_run}" ]]; then
     git clean -dfxn &&
       git submodule foreach --recursive git clean -dfxn
   else
-    read -r "response?Are you sure? [y/N] "
+    if [[ -n "${force}" ]]; then
+      response="Y"
+    else
+      read -r "response?Are you sure? [y/N] "
+    fi
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
       git clean -e .dir-locals.el -e compile_commands.json -dfx &&
         git submodule foreach --recursive git clean -dfx

@@ -33,21 +33,21 @@ zinit $load hlissner/zsh-autopair
 zinit ice wait lucid atpull'zinit creinstall -q .'
 zinit $load zsh-users/zsh-completions
 
-zinit ice wait lucid light-mode for \
+zinit wait lucid light-mode for \
   id-as'fzf/completion' https://github.com/junegunn/fzf/blob/master/shell/completion.zsh \
   id-as'fzf/key-bindings' https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zsh
 
 zinit ice wait lucid multisrc"{aliases,general}.zsh"
 zinit $load $ZSH/interactive
 
-zinit ice wait'1a' lucid atinit'zicompinit_fast; zicdreplay'
+zinit ice wait lucid atinit'zicompinit_fast; zicdreplay'
 zinit $load zdharma/fast-syntax-highlighting
 
-zinit ice wait'1b' atload"!_zsh_autosuggest_start" lucid
+zinit ice wait atload"!_zsh_autosuggest_start" lucid
 zinit $load zsh-users/zsh-autosuggestions
 
 unsetopt PUSHD_IGNORE_DUPS
-zinit ice wait'2' lucid as"program" id-as'zoxide/init' \
+zinit ice wait'2' lucid id-as'zoxide/init' \
       atclone'zoxide init zsh > zoxide-init.zsh' \
       atpull'!%atclone' run-atpull src'zoxide-init.zsh'
 zinit $load zdharma/null

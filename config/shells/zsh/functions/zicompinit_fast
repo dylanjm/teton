@@ -8,7 +8,9 @@ function zicompinit_fast () {
   local zcompf="$ZINIT[ZCOMPDUMP_PATH]"
   local zcompf_a="${zcompf}.augur"
 
-  if [[ -e "$zcompf_a" && -f "$zcompf_a"(#qN.mh+23) ]]; then
+  [[ ! -e "$zcompf_a" ]] && touch "$zcompf_a"
+
+  if [[ -f "$zcompf_a"(#qN.mh+23) ]]; then
     compinit -d "$zcompf"
     touch "$zcompf_a"
   else

@@ -127,15 +127,15 @@ $(echo -e "$(bold "bisfetch (BISON Fetch)")"):
 A script to fetch remote assessment performance data.
 
 $(echo -e "$(yellow "USAGE")"):
-        $ME [-h] [-n] [-l INTEGER] [-f folder] [<folder> ...]
+        $ME [-h] [-n] [-l INTEGER] [-f <folder>] [<folder> ...]
 
 $(echo -e "$(yellow "OPTIONS")"):
         -h        - Show this message
         -n        - Perform a dry-run
         -l        - Look back a previous run; Defaults to 1 (most-recent)
-        -f        - Folder of interest; the flag is optional but a folder is required.
+        -f        - Folder of interest; optional flag
 
-$(echo -e "$(yellow "ARGS")"):
+$(echo -e "$(yellow "ARGUMENTS")"):
         <folder>  - Folder of interest from remote machine.
                     To fetch all folders specify '*'
 

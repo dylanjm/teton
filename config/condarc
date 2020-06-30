@@ -1,4 +1,4 @@
-#-*-mode: yaml;-*-
+#-*-mode: yaml-*-
 channels:
   - https://mooseframework.org/conda/moose
   - conda-forge

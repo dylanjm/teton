@@ -13,7 +13,6 @@ export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_BIN_HOME="${HOME}/.local/bin"
 export CACHE="${XDG_CACHE_HOME}"
 
-
 ###
 ### Config
 ###
@@ -69,7 +68,7 @@ export FZF_DEFAULT_OPTS='
   --color info:#83a598,prompt:#bdae93,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#665c54
 '
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS="--preview '(cat {} 2> /dev/null || exa --tree --color=always {}) 2> /dev/null | head -200'"
+export FZF_CTRL_T_OPTS="--preview '(bat --theme ansi-dark --color always {} 2> /dev/null || exa --tree --color=always {}) 2> /dev/null | head -200'"
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 export FZF_ALT_C_OPTS="--preview 'exa --tree --color=always {} | head -200'"
 

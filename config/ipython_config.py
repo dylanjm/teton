@@ -171,7 +171,7 @@ c.InteractiveShell.ast_node_interactivity = 'last_expr'
 c.InteractiveShell.autoindent = True
 
 ## Enable magic commands to be called without the leading %.
-#c.InteractiveShell.automagic = True
+c.InteractiveShell.automagic = True
 
 ## The part of the banner to be printed before the profile
 #c.InteractiveShell.banner1 = "Python 3.8.0 (default, Jan  6 2020, 09:28:12) \nType 'copyright', 'credits' or 'license' for more information\nIPython 7.13.0 -- An enhanced Interactive Python. Type '?' for help.\n"
@@ -190,7 +190,7 @@ c.InteractiveShell.autoindent = True
 ## Use colors for displaying information about objects. Because this information
 #  is passed through a pager (like 'less'), and some pagers get confused with
 #  color codes, this capability can be turned off.
-#c.InteractiveShell.color_info = True
+c.InteractiveShell.color_info = True
 
 ## Set the color scheme (NoColor, Neutral, Linux, or LightBG).
 c.InteractiveShell.colors = 'LightBG'
@@ -206,7 +206,7 @@ c.InteractiveShell.colors = 'LightBG'
 #c.InteractiveShell.display_page = False
 
 ## (Provisional API) enables html representation in mime bundles sent to pagers.
-#c.InteractiveShell.enable_html_pager = False
+c.InteractiveShell.enable_html_pager = True
 
 ## Total length of command history
 c.InteractiveShell.history_length = 10000
@@ -323,10 +323,10 @@ c.TerminalInteractiveShell.highlight_matching_brackets = True
 c.TerminalInteractiveShell.highlighting_style = 'friendly'
 
 ## Override highlighting format for specific tokens
-#c.TerminalInteractiveShell.highlighting_style_overrides = {}
+c.TerminalInteractiveShell.highlighting_style_overrides = {}
 
 ## 
-#c.TerminalInteractiveShell.mime_renderers = {}
+c.TerminalInteractiveShell.mime_renderers = {}
 
 ## Enable mouse support in the prompt (Note: prevents selecting text with the
 #  mouse)
@@ -457,16 +457,16 @@ c.TerminalInteractiveShell.term_title = True
 #  returned and this format type is not used.
 
 ## 
-#c.BaseFormatter.deferred_printers = {}
+c.BaseFormatter.deferred_printers = {}
 
 ## 
-#c.BaseFormatter.enabled = True
+c.BaseFormatter.enabled = True
 
 ## 
-#c.BaseFormatter.singleton_printers = {}
+c.BaseFormatter.singleton_printers = {}
 
 ## 
-#c.BaseFormatter.type_printers = {}
+c.BaseFormatter.type_printers = {}
 
 #------------------------------------------------------------------------------
 # PlainTextFormatter(BaseFormatter) configuration
@@ -495,24 +495,24 @@ c.TerminalInteractiveShell.term_title = True
 #                  p.end_group(7, '])')
 
 ## 
-#c.PlainTextFormatter.float_precision = ''
+c.PlainTextFormatter.float_precision = ''
 
 ## Truncate large collections (lists, dicts, tuples, sets) to this size.
 #  
 #  Set to 0 to disable truncation.
-#c.PlainTextFormatter.max_seq_length = 1000
+c.PlainTextFormatter.max_seq_length = 1000
 
 ## 
-#c.PlainTextFormatter.max_width = 79
+c.PlainTextFormatter.max_width = 79
 
 ## 
-#c.PlainTextFormatter.newline = '\n'
+c.PlainTextFormatter.newline = '\n'
 
 ## 
-#c.PlainTextFormatter.pprint = True
+c.PlainTextFormatter.pprint = True
 
 ## 
-#c.PlainTextFormatter.verbose = False
+c.PlainTextFormatter.verbose = False
 
 #------------------------------------------------------------------------------
 # Completer(Configurable) configuration

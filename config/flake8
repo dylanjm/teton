@@ -1,6 +1,6 @@
 [flake8]
-ignore = E226,E302,E41
-max-line-length = 100
-exclude = tests/*
+extend-exclude = build/,*.pyc
+max-line-length = 99
+max-doc-length = 71
 max-complexity = 10
 max-parents = 15

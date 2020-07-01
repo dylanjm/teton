@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-30 17:16:36
+/last updated/: 2020-06-30 20:25:07
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1315,7 +1315,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                `(,(rx bos "*ielm*" eos)
                  (display-buffer-reuse-window display-buffer-in-side-window)
                  (side . right)
-                 (window-width . 80))))
+                 (window-width . 120))))
 #+end_src
 
 *** iMenu (Built-In)
@@ -4008,12 +4008,11 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 *** LISP
-**** Lisp Mode
-#+name: init-lisp mode-block
+**** Lisp-Mode
+#+name: init-lisp-mode-block
 #+begin_src emacs-lisp
 (use-package lisp-mode
-  :straight (:type built-in)
-  :gfhook #'cl-font-lock-built-in-mode)
+  :straight (:type built-in))
 #+end_src
 
 **** Elisp-Mode (Built-In)

@@ -28,7 +28,6 @@ export EMACS="/Appplications/Emacs.app"
 ###
 export HISTFILE="${XDG_DATA_HOME}/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
-export HISTORY_IGNORE='(cd *|lx *|rm *)'
 export HISTSIZE=500000
 export SAVEHIST=500000
 
@@ -46,7 +45,6 @@ export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 ### Conda
 ###
 export CONDARC="${XDG_CONFIG_HOME}/condarc"
-export CONDA_ENVS_PATH="/usr/local/Caskroom/miniconda/base/envs:${XDG_DATA_HOME}/conda/envs"
 
 ###
 ### Emacs-Anywhere
@@ -102,21 +100,6 @@ export JULIA_NUM_THREADS=16
 export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia"
 
 ###
-### ZSH
-###
-export ZSH="${DOTFILES}/config/shells/zsh"
-
-###
-### Zplugin
-###
-export ZINIT[HOME_DIR]="${XDG_DATA_HOME}/zinit"
-export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
-export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
-export ZINIT[ZCOMPDUMP_PATH]="${XDG_CACHE_HOME}/zcompdump"
-export ZINIT[COMPINIT_OPTS]="-C"
-export ZPFX="$ZINIT[HOME_DIR]/polaris"
-
-###
 ### Less
 ###
 export LESS="-g -i -M -R -S -w -z-4"
@@ -132,6 +115,17 @@ export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
 export PYGMENTIZE_STYLE='paraiso-dark'
 
 ###
+### Python
+###
+export PYTHONPATH="$HOME/Documents/projects/moose/python:$PYTHONPATH"
+export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
+export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
+export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
+export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
+export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
+export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy_cache"
+
+###
 ### R
 ###
 export R_USER="${XDG_CONFIG_HOME}/R"
@@ -144,22 +138,6 @@ export R_HISTSIZE=100000
 export R_STARTUP_DEBUG=TRUE
 export MKL_NUM_THREADS=16
 export OMP_NUM_THREADS=16
-
-###
-### Parallel
-###
-export PARALLEL_HOME="${XDG_DATA_HOME}/parallel"
-
-###
-### Python
-###
-export PYTHONPATH="$HOME/Documents/projects/moose/python:$PYTHONPATH"
-export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
-export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
-export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
-export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
-export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
-export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy_cache"
 
 ###
 ### Rust/Cargo
@@ -183,17 +161,26 @@ export TERMINFO="${XDG_DATA_HOME}/terminfo"
 export WEECHAT_HOME="${XDG_CONFIG_HOME}/weechat"
 
 ###
+### ZSH
+###
+export ZSH="${DOTFILES}/config/shells/zsh"
+
+###
+### Zplugin
+###
+export ZINIT[HOME_DIR]="${XDG_DATA_HOME}/zinit"
+export ZINIT[BIN_DIR]="$ZINIT[HOME_DIR]/bin"
+export ZINIT[PLUGINS_DIR]="$ZINIT[HOME_DIR]/plugins"
+export ZINIT[ZCOMPDUMP_PATH]="${XDG_CACHE_HOME}/zcompdump"
+export ZINIT[COMPINIT_OPTS]="-C"
+export ZPFX="$ZINIT[HOME_DIR]/polaris"
+
+###
 ### Zoxide
 ###
 export _ZO_DATA_DIR="${XDG_DATA_HOME}/zoxide"
 export _ZO_ECHO=0
-export _ZO_EXCLUDE_DIRS=()
-export _ZO_MAXAGE=15
-
-###
-### Z
-###
-export _Z_DATA="${XDG_DATA_HOME}/z"
+export _ZO_MAXAGE=100
 
 ###
 ### ZSH-Auto-Suggestions
@@ -244,6 +231,7 @@ autoload -Uz time-shell \
          zicompinit_fast \
          brew \
          nuke \
+         conda \
          pyenv \
          knitit \
          vterm_printf \

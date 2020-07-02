@@ -7,6 +7,6 @@ function colorlist (){
 }
 
 # Local Variables:
-# mode: sh-script
-# sh-indentation: 2
+# mode: shell-script
+# sh-basic-offset: 2
 # End:

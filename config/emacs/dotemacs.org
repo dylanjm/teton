@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-06-30 20:25:07
+/last updated/: 2020-07-01 14:08:56
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -383,14 +383,14 @@ Here are some of my personal variables that I will need to refer to at some poin
 
 #+name: init-variables-block
 #+begin_src emacs-lisp
-(defvar djm--assets-directory    (concat user-emacs-directory "assets/"))
-(defvar djm--lisp-directory      (concat user-emacs-directory "lisp/"))
-(defvar djm--straight-directory  (concat user-emacs-directory "straight/"))
-(defvar djm--yasnippet-directory (concat user-emacs-directory "snippets/"))
-(defvar djm--org-agenda-directory (getenv "ORG_FILES"))
-(defvar djm--custom-file  (no-littering-expand-etc-file-name "custom.el"))
+(defvar arco--assets-directory    (concat user-emacs-directory "assets/"))
+(defvar arco--lisp-directory      (concat user-emacs-directory "lisp/"))
+(defvar arco--straight-directory  (concat user-emacs-directory "straight/"))
+(defvar arco--yasnippet-directory (concat user-emacs-directory "snippets/"))
+(defvar arco--org-agenda-directory (getenv "ORG_FILES"))
+(defvar arco--custom-file  (no-littering-expand-etc-file-name "custom.el"))
 (defvar arco--user-secret-file (no-littering-expand-etc-file-name "secret.el"))
-(defvar djm--auto-save-file-cache "~/.cache/emacs/backups/")
+(defvar arco--auto-save-file-cache "~/.cache/emacs/backups/")
 
 
 (defconst EMACS28+ (> emacs-major-version 27))
@@ -701,12 +701,6 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 (fset 'custom-safe-themes 't)
 #+end_src
 
-#+name: init-aliases-block
-#+begin_src emacs-lisp
-(defalias 'qr #'query-replace)
-(defalias 'qrr #'query-replace-regexp)
-#+end_src
-
 ** Built-In Defaults
 *** Abbrev (Built-In)
 
@@ -949,18 +943,17 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (general-setq-default auto-save-list-file-prefix nil
                         auto-save-list-file-name nil
                         auto-save-no-message t
-                        auto-window-vscroll nil
                         bidi-paragraph-separate-re "^"
                         bidi-paragraph-start-re "^"
                         cursor-in-non-selected-windows nil
                         cursor-type 'bar
                         delete-by-moving-to-trash t
                         disabled-command-function nil
-                        default-directory "$HOME"
+                        default-directory (f-expand "$HOME")
                         echo-keystrokes 0.02
-                        fast-but-imprecise-scrolling nil
+                        fast-but-imprecise-scrolling t
                         ffap-machine-p-known 'reject
-                        fill-column 82
+                        fill-column 80
                         frame-resize-pixelwise t
                         frame-title-format '("%b - Emacs")
                         highlight-nonselected-windows nil
@@ -982,7 +975,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         scroll-conservatively 101
                         scroll-margin 5
                         scroll-preserve-screen-position t
-                        scroll-step 1
                         sentence-end-double-space nil
                         tab-always-indent 'complete
                         tab-width 4
@@ -1155,9 +1147,9 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :init
   (general-setq-default auto-mode-case-fold nil
-                        auto-save-file-name-transforms `((".*" ,djm--auto-save-file-cache t))
+                        auto-save-file-name-transforms `((".*" ,arco--auto-save-file-cache t))
                         backup-by-copying t
-                        backup-directory-alist `((".*" . ,djm--auto-save-file-cache))
+                        backup-directory-alist `((".*" . ,arco--auto-save-file-cache))
                         confirm-kill-processes nil
                         confirm-nonexistent-file-or-buffer nil
                         create-lockfiles nil
@@ -1667,11 +1659,11 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   (compdef
    :modes '(sh-mode shell-script-mode)
    :capf #'sh-completion-at-point-function
-   :company '(company-shell
-              company-files
+   :company '(company-capf
+              company-shell
               company-shell-env
-              company-dabbrev-code
-              company-capf)))
+              company-files
+              company-dabbrev-code)))
 #+end_src
 
 *** Shell (Built-In)
@@ -1749,7 +1741,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Term (Built-In)
 #+name: init-term-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package term
   :straight (:type built-in)
   :commands term
@@ -1934,7 +1926,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Winner (Built-In)
 #+name: init-winner-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package winner
   :straight (:type built-in)
   :ghook 'emacs-startup-hook
@@ -1965,7 +1957,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 (use-package cus-edit
   :straight (:type built-in)
   :init
-  (general-setq custom-file djm--custom-file)
+  (general-setq custom-file arco--custom-file)
   (when (file-exists-p custom-file)
     (load custom-file :noerror)))
 #+end_src
@@ -2238,12 +2230,12 @@ A nice way to restart emacs on the fly if you need to.
 (use-package projectile
   :blackout t
   :straight t
-  ;;:ghook 'emacs-startup-hook
   :general
   (:prefix "C-c p"
            "s" #'projectile-switch-project
            "c" #'projectile-compile-project
-           "f" #'projectile-find-file)
+           "f" #'projectile-find-file
+           "b" #'projectile-switch-to-buffer)
   :preface
   (defun projectile-project-find-function (dir)
     (let* ((root (projectile-project-root dir)))
@@ -2251,10 +2243,9 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (general-setq projectile-completion-system 'default
                 projectile-enable-caching t
-                projectile-switch-project-action 'projectile-dired
-                projectile--mode-line "Projectile")
+                projectile-switch-project-action 'projectile-dired)
   (general-pushnew 'projectile-project-find-function project-find-functions)
-  (projectile-global-mode +1))
+  (projectile-global-mode))
 #+end_src
 
 *** [[https://github.com/wbolster/emacs-direnv][Direnv]]
@@ -2282,7 +2273,7 @@ A nice way to restart emacs on the fly if you need to.
   :straight (:host github :repo "raxod502/selectrum" :files ("*.el"))
   :ghook 'emacs-startup-hook
   :config
-  (general-setq selectrum-num-candidates-displayed 15))
+  (general-setq selectrum-num-candidates-displayed 10))
 
 
 (use-package selectrum-prescient
@@ -2363,29 +2354,6 @@ A nice way to restart emacs on the fly if you need to.
              company-shell-env))
 #+end_src
 
-*** [[https://github.com/alexeyr/company-auctex][Company-Auctex]]
-#+name: init-company-auctex-block
-#+begin_src emacs-lisp
-(use-package company-auctex
-  :straight t
-  :after (:all company auctex)
-  :ghook (TeX-mode-hook #'company-auctex-init))
-#+end_src
-
-*** [[https://github.com/vspinu/company-math][Company-Math]]
-#+name: init-company-math-block
-#+begin_src emacs-lisp
-(use-package company-math
-  :straight t
-  :after (:all company auctex)
-  :ghook #'TeX-mode-hook
-  :config
-  (compdef
-   :modes #'TeX-mode
-   :capf #'pcomplete-completions-at-point
-   :company (company-math-symbols company-latex-commands)))
-#+end_src
-
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
@@ -2399,7 +2367,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq yas-verbosity 1
                 yas-wrap-around-region t
                 yas-prompt-functions '(yas-completing-prompt)
-                yas-snippet-dirs `(,djm--yasnippet-directory)))
+                yas-snippet-dirs `(,arco--yasnippet-directory)))
 #+end_src
 
 ** Documentation
@@ -2449,6 +2417,9 @@ A nice way to restart emacs on the fly if you need to.
   :general
   ([remap query-replace] #'anzu-query-replace-regexp
    [remap query-replace-regexp] #'anzu-query-replace)
+  :init
+  (defalias 'qr #'anzu-query-replace)
+  (defalias 'qrr #'anzu-query-replace-regexp)
   :config
   (global-anzu-mode))
 #+end_src
@@ -3180,25 +3151,23 @@ A nice way to restart emacs on the fly if you need to.
   :mode (("\\.org\\'" . org-mode))
   :gfhook #'set-buffer-fixed-pitch
   :general
-  ("C-c a" #'org-agenda
-   "C-c c" #'org-capture)
   (:keymaps 'org-mode-map
             "M-n" #'outline-next-visible-heading
             "M-p" #'outline-previous-visible-heading)
-  :company '(company-dabbrev company-capf company-files)
+  :company '(company-capf company-files company-dabbrev)
   :capf #'pcomplete-completions-at-point
   :preface
   (defun set-buffer-fixed-pitch ()
     (general-setq-local line-spacing 2
-                        fill-column 100)
+                        fill-column 110)
     (set-face-attribute 'variable-pitch nil
                         :family "Iosevka Sparkle"
                         :inherit 'default)
     (set-face-attribute 'fixed-pitch nil
                         :family "Iosevka Curly"
                         :inherit 'default)
-    (variable-pitch-mode +1)
-    (virtual-auto-fill-mode +1))
+    (variable-pitch-mode)
+    (virtual-auto-fill-mode))
   :config
   ;; Directory Settings
   (general-setq org-archive-location "~/Documents/org-files/archive.org::"
@@ -3282,6 +3251,9 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package org-agenda
   :straight nil
+  :general
+  ("C-c a" #'org-agenda
+   "C-c c" #'org-capture)
   :config
   (general-setq org-agenda-block-separator nil
                 org-agenda-diary-file "~/Documents/org-files/diary.org"
@@ -3298,13 +3270,6 @@ A nice way to restart emacs on the fly if you need to.
                 org-agenda-tags-column -100
                 org-agenda-use-time-grid t
                 org-agenda-window-setup 'only-window))
-
-(use-package org-super-agenda
-  :straight t)
-
-(defun org-archive-done-tasks ()
-  (interactive)
-  (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
 *** Org-Src
@@ -3313,18 +3278,18 @@ A nice way to restart emacs on the fly if you need to.
 (use-package org-src
   :straight nil
   :preface
-  (defun djm/org-src-supress-final-newline ()
+  (defun arco/org-src-supress-final-newline ()
     (setq-local require-final-newline nil))
 
-  (defun djm/org-src-delete-trailing-space (&rest _)
+  (defun arco/org-src-delete-trailing-space (&rest _)
     (delete-trailing-whitespace))
 
-  (defun djm/disable-flycheck-in-org-src-block ()
+  (defun arco/disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   :init
-  (general-add-hook 'org-src-mode-hook #'djm/org-src-supress-final-newline)
-  (general-add-hook 'org-src-mode-hook #'djm/disable-flycheck-in-org-src-block)
-  (general-add-advice 'org-edit-src-exit :before #'djm/org-src-delete-trailing-space)
+  (general-add-hook 'org-src-mode-hook #'arco/org-src-supress-final-newline)
+  (general-add-hook 'org-src-mode-hook #'arco/disable-flycheck-in-org-src-block)
+  (general-add-advice 'org-edit-src-exit :before #'arco/org-src-delete-trailing-space)
   :config/el-patch
   (el-patch-defun org-src--construct-edit-buffer-name (org-buffer-name lang)
     (concat "[" org-buffer-name "]"))
@@ -3347,15 +3312,11 @@ A nice way to restart emacs on the fly if you need to.
     (when org-inline-image-overlays
       (org-redisplay-inline-images)))
   :init
-  (general-add-hook 'org-babel-after-execute-hook
-                    #'arco/org-redisplay-inline-images)
+  (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images)
   :config
   (general-setq org-babel-load-languages '((emacs-lisp . t)
                                            (shell . t)
-                                           (python . t)
-                                           (ditaa . t)
-                                           (dot . t)
-                                           (plantuml . t))
+                                           (ditaa . t))
                 org-confirm-babel-evaluate nil))
 
 (use-package ob-ditaa
@@ -3364,13 +3325,6 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
                 "/usr/local/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar"))
-
-(use-package ob-plantuml
-  :straight nil
-  :commands (org-babel-execute:plantuml)
-  :config
-  (general-setq org-plantuml-jar-path
-                "/usr/local/Cellar/plantuml/1.2020.2/libexec/plantuml.jar"))
 #+end_src
 
 *** Org-Ox
@@ -3416,14 +3370,10 @@ A nice way to restart emacs on the fly if you need to.
 
 
 (use-package ox-gfm
-  :demand t
-  :straight t
-  :after (org))
+  :straight t)
 
 (use-package ox-jdf-report
-  :demand t
-  :straight (:host github :repo "dylanjm/ox-jdf")
-  :after (org))
+  :straight (:host github :repo "dylanjm/ox-jdf"))
 #+end_src
 
 *** [[https://github.com/integral-dw/org-superstar-mode][Org-SuperStar]]
@@ -3437,33 +3387,13 @@ A nice way to restart emacs on the fly if you need to.
                 org-superstar-special-todo-items t))
 #+end_src
 
-*** [[https://github.com/jkitchin/org-ref][Org-Ref]]
-#+name: init-org-ref-block
-#+begin_src emacs-lisp :tangle no
-(use-package org-ref
-  :straight t
-  :commands (org-ref-insert-link))
-#+end_src
-
 *** [[https://github.com/snosov1/toc-org][TOC-Org]]
 #+name: init-toc-org-block
 #+begin_src emacs-lisp
-  (use-package toc-org
-    :ghook 'org-mode-hook 'markdown-mode-hook)
-#+end_src
-
-*** [[https://github.com/jethrokuan/org-roam][Org-Roam]]
-#+name: init-org-roam-block
-#+begin_src emacs-lisp :tangle no
-(use-package org-roam
-  :straight (:host github :repo "jethrokuan/org-roam")
-  :general
-  (:keymaps 'org-roam-mode-map
-   "C-c n l" #'org-roam
-   "C-c n f" #'org-roam-find-file
-   "C-c n g" #'org-roam-show-graph)
-  (:keymaps 'org-mode-map
-   "C-c n i" #'org-roam-insert))
+(use-package toc-org
+  :blackout t
+  :straight t
+  :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
 ** Email
@@ -3599,170 +3529,170 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://www.gnu.org/software/emms/][EMMS]]
 #+name: init-emms-block
 #+begin_src emacs-lisp :tangle no
-  (use-package emms
-    :straight t
-    :commands (emms)
-    :init
-    (defconst emms-info-atomic-parsley-tag-alist '(("©too" . "info-note")
-                                                   ("©alb" . "info-album")
-                                                   ("©ART" . "info-artist")
-                                                   ("©nam" . "info-title")
-                                                   ("©gen" . "info-genre")
-                                                   ("©day" . "info-year")
-                                                   ("trkn" . "info-tracknumber")))
+(use-package emms
+  :straight t
+  :commands (emms)
+  :init
+  (defconst emms-info-atomic-parsley-tag-alist '(("©too" . "info-note")
+                                                 ("©alb" . "info-album")
+                                                 ("©ART" . "info-artist")
+                                                 ("©nam" . "info-title")
+                                                 ("©gen" . "info-genre")
+                                                 ("©day" . "info-year")
+                                                 ("trkn" . "info-tracknumber")))
 
-    (defun emms-info-atomic-parsley (track)
-      (when (and (eq 'file (emms-track-type track))
-                 (string-match "\\.[Mm][Pp]4\\'" (emms-track-name track)))
-        (with-temp-buffer
-          (when (zerop
-                 (apply (if (fboundp 'emms-i18n-call-process-simple)
-                            'emms-i18n-call-process-simple
-                          'call-process)
-                        "AtomicParsley"
-                        nil t nil
-                        (list (emms-track-name track) "-t" "+")))
-            (goto-char (point-min))
-            (while (not (eql (point) (point-max)))
-              (if (re-search-forward "^Atom \"\\(.*\\)\" contains: \\(.*\\)$" nil t)
-                  (progn
-                    (let ((name (match-string 1))
-                          (value (match-string 2)))
-                      (when (> (length value) 0)
-                        (emms-track-set track
-                                        (intern (cdr (assoc name emms-info-atomic-parsley-tag-alist)))
-                                        value))
-                      (forward-line 1)))
-                (forward-line 1)))))))
+  (defun emms-info-atomic-parsley (track)
+    (when (and (eq 'file (emms-track-type track))
+               (string-match "\\.[Mm][Pp]4\\'" (emms-track-name track)))
+      (with-temp-buffer
+        (when (zerop
+               (apply (if (fboundp 'emms-i18n-call-process-simple)
+                          'emms-i18n-call-process-simple
+                        'call-process)
+                      "AtomicParsley"
+                      nil t nil
+                      (list (emms-track-name track) "-t" "+")))
+          (goto-char (point-min))
+          (while (not (eql (point) (point-max)))
+            (if (re-search-forward "^Atom \"\\(.*\\)\" contains: \\(.*\\)$" nil t)
+                (progn
+                  (let ((name (match-string 1))
+                        (value (match-string 2)))
+                    (when (> (length value) 0)
+                      (emms-track-set track
+                                      (intern (cdr (assoc name emms-info-atomic-parsley-tag-alist)))
+                                      value))
+                    (forward-line 1)))
+              (forward-line 1)))))))
 
-    (defun emms-mark-add-info-to-tracks ()
-      "Add info to all track in playlist"
-      (interactive)
-      (emms-mark-do-with-marked-track (lambda nil
-                                        (let ((x (emms-playlist-track-at)))
-                                          (emms-info-atomic-parsley x))
-                                        (progn
-                                          (forward-line 1)
-                                          (point)))))
+  (defun emms-mark-add-info-to-tracks ()
+    "Add info to all track in playlist"
+    (interactive)
+    (emms-mark-do-with-marked-track (lambda nil
+                                      (let ((x (emms-playlist-track-at)))
+                                        (emms-info-atomic-parsley x))
+                                      (progn
+                                        (forward-line 1)
+                                        (point)))))
 
   ;;; Display album in playlist
-    (defun ambrevar/emms-artist-album-track-and-title-format (bdata fmt)
-      (concat
-       "%i"
-       (let ((artist (emms-browser-format-elem fmt "a")))
-         (if (not artist)
-             "%n"                           ; If unknown, display the filename.
-           (concat
-            "%a - "
-            (let ((album (emms-browser-format-elem fmt "A")))
-              (if album "%A - " ""))
-            (let ((disc (emms-browser-format-elem fmt "D")))
-              (if (and disc (not (string= disc ""))) "%D/" ""))
-            (let ((track (emms-browser-format-elem fmt "T")))
-              (if (and track (not (string= track "0")))
-                  "%T. "
-                ""))
-            "%t [%d]")))))
+  (defun ambrevar/emms-artist-album-track-and-title-format (bdata fmt)
+    (concat
+     "%i"
+     (let ((artist (emms-browser-format-elem fmt "a")))
+       (if (not artist)
+           "%n"                           ; If unknown, display the filename.
+         (concat
+          "%a - "
+          (let ((album (emms-browser-format-elem fmt "A")))
+            (if album "%A - " ""))
+          (let ((disc (emms-browser-format-elem fmt "D")))
+            (if (and disc (not (string= disc ""))) "%D/" ""))
+          (let ((track (emms-browser-format-elem fmt "T")))
+            (if (and track (not (string= track "0")))
+                "%T. "
+              ""))
+          "%t [%d]")))))
 
 
-    ;; Display disc number in browser
-    (defun ambrevar/emms-browser-track-artist-and-title-format (bdata fmt)
-      (concat
-       "%i"
-       (let ((disc (emms-browser-format-elem fmt "D")))
-         (if (and disc (not (string= disc "")))
-             "%D/"))
-       (let ((track (emms-browser-format-elem fmt "T")))
-         (if (and track (not (string= track "0")))
-             "%T. "
-           ""))
-       "%n"))
+  ;; Display disc number in browser
+  (defun ambrevar/emms-browser-track-artist-and-title-format (bdata fmt)
+    (concat
+     "%i"
+     (let ((disc (emms-browser-format-elem fmt "D")))
+       (if (and disc (not (string= disc "")))
+           "%D/"))
+     (let ((track (emms-browser-format-elem fmt "T")))
+       (if (and track (not (string= track "0")))
+           "%T. "
+         ""))
+     "%n"))
 
 
-    (defun ambrevar/emms-time-for-display (track)
-      "Inspired by `emms-playing-time-display'."
-      (let* ((total-playing-time
-              (or (emms-track-get
-                   track
-                   'info-playing-time)
-                  0))
-             (total-min-only (/ total-playing-time 60))
-             (total-sec-only (% total-playing-time 60)))
-        (format "%02d:%02d" total-min-only total-sec-only)))
+  (defun ambrevar/emms-time-for-display (track)
+    "Inspired by `emms-playing-time-display'."
+    (let* ((total-playing-time
+            (or (emms-track-get
+                 track
+                 'info-playing-time)
+                0))
+           (total-min-only (/ total-playing-time 60))
+           (total-sec-only (% total-playing-time 60)))
+      (format "%02d:%02d" total-min-only total-sec-only)))
 
-    (defun ambrevar/emms-track-description-with-album (track)
-      "Simple function to give a user-readable description of a track.
+  (defun ambrevar/emms-track-description-with-album (track)
+    "Simple function to give a user-readable description of a track.
   If it's a file track, just return the file name.  Otherwise,
   return the type and the name with a colon in between.
   Hex-encoded characters in URLs are replaced by the decoded
   character."
-      (let ((type (emms-track-type track)))
-        (cond ((eq 'file type)
-               (cl-flet ((fmt (string &optional suffix prefix)
-                              (if string
-                                  (concat prefix string suffix)
-                                "")))
-                 (concat
-                  (fmt (emms-track-get track 'info-artist) " - ")
-                  (fmt (emms-track-get track 'info-album) " - ")
-                  (fmt (emms-track-get track 'info-discnumber) "/")
-                  (if (emms-track-get track 'info-tracknumber)
-                      (format "%02d. " (string-to-number (emms-track-get track 'info-tracknumber)))
-                    "")
-                  (emms-track-get track 'info-title)
-                  (fmt (ambrevar/emms-time-for-display track) "]" " ["))))
-              ((eq 'url type)
-               (emms-format-url-track-name (emms-track-name track)))
-              (t (concat (symbol-name type)
-                         ": " (emms-track-name track))))))
+    (let ((type (emms-track-type track)))
+      (cond ((eq 'file type)
+             (cl-flet ((fmt (string &optional suffix prefix)
+                            (if string
+                                (concat prefix string suffix)
+                              "")))
+               (concat
+                (fmt (emms-track-get track 'info-artist) " - ")
+                (fmt (emms-track-get track 'info-album) " - ")
+                (fmt (emms-track-get track 'info-discnumber) "/")
+                (if (emms-track-get track 'info-tracknumber)
+                    (format "%02d. " (string-to-number (emms-track-get track 'info-tracknumber)))
+                  "")
+                (emms-track-get track 'info-title)
+                (fmt (ambrevar/emms-time-for-display track) "]" " ["))))
+            ((eq 'url type)
+             (emms-format-url-track-name (emms-track-name track)))
+            (t (concat (symbol-name type)
+                       ": " (emms-track-name track))))))
 
 
-    (defun ambrevar/emms-tracks-duration (begin end)
-      "Display play time of tracks in region."
-      (interactive "r")
-      (if (not (use-region-p))
-          (message "%s" (emms-browser-track-duration
-                         (car (emms-browser-tracks-at-point))))
-        (let* ((total-time)
-               (first-line (line-number-at-pos begin))
-               (last-line (line-number-at-pos end))
-               (count 0))
-          (setq total-time
-                (save-mark-and-excursion
-                  (cl-loop for line from first-line to last-line
-                           do (goto-line line)
-                           for time = (emms-track-get (car (emms-browser-tracks-at-point))
-                                                      'info-playing-time)
-                           when time
-                           do (cl-incf count)
-                           when time
-                           sum time)))
-          (message "%02d:%02d for %d tracks" (/ total-time 60) (% total-time 60)
-                   count))))
+  (defun ambrevar/emms-tracks-duration (begin end)
+    "Display play time of tracks in region."
+    (interactive "r")
+    (if (not (use-region-p))
+        (message "%s" (emms-browser-track-duration
+                       (car (emms-browser-tracks-at-point))))
+      (let* ((total-time)
+             (first-line (line-number-at-pos begin))
+             (last-line (line-number-at-pos end))
+             (count 0))
+        (setq total-time
+              (save-mark-and-excursion
+                (cl-loop for line from first-line to last-line
+                         do (goto-line line)
+                         for time = (emms-track-get (car (emms-browser-tracks-at-point))
+                                                    'info-playing-time)
+                         when time
+                         do (cl-incf count)
+                         when time
+                         sum time)))
+        (message "%02d:%02d for %d tracks" (/ total-time 60) (% total-time 60)
+                 count))))
 
-    :config
-    (require 'emms-setup)
-    (emms-all)
-    (emms-history-load)
-    (require 'emms-player-mpv)
-    (require 'emms-source-playlist)
-    (require 'emms-source-file)
-    (require 'emms-mark)
-    (require 'emms-info)
-    (require 'emms-browser)
-    (general-setq emms-player-list '(emms-player-mpv))
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-history-load)
+  (require 'emms-player-mpv)
+  (require 'emms-source-playlist)
+  (require 'emms-source-file)
+  (require 'emms-mark)
+  (require 'emms-info)
+  (require 'emms-browser)
+  (general-setq emms-player-list '(emms-player-mpv))
 
 
-    (general-setq emms-source-file-default-directory (expand-file-name "~/Movies/")
-                  emms-info-asynchronously t
-                  emms-info-auto-update t
-                  emms-show-format "NP: %s"
-                  emms-playlist-buffer-name "*EMMS Playlist*"
-                  emms-browser-default-format "%i%a - %A:	%T	%t [%d]")
+  (general-setq emms-source-file-default-directory (expand-file-name "~/Movies/")
+                emms-info-asynchronously t
+                emms-info-auto-update t
+                emms-show-format "NP: %s"
+                emms-playlist-buffer-name "*EMMS Playlist*"
+                emms-browser-default-format "%i%a - %A:	%T	%t [%d]")
 
-    (general-setq emms-info-functions '(emms-info-atomic-parsley))
-    (general-pushnew "--no-audio-display" emms-player-mpv-parameters)
-    (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
+  (general-setq emms-info-functions '(emms-info-atomic-parsley))
+  (general-pushnew "--no-audio-display" emms-player-mpv-parameters)
+  (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
 #+end_src
 
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
@@ -3784,46 +3714,30 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq htmlize-ignore-face-size t))
 #+end_src
 
-*** [[https://github.com/flexibeast/ebuku][Ebuku]]
-#+name: init-ebuku-block
-#+begin_src emacs-lisp
-(use-package ebuku
-  :straight t)
-#+end_src
-
 ** Version Control
 *** [[https://github.com/magit/magit][Magit]]
 #+name: init-magit-block
 #+begin_src emacs-lisp
 (use-package magit
   :straight t
+  :ghook
   :general ("C-x g"   #'magit-status
             "C-x M-g" #'magit-dispatch)
-  :preface
+  :init
   (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode)
   :config
   (general-setq magit-view-git-manual-method 'woman
-                magit-revision-show-gravatars
-                '("^Author:     " . "^Commit:     ")
+                magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                 magit-diff-refine-hunk t
                 magit-save-repository-buffers nil
-                magit-display-buffer-function
-                #'magit-display-buffer-fullframe-status-v1))
-
-(use-package magit-diff
-  :demand t
-  :straight nil
-  :after magit
-  :config
-  (general-setq magit-diff-refine-hunk t))
+                magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package git-commit
   :straight nil
   :ghook ('magit-mode-hook #'global-git-commit-mode)
   :config
   (general-setq git-commit-summary-max-length 50
-                git-commit-style-convention-checks
-                '(overlong-summary-line non-empty-second-line)))
+                git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line)))
 #+end_src
 
 *** [[https://github.com/magit/forge][Forge]]
@@ -3840,27 +3754,27 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://gitlab.com/pidu/git-timemachine][Git-Time-Machine]]
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
-  (use-package git-timemachine
-    :straight (:host gitlab :repo "pidu/git-timemachine")
-    :config
-    (general-setq git-timemachine-show-minibuffer-details t))
+(use-package git-timemachine
+  :straight (:host gitlab :repo "pidu/git-timemachine")
+  :config
+  (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
 #+begin_src emacs-lisp
-  (use-package vdiff-magit
-    :straight t
-    :general
-    (:keymaps 'magit-mode-map
-     "e" #'vdiff-magit-dwim
-     "E" #'vdiff-magit)
-    :config
-    (transient-suffix-put 'magit-dispatch "e" :description "vdiff (dwim)")
-    (transient-suffix-put 'magit-dispatch "e" :command #'vdiff-magit-dwim)
-    (transient-suffix-put 'magit-dispatch "E" :description "vdiff")
-    (transient-suffix-put 'magit-dispatch "E" :command #'vdiff-magit))
+(use-package vdiff-magit
+  :straight t
+  :general
+  (:keymaps 'magit-mode-map
+            "e" #'vdiff-magit-dwim
+            "E" #'vdiff-magit)
+  :config
+  (transient-suffix-put 'magit-dispatch "e" :description "vdiff (dwim)")
+  (transient-suffix-put 'magit-dispatch "e" :command #'vdiff-magit-dwim)
+  (transient-suffix-put 'magit-dispatch "E" :description "vdiff")
+  (transient-suffix-put 'magit-dispatch "E" :command #'vdiff-magit))
 #+end_src
 
 *** [[https://github.com/magit/with-editor][With-Editor]]
@@ -3926,9 +3840,7 @@ A nice way to restart emacs on the fly if you need to.
   :commands (lsp-ui-mode)
   :ghook 'lsp-mode-hook
   :config
-  (general-setq lsp-ui-doc-max-height 25
-                lsp-ui-doc-max-width 50
-                lsp-ui-sideline-ignore-duplicate t
+  (general-setq lsp-ui-sideline-ignore-duplicate t
                 lsp-ui-sideline-show-hover nil
                 lsp-ui-doc-position 'top
                 lsp-ui-flycheck-list-position 'right
@@ -3942,7 +3854,6 @@ A nice way to restart emacs on the fly if you need to.
 (use-package flycheck
   :straight t
   :ghook (#'prog-mode-hook #'global-flycheck-mode)
-  :ghook (#'prog-mode-hook #'flycheck-mode-on-safe)
   :commands (flycheck-list-errors)
   :init
   (defvar arco--flake8rc (f-expand (format "%s/%s" (getenv "XDG_CONFIG_HOME") "flake8")))
@@ -3984,14 +3895,10 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package flycheck-popup-tip
   :blackout t
   :straight t
-  :after flycheck
-  :if (display-graphic-p)
-  :commands (flycheck-popup-tip-show-popup
-             flycheck-popup-tip-delete-popup)
   :ghook 'flycheck-mode-hook
   :config
   (general-setq flycheck-popup-tip-error-prefix "‼ "))
@@ -4008,13 +3915,6 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 *** LISP
-**** Lisp-Mode
-#+name: init-lisp-mode-block
-#+begin_src emacs-lisp
-(use-package lisp-mode
-  :straight (:type built-in))
-#+end_src
-
 **** Elisp-Mode (Built-In)
 #+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
@@ -4026,7 +3926,7 @@ A nice way to restart emacs on the fly if you need to.
          ("\\.Cask\\'" . emacs-lisp-mode))
   :gfhook #'outline-minor-mode
   :init
-  (general-setq emacs-lisp-docstring-fill-column 80))
+  (general-setq emacs-lisp-docstring-fill-column 72))
 #+end_src
 
 **** [[https://github.com/joaotavora/sly][SLY]]
@@ -4034,11 +3934,10 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package sly
   :straight t
-  :ghook 'common-lisp-hook
+  :ghook 'lisp-mode-hook
   :config
   (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
-                sly-mrepl-history-file-name
-                (no-littering-expand-var-file-name "sly-mrepl-history")))
+                sly-mrepl-history-file-name (no-littering-expand-var-file-name "sly-mrepl-history")))
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
@@ -4056,9 +3955,10 @@ This is a nifty package that allows me to define functions as local variables in
 #+name: init-async-block
 #+begin_src emacs-lisp
 (use-package async
-  :blackout (dired-async-mode . "")
   :straight t
-  :ghook ('dired-mode-hook #'dired-async-mode))
+  :ghook ('dired-mode-hook #'dired-async-mode)
+  :init
+  (general-setq dired-async-mode-lighter ""))
 #+end_src
 
 **** [[https://github.com/clojure-emacs/clojure-mode][Clojure-Mode]]
@@ -4193,23 +4093,6 @@ This is a nifty package that allows me to define functions as local variables in
                   ess-help-own-frame nil))
 #+end_src
 
-*** Julia
-**** [[https://github.com/JuliaEditorSupport/julia-emacs][Julia-Mode]]
-#+name: init-julia-block
-#+begin_src emacs-lisp
-(use-package julia-mode
-  :straight t
-  :interpreter "/usr/local/bin/julia")
-#+end_src
-
-**** [[https://github.com/tpapp/julia-repl][Julia-REPL]]
-#+name: init-julia-repl-block
-#+begin_src emacs-lisp :tangle no
-(use-package julia-repl
-  :straight t
-  :ghook 'julia-mode-hook)
-#+end_src
-
 *** Python
 **** Python (Built-In)
 #+name: init-python-block
@@ -4266,18 +4149,16 @@ This is a nifty package that allows me to define functions as local variables in
   :demand t
   :after lsp-mode
   :straight t
-  :ghook ('lsp-mode-hook #'(lambda () (require 'ccls)))
   :init
   (general-setq ccls-executable "/usr/local/bin/ccls")
   :config
   (general-setq-local company-transformers nil)
-  (general-setq ccls-sem-highlight-method 'overlay)
-  (ccls-use-default-rainbow-sem-highlight)
   (general-setq ccls-initialization-options
                 `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
                                             "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
                                             "-isystem/usr/local/include"]
-                                :resourceDir (string-trim (shell-command-to-string "clang -print-resource-dir"))))))
+                                :resourceDir (string-trim (shell-command-to-string "clang -print-resource-dir")))))
+  (ccls-use-default-rainbow-sem-highlight))
 #+end_src
 
 **** [[https://github.com/sonatard/clang-format][Clang-Format]]
@@ -4458,13 +4339,6 @@ This is a nifty package that allows me to define functions as local variables in
      (t (markdown-mode))))
 
   (general-add-hook 'ea-popup-hook #'popup-handler))
-#+end_src
-
-*** [[https://github.com/vermiculus/sx.el][Stack-Exchange]]
-#+name: init-stack-exchange-block
-#+begin_src emacs-lisp
-(use-package sx
-  :straight t)
 #+end_src
 
 *** [[https://github.com/canatella/xwidget-plus][Xwidget-Plus]]

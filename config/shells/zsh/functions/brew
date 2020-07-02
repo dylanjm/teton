@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-brew() {
+function brew() {
   # check if pyenv is available
   # edit: fixed redirect issue in earlier version
   if command -v pyenv >/dev/null 2>&1; then
@@ -10,3 +10,8 @@ brew() {
     /usr/local/bin/brew "$@"
   fi
 }
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

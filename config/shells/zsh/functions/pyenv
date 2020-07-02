@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-pyenv() {
+function pyenv() {
   unset -f pyenv
   eval "$(command pyenv init -)"
   if [[ -n "${ZSH_PYENV_LAZY_VIRTUALENV}" ]]; then
@@ -10,6 +10,6 @@ pyenv() {
 }
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

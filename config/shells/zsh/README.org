@@ -2,15 +2,14 @@
 
 
 ** Startup-Time
+#+PROPERTY: header-args:sh :prologue "exec 2>&1" :epilogue ":"
 
-#+begin_src shell :results output :exports both
-hyperfine -- '$SHELL -i -c exit'
+#+begin_src sh :results output :exports both
+hyperfine --warmup 15 -- '$SHELL -i -c exit'
 #+end_src
 
 #+RESULTS:
 : Benchmark #1: $SHELL -i -c exit
-:   Time (mean ± σ):      41.6 ms ±   1.7 ms    [User: 25.7 ms, System: 13.8 ms]
-:   Range (min … max):    40.1 ms …  48.2 ms    62 runs
+:   Time (mean ± σ):      59.4 ms ±   6.2 ms    [User: 28.6 ms, System: 27.3 ms]
+:   Range (min … max):    50.6 ms …  75.6 ms    56 runs
 :
-
-** Startup Profiling

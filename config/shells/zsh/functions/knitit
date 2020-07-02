@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-knitit() {
+function knitit() {
   /usr/local/bin/emacs \
     --batch \
     -l org "${DOTFILES}/config/emacs/dotemacs.org" \
@@ -8,6 +8,6 @@ knitit() {
 }
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

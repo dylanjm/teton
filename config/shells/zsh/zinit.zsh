@@ -24,7 +24,7 @@ load=light
 zinit ice lucid depth=1
 zinit $load romkatv/powerlevel10k
 
-zinit ice wait lucid ver"dev"
+zinit ice wait lucid
 zinit $load marlonrichert/zsh-autocomplete
 
 zinit ice wait lucid

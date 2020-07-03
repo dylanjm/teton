@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/teton"
 export PYENV_ROOT="$HOME/.pyenv"
@@ -23,15 +24,9 @@ source "$DOTFILES/shells/bash/settings/navigation.bash"
 # shellcheck source=plugins/git_completion.bash
 source "$DOTFILES/shells/bash/plugins/git_completion.bash"
 
-
 export LESS="-R -F -i -J -M -R -W -x4 -X -z-4"
 export LESSOPEN="|lessfilter %s"
 export LESS_ADVANCED_PREPROCESSOR=1
-
-if [[ -f /opt/moose/environments/moose_profile ]]; then
-    . /opt/moose/environments/moose_profile
-    module load moose-dev-clang ccache icecream
-fi
 
 alias ls='gls -la -G --color=tty --group-directories-first'
 alias lx='exa -lah --icons --time=changed --time-style long-iso --group-directories-first'

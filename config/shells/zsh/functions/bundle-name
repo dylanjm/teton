@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
 function bundle-name () {
-    local app="${1}"
-    osascript -e 'id of app "'${app}'"'
+  local app="${1}"
+  osascript -e 'id of app "'${app}'"'
 }
 
 # Local Variables:

@@ -1,6 +1,11 @@
 #!/usr/bin/env zsh
 
-bundle-name () {
+function bundle-name () {
     local app="${1}"
     osascript -e 'id of app "'${app}'"'
 }
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

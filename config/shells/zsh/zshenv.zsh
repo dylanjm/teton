@@ -213,7 +213,7 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       /usr/local/sbin
       /usr/sbin
       /sbin
-      /usr/local/texlive/2019/bin/x86_64-darwin
+      /usr/local/texlive/2020cd /bin/x86_64-darwin
       /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 

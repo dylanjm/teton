@@ -1,5 +1,4 @@
-
-#set fish_color_hostname 'a67523'
+set fish_color_hostname 'a67523'
 set -gx fish_greeting ''
 
 if not functions -q fisher
@@ -19,10 +18,10 @@ function fish_prompt
     printf '%s' $user
     set_color normal
 
-    # printf ' at '
-    # set_color yellow
-    # printf '%s' (hostname -s)
-    # set_color normal
+    printf ' at '
+    set_color yellow
+    printf '%s' (hostname -s)
+    set_color normal
 
     printf ' in '
     set_color $fish_color_cwd
@@ -35,15 +34,15 @@ function fish_prompt
     printf ' (%s)' (date +%H:%M)
     echo
 
-    #if test $last_status -eq 0
-    #    set_color white -o
-    #    printf '><((°> '
-    #else
-    #    set_color red -o
-    #    printf '><((ˣ> '
-    #    set_color white -o
-    #    printf '[%d] ' $last_status
-    #end
+    if test $last_status -eq 0
+       set_color white -o
+       printf '><((°> '
+    else
+       set_color red -o
+       printf '><((ˣ> '
+       set_color white -o
+       printf '[%d] ' $last_status
+    end
 
     if test $last_status -ne 0
         set_color white -o
@@ -83,5 +82,3 @@ function git_prompt
 end
 
 set -gx __fish_initialized 1
-
-eval (direnv hook fish)

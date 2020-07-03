@@ -1,11 +1,10 @@
 #!/usr/bin/env zsh
-#-*- sh-mode -*-
 
 function vterm_prompt_end() {
   vterm_printf "51;A$(whoami)@$(hostname):$(pwd)";
 }
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

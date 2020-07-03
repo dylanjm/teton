@@ -17,6 +17,6 @@ function conda(){
 }
 
 # Local Variables:
-# mode: shell-script-mode
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

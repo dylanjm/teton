@@ -56,8 +56,8 @@ unsetopt clobber            # do not overwrite existing files with > and >>.
 ### Completion
 ###
 zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
-# # zstyle ':autocomplete:list-choices:*' min-input 3
-# # zstyle ':autocomplete:list-choices:*' max-lines 40%
+zstyle ':autocomplete:list-choices:*' min-input 3
+zstyle ':autocomplete:list-choices:*' max-lines 40%
 # # zstyle ':autocomplete:space:*' magic correct-word expand-history
 # # zstyle ':autocomplete:tab:*' completion select
 # # zstyle ':autocomplete:*:too-many-matches' message ''

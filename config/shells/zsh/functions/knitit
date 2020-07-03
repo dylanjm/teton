@@ -1,10 +1,9 @@
 #!/usr/bin/env zsh
 
 function knitit() {
-  /usr/local/bin/emacs \
-    --batch \
-    -l org "${DOTFILES}/config/emacs/dotemacs.org" \
-    -f org-babel-tangle
+  /usr/local/bin/emacs --batch \
+                       -l org "${DOTFILES}/config/emacs/dotemacs.org" \
+                       -f org-babel-tangle
 }
 
 # Local Variables:

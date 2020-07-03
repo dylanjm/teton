@@ -5,6 +5,6 @@ function open-apps () {
 }
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

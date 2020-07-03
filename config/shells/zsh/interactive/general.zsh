@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+# #!/usr/bin/env zsh
 autoload -Uz allopt zed zmv zcalc
 autoload -Uz colors && colors
 
@@ -42,7 +42,6 @@ unsetopt check_jobs       # Don't report on jobs when shell exit.
 ###
 setopt auto_cd              # auto changes to a directory without typing cd.
 setopt auto_pushd           # push the old directory onto the stack on cd.
-setopt pushd_ignore_dups    # do not store duplicates in the stack.
 setopt pushd_silent         # do not print the directory stack after pushd or popd.
 setopt pushd_tohome         # push to home directory when no argument is given.
 setopt pushd_minus          # allows you to 'cd -n' to n previous directories
@@ -57,14 +56,14 @@ unsetopt clobber            # do not overwrite existing files with > and >>.
 ### Completion
 ###
 zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
-zstyle ':autocomplete:list-choices:*' min-input 3
-zstyle ':autocomplete:list-choices:*' max-lines 40%
-zstyle ':autocomplete:space:*' magic correct-word expand-history
-zstyle ':autocomplete:tab:*' completion select
-zstyle ':autocomplete:*:too-many-matches' message ''
-zstyle ':autocomplete:*:no-matches-yet' message ''
-zstyle ':autocomplete:*:no-matches-at-all' message ''
-
+# # zstyle ':autocomplete:list-choices:*' min-input 3
+# # zstyle ':autocomplete:list-choices:*' max-lines 40%
+# # zstyle ':autocomplete:space:*' magic correct-word expand-history
+# # zstyle ':autocomplete:tab:*' completion select
+# # zstyle ':autocomplete:*:too-many-matches' message ''
+# # zstyle ':autocomplete:*:no-matches-yet' message ''
+# # zstyle ':autocomplete:*:no-matches-at-all' message ''
+#
 ###
 ### History
 ###

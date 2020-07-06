@@ -23,3 +23,8 @@ esac
 # show the "error" colour on first launch. To avoid this, we simply end with a
 # true command:
 true
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

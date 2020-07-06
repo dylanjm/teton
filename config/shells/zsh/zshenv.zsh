@@ -238,3 +238,8 @@ autoload -Uz time-shell \
          vterm_cmd \
          vterm_prompt_end \
          colorlist
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-03 15:28:28
+/last updated/: 2020-07-06 11:48:54
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -434,6 +434,7 @@ There are certain buffers I don't want to delete on accident. Code taken from [[
 #+end_src
 
 **** Eval-Print-Last-Sexp
+
 #+name: init-eval-print-last-sexp-block
 #+begin_src emacs-lisp
 (el-patch-defun eval-print-last-sexp (&optional eval-last-sexp-arg-internal)
@@ -464,8 +465,7 @@ this command arranges for all errors to enter the debugger.
 (defun arco/eval-to-kill-ring ()
   (interactive)
   (kill-new
-   (with-output-to-string
-     (princ (call-interactively 'eval-expression)))))
+   (with-output-to-string (princ (call-interactively 'eval-expression)))))
 #+end_src
 
 **** Async Tangle

@@ -12,4 +12,8 @@ hyperfine --warmup 15 -- '$SHELL -i -c exit'
 : Benchmark #1: $SHELL -i -c exit
 :   Time (mean ± σ):      59.4 ms ±   6.2 ms    [User: 28.6 ms, System: 27.3 ms]
 :   Range (min … max):    50.6 ms …  75.6 ms    56 runs
-:
+
+** Features
++ Zinit :: Quick and easy to use plugin manager
++ Powerlevel10k :: Blazing fast zsh theme that is ultra-customizable
++ FZF :: Fuzzy Finder

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-06 11:48:54
+/last updated/: 2020-07-06 13:25:06
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -220,7 +220,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   (setq exec-path-from-shell-variables '("XDG_CONFIG_HOME" "XDG_CACHE_HOME"
                                          "XDG_DATA_HOME" "XDG_BIN_HOME"
                                          "DOTFILES" "ORG_FILES"
-                                         "EDITOR" "EMACS" "HISTFILE"
+                                         "EDITOR" "EMACS" "HISTFILE" "MOOSE_DIR"
                                          "HIST_IGNORE" "HISTSIZE" "SAVEHIST" "ATOM_HOME"
                                          "CCACHE_DIR" "CONDARC" "CONDA_ENVS_PATH" "EA_PATH"
                                          "FZF_DEFAULT_COMMAND" "GPG_TTY" "GNUPGHOME"
@@ -2276,7 +2276,7 @@ A nice way to restart emacs on the fly if you need to.
                                            vterm-mode
                                            eshell-mode
                                            term-mode))
-  (general-setq company-backends '(company-capf)))
+  (general-setq company-backends '(company-capf company-files company-dabbrev)))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -2999,8 +2999,9 @@ A nice way to restart emacs on the fly if you need to.
                    (predicate . (-contains? '("*direnv*"
                                               "*straight-process*"
                                               "*explain-pause-log*"
-                                              "*lsp"
+                                              "*lsp-log*"
                                               "*ccls*"
+                                              "*ccls::stderr*"
                                               "*mspyls*"
                                               "*mspyls::stderr*"
                                               "flycheck")
@@ -3655,7 +3656,6 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
-
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
 #+begin_src emacs-lisp
@@ -3711,27 +3711,18 @@ A nice way to restart emacs on the fly if you need to.
                         (flycheck-add-next-checker 'python-mypy 'python-pycompile)))
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
-                lsp-keep-workspace-alive nil
-                lsp-enable-folding nil
-                lsp-enable-file-watchers nil
-                lsp-enable-links nil
-                lsp-enable-text-document-color nil
-                lsp-enable-semantic-highlighting nil
-                lsp-enable-indentation nil
-                lsp-enable-on-type-formatting nil
                 lsp-prefer-capf t
+                lsp-enable-file-watchers nil
                 lsp-diagnostic-package :flycheck
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
                 lsp-eldoc-hook nil))
 #+end_src
 
-*** LSP-UI
+*** [[https://github.com/emacs-lsp/lsp-ui][LSP-UI]]
 #+name: init-lsp-ui-block
 #+begin_src emacs-lisp
 (use-package lsp-ui
-  :demand t
-  :after lsp-mode
   :straight t
   :commands (lsp-ui-mode)
   :ghook 'lsp-mode-hook
@@ -3851,16 +3842,6 @@ This is a nifty package that allows me to define functions as local variables in
   :mode ("\\.edn$"))
 #+end_src
 
-**** [[https://gitlab.com/jaor/geiser][Geiser]]
-#+name: init-geiser-block
-#+begin_src emacs-lisp
-(use-package geiser
-  :straight t
-  :config
-  (general-setq geiser-active-implementations '(guile)
-                geiser-default-implementation 'guile))
-#+end_src
-
 *** Markdown
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]
 #+name: init-markdown-block
@@ -3923,50 +3904,6 @@ This is a nifty package that allows me to define functions as local variables in
   (general-setq reftex-plug-into-AUCTeX t))
 #+end_src
 
-*** R
-**** ESS
-#+name: init-ess-block
-#+begin_src emacs-lisp
-(use-package ess
-  :straight t
-  :general
-  (:keymaps '(ess-mode-map inferior-ess-mode-map)
-            "C-c ." #'djm/R-pipe-operator)
-  :preface
-  (autoload 'ess-rdired "ess-rdired")
-  (defun djm/R-pipe-operator ()
-    "R - piping operator (%>%)"
-    (interactive)
-    (just-one-space 1)
-    (insert "%>%")
-    (reindent-then-newline-and-indent))
-  :config
-  (general-setq ess-ask-for-ess-directory nil
-                ess-eldoc-show-on-symbol t
-                ess-use-tracebug t
-                ess-use-flymake nil
-                ess-style 'RStudio
-                ess-describe-at-point-method 'tooltip
-                ess-eval-visibly 'nowait
-                ess-fill-calls-newlines t
-                ess-help-own-frame 'one
-                ess-history-file nil
-                ess-indent-with-fancy-comments nil
-                ess-nuke-trailing-whitespace t
-                ess-offset-arguments 'prev-line
-                ess-offset-continued 'straight
-                ess-roxy-fontify-examples t
-                ess-use-auto-complete nil
-                ess-use-company t
-                inferior-ess-program "R"
-                inferior-R-program-name "R"
-                ess-local-process-name "R"
-                inferior-R-args "--no-restore --quiet --no-save"
-                inferior-ess-same-window nil
-                inferior-ess-same-window nil
-                ess-help-own-frame nil))
-#+end_src
-
 *** Python
 **** Python (Built-In)
 #+name: init-python-block
@@ -3984,12 +3921,12 @@ This is a nifty package that allows me to define functions as local variables in
                 python-indent-guess-indent-offset-verbose nil
                 python-indent-offset 4
                 comment-inline-offset 2)
-  (setenv "PYTHONPATH" (expand-file-name "~/Documents/projects/moose/python")))
+  (setenv "PYTHONPATH" (f-join (getenv "MOOSE_DIR") "python")))
 #+end_src
 
 **** [[https://github.com/necaris/conda.el][Conda]]
 #+name: init-conda-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package conda
   :demand t
   :after (python)

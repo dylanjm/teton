@@ -7,12 +7,3 @@
     (load quicklisp-init)))
 
 (setf sb-impl::*default-external-format* :utf-8)
-
-(let ((lib-fix-posix "/usr/local/Cellar/libfixposix/0.4.3/lib/libfixposix.dylib")
-      (lib-magick-wand "/usr/local/Cellar/imagemagick/7.0.10-23/lib/libMagickWand-7.Q16HDRI.7.dylib"))
-  (dolist (libs (list lib-fix-posix lib-magick-wand))
-    (when (and (probe-file libs)
-               (ignore-errors (asdf:load-system "cffi")))
-      (pushnew libs
-               (symbol-value (find-symbol (string '*foreign-library-directories*)
-                                          (find-package 'cffi))) :test #'equal))))

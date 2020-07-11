@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck source=/Users/mcdodj/.local/share/env.zsh.gpg
+# shellcheck source="${HOME}/.local/share/env.zsh.gpg"
 source <( gpg --decrypt "${XDG_DATA_HOME}/env.zsh.gpg")
 
 git_repo_delete(){

@@ -29,10 +29,11 @@ main() {
   bootstrap-bundle
 }
 
-main
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  main
+fi
 
 # Local Variables:
-# mode: sh-script
-# sh-indentation: 2
+# mode: shell-script
+# sh-basic-offset: 2
 # End:
-

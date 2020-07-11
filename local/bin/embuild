@@ -168,7 +168,6 @@ install() {
 
   ln -sfv "$PREFIX/bin/emacsclient" /usr/local/bin/emacsclient
   ln -s "$NS_APP" /Applications
-
 }
 
 # Main #################################################################
@@ -183,6 +182,6 @@ main() {
 main "${@}"
 
 # Local Variables:
-# mode: sh-script
-# sh-indentation: 2
+# mode: shell-script
+# sh-basic-offset: 2
 # End:

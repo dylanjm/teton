@@ -108,31 +108,31 @@ red() { echo "${RED}$*${NORMAL}"; }
 
 usage() {
   cat <<-EOM
-$(echo -e "$(bold "smash - The follies of corporate life")"):
-    An Office Space meme script.
+	$(echo -e "$(bold "smash - The follies of corporate life")"):
+	An Office Space meme script.
 
-$(echo -e "$(bold USAGE)"):
-    ${_ME} [-h] [-w] CAPTION
+	$(echo -e "$(bold USAGE)"):
+	    ${_ME} [-h] [-w] CAPTION
 
-$(echo -e "$(bold FLAGS)"):
-    -h    - show this message
-    -w    - place CAPTION text into white bar above image.
+	$(echo -e "$(bold FLAGS)"):
+	    -h    - show this message
+	    -w    - place CAPTION text into white bar above image.
 
-$(echo -e "$(bold ARGS)"):
-    CAPTION    - the text you want placed in the image or above the image.
+	$(echo -e "$(bold ARGS)"):
+	    CAPTION    - the text you want placed in the image or above the image.
 
-$(echo -e "$(bold EXAMPLES)"):
+	$(echo -e "$(bold EXAMPLES)"):
 
-To create a meme with the text placed above the broken photocopier, use the
-command:
-    ${_ME} "This Project"
+	To create a meme with the text placed above the broken photocopier, use the
+	command:
+	    ${_ME} "This Project"
 
-To create a more classic style meme, with the text placed in a white-bar above
-the image, use the command:
-    ${_ME} -w "Me when I realize this project is due..."
+	To create a more classic style meme, with the text placed in a white-bar
+	above the image, use the command:
+	    ${_ME} -w "Me when I realize this project is due..."
 
-After running ${_ME}, the meme is instantly placed in your clipboard.
-EOM
+	After running ${_ME}, the meme is instantly placed in your clipboard.
+	EOM
 }
 
 setup-vars() {
@@ -222,6 +222,6 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
 fi
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

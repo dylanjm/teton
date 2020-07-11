@@ -14,9 +14,8 @@ allowed_shells() {
 
 change_shell() {
   local shell="${1}"
-  [[ "${SHELL}" != "/usr/local/bin/${shell}" ]] && {
+  [[ "${SHELL}" != "/usr/local/bin/${shell}" ]] &&
       sudo chsh -s "/usr/local/bin/${shell}" "$USER"
-  }
 }
 
 bootstrap_shell() {
@@ -60,4 +59,6 @@ main() {
   done
 }
 
-main "${@}"
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  main "${@}"
+fi

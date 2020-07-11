@@ -1,22 +1,16 @@
 #!/usr/bin/env bash
 
 declare -a arr=(
-  ###
-  ### Iosevka Font - https://github.com/be5invis/Iosevka/releases
-  ###
+  # Iosevka Font - Great Monospace and Proportional Font
   "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-curly-3.2.2.zip"
   "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-term-curly-3.2.2.zip"
   "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/pkg-iosevka-sparkle-3.2.2.zip"
 
-  ###
-  ### Symbola
-  ###
-  "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip" # Great Unicode Support
+  # Symbola - Great Unicode Support
+  "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip"
 
-  ###
-  ### XITS
-  ###
-  "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip" # Great Math Support
+  # XITS - Great Math Support
+  "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip"
 )
 
 move_font() {
@@ -55,4 +49,11 @@ main() {
   install_fonts
 }
 
-main
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  main
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

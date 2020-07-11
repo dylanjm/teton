@@ -54,18 +54,18 @@
 
 # Globals & Constants ##################################################
 
-ME="$(basename "${0}")"
-ARGS=("${@}")
-BISON="${BISON_DIR:-$HOME/Documents/projects/bison}"
+readonly ME="$(basename "${0}")"
+readonly ARGS=("${@}")
+readonly BISON="${BISON_DIR:-$HOME/Documents/projects/bison}"
 
 # Colors
-NORMAL='\033[0m'
-BOLD='\033[1m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-MAGENTA='\033[1;4;35m'
-YELLOW='\033[1;33m'
+readonly NORMAL='\033[0m'
+readonly BOLD='\033[1m'
+readonly RED='\033[1;31m'
+readonly GREEN='\033[1;32m'
+readonly BLUE='\033[1;34m'
+readonly MAGENTA='\033[1;4;35m'
+readonly YELLOW='\033[1;33m'
 
 # Flags
 DRYRUN=0
@@ -75,11 +75,11 @@ FOLDER=""
 # Utilities ############################################################
 
 magenta() { echo "${MAGENTA}$*${NORMAL}"; }
-yellow() { echo "${YELLOW}$*${NORMAL}"; }
-green() { echo "${GREEN}$*${NORMAL}"; }
-bold() { echo "${BOLD}$*${NORMAL}"; }
-blue() { echo "${BLUE}$*${NORMAL}"; }
-red() { echo "${RED}$*${NORMAL}"; }
+yellow()  { echo "${YELLOW}$*${NORMAL}"; }
+green()   { echo "${GREEN}$*${NORMAL}"; }
+bold()    { echo "${BOLD}$*${NORMAL}"; }
+blue()    { echo "${BLUE}$*${NORMAL}"; }
+red()     { echo "${RED}$*${NORMAL}"; }
 
 foldernames() {
   [[ -z "${ALLOWED_FOLDERS+x}" ]] && {
@@ -98,11 +98,11 @@ foldernames() {
 bison_exists_p() {
   [[ ! -e "${BISON}" ]] && {
     cat <<-HEREDOC
-You must have a local copy of BISON to use this script.
-If you do have a local copy, add the following to your .bashrc:
+	You must have a local copy of BISON to use this script.
+	If you do have a local copy, add the following to your .bashrc:
 
-export BISON_DIR="<path/to/your/bison/folder>"
-HEREDOC
+	export BISON_DIR="<path/to/your/bison/folder>"
+	HEREDOC
     exit 1
   }
   return 0
@@ -110,49 +110,49 @@ HEREDOC
 
 folder_not_found() {
   cat <<-HEREDOC
-$(echo -e "$(red "ERROR: Folder '$FOLDER' Not Found!")")
-Permissions on the most recent run might've not been changed yet.
-Try using the LOOKBACK flag (-l) to fetch a previous nightly run.
+	$(echo -e "$(red "ERROR: Folder '$FOLDER' Not Found!")")
+	Permissions on the most recent run might've not been changed yet.
+	Try using the LOOKBACK flag (-l) to fetch a previous nightly run.
 
-$(echo -e "$(yellow "Possible Folder Names Include")"):
-$(foldernames)
-HEREDOC
+	$(echo -e "$(yellow "Possible Folder Names Include")"):
+	$(foldernames)
+	HEREDOC
   exit 1
 }
 
 usage() {
   cat <<-HEREDOC
-$(echo -e "$(bold "bisfetch (BISON Fetch)")"):
+	$(echo -e "$(bold "bisfetch (BISON Fetch)")"):
 
-A script to fetch remote assessment performance data.
+	A script to fetch remote assessment performance data.
 
-$(echo -e "$(yellow "USAGE")"):
-        $ME [-h] [-n] [-l INTEGER] [-f <folder>] [<folder> ...]
+	$(echo -e "$(yellow "USAGE")"):
+	    ${ME} [-h] [-n] [-l INTEGER] [-f <folder>] [<folder> ...]
 
-$(echo -e "$(yellow "OPTIONS")"):
-        -h        - Show this message
-        -n        - Perform a dry-run
-        -l        - Look back a previous run; Defaults to 1 (most-recent)
-        -f        - Folder of interest; optional flag
+	$(echo -e "$(yellow "OPTIONS")"):
+	    -h        - Show this message
+	    -n        - Perform a dry-run
+	    -l        - Look back a previous run; Defaults to 1 (most-recent)
+	    -f        - Folder of interest; optional flag
 
-$(echo -e "$(yellow "ARGUMENTS")"):
-        <folder>  - Folder of interest from remote machine.
-                    To fetch all folders specify '*'
+	$(echo -e "$(yellow "ARGUMENTS")"):
+	    <folder>  - Folder of interest from remote machine.
+	                To fetch all folders specify '*'
 
-$(echo -e "$(yellow "EXAMPLES")"):
-To fetch the most recent data from IFA_677, the following commands are
-equivalent:
+	$(echo -e "$(yellow "EXAMPLES")"):
+	To fetch the most recent data from IFA_677, the following commands are
+	equivalent:
 
-        bisfetch IFA_677
-        bisfetch -f IFA_677
+	    ${ME} IFA_677
+	    ${ME} -f IFA_677
 
-To perform a dry-run and fetch the data that was output two runs ago:
+	To perform a dry-run and fetch the data that was output two runs ago:
 
-        bisfetch -n -l 2 IFA_677
+	    ${ME} -n -l 2 IFA_677
 
-$(echo -e "$(yellow "Possible folder names include")"):
-$(foldernames)
-HEREDOC
+	$(echo -e "$(yellow "Possible folder names include")"):
+	$(foldernames)
+	HEREDOC
   exit 0
 }
 
@@ -274,7 +274,6 @@ if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
 fi
 
 # Local Variables:
-# mode: sh-script
-# sh-indentation: 2
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

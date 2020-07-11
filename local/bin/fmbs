@@ -46,35 +46,36 @@
 # Notes ################################################################
 
 # Globals ##############################################################
-_ME=$(basename "${0}")
+readonly _ME=$(basename "${0}")
 
-NORMAL='\033[0m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-YELLOW='\033[1;33m'
+readonly NORMAL='\033[0m'
+readonly RED='\033[1;31m'
+readonly GREEN='\033[1;32m'
+readonly BLUE='\033[1;34m'
+readonly YELLOW='\033[1;33m'
+readonly BOLD='\033[1m'
 
 # Utilities ############################################################
 
+magenta() { echo "${MAGENTA}$*${NORMAL}"; }
 yellow() { echo "${YELLOW}$*${NORMAL}"; }
 green() { echo "${GREEN}$*${NORMAL}"; }
 blue() { echo "${BLUE}$*${NORMAL}"; }
 red() { echo "${RED}$*${NORMAL}"; }
-magenta() { echo "${MAGENTA}$*${NORMAL}"; }
 bold() { echo "${BOLD}$*${NORMAL}"; }
 
 usage() {
-  cat <<HEREDOC
-fmbs (Fix MBSync):
-Script to fix duplicate UIDs created by mbsync.
+  cat <<-HEREDOC
+	$(echo -e "$(bold "fmbs (Fix MBSync)")"):
+	Script to fix duplicate UIDs created by mbsync.
 
-$(echo -e "$(yellow "Usage")"):
-       ${_ME} [-h] [-n]
+	$(echo -e "$(yellow "Usage")"):
+	    ${_ME} [-h] [-n]
 
-$(echo -e "$(yellow "Options")"):
-       -h  Display this help information.
-       -n  Dry run to show which files will be changed.
-HEREDOC
+	$(echo -e "$(yellow "Options")"):
+	    -h  Display this help information.
+	    -n  Dry run to show which files will be changed.
+	HEREDOC
 }
 
 get_args() {
@@ -82,7 +83,7 @@ get_args() {
     case "$flag" in
       h)
         usage
-        exit 1
+        exit 0
         ;;
       n)
         dry_run=1
@@ -113,9 +114,11 @@ _main() {
   done
 }
 
-_main "${@}"
+if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then
+  _main "${@}"
+fi
 
 # Local Variables:
-# mode: sh-script
+# mode: shell-script
 # sh-basic-offset: 2
 # End:

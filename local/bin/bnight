@@ -56,11 +56,12 @@
 
 readonly _ME="$(basename "${0}")"
 
-NORMAL='\033[0m'
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-BLUE='\033[1;34m'
-YELLOW='\033[1;33m'
+readonly NORMAL='\033[0m'
+readonly RED='\033[1;31m'
+readonly GREEN='\033[1;32m'
+readonly BLUE='\033[1;34m'
+readonly YELLOW='\033[1;33m'
+readonly BOLD='\033[1m'
 
 TIME="2weeks"
 
@@ -74,18 +75,18 @@ blue()    { echo "${BLUE}$*${NORMAL}"; }
 red()     { echo "${RED}$*${NORMAL}"; }
 
 usage() {
-  cat <<- EOM
-$(echo -e "$(bold "bnight - BISON Nightly")"):
-    A script to fetch nightly BISON performance data in batches.
+  cat <<-EOM
+	$(echo -e "$(bold "bnight - BISON Nightly")"):
+	    A script to fetch nightly BISON performance data in batches.
 
-$(echo -e "$(yellow USAGE)"):
-    ${_ME} [-h] [-t <string>]
+	$(echo -e "$(yellow USAGE)"):
+	    ${_ME} [-h] [-t <string>]
 
-$(echo -e "$(yellow FLAGS)"):
-    -h    - show this message
-    -t    - a string specifing --changed-within time given to fd command.
-            Defaults to '2weeks'.
-EOM
+	$(echo -e "$(yellow FLAGS)"):
+	    -h    - Show this message.
+	    -t    - A string specifing --changed-within time given to fd command.
+	            *Defaults to '2weeks'.
+	EOM
 }
 
 get_args() {
@@ -138,6 +139,6 @@ main() {
 main "${@}"
 
 # Local Variables:
-# mode: sh-script
-# sh-indentation: 2
+# mode: shell-script
+# sh-basic-offset: 2
 # End:

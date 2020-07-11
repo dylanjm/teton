@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-06 13:25:06
+/last updated/: 2020-07-09 21:40:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3811,6 +3811,13 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
                 sly-mrepl-history-file-name (nl-var-expand "sly-mrepl-history")))
+#+end_src
+
+**** Paredit
+#+name: init-paredit-block
+#+begin_src emacs-lisp
+(use-package paredit
+  :straight t)
 #+end_src
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]

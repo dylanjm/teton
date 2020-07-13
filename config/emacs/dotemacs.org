@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-09 21:40:58
+/last updated/: 2020-07-12 13:57:52
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -372,9 +372,9 @@ This function is a great way to conditional run functions at different intervals
 #+begin_src emacs-lisp
 (defmacro arco/run-at-active-interval (interval idle-interval &rest body)
   "Every INTERVAL seconds, unless idle for > IDLE-INTERVAL seconds, run BODY.
-  Also, after IDLE-INTERVAL seconds of idle time, run BODY. This allows using an
-  idle timer to quickly run BODY when Emacs becomes idle but also ensures that
-  BODY is run periodically even if Emacs is actively being used."
+Also, after IDLE-INTERVAL seconds of idle time, run BODY. This allows using an
+idle timer to quickly run BODY when Emacs becomes idle but also ensures that
+BODY is run periodically even if Emacs is actively being used."
   (declare (indent 2))
   `(progn
      (run-at-time (current-time) ,interval
@@ -464,8 +464,8 @@ this command arranges for all errors to enter the debugger.
 #+begin_src emacs-lisp
 (defun arco/eval-to-kill-ring ()
   (interactive)
-  (kill-new
-   (with-output-to-string (princ (call-interactively 'eval-expression)))))
+  (kill-new (with-output-to-string
+              (princ (call-interactively 'eval-expression)))))
 #+end_src
 
 **** Async Tangle
@@ -553,8 +553,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (when (display-graphic-p frame)
     (when window-system
       (if (> (x-display-pixel-width) 2000)
-          (arco/set-face-attribute-font arco/default-font 16)
-        (arco/set-face-attribute-font arco/default-font 14)))))
+          (arco/set-face-attribute-font arco/default-font 18)
+        (arco/set-face-attribute-font arco/default-font 16)))))
 
 (defun configure-fonts (frame)
   "Set up fonts for FRAME.
@@ -588,12 +588,11 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   ;; 1234567890#%^*
   ;; ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
   ;; αβγδεζηθικλμνξοπρστυφχψω
-  (set-frame-parameter (selected-frame)
-                       'internal-border-width 15)
+  (set-frame-parameter (selected-frame) 'internal-border-width 15)
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
 
-  ;; Define a font set stack for symbols, greek and math characters
+  ;; Define a fontset stack for symbols, greek and math characters
   (dolist (script '(mathematical symbol greek))
     (set-fontset-font t script (font-spec :family "Symbola") nil 'prepend)
     (set-fontset-font t script (font-spec :family "XITS Math" nil 'prepend)))
@@ -665,6 +664,7 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 *** Hooks, Macros & Advice
 
 This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
+
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
 (general-add-hook 'write-file-functions 'time-stamp)
@@ -827,7 +827,7 @@ Let's add a few helpful units to the calculator.
 *** Calendar (Built-In)
 
 #+name: init-calendar-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package calendar
   :straight (:type built-in)
   :ghook ('calendar-today-visible-hook #'calendar-mark-today)
@@ -850,8 +850,8 @@ Let's add a few helpful units to the calculator.
 
 *** Comint (Built-In)
 
-Added some functionality to kill buffers when their process ends. Code taken from
-https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close.
+Added some functionality to kill buffers when their process ends. Code taken from [[https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close][Eigenbahn]].
+
 #+name: init-comint-block
 #+begin_src emacs-lisp
 (use-package comint
@@ -861,7 +861,7 @@ https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close.
   (defvar arco--kill-on-exit-comint-hook-has-run nil
     "Whether or not `kill-on-exit-comint-hook' has run or not.
 We need this buffer-local var to prevent the hook from running
-   several times, as can happen for example when calling `shell'.")
+several times, as can happen for example when calling `shell'.")
 
   (defun arco/kill-buffer-sentinel (process output)
     "Process sentinel to auto kill associated buffer once PROCESS dies."
@@ -1064,6 +1064,14 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 electric-quote-replace-double t))
 #+end_src
 
+*** Emacs-Lock (Built-In)
+#+name: init-emacs-lock-block
+#+begin_src emacs-lisp
+(use-package emacs-lock
+  :blackout ""
+  :straight (:type built-in))
+#+end_src
+
 *** Epa (Built-In)
 
 #+name: init-epa-block
@@ -1145,7 +1153,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         confirm-nonexistent-file-or-buffer nil
                         create-lockfiles nil
                         delete-old-versions t
-                        enable-local-variables :all
+                        enable-local-variables t
                         find-file-suppress-same-file-warnings t
                         find-file-visit-truename t
                         insert-directory-program "gls"
@@ -1340,8 +1348,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :preface
   (defun djm/fetch-hunspell-dictionary ()
-    (unless (file-exists-p "~/Library/Spelling/en_US.aff")
-      (shell-command "bash $DOTFILES/bootstrap/setup-dictionaries.sh")))
+    (unless (file-exists-p (expand-file-name "~/Library/Spelling/en_US.aff"))
+      (shell-command "bash ${DOTFILES}/bootstrap/setup-dictionaries.sh")))
   :config
   (djm/fetch-hunspell-dictionary)
   (general-setq ispell-dictionary "en_US"
@@ -1364,8 +1372,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
              (makefile-makepp-mode . "Makefile")
              (makefile-bsdmake-mode . "Makefile")
              (makefile-imake-mode . "Makefile"))
-  :straight (:type built-in))
-  ;;:gfhook #'(lambda () (setq-local indent-tabs-mode t)))
+  :straight (:type built-in)
+  :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
 #+end_src
 
 *** Man-Mode (Built-In)
@@ -1463,6 +1471,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :init
   (general-setq mac-command-modifier 'meta
                 mac-option-modifier 'super
+                ;; Karabiner binds left-ctrl to right-ctrl
                 mac-right-control-modifier 'hyper))
 #+end_src
 
@@ -1541,7 +1550,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Re-Builder (Built-In)
-#+name: init-re-builder (built-in)-block
+#+name: init-re-builder-block
 #+begin_src emacs-lisp
 (use-package re-builder
   :straight (:type built-in)
@@ -1599,9 +1608,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :straight (:type built-in)
   :init
   (general-setq select-enable-clipboard t
-                x-select-request-type '(UTF8_STRING
-                                        COMPOUND_TEXT
-                                        TEXT STRING)))
+                x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
 
 *** Shell-Script (Built-In)
@@ -1644,9 +1651,10 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
         (with-no-warnings
           (font-lock-fontify-buffer)))))
   :init
-  (general-setq-default sh-basic-offset 2)
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
   (general-add-hook 'sh-mode-hook #'sh-script-extra-font-lock-activate)
+  :config
+  (general-setq-default sh-basic-offset 2)
   (compdef
    :modes '(sh-mode shell-script-mode)
    :capf #'sh-completion-at-point-function
@@ -1710,7 +1718,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package subr-x
   :straight (:type built-in)
-  :init
+  :preface
   (defun display-buffer-fullframe (buffer alist)
     (when-let* ((window (or (display-buffer-reuse-window buffer alist)
                             (display-buffer-same-window buffer alist)
@@ -1738,7 +1746,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :commands term
   :config
   (general-setq term-buffer-maximum-size 9999
-                termp-completion-autolist t
+                term-completion-autolist t
                 term-completion-recexact t
                 term-scroll-to-bottom-on-output t))
 #+end_src
@@ -1843,7 +1851,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Wid-Edit (Built-In)
-#+name: init-wid-edit (built-in)-block
+#+name: init-wid-edit-block
 #+begin_src emacs-lisp
 (use-package wid-edit
   :straight (:type built-in)
@@ -1957,10 +1965,10 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 #+name: init-secret-load-block
 #+begin_src emacs-lisp
-  (when (file-exists-p arco--user-secret-file)
-    (load arco--user-secret-file :noerror)
-    (general-setq-default user-mail-address arco--user-email
-                          user-full-name arco--user-name))
+(when (file-exists-p arco--user-secret-file)
+  (load arco--user-secret-file :noerror)
+  (general-setq-default user-mail-address arco--user-email
+                        user-full-name arco--user-name))
 #+end_src
 
 ** Themes & Aesthetics
@@ -2013,7 +2021,7 @@ Sort of a standard package in most emacs-configs these days.
   (general-setq default-text-scale-amount 20))
 #+end_src
 
-*** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox Theme]]
+*** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox-Theme]]
 
 My own personal fork of the gruvbox-theme. I've mostly added color-modes for missing packages.
 
@@ -2071,9 +2079,9 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 (use-package page-break-lines
   :blackout t
   :straight t
-  :ghook djm--page-break-line-hooks
+  :ghook arco--page-break-line-hooks
   :preface
-  (defconst djm--page-break-line-hooks '(ibuffer-mode-hook
+  (defconst arco--page-break-line-hooks '(ibuffer-mode-hook
                                          text-mode-hook
                                          comint-mode-hook
                                          compilation-mode-hook
@@ -2113,7 +2121,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 
 *** [[https://github.com/lastquestion/explain-pause-mode][Explain-Pause-Mode]]
 #+name: init-explain-pause-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package explain-pause-mode
   :blackout t
   :straight (:host github :repo "lastquestion/explain-pause-mode")
@@ -2418,13 +2426,6 @@ A nice way to restart emacs on the fly if you need to.
    "C-<" #'mc/mark-previous-like-this))
 #+end_src
 
-*** [[https://github.com/akicho8/string-inflection][String-Inflection]]
-#+name: init-string-inflection-block
-#+begin_src emacs-lisp
-(use-package string-inflection
-  :straight t)
-#+end_src
-
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]
 #+name: init-zop-to-char-block
 #+begin_src emacs-lisp
@@ -2476,7 +2477,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package hungry-delete
   :blackout t
   :straight t
-  :ghook 'emacs-lisp-mode-hook)
+  :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
 #+end_src
 
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
@@ -4131,6 +4132,7 @@ This is a nifty package that allows me to define functions as local variables in
 + [[https://github.com/chrisbarrett/.emacs.d][chrisbarret config]]
 + [[https://github.com/raxod502/radian][raxod502 config]]
 + [[https://github.com/noctuid/dotfiles][noctuid dotfiles]]
++ [[https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close][Eigenbahn]]
 
 * COMMENT Local Variables
 # Local Variables:

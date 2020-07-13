@@ -20,7 +20,7 @@ export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export DOTFILES="${HOME}/teton"
 export ORG_FILES="${HOME}/Documents/org-files"
-export EDITOR="/usr/local/bin/emacsclient -t -c"
+export EDITOR="/usr/local/bin/emacsclient -t -c -a ''"
 export EMACS="/Appplications/Emacs.app"
 
 ###

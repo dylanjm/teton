@@ -13,6 +13,10 @@ declare -a arr=(
   "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip"
 )
 
+remove-old-fonts() {
+  rm "${HOME}/Library/Fonts/iosevka-*"
+}
+
 move_font() {
   local fontname="${1}"
   if [[ -e "${HOME}/Library/Fonts/$(basename "${fontname}")" ]]; then

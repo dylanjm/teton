@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-12 22:53:11
+/last updated/: 2020-07-13 12:36:25
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -245,16 +245,14 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 
 *** [[https://github.com/emacscollective/no-littering][No-Littering]]
 
-Not super stoked on using this package, as I might replace it later with my own setup, but until then it's a good way to keep your emacs directory clean.
-
 #+name: init-no-littering-block
 #+begin_src emacs-lisp
 (use-package no-littering
   :demand t
   :straight t
   :init
-  (setq no-littering-etc-directory "~/.local/share/emacs/"
-        no-littering-var-directory "~/.cache/emacs/")
+  (setq no-littering-etc-directory (expand-file-name "~/.local/share/emacs/")
+        no-littering-var-directory (expand-file-name "~/.cache/emacs/"))
   (defalias 'nl-var-expand #'no-littering-expand-var-file-name)
   (defalias 'nl-etc-expand #'no-littering-expand-etc-file-name))
 #+end_src
@@ -291,7 +289,7 @@ Great package for managing key-bindings and other customizations.
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
 
-Similar to packages like minions, diminish, or delight. You can alter how your minor and major modes show up in the mode-line.
+Similar to packages like =minions=, =diminish=, or =delight=. You can alter how your minor and major modes show up in the mode-line.
 
 #+name: init-blackout-block
 #+begin_src emacs-lisp
@@ -304,7 +302,7 @@ Similar to packages like minions, diminish, or delight. You can alter how your m
 
 Great Elisp library used throughout my config
 
-#+name: init-f-block
+#+name: init-emacs-lisp-libraries-block
 #+begin_src emacs-lisp
 (use-package dash
   :demand t
@@ -606,17 +604,17 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
 
-**** Clean-Up Yanked Text
+**** Clean-Up-Yanked-Text
 
 Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]].
 
 #+name: init-yank-ws-cleanup-block
 #+begin_src emacs-lisp
-(defun arco/yank-ws-cleanup (&rest _)
-  (whitespace-cleanup)
-  (delete-trailing-whitespace))
-
-(general-add-advice #'insert-for-yank :after #'arco/yank-ws-cleanup)
+;; (defun arco/yank-ws-cleanup (&rest _)
+;;   (whitespace-cleanup)
+;;   (delete-trailing-whitespace))
+;;
+;; (general-add-advice #'insert-for-yank :after #'arco/yank-ws-cleanup)
 
 (defun arco/display-ansi-codes (buf &rest _)
   (and (bufferp buf)

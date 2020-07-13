@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 export CACHE="$HOME/.cache"
 export DOTFILES="$HOME/teton"
 export PYENV_ROOT="$HOME/.pyenv"

@@ -1,4 +1,4 @@
-# #!/usr/bin/env zsh
+#!/usr/bin/env zsh
 autoload -Uz allopt zed zmv zcalc
 autoload -Uz colors && colors
 
@@ -6,30 +6,34 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-# Treat these characters as part of a word.
-export WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
+
+export WORDCHARS='*?_-.[]~&;!#$%^(){}<>'  # Treat characters as part of a word.
 autoload -Uz select-word-style
 select-word-style shell
 
-# Automatically escape URLs.
-autoload -Uz url-quote-magic
+
+autoload -Uz url-quote-magic  # Automatically escape URLs.
 zle -N self-insert url-quote-magic
 
-# Make bracketed paste slightly smarter. This causes url-quote-magic
-# below to work correctly.
+## Make bracketed paste slightly smarter. This causes url-quote-magic
+## below to work correctly.
 autoload -Uz bracketed-paste-magic
 zle -N bracketed-paste bracketed-paste-magic
 
 # allow comments with #
 setopt interactive_comments
 
-## General
+###
+### General
+###
 setopt   combining_chars    # combine zero-length punc chars (accents) with base char
 setopt   rc_quotes          # allow 'henry''s garage' instead of 'henry'\''s garage'
 setopt   hash_list_all      # make sure the entire command path is hashed first before correcting.
-unsetopt brace_ccl        # Allow brace character class list expansion.
+unsetopt brace_ccl          # allow brace character class list expansion.
 
-## Jobs
+###
+### Jobs
+###
 setopt long_list_jobs     # list jobs in the long format by default.
 setopt auto_resume        # attempt to resume existing job before creating a new process.
 setopt notify             # report status of background jobs immediately.
@@ -56,14 +60,14 @@ unsetopt clobber            # do not overwrite existing files with > and >>.
 ### Completion
 ###
 zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
-zstyle ':autocomplete:list-choices:*' min-input 3
-zstyle ':autocomplete:list-choices:*' max-lines 40%
-# # zstyle ':autocomplete:space:*' magic correct-word expand-history
-# # zstyle ':autocomplete:tab:*' completion select
-# # zstyle ':autocomplete:*:too-many-matches' message ''
-# # zstyle ':autocomplete:*:no-matches-yet' message ''
-# # zstyle ':autocomplete:*:no-matches-at-all' message ''
-#
+# zstyle ':autocomplete:list-choices:*' min-input 3
+# zstyle ':autocomplete:list-choices:*' max-lines 40%
+# zstyle ':autocomplete:space:*' magic correct-word expand-history
+# zstyle ':autocomplete:tab:*' completion select
+# zstyle ':autocomplete:*:too-many-matches' message ''
+# zstyle ':autocomplete:*:no-matches-yet' message ''
+# zstyle ':autocomplete:*:no-matches-at-all' message ''
+
 ###
 ### History
 ###

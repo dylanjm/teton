@@ -2,7 +2,7 @@
 # Author: NICHOLAS85
 # Source: https://github.com/zdharma/zplugin-configs/blob/master/NICHOLAS85/.zplugin/plugins/_local---config-files/functions/_zpcompinit_fast
 
-function zicompinit_fast () {
+function zicompinit_fast() {
   setopt extended_glob local_options
   autoload -Uz compinit
   local zcompf="$ZINIT[ZCOMPDUMP_PATH]"

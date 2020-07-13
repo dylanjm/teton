@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
-##########
-# Global #
-##########
+###
+### Global
+###
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../../'
@@ -12,14 +12,14 @@ alias -g WC='| wc -l'
 alias -g TF='| tail -f'
 alias -g DN='/dev/null'
 alias -g d='dirs -v'
-for index ({1..9}) alias "$index"="cd +${index}"; unset index
+for index ({1..9}) alias "$index"="cd -${index}"; unset index
 alias -L run-help > /dev/null && unalias run-help
 autoload -Uz  run-help    run-help-git  run-help-ip   run-help-openssl \
               run-help-p4 run-help-sudo run-help-svk  run-help-svn
 
-#########
-# Emacs #
-#########
+###
+### Emacs
+###
 alias tconf="${EDITOR} ${DOTFILES}"
 alias zconf="${EDITOR} ${ZSH}"
 alias econf="${EDITOR} ${DOTFILES}/config/emacs"

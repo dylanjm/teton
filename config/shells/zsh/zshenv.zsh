@@ -112,7 +112,6 @@ export LESS_TERMCAP_se=$'\E[0m'        # end standout-mode
 export LESS_TERMCAP_so=$'\E[01;44;33m' # begin standout-mode - info box
 export LESS_TERMCAP_ue=$'\E[0m'        # end underline
 export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
-export PYGMENTIZE_STYLE='paraiso-dark'
 
 ###
 ### Python
@@ -124,6 +123,7 @@ export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"
 export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
 export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
 export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy_cache"
+export PYGMENTIZE_STYLE='paraiso-dark'
 
 ###
 ### R

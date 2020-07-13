@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-12 13:57:52
+/last updated/: 2020-07-12 22:53:11
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2530,7 +2530,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package dired
   :blackout "Dired"
   :straight (:type built-in)
-  :gfhook '(hl-line-mode arco/dired-for-tramp)
+  :gfhook '(hl-line-mode arco/dired-for-tramp hide-mode-line-mode)
   :general
   (:keymaps 'dired-mode-map
             "h" #'dired-up-directory

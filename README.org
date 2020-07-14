@@ -2,5 +2,19 @@
 [[https://github.com/dylanjm/teton/actions][file:https://github.com/dylanjm/teton/workflows/CI/badge.svg]]
 
 ** About
+
+
+Teton is an opinionated set of dotfiles that prioritizes simplicity and documentation. About 90% of this repository focuses on providing configurations for macOS systems.
+
 ** Installation
+
+/NOTE/: This repository will probably be more beneficial to users if they only browse and copy instead of cloning directly.
+
+#+begin_example
+git clone https://www.github.com/dylanjm/teton ~/teton
+#+end_example
+
 ** Features
+
++ Emacs
++ ZSH

@@ -1,4 +1,6 @@
 #+HTML: <p align="center"><img src="assets/teton.png" /></p>
+
+#+ATTR_HTML: :style margin-left: auto; margin-right: auto;
 [[https://github.com/dylanjm/teton/actions][file:https://github.com/dylanjm/teton/workflows/CI/badge.svg]]
 
 ** About

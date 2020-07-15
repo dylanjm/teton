@@ -1,84 +1,83 @@
-#!/usr/bin/env bash
-#                  @@@
-#               @**+**=+,                      +%#+++
-#             @****#####                       @+*++
-#             @*@@@@@%#      @@@@%%#*        +=+###-+-@
-#              #%@@@@@@+@@=**@@@@@@###:    @=*+%*+   #*-:@
-#               @@@@@@@@%+#@*@%@%%###%*****####*      #%%+=
-#                #%@@@@@@@@*@@%##@@@@@@@@@%@          @@@@**.:@
-#                 %@@@@@@@#@#@@@@@#@#             .==*@@@@@@%#=
-#                @%#@@@@@@@@@@@@##.       +#-+**=++*@@%%%@@@%
-#              @+@@@%@@@#%@@@@@#***+**+++*%@**######@
-#              @%##%@%%###*%#%#@#*##%@@@@##@@@%@
-#              @@%%%@@####@@@@#*%@@@@@##@@@
-#              **@%%##%@@@@@@@@@@@%%%@
-#             @#@@@%@@@@@@@@@@@@@@
-#            +#@@@@@@@@@@@@@@@@@#
-#               @@@@@@@@@@@@@@@@@
-#                @@@@@@@@@@@@@@@@
-#                   @@@@@@@@@@@@@
-#                      @@@@@@@@@@@
-#                       @@@@@@@@@@
-#                       @@@@@@@@@@@
-#                       @@@@@@@@@@
-#                      *@@@@@@@@@@
-#                       @@@@@@@@@
-#                       @@@@@@@@@
-#                      @@@@@@@@@
-#                      @@@@@@@@
-#                      @@@@@@#
-#                     @@@@@@@@@                     88
-#                     @@%@@@@@                      88
-#                                                   88
-# ,adPPYba, 88,dPYba,,adPYba,  ,adPPYYba, ,adPPYba, 88,dPPYba,
-# I8[    "" 88P'   "88"    "8a ""     `Y8 I8[    "" 88P'    "8a
-#  `"Y8ba,  88      88      88 ,adPPPPP88  `"Y8ba,  88       88
-# aa    ]8I 88      88      88 88,    ,88 aa    ]8I 88       88
-# `"YbbdP"' 88      88      88 `"8bbdP"Y8 `"YbbdP"' 88       88
-#
-# smash - The follies of coporate life:
-#    An Office Space meme script.
-#
-# Usage:
-#    smash [-h] [-w] CAPTION
-#
-# Depends on:
-#    imagemagick
-#    wget
-#    osascript (macOS)
-#
-# Example:
-#    smash "This Project"
-#    smash -w "Me when I realize this project is due EOD..."
-#
-# Submit issues to https://github.com/dylanm/teton/issues
-#
-# MIT License
-#
-# Copyright (c) 2019-2020 Dylan McDowell
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+###!/usr/bin/env bash
+###                  @@@
+###               @**+**=+,                      +%#+++
+###             @****#####                       @+*++
+###             @*@@@@@%#      @@@@%%#*        +=+###-+-@
+###              #%@@@@@@+@@=**@@@@@@###:    @=*+%*+   #*-:@
+###               @@@@@@@@%+#@*@%@%%###%*****####*      #%%+=
+###                #%@@@@@@@@*@@%##@@@@@@@@@%@          @@@@**.:@
+###                 %@@@@@@@#@#@@@@@#@#             .==*@@@@@@%#=
+###                @%#@@@@@@@@@@@@##.       +#-+**=++*@@%%%@@@%
+###              @+@@@%@@@#%@@@@@#***+**+++*%@**######@
+###              @%##%@%%###*%#%#@#*##%@@@@##@@@%@
+###              @@%%%@@####@@@@#*%@@@@@##@@@
+###              **@%%##%@@@@@@@@@@@%%%@
+###             @#@@@%@@@@@@@@@@@@@@
+###            +#@@@@@@@@@@@@@@@@@#
+###               @@@@@@@@@@@@@@@@@
+###                @@@@@@@@@@@@@@@@
+###                   @@@@@@@@@@@@@
+###                      @@@@@@@@@@@
+###                       @@@@@@@@@@
+###                       @@@@@@@@@@@
+###                       @@@@@@@@@@
+###                      *@@@@@@@@@@
+###                       @@@@@@@@@
+###                       @@@@@@@@@
+###                      @@@@@@@@@
+###                      @@@@@@@@
+###                      @@@@@@#
+###                     @@@@@@@@@                     88
+###                     @@%@@@@@                      88
+###                                                   88
+### ,adPPYba, 88,dPYba,,adPYba,  ,adPPYYba, ,adPPYba, 88,dPPYba,
+### I8[    "" 88P'   "88"    "8a ""     `Y8 I8[    "" 88P'    "8a
+###  `"Y8ba,  88      88      88 ,adPPPPP88  `"Y8ba,  88       88
+### aa    ]8I 88      88      88 88,    ,88 aa    ]8I 88       88
+### `"YbbdP"' 88      88      88 `"8bbdP"Y8 `"YbbdP"' 88       88
+###
+### smash - The follies of coporate life:
+###    An Office Space meme script.
+###
+### Usage:
+###    smash [-h] [-w] CAPTION
+###
+### Depends on:
+###    imagemagick
+###    wget
+###    osascript (macOS)
+###
+### Example:
+###    smash "This Project"
+###    smash -w "Me when I realize this project is due EOD..."
+###
+### Submit issues to https://github.com/dylanm/teton/issues
+###
+### MIT License
+###
+### Copyright (c) 2019-2020 Dylan McDowell
+###
+### Permission is hereby granted, free of charge, to any person obtaining a copy
+### of this software and associated documentation files (the "Software"), to deal
+### in the Software without restriction, including without limitation the rights
+### to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+### copies of the Software, and to permit persons to whom the Software is
+### furnished to do so, subject to the following conditions:
+###
+### The above copyright notice and this permission notice shall be included in all
+### copies or substantial portions of the Software.
+###
+### THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+### IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+### FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+### AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+### LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+### OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+### SOFTWARE.
 
-# Notes ################################################################
-
-# Globals ############################################################
-
+#######################################################################
+############################### Globals ###############################
+#######################################################################
 # Constants
 readonly _ME="$(basename "${0}")"
 readonly IMG_URL="https://electricbricks.net/wp-content/uploads/2016/11/office-space-printer.jpg"
@@ -97,8 +96,9 @@ readonly YELLOW='\033[1;33m'
 # Flags
 WHITEBAR=0
 
-# Utilities ############################################################
-
+#######################################################################
+############################## Utilities ##############################
+#######################################################################
 magenta() { echo "${MAGENTA}$*${NORMAL}"; }
 yellow() { echo "${YELLOW}$*${NORMAL}"; }
 green() { echo "${GREEN}$*${NORMAL}"; }
@@ -170,10 +170,11 @@ parse-args() {
   _MESSAGE="${*}"
 }
 
-# Core #################################################################
-
+#######################################################################
+################################ Core #################################
+#######################################################################
 make_meme() {
-  # Depending on flags, create meme and store it in /tmp/smash.jpg
+  ## Depending on flags, create meme and store it in /tmp/smash.jpg.
   local caption
   local memefile
   local office_space
@@ -201,7 +202,7 @@ make_meme() {
 }
 
 file-to-clipboard() {
-  # Use an applescript to read the meme jpeg into the system clipbaord.
+  ## Use an applescript to read the meme jpeg into the system clipbaord.
   local memefile="/tmp/smash.jpg"
   osascript \
     -e 'on run args' \
@@ -210,6 +211,9 @@ file-to-clipboard() {
     "${memefile}"
 }
 
+#######################################################################
+################################ Main #################################
+#######################################################################
 main() {
   parse-args "${@}"
   setup-vars

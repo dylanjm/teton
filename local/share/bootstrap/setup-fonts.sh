@@ -15,6 +15,8 @@ declare -a arr=(
 
 remove-old-fonts() {
   rm "${HOME}/Library/Fonts/iosevka-*"
+  rm "${HOME}/Library/Fonts/symbola*"
+  rm "${HOME}/Library/Fonts/xits*"
 }
 
 move_font() {
@@ -27,7 +29,7 @@ move_font() {
   fi
 }
 
-create_tmp_dir(){
+create_tmp_dir() {
   local fonturl="${1}"
   printf "%s\n" "${fonturl}"
   TMPFILE=$(mktemp)
@@ -43,7 +45,8 @@ install_fonts() {
 
     while read -r line; do
       move_font "${line}"
-    done < <(find -E "${TMPDIR}"/* -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*")
+    done < <(find -E "${TMPDIR}"/* \
+                  -iregex '.*\.(ttf|ttc|otf)' -not -path "*/ttf-unhinted/*")
 
     rm -rf "${TMPDIR}"
   done

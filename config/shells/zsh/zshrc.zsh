@@ -13,6 +13,8 @@ case "${INSIDE_EMACS:-}" in
     source "${ZSH}/themes/p10k.zsh"
     ;;
   "vterm")
+    autoload -U add-zsh-hook
+    add-zsh-hook -Uz chpwd (){ print -Pn "\e]2;%m:%2~\a" }
     setopt prompt_subst
     source "${ZSH}/themes/p10k_vterm.zsh"
     PROMPT="$PROMPT'%{$(vterm_prompt_end)%}'"

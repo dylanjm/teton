@@ -1,35 +1,13 @@
 #!/usr/bin/env zsh
 
 function vterm_cmd() {
-  if [ -n "$TMUX" ]; then
-    # tell tmux to pass the escape sequences through
-    # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
-    printf "\ePtmux;\e\e]51;E"
-  elif [ "${TERM%%-*}" = "screen" ]; then
-    # GNU screen (screen, screen-256color, screen-256color-bce)
-    printf "\eP\e]51;E"
-  else
-    printf "\e]51;E"
-  fi
-
-  printf "\e]51;E"
-  local r
-  while [[ $# -gt 0 ]]; do
-    r="${1//\\/\\\\}"
-    r="${r//\"/\\\"}"
-    printf '"%s" ' "$r"
+  local vterm_elisp
+  vterm_elisp=""
+  while [ $# -gt 0 ]; do
+    vterm_elisp="$vterm_elisp""$(printf '"%s" ' "$(printf "%s" "$1" | sed -e 's|\\|\\\\|g' -e 's|"|\\"|g')")"
     shift
   done
-  if [ -n "$TMUX" ]; then
-    # tell tmux to pass the escape sequences through
-    # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
-    printf "\007\e\\"
-  elif [ "${TERM%%-*}" = "screen" ]; then
-    # GNU screen (screen, screen-256color, screen-256color-bce)
-    printf "\007\e\\"
-  else
-    printf "\e\\"
-  fi
+  vterm_printf "51;E$vterm_elisp"
 }
 
 # Local Variables:

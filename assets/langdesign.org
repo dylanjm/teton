@@ -1,0 +1,184 @@
+* Language Design Notes
+** Influences
+*** R
+**** Likes
++ Tidyverse abstractions (i.e. quasiquotation, etc)
++ Piping operator consistency (i.e always places output to first argument)
++ Native data-frame support
++ Clean lambda function syntax (Tidyverse style)
++ Vectorized functions
++ Awesome project development utilities
++ Amazing help/documentation system
++ Rmarkdown integration within the language
++ Awesome community
+**** Dislikes
++ Hacking on R internals is complicated and a mismash compiled codes.
++ Non-tidyverse syntax can be verbose and hard to read.
++ Package system is good but often run into errors during build process.
++ Not a well defined paradigm throughout the language
++ Type inference can sometimes be weird.
++ Seems like there are always 1000 band-aid solutions to common-problems.
+*** Python
+**** Likes
++ Easy to fire-up and test quick ideas.
++ Typically a single elegant solution to a problem.
++ Iteration is simple and straight forward
++ Scripts can be very simple to read and understand.
+**** Dislikes
++ Reliance on whitespace and identation.
++ Shys away from functional approaches to problems.
++ Odd esoteric feautres that come with the object system (i.e =__str__=).
++ Horrible to manage python installs and environments.
++ Package system leaves a lot to be desired.
++ Starts to lose its elegance quickly when using a non-standard approach to a problem (e.g "over-reliance on being /Pythonic/")
+*** Julia
+**** Likes
++ Type system
++ Multiple Dispatch
++ Lots of syntactic sugar
++ Nails a simple aesthetic
++ Macros
+**** Dislikes
++ REPL based workflow feels like more of a constraint when compared to Common Lisp.
++ Not a lot of coherence to syntactic style across packages.
++ Scripting feels unnatural.
++ Too heavily based in computational science
+*** Common Lisp
+**** Likes
++ S-expressions just click and feel smooth
++ kebab-case and non-alphanumeric naming is awesome
++ Macros
++ REPL interactivity; restarts; stack-traces
++ Build system (e.g. image-based builds)
++ Project system (i.e. =asdf=)
++ Package system (i.e. =quicklisp=)
+**** Dislikes
++ Scripting with common-lisp feels unnatural
++ Documenation can be improved
++ SLIME feels a little outdated
++ List and structure manipulation can feel forced at times (i.e. =car= =caar= =cadar= =cdr=)
+*** Bash/Zsh
+**** Likes
++ Interactivity is prime (obviously being a shell)
++ Extended glob and modifiers are awesome (but ugly)
+**** Dislikes
++ Lack of structured data
++ Math calculations leave a lot to be desired.
++ Scoping is weird for variables
+** Proposal
+A dynamically typed, multiple-dispatch language that promotes a functional style of programming.
+
+I envision an interactive hacker language that can be used to poke and prod around ideas and tasks. Ideally it would be a scripting language for quick ad-hoc projects but could also handle small to medium sized projects. It would be the answer to questions like:
+
++ /"Hey, we need a script to run and send email reports of our nightly testing"/
++ /"Hey, we'd like to store our nightly testing data in a database and need a simple way to fetch, analyze, and report this data."/
+
+Its type and multiple-dispatch system would allow for the creation of consistent and reusable code. Its macro system would allow for the creation of small DSLs for specific problems.
+
+A big strength of the language would be its simplistic yet powerful ecosystem. A huge focus would be on providing easy-to-use package builder and managers. Documentation and testing tools will also not be after thoughts but part of the continuous development process.
+
+Nothing ground-breaking language wise but just consistent and simple from the first line of code to the finished project.
+
+Ultimately, I envision a simple scripting language informed by Common-Lisp wisdom.
+
+** Syntax
+
++ =;;= are comments.
++ =;;'= are documentation strings
++ =let= assigns or declares variables and functions
++ =let name : type= is for function declarations
++ =let var = value= is for mutable variables =:== is for immutable variables
++ =|>= is the function chaining operator or pipe operator
+
+#+begin_example
+#!/usr/bin/language --entry main
+using opticl  ;; CL library but pretend its just a generic library
+
+;;' @function get-image-data
+;;' @param filename
+;;' @return A grayscale image type
+;;' @description Take a filename and read in the photo.
+let get-image-data : <str> -> Image
+fn get-image-data (filename) {
+  ;; Unmutable variables are assigned via `:='
+  let img := opticl/read_image_file(filename)
+  opticl/coerce_image(img, 'opticl/8_bit_gray_image)
+}
+
+;;' @function resize-image-fixed
+;;' @param image
+;;' @param max-width
+;;' @param max-height
+;;' @return Image
+;;' @description Return the factorial of a number.
+let resize-image-fixed : <Image, int, int> -> Image
+fn resize-image-fixed(image, max_width, max_height) {
+  ;; `with' macro to handle things like destructing-bind
+  ;; from common-lisp.
+  with image-bounds(image) as <width, height>
+    ;; Unmutable variables are assigned via `:='
+    let ratio := min(max_width / width, max_height / height)
+        neww  := width * ratio
+        newh  := height * ratio
+    ;; External libraries can be specified using name/function.
+    opticl/resize_image(image, neww, newh)
+}
+
+;;' @function paste
+;;' @param
+;;' @return nil
+;;' @description Concat all input into string and output
+;;' to Stream.
+let paste : <Stream, char> -> nil
+fn paste(stream, output-char) {
+  format(stream, "~{%s~} ~\n", output-char)
+}
+
+;;' @function map-pixel-to-char
+;;' @param color-value
+;;' @description Return a char that is represents
+;;' its grayscale color value.
+let map_pixel_to_char : <int> -> char
+fn map_pixel_to_char(color_value) {
+  let char_list := coerce("@%#*+=-:., ", list)
+  color_value
+    |> floor(., 25)
+    |> nth(., char_list)
+}
+
+;;' @function convert-image
+;;' @param image-matrix
+;;' @description Convert all values to chars and
+;;' return a nested list containing the new image.
+let convert_image : <list> -> list
+fn convert_image(image_matrix) {
+  with dims(image-matrix) as <n, m>
+    for i from 0 below n
+      ;; mutable variables use `='
+      let x = [aref(image-matrix i j) for j from 0 below m]
+      collect(map(x, 'map_pixel_to_char))
+}
+
+;;' @function display-ascii
+;;' @param char-matrix
+;;' @description Output the matrix to stdout.
+fn display_ascii (char-matrix) {
+  ;; Using a lambda function.
+  map(char-matrix, ~(x): paste(#t, x))
+}
+
+fn main() {
+  get-image-data("~/Desktop/image.png")
+    |> resize-image-fixed(., 50, 50)
+    |> convert_image()
+    |> display_ascii()
+}
+#+end_example
+
+** Pipedream Goals
++ A full interactive shell written in the language.
++ An emacs competitor written completely in the language.
+** Inspiration
++ [[https://gitlab.com/ifff/mushroom][Mushroom]]
++ [[https://arkscript-lang.github.io/][ArkScript]]
++ [[https://github.com/JamesBoer/Jinx][Jinx]]

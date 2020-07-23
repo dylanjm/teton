@@ -91,7 +91,9 @@ export GUILE_HISTORY="${XDG_DATA_HOME}/guile_history"
 ###
 ### Java
 ###
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-13.0.2.jdk/Contents/Home"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-14.0.1.jdk/Contents/Home"
+export JUNIT_HOME="/Library/JUNIT"
+export CLASSPATH="${CLASSPATH}:${JUNIT_HOME}/junit-4.10.jar:."
 
 ###
 ### Julia

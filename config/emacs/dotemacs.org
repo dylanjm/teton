@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-25 16:10:04
+/last updated/: 2020-07-28 15:24:56
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2117,6 +2117,16 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   (general-setq gcmh-idle-delay 10))
 #+end_src
 
+*** [[https://github.com/politza/pdf-tools][PDF-Tools]]
+#+name: init-pdf-tools-block
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :straight t
+  :mode ("\\.pdf$" . 'pdf-view-mode)
+  :preface
+  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"))
+#+end_src
+
 *** [[https://github.com/lastquestion/explain-pause-mode][Explain-Pause-Mode]]
 #+name: init-explain-pause-mode-block
 #+begin_src emacs-lisp :tangle no
@@ -2210,6 +2220,9 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq projectile-completion-system 'default
                 projectile-enable-caching t
                 projectile-switch-project-action 'projectile-dired)
+  (general-pushnew ".ccls-cache" projectile-globally-ignored-directories)
+  (general-pushnew ".ccls-root" projectile-project-root-files-bottom-up)
+  (general-pushnew "compile_commands.json" projectile-project-root-files-top-down-recurring)
   (general-pushnew 'projectile-project-find-function project-find-functions)
   (projectile-global-mode))
 #+end_src
@@ -2805,14 +2818,9 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq ibuffer-formats
                 '((mark modified " " (mode 1 1) " " (name 25 25 :left :elide) " " filename-and-process)))
   (general-setq ibuffer-never-show-predicates
-                (list (rx (or "*magit-"
-                              "*git-auto-push*"
-                              "*Backtrace*"
-                              "*new*"
-                              "*Org*"
-                              "*helpful"
-                              "*Flycheck error messages*"
-                              "*Help*"))))
+                (list (rx (or "*magit-" "*git-auto-push*" "*Backtrace*"
+                              "*new*" "*Org*" "*helpful"
+                              "*Flycheck error messages*" "*Help*"))))
 
   (define-ibuffer-column mode
     (:inline t)
@@ -2994,17 +3002,12 @@ A nice way to restart emacs on the fly if you need to.
     (ibuffer-projectile-set-filter-groups)
     (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
     (add-to-list 'ibuffer-filter-groups
-                 '("System"
-                   (predicate . (-contains? '("*direnv*"
-                                              "*straight-process*"
-                                              "*explain-pause-log*"
-                                              "*lsp-log*"
-                                              "*ccls*"
-                                              "*ccls::stderr*"
-                                              "*mspyls*"
-                                              "*mspyls::stderr*"
-                                              "flycheck")
-                                            (buffer-name)))))
+                 '("System" (predicate . (-contains? '("*direnv*" "*straight-process*"
+                                                       "*explain-pause-log*" "*lsp-log*"
+                                                       "*ccls*" "*ccls::stderr*"
+                                                       "*mspyls*" "*mspyls::stderr*"
+                                                       "flycheck")
+                                                     (buffer-name)))))
     (unless (eq ibuffer-sorting-mode 'alphabetic)
       (ibuffer-do-sort-by-alphabetic))
 
@@ -3812,13 +3815,6 @@ A nice way to restart emacs on the fly if you need to.
                 sly-mrepl-history-file-name (nl-var-expand "sly-mrepl-history")))
 #+end_src
 
-**** Paredit
-#+name: init-paredit-block
-#+begin_src emacs-lisp
-(use-package paredit
-  :straight t)
-#+end_src
-
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
 
 This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
@@ -3972,13 +3968,13 @@ This is a nifty package that allows me to define functions as local variables in
   (general-setq-local company-transformers nil)
   (setq ccls-sem-highlight-method 'overlay)
   (general-setq ccls-initialization-options
-                `(:clang ,(list :extraArgs ["-isystem/usr/local/opt/llvm/include/c++/v1"
-                                            "-isystem/usr/local/opt/llvm/Toolchains/LLVM10.0.0.xctoolchain/usr/include"
+                `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                                            "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
                                             "-isystem/usr/local/include"]
                                 :resourceDir (string-trim
                                               (shell-command-to-string
-                                               "/usr/local/opt/llvm/bin/clang -print-resource-dir")))))
-;;(ccls-use-default-rainbow-sem-highlight)
+                                               "clang -print-resource-dir")))))
+  (ccls-use-default-rainbow-sem-highlight)
 
   (defun ccls/callee ()
     (interactive)

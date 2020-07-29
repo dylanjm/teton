@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-07-28 15:24:56
+/last updated/: 2020-07-29 09:51:43
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2032,7 +2032,8 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
   (defun arco/load-gruvbox-theme ()
     (load-theme 'gruvbox-dark-hard t)
     (when (daemonp)
-      (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+      (general-add-hook
+       'after-make-frame-functions #'setup-main-fonts))
     (when-let (frame (selected-frame))
       (setup-main-fonts frame)
       (configure-fonts frame))))

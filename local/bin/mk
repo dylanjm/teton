@@ -5,8 +5,9 @@ main() {
     cd ..
   done
 
+  numcores=$(sysctl -n hw.ncpu)
   printf "%s\n" "Building in ""$(pwd)""..."
-  make -j 16 "${@}"
+  make -j "${numcores}" "${@}"
 }
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then

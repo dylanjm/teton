@@ -9,6 +9,8 @@
   editor = /usr/local/bin/emacsclient -t -c
 [github]
   user = dylanjm
+[gitlab]
+  user = mcdodyla
 [rebase]
   autoSquash = true
 [push]

@@ -23,8 +23,8 @@ autoload -Uz  run-help    run-help-git  run-help-ip   run-help-openssl \
 alias tconf="${EDITOR} ${DOTFILES}"
 alias zconf="${EDITOR} ${ZSH}"
 alias econf="${EDITOR} ${DOTFILES}/config/emacs"
-alias kemc="brew services restart emacs-head@27"
-alias em="/usr/local/bin/emacsclient -t -c"
+alias kemc="brew services restart emacs-head@28"
+alias em="/usr/local/bin/emacsclient -t -c -a ''"
 [[ "${INSIDE_EMACS}" == "vterm" ]] &&
   alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 

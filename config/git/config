@@ -11,6 +11,7 @@
   user = dylanjm
 [gitlab]
   user = mcdodyla
+  email = dylan.mcdowell@inl.gov
 [rebase]
   autoSquash = true
 [push]

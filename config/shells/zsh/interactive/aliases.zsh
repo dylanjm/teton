@@ -106,4 +106,5 @@ if [[ "${USER}" == "mcdodj" ]]; then
   alias moose='cd ~/Documents/projects/moose'
   alias libmesh='cd ~/Documents/projects/libmesh'
   alias papers='cd ~/Documents/projects/papers'
+  alias bb='cd ~/Documents/projects/blackbear'
 fi

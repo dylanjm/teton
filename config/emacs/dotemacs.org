@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-05 11:54:42
+/last updated/: 2020-08-06 16:42:30
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3969,12 +3969,15 @@ This is a nifty package that allows me to define functions as local variables in
   (general-setq-local company-transformers nil)
   (setq ccls-sem-highlight-method 'overlay)
   (general-setq ccls-initialization-options
-                `(:clang ,(list :extraArgs ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
-                                            "-isystem/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
-                                            "-isystem/usr/local/include"]
-                                :resourceDir (string-trim
-                                              (shell-command-to-string
-                                               "clang -print-resource-dir")))))
+                `(:clang
+                  ,(list
+                    :extraArgs
+                    ["-isystem/Library/Developer/CommandLineTools/usr/include/c++/v1"
+                     "-isysroot/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+                     "-isystem/usr/local/include"]
+                    :resourceDir (string-trim
+                                  (shell-command-to-string
+                                   "clang -print-resource-dir")))))
   (ccls-use-default-rainbow-sem-highlight))
 
   ;; (defun ccls/callee ()

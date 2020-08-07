@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-07 17:37:57
+/last updated/: 2020-08-07 17:44:33
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -12,7 +12,6 @@
     - [[#garbage-collection][Garbage Collection]]
     - [[#pre-gui-optimization][Pre-Gui Optimization]]
 - [[#init][Init]]
-    - [[#header][Header]]
     - [[#package-management][Package Management]]
     - [[#initial-demands][Initial Demands]]
     - [[#personal-configuration][Personal Configuration]]
@@ -105,8 +104,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
-;; Some nice UI tweaks that improve performance when specified
-;; in early-init.el
 (modify-all-frames-parameters '((width . 80)
                                 (height . 50)
                                 (internal-border-width . 15)
@@ -139,7 +136,6 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+end_src
 
 * Init
-** Header
 #+name: init-header-block
 #+begin_src emacs-lisp :exports none
 ;;; init.el --- Arco Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t -*-
@@ -4182,9 +4178,8 @@ This is a nifty package that allows me to define functions as local variables in
                 keycast-remove-tail-elements nil))
 #+end_src
 
-** Footer :noexport:
 #+name: init-footer-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :exports none
 (provide 'init)
   ;;; init.el ends here
 #+end_src

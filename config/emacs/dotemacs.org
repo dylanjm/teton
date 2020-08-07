@@ -4,17 +4,14 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-06 16:42:30
+/last updated/: 2020-08-07 17:29:13
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
 - [[#early-init][Early-Init]]
-    - [[#header][Header]]
     - [[#garbage-collection][Garbage Collection]]
     - [[#pre-gui-optimization][Pre-Gui Optimization]]
-    - [[#footer][Footer]]
 - [[#init][Init]]
-    - [[#header-1][Header]]
     - [[#package-management][Package Management]]
     - [[#initial-demands][Initial Demands]]
     - [[#personal-configuration][Personal Configuration]]
@@ -39,7 +36,6 @@
     - [[#syntax--linting][Syntax & Linting]]
     - [[#languages][Languages]]
     - [[#miscellaneous][Miscellaneous]]
-    - [[#footer-1][Footer]]
 - [[#citations][Citations]]
 
 * About
@@ -50,7 +46,7 @@ This document is my current emacs config which contains the code for my =early-i
 :properties:
 :header-args: :tangle "~/teton/config/emacs/early-init.el"
 :end:
-** Header
+** Header :noexport:
 #+name: early-init-header-block
 #+begin_src emacs-lisp
   ;;; early-init.el --- Arco Emacs Early Initialization. -*- lexical-binding: t; buffer-read-only: t -*-
@@ -135,7 +131,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 (set-file-name-coding-system 'utf-8)
 #+end_src
 
-** Footer
+** Footer :noexport:
 
 #+name: early-init-footer-block
 #+begin_src emacs-lisp
@@ -144,7 +140,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 #+end_src
 
 * Init
-** Header
+** Header :noexport:
 #+name: init-header-block
 #+begin_src emacs-lisp
 ;;; init.el --- Arco Emacs main configuration file -*- lexical-binding: t; buffer-read-only: t -*-
@@ -3873,7 +3869,7 @@ This is a nifty package that allows me to define functions as local variables in
 *** LaTeX
 **** AuCTeX
 #+name: init-auctex-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package tex
   :straight auctex
   :gfhook ('LaTeX-mode-hook '(TeX-fold-mode
@@ -3881,9 +3877,8 @@ This is a nifty package that allows me to define functions as local variables in
                               reftex-mode
                               virtual-auto-fill-mode))
   :init
-  (general-setq TeX-PDF-mode nil
-                TeX-engine "pdflatex"))
-
+  (general-setq TeX-view-program-selection '((output-pdf "pdf-tools"))
+                TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
 (use-package auctex-latexmk
   :straight t
@@ -3905,6 +3900,13 @@ This is a nifty package that allows me to define functions as local variables in
   :straight t
   :init
   (general-setq reftex-plug-into-AUCTeX t))
+#+end_src
+
+**** [[https://github.com/cdominik/cdlatex][CDLaTeX]]
+#+name: init-cdlatex-block
+#+begin_src emacs-lisp
+(use-package cdlatex
+  :straight t)
 #+end_src
 
 *** Python
@@ -4181,8 +4183,7 @@ This is a nifty package that allows me to define functions as local variables in
                 keycast-remove-tail-elements nil))
 #+end_src
 
-** Footer
-
+** Footer :noexport:
 #+name: init-footer-block
 #+begin_src emacs-lisp
 (provide 'init)

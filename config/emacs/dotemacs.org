@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-07 17:44:33
+/last updated/: 2020-08-07 17:55:50
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -104,6 +104,8 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
+;; Some nice UI tweaks that improve performance when specified
+;; in early-init.el
 (modify-all-frames-parameters '((width . 80)
                                 (height . 50)
                                 (internal-border-width . 15)
@@ -683,7 +685,6 @@ This just changes the time-stamp at the top of my config. It's super annoying to
 
 ** Built-In Packages
 *** Abbrev (Built-In)
-
 #+name: init-abbrev-block
 #+begin_src emacs-lisp
 (use-package abbrev

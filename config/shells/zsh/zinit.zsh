@@ -22,25 +22,11 @@ load=light
 zinit ice lucid depth=1
 zinit $load romkatv/powerlevel10k
 
-# zinit ice wait lucid ver"dev"
-# zinit $load marlonrichert/zsh-autocomplete
-
 zinit ice wait lucid atpull'zinit creinstall -q .' blockf
 zinit $load zsh-users/zsh-completions
 
-# zinit ice wait lucid id-as'fzf/completion'
-# zinit snippet https://github.com/junegunn/fzf/blob/master/shell/completion.zsh
-#
-# zinit ice wait lucid id-as'fzf/key-bindings'
-# zinit snippet https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zsh
-
 zinit ice wait lucid src"general.zsh" id-as'personal/config'
 zinit $load $ZSH/interactive
-
-# zinit ice wait lucid id-as'zoxide/init' \
-#       atclone'zoxide init zsh > zoxide-init.zsh' \
-#       atpull'!%atclone' pick'zoxide-init.zsh'
-# zinit $load zdharma/null
 
 zinit ice wait lucid \
       atclone'gdircolors -b LS_COLORS > clrs.zsh' \
@@ -54,7 +40,6 @@ zinit $load zdharma/fast-syntax-highlighting
 zinit ice wait'1b' lucid atload"!_zsh_autosuggest_start" blockf
 zinit $load zsh-users/zsh-autosuggestions
 
-# Load after compinit
 zinit ice wait'1c' lucid
 zinit $load hlissner/zsh-autopair
 

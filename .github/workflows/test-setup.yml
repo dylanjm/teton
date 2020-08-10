@@ -10,6 +10,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tmpfile Creation
-        run: echo -e "2\n4" > tmpfile
-      - name: Setup
-        run: ./install < tmpfile
+        run: echo -e "Hello, World!"

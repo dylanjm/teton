@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-07 17:55:50
+/last updated/: 2020-08-11 12:46:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -187,11 +187,11 @@ Use-Package is nearly ubiquitous in an Emacs config these days.
 
 #+name: init-block-use-package-block
 #+begin_src emacs-lisp
-(setq-default use-package-verbose t
+(setq-default use-package-verbose nil
               use-package-always-defer t
-              use-package-compute-statistics t
-              use-package-expand-minimally nil
-              use-package-enable-imenu-support t)
+              use-package-compute-statistics nil
+              use-package-expand-minimally t
+              use-package-enable-imenu-support nil)
 (straight-use-package 'use-package)
 #+end_src
 
@@ -544,8 +544,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (when (display-graphic-p frame)
     (when window-system
       (if (> (x-display-pixel-width) 2000)
-          (arco/set-face-attribute-font arco/default-font 18)
-        (arco/set-face-attribute-font arco/default-font 16)))))
+          (arco/set-face-attribute-font arco/default-font 16)
+        (arco/set-face-attribute-font arco/default-font 14)))))
 
 (defun configure-fonts (frame)
   "Set up fonts for FRAME.
@@ -2117,16 +2117,9 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :straight t
   :mode ("\\.pdf$" . 'pdf-view-mode)
   :preface
-  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"))
-#+end_src
-
-*** [[https://github.com/lastquestion/explain-pause-mode][Explain-Pause-Mode]]
-#+name: init-explain-pause-mode-block
-#+begin_src emacs-lisp :tangle no
-(use-package explain-pause-mode
-  :blackout t
-  :straight (:host github :repo "lastquestion/explain-pause-mode")
-  :ghook 'emacs-startup-hook)
+  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  :config
+  (pdf-tools-enable-minor-modes))
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
@@ -2174,7 +2167,7 @@ A nice way to restart emacs on the fly if you need to.
   :general
   ("C-c x v" #'multi-vterm-dedicated-toggle)
   :init
-  (general-setq multi-vterm-dedicated-window-height 25
+  (general-setq multi-vterm-dedicated-window-height 20
                 multi-vterm-dedicated-window t))
 #+end_src
 
@@ -2248,47 +2241,62 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
 #+begin_src emacs-lisp
-(use-package company
+  (use-package company
+    :blackout t
+    :straight t
+    :commands company-complete-common company-manual-begin company-grab-line
+    :ghook ('emacs-startup-hook #'global-company-mode)
+    :general
+    ([remap completion-at-point] #'company-manual-begin
+     [remap complete-symbol] #'company-manual-begin)
+    (:keymaps 'company-active-map
+              "TAB"     #'company-complete-selection
+              "<tab>"   #'company-complete-selection
+              "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
+              "C-p"     #'company-select-previous-or-abort)
+    (:keymaps 'company-active-map
+              :predicate '(company-explicit-action-p)
+              "<return>" #'company-complete-selection
+              "RET"      #'company-complete-selection)
+    (:keymaps 'comint-mode-map
+              [remap indent-for-tab-command] #'company-manual-begin)
+    :init
+    (general-unbind :keymaps 'company-active-map "C-w" "C-h")
+    (general-setq company-async-timeout 10
+                  company-auto-complete nil
+                  company-auto-complete-chars nil
+                  company-dabbrev-other-buffers nil
+                  company-dabbrev-ignore-case nil
+                  company-dabbrev-downcase nil
+                  company-idle-delay 0.25
+                  company-minimum-prefix-length 2
+                  company-show-numbers t
+                  company-require-match 'never
+                  company-tooltip-limit 14
+                  company-tooltip-align-annotations t)
+    (general-setq company-frontends '(company-pseudo-tooltip-frontend
+                                      company-echo-metadata-frontend))
+    (general-setq company-global-modes '(not message-mode
+                                             help-mode
+                                             gud-mode
+                                             vterm-mode
+                                             eshell-mode
+                                             term-mode))
+    (general-setq company-backends '(company-capf company-files company-dabbrev)))
+#+end_src
+
+*** [[https://github.com/sebastiencs/company-box][Company-Box]]
+#+name: init-company-box-block
+#+begin_src emacs-lisp
+(use-package company-box
   :blackout t
   :straight t
-  :commands company-complete-common company-manual-begin company-grab-line
-  :ghook ('emacs-startup-hook #'global-company-mode)
-  :general
-  ([remap completion-at-point] #'company-manual-begin
-   [remap complete-symbol] #'company-manual-begin)
-  (:keymaps 'company-active-map
-            "TAB"     #'company-complete-selection
-            "<tab>"   #'company-complete-selection
-            "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
-            "C-p"     #'company-select-previous-or-abort)
-  (:keymaps 'company-active-map
-            :predicate '(company-explicit-action-p)
-            "<return>" #'company-complete-selection
-            "RET"      #'company-complete-selection)
-  (:keymaps 'comint-mode-map
-            [remap indent-for-tab-command] #'company-manual-begin)
-  :init
-  (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-  (general-setq company-async-timeout 10
-                company-auto-complete-chars nil
-                company-dabbrev-other-buffers nil
-                company-dabbrev-ignore-case nil
-                company-dabbrev-downcase nil
-                company-idle-delay 0.25
-                company-minimum-prefix-length 2
-                company-show-numbers t
-                company-require-match 'never
-                company-tooltip-limit 14
-                company-tooltip-align-annotations t)
-  (general-setq company-frontends '(company-pseudo-tooltip-frontend
-                                    company-echo-metadata-frontend))
-  (general-setq company-global-modes '(not message-mode
-                                           help-mode
-                                           gud-mode
-                                           vterm-mode
-                                           eshell-mode
-                                           term-mode))
-  (general-setq company-backends '(company-capf company-files company-dabbrev)))
+  :ghook 'company-mode-hook
+  :config
+  (general-setq company-box-show-single-candidate t
+                company-box-backends-colors nil
+                company-box-max-candidates 14
+                company-box-icons-alist 'company-box-icons-all-the-icons))
 #+end_src
 
 *** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
@@ -2457,13 +2465,13 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook 'emacs-startup-hook
   :init
-  (defun arco/hack-makefile-indentation (props)
+  (defun arco/hack-makefile-indent (props)
     (when (derived-mode-p 'makefile-mode)
       (puthash 'indent_style "tab" props)))
   :config
   (general-setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
   (general-add-hook 'editorconfig-hack-properties-functions
-                    #'arco/hack-makefile-indentation))
+                    #'arco/hack-makefile-indent))
 #+end_src
 
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
@@ -2472,7 +2480,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package highlight-indent-guides
   :blackout t
   :straight t
-  :ghook 'python-mode-hook 'yaml-mode-hook)
+  :ghook '(python-mode-hook yaml-mode-hook moose-mode-hook))
 #+end_src
 
 *** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
@@ -2993,7 +3001,7 @@ A nice way to restart emacs on the fly if you need to.
   :preface
   (defun djm/config-ibuffer-projectile ()
     (ibuffer-projectile-set-filter-groups)
-    (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
+    ;; (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
     (add-to-list 'ibuffer-filter-groups
                  '("System" (predicate . (-contains? '("*direnv*" "*straight-process*"
                                                        "*explain-pause-log*" "*lsp-log*"
@@ -4041,6 +4049,13 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 *** MOOSE
+**** [[https://github.com/dylanjm/emacs-moose-mode][Moose-Mode]]
+#+name: init-moose-mode-block
+#+begin_src emacs-lisp
+(use-package moose-mode
+  :straight (:host github :repo "dylanjm/emacs-moose-mode"))
+#+end_src
+
 **** [[https://github.com/dylanjm/moose-hit-format.el][Hit-Formatter]]
 #+name: init-hit-formatter-block
 #+begin_src emacs-lisp

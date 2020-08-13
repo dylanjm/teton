@@ -98,7 +98,6 @@ fi
 ###
 if [[ "${USER}" == "mcdodj" ]]; then
   alias code="cd ~/Documents/forked_github"
-  alias kbai="cd ~/Documents/forked_github/cs7637-kbai"
   alias proj='cd ~/Documents/projects'
   alias bis='cd ~/Documents/projects/bison'
   alias bisd='cd ~/Documents/projects/bison_data'
@@ -107,4 +106,5 @@ if [[ "${USER}" == "mcdodj" ]]; then
   alias libmesh='cd ~/Documents/projects/libmesh'
   alias papers='cd ~/Documents/projects/papers'
   alias bb='cd ~/Documents/projects/blackbear'
+  alias grz='cd ~/Documents/projects/grizzly'
 fi

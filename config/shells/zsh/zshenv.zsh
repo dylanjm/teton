@@ -158,6 +158,11 @@ export SUBVERSION_HOME="${XDG_CONFIG_HOME}/subversion"
 export TERMINFO="${XDG_DATA_HOME}/terminfo"
 
 ###
+### TreeSitter
+###
+export TREE_SITTER_DIR="${XDG_DATA_HOME}/tree-sitter"
+
+###
 ### Weechat
 ###
 export WEECHAT_HOME="${XDG_CONFIG_HOME}/weechat"

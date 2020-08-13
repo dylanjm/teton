@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-11 12:46:04
+/last updated/: 2020-08-13 13:05:11
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -178,7 +178,7 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
     (goto-char (point-max))
     (eval-print-last-sexp)))
 (load bootstrap-file nil 'nomessage)
-(load indent-file nil 'nomessage)
+;;(load indent-file nil 'nomessage)
 #+end_src
 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
@@ -219,7 +219,7 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                          "FZF_DEFAULT_COMMAND" "GPG_TTY" "GNUPGHOME"
                                          "SSH_AUTH_SOCK" "GOKU_EDN_CONFIG_FILE"
                                          "GUILE_AUTO_COMPILE" "GUILE_HISTORY"
-                                         "JAVA_HOME"
+                                         "JAVA_HOME" "TREE_SITTER_DIR"
                                          "ZSH"
                                          "PYGMENTIZE_STYLE"
                                          "PYENV_ROOT"
@@ -2118,6 +2118,8 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :mode ("\\.pdf$" . 'pdf-view-mode)
   :preface
   (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  :init
+  (pdf-loader-install)
   :config
   (pdf-tools-enable-minor-modes))
 #+end_src
@@ -2197,7 +2199,8 @@ A nice way to restart emacs on the fly if you need to.
            "s" #'projectile-switch-project
            "c" #'projectile-compile-project
            "f" #'projectile-find-file
-           "b" #'projectile-switch-to-buffer)
+           "b" #'projectile-switch-to-buffer
+           "k" #'projectile-kill-buffers)
   :preface
   (defun projectile-project-find-function (dir)
     (let* ((root (projectile-project-root dir)))
@@ -2241,48 +2244,48 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/company-mode/company-mode][Company]]
 #+name: init-company-block
 #+begin_src emacs-lisp
-  (use-package company
-    :blackout t
-    :straight t
-    :commands company-complete-common company-manual-begin company-grab-line
-    :ghook ('emacs-startup-hook #'global-company-mode)
-    :general
-    ([remap completion-at-point] #'company-manual-begin
-     [remap complete-symbol] #'company-manual-begin)
-    (:keymaps 'company-active-map
-              "TAB"     #'company-complete-selection
-              "<tab>"   #'company-complete-selection
-              "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
-              "C-p"     #'company-select-previous-or-abort)
-    (:keymaps 'company-active-map
-              :predicate '(company-explicit-action-p)
-              "<return>" #'company-complete-selection
-              "RET"      #'company-complete-selection)
-    (:keymaps 'comint-mode-map
-              [remap indent-for-tab-command] #'company-manual-begin)
-    :init
-    (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-    (general-setq company-async-timeout 10
-                  company-auto-complete nil
-                  company-auto-complete-chars nil
-                  company-dabbrev-other-buffers nil
-                  company-dabbrev-ignore-case nil
-                  company-dabbrev-downcase nil
-                  company-idle-delay 0.25
-                  company-minimum-prefix-length 2
-                  company-show-numbers t
-                  company-require-match 'never
-                  company-tooltip-limit 14
-                  company-tooltip-align-annotations t)
-    (general-setq company-frontends '(company-pseudo-tooltip-frontend
-                                      company-echo-metadata-frontend))
-    (general-setq company-global-modes '(not message-mode
-                                             help-mode
-                                             gud-mode
-                                             vterm-mode
-                                             eshell-mode
-                                             term-mode))
-    (general-setq company-backends '(company-capf company-files company-dabbrev)))
+(use-package company
+  :blackout t
+  :straight t
+  :commands company-complete-common company-manual-begin company-grab-line
+  :ghook ('emacs-startup-hook #'global-company-mode)
+  :general
+  ([remap completion-at-point] #'company-manual-begin
+   [remap complete-symbol] #'company-manual-begin)
+  (:keymaps 'company-active-map
+            "TAB"     #'company-complete-selection
+            "<tab>"   #'company-complete-selection
+            "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
+            "C-p"     #'company-select-previous-or-abort)
+  (:keymaps 'company-active-map
+            :predicate '(company-explicit-action-p)
+            "<return>" #'company-complete-selection
+            "RET"      #'company-complete-selection)
+  (:keymaps 'comint-mode-map
+            [remap indent-for-tab-command] #'company-manual-begin)
+  :init
+  (general-unbind :keymaps 'company-active-map "C-w" "C-h")
+  (general-setq company-async-timeout 10
+                company-auto-complete nil
+                company-auto-complete-chars nil
+                company-dabbrev-other-buffers nil
+                company-dabbrev-ignore-case nil
+                company-dabbrev-downcase nil
+                company-idle-delay 0.15
+                company-minimum-prefix-length 2
+                company-show-numbers t
+                company-require-match 'never
+                company-tooltip-limit 14
+                company-tooltip-align-annotations t)
+  (general-setq company-frontends '(company-pseudo-tooltip-frontend
+                                    company-echo-metadata-frontend))
+  (general-setq company-global-modes '(not message-mode
+                                           help-mode
+                                           gud-mode
+                                           vterm-mode
+                                           eshell-mode
+                                           term-mode))
+  (general-setq company-backends '(company-capf company-files company-dabbrev)))
 #+end_src
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
@@ -2309,20 +2312,10 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/PythonNut/company-flx][Company-FLX]]
 #+name: init-company-flx-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package company-flx
   :straight t
   :ghook 'company-mode-hook)
-#+end_src
-
-*** [[https://github.com/Alexander-Miller/company-shell][Company-Shell]]
-
-#+name: init-company-shell-block
-#+begin_src emacs-lisp
-(use-package company-shell
-  :straight t
-  :commands (company-shell
-             company-shell-env))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
@@ -4141,6 +4134,22 @@ This is a nifty package that allows me to define functions as local variables in
 #+end_src
 
 ** Miscellaneous
+*** [[https://github.com/ubolonton/emacs-tree-sitter][Tree-Sitter]]
+#+name: init-tree-sitter-block
+#+begin_src emacs-lisp
+;; (use-package tree-sitter
+;;   :straight ( :host github
+;;               :repo "ubolonton/emacs-tree-sitter"
+;;               :files ("lisp/*.el") ))
+;;
+;; (use-package tree-sitter-langs
+;;   :straight ( :host github
+;;               :repo "ubolonton/emacs-tree-sitter"
+;;               :files ("langs/*.el" "langs/queries")))
+(add-to-list 'load-path "/Users/mcdodj/Documents/forked_github/emacs-tree-sitter/lisp")
+(add-to-list 'load-path "/Users/mcdodj/Documents/forked_github/emacs-tree-sitter/langs")
+#+end_src
+
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block
 #+begin_src emacs-lisp

@@ -2,9 +2,9 @@
 
 declare -a arr=(
   # Iosevka Font - Great Monospace and Proportional Font
-  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-curly-3.2.2.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/ttf-iosevka-term-curly-3.2.2.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.2.2/pkg-iosevka-sparkle-3.2.2.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-curly-3.4.3.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-term-curly-3.4.3.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-sparkle-3.4.3.zip"
 
   # Symbola - Great Unicode Support
   "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip"
@@ -13,7 +13,7 @@ declare -a arr=(
   "https://fontlibrary.org/assets/downloads/xits-math/ac15a89f7e6aa3dccd97957dd9615c89/xits-math.zip"
 )
 
-remove-old-fonts() {
+remove_old_fonts() {
   rm "${HOME}/Library/Fonts/iosevka-*"
   rm "${HOME}/Library/Fonts/symbola*"
   rm "${HOME}/Library/Fonts/xits*"
@@ -39,6 +39,8 @@ create_tmp_dir() {
 }
 
 install_fonts() {
+  remove_old_fonts
+
   local i
   for i in "${arr[@]}"; do
     create_tmp_dir "${i}"

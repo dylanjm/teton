@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-13 13:05:11
+/last updated/: 2020-08-17 19:10:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -4136,18 +4136,20 @@ This is a nifty package that allows me to define functions as local variables in
 ** Miscellaneous
 *** [[https://github.com/ubolonton/emacs-tree-sitter][Tree-Sitter]]
 #+name: init-tree-sitter-block
-#+begin_src emacs-lisp
-;; (use-package tree-sitter
-;;   :straight ( :host github
-;;               :repo "ubolonton/emacs-tree-sitter"
-;;               :files ("lisp/*.el") ))
-;;
-;; (use-package tree-sitter-langs
-;;   :straight ( :host github
-;;               :repo "ubolonton/emacs-tree-sitter"
-;;               :files ("langs/*.el" "langs/queries")))
-(add-to-list 'load-path "/Users/mcdodj/Documents/forked_github/emacs-tree-sitter/lisp")
-(add-to-list 'load-path "/Users/mcdodj/Documents/forked_github/emacs-tree-sitter/langs")
+#+begin_src emacs-lisp :tangle no
+(use-package tree-sitter
+  :straight ( :host github
+              :repo "ubolonton/emacs-tree-sitter"
+              :files ("lisp/*.el") )
+  :init
+  (global-tree-sitter-mode +1))
+
+(use-package tree-sitter-langs
+  :demand t
+  :after tree-sitter
+  :straight ( :host github
+              :repo "ubolonton/emacs-tree-sitter"
+              :files ("langs/*.el" "langs/queries")))
 #+end_src
 
 *** [[https://github.com/parkouss/speed-type][SpeedType]]

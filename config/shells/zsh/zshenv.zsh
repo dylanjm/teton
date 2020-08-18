@@ -21,7 +21,7 @@ export LANG="en_US.UTF-8"
 export DOTFILES="${HOME}/teton"
 export ORG_FILES="${HOME}/Documents/org-files"
 export EDITOR="/usr/local/bin/emacsclient -t -c -a '/usr/local/bin/emacs'"
-export EMACS="/Appplications/Emacs.app"
+export EMACS="/usr/local/bin/emacs"
 
 ###
 ### History
@@ -104,7 +104,7 @@ export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia"
 ###
 ### Less
 ###
-export LESS="-g -i -M -R -S -w -z-4"
+export LESS="-g -i -F -M -N -R -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="${XDG_DATA_HOME}/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking

@@ -457,16 +457,16 @@ c.TerminalInteractiveShell.term_title = True
 #  returned and this format type is not used.
 
 ## 
-c.BaseFormatter.deferred_printers = {}
+# c.BaseFormatter.deferred_printers = {}
 
 ## 
-c.BaseFormatter.enabled = True
+# c.BaseFormatter.enabled = True
 
 ## 
-c.BaseFormatter.singleton_printers = {}
+# c.BaseFormatter.singleton_printers = {}
 
 ## 
-c.BaseFormatter.type_printers = {}
+# c.BaseFormatter.type_printers = {}
 
 #------------------------------------------------------------------------------
 # PlainTextFormatter(BaseFormatter) configuration

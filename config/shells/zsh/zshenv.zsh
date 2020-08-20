@@ -19,7 +19,7 @@ export CACHE="${XDG_CACHE_HOME}"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 export DOTFILES="${HOME}/teton"
-export ORG_FILES="${HOME}/Documents/org-files"
+export ORG_FILES="${HOME}/Documents/forked_github/org-files"
 export EDITOR="/usr/local/bin/emacsclient -t -c -a '/usr/local/bin/emacs'"
 export EMACS="/usr/local/bin/emacs"
 

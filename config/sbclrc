@@ -2,8 +2,9 @@
 ;;; The following lines added by ql:add-to-init-file:
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames ".local/share/quicklisp/setup.lisp"
-                                       (user-homedir-pathname))))
+                        (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
 
-(setf sb-impl::*default-external-format* :utf-8)
+(ql:quickload :cffi)
+(pushnew "/usr/local/lib" cffi:*foreign-library-directories* :test #'equal)

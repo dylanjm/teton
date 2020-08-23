@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-17 19:10:08
+/last updated/: 2020-08-21 13:43:48
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2820,7 +2820,7 @@ A nice way to restart emacs on the fly if you need to.
     (:inline t)
     (with-current-buffer (current-buffer)
       (let ((icon (all-the-icons-icon-for-buffer)))
-        (if (stringp icon)
+        (if (and (stringp icon) (window-system))
             icon
           " "))))
 
@@ -4136,13 +4136,12 @@ This is a nifty package that allows me to define functions as local variables in
 ** Miscellaneous
 *** [[https://github.com/ubolonton/emacs-tree-sitter][Tree-Sitter]]
 #+name: init-tree-sitter-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package tree-sitter
+  :demand t
   :straight ( :host github
               :repo "ubolonton/emacs-tree-sitter"
-              :files ("lisp/*.el") )
-  :init
-  (global-tree-sitter-mode +1))
+              :files ("lisp/*.el") ))
 
 (use-package tree-sitter-langs
   :demand t

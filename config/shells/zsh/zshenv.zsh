@@ -237,6 +237,7 @@ export HELPDIR="${MANPATH}"
 autoload -Uz time-shell \
          zicompinit_fast \
          brew \
+         vbox \
          nuke \
          conda \
          pyenv \

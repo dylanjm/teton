@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-21 13:43:48
+/last updated/: 2020-08-26 12:03:00
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3703,7 +3703,6 @@ A nice way to restart emacs on the fly if you need to.
                     #'(lambda ()
                         (flycheck-add-next-checker 'lsp 'python-flake8)
                         (flycheck-add-next-checker 'python-flake8 'python-mypy)
-                        (flycheck-add-next-checker 'python-flake8 'python-pylint)
                         (flycheck-add-next-checker 'python-mypy 'python-pycompile)))
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
@@ -3941,7 +3940,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package lsp-python-ms
   :demand t
   :after lsp-mode
@@ -3952,6 +3951,17 @@ This is a nifty package that allows me to define functions as local variables in
   :config
   (general-setq lsp-python-ms-extra-paths
                 (expand-file-name "~/Documents/projects/moose/python")))
+#+end_src
+
+**** [[https://github.com/emacs-lsp/lsp-pyright][Pyright]]
+#+name: init-pyright-block
+#+begin_src emacs-lisp
+(use-package lsp-pyright
+  :straight t
+  :ghook ('python-mode-hook
+          #'(lambda ()
+              (require 'lsp-pyright)
+              (lsp-deferred))))
 #+end_src
 
 *** C++

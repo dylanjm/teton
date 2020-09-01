@@ -218,12 +218,6 @@ EOF
 create_local_paths() {
   [[ "${#files[@]}" == 0 ]] && folder_not_found
 
-  printf "\n📁 %b%b%b%b:\n" \
-         "$(bold "Inspecting Nightly Folder") " \
-         "$(magenta "${files[0]:20:14}") " \
-         "$(bold "for Assessment") " \
-         "$(magenta "$FOLDER")"
-
   # Modify remote paths to fit for local paths
   # We need extglob for '+([0-9])' to match multiple numbers.
   local i
@@ -259,6 +253,12 @@ main() {
   get_args "${@}"
   mapfile -t files < <(fetch_folder_files)
   mapfile -t local_paths < <(create_local_paths)
+  printf "\n📁 %b%b%b%b:\n" \
+         "$(bold "Inspecting Nightly Folder") " \
+         "$(magenta "${files[0]:20:14}") " \
+         "$(bold "for Assessment") " \
+         "$(magenta "$FOLDER")"
+
   copy_files
 }
 

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-26 12:03:00
+/last updated/: 2020-08-31 17:38:54
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1995,6 +1995,13 @@ Sort of a standard package in most emacs-configs these days.
                    all-the-icons-icon-alist))
 #+end_src
 
+*** [[https://github.com/mickeynp/ligature.el][Ligatures]]
+#+name: init-ligatures-block
+#+begin_src emacs-lisp
+(use-package ligatures
+  :straight (:host github :repo "mickeynp/ligature.el"))
+#+end_src
+
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
 
 - TODO: Figure out how to config my fonts so this changes all font sizes consistently.
@@ -2666,7 +2673,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
 #+name: init-dired-hacks-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dired-hacks
   :straight t)
 
@@ -3940,7 +3947,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package lsp-python-ms
   :demand t
   :after lsp-mode
@@ -3955,7 +3962,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/emacs-lsp/lsp-pyright][Pyright]]
 #+name: init-pyright-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package lsp-pyright
   :straight t
   :ghook ('python-mode-hook
@@ -4146,7 +4153,7 @@ This is a nifty package that allows me to define functions as local variables in
 ** Miscellaneous
 *** [[https://github.com/ubolonton/emacs-tree-sitter][Tree-Sitter]]
 #+name: init-tree-sitter-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package tree-sitter
   :demand t
   :straight ( :host github

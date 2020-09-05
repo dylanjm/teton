@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-08-31 17:38:54
+/last updated/: 2020-09-03 13:43:29
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -756,6 +756,24 @@ Here we can setup proper coloring for compile buffers.
                                :macos-keychain-internet
                                :macos-keychain-generic)
                 auth-source-do-cache t))
+#+end_src
+
+*** Auto-Insert (Built-In)
+#+name: init-auto-insert-block
+#+begin_src emacs-lisp
+(use-package autoinsert
+  :straight (:type built-in)
+  :commands (auto-insert)
+  :ghook ('emacs-startup-hook #'auto-insert-mode)
+  :preface
+  (defun arco/autoinsert-yas-expand()
+    "Replace text in yasnippet template."
+    (yas/expand-snippet (buffer-string) (point-min) (point-max)))
+  :config
+  (general-setq auto-insert 'other)
+  (general-setq auto-insert-directory (nl-etc-expand "autoinsert/"))
+  (general-setq auto-insert-alist
+                '((("\\.py\\'" . "Python Plotting") . ["template.py" arco/autoinsert-yas-expand]))))
 #+end_src
 
 *** Autorevert (Built-In)

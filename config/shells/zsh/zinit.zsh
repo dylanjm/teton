@@ -34,14 +34,15 @@ zinit ice wait lucid \
       atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"'
 zinit $load trapd00r/LS_COLORS
 
+zinit ice wait lucid
+zinit $load hlissner/zsh-autopair
+
 zinit ice wait'1a' lucid atinit'zicompinit_fast; zicdreplay' blockf
 zinit $load zdharma/fast-syntax-highlighting
 
 zinit ice wait'1b' lucid atload"!_zsh_autosuggest_start" blockf
 zinit $load zsh-users/zsh-autosuggestions
 
-zinit ice wait'1c' lucid
-zinit $load hlissner/zsh-autopair
 
 # Local Variables:
 # mode: shell-script

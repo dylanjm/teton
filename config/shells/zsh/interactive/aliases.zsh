@@ -70,7 +70,7 @@ alias rg='rg --color=always --hidden --glob !.git --ignore-case --line-number --
 ###
 alias refresh="source ${HOME}/.zshrc; echo 'Reloaded .zshrc.'"
 alias reload="exec ${SHELL} -l -i"
-alias bubu='brew update && brew upgrade && brew cask upgrade && brew cleanup'
+alias bubu='brew update && brew upgrade && brew upgrade --cask && brew cleanup'
 
 ###
 ### Git aliases

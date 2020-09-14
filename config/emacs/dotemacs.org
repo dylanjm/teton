@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-09-10 10:16:10
+/last updated/: 2020-09-13 10:19:37
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3743,6 +3743,8 @@ A nice way to restart emacs on the fly if you need to.
                         (flycheck-add-next-checker 'python-mypy 'python-pycompile)))
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
+                lsp-idle-delay 0.1
+                lsp-header-breadcrumb-enable t
                 lsp-prefer-capf t
                 lsp-enable-file-watchers nil
                 lsp-diagnostic-package :flycheck

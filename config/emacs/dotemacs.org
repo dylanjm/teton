@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-09-16 12:31:13
+/last updated/: 2020-09-17 20:46:51
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2700,74 +2700,74 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
 #+name: init-dired-hacks-block
 #+begin_src emacs-lisp
-(use-package dired-hacks
-  :straight t)
+  (use-package dired-hacks
+    :straight t)
 
-;; (use-package dired-hacks-utils
-;;   :straight nil)
-;;
-;; (use-package dired-filter
-;;   :straight nil)
-;;
-;; (use-package dired-rainbow
-;;   :demand t
-;;   :straight nil
-;;   :after (dired)
-;;   :config
-;;   (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
-;;
-;; (use-package dired-narrow
-;;   :straight nil
-;;   :after dired
-;;   :commands (dired-narrow
-;;              dired-narrow-fuzzy
-;;              dired-narrow-regexp)
-;;   :general
-;;   (:keymaps 'dired-mode-map
-;;             "C-c C-n" #'dired-narrow
-;;             "C-c C-f" #'dired-narrow-fuzzy
-;;             "C-c C-r" #'dired-narrow-regexp)
-;;   :config
-;;   (general-setq dired-narrow-exit-when-one-left t
-;;                 dired-narrow-enable-blinking t
-;;                 dired-narrow-blink-time 0.3))
-;;
-;; (use-package dired-collapse
-;;   :straight nil
-;;   :general
-;;   (:keymaps 'dired-mode-map
-;;             "c" #'dired-collapse-mode))
-;;
-;; (use-package dired-open
-;;   :straight nil
-;;   :config
-;;   (general-setq dired-open-functions '(dired-open-by-extension
-;;                                        dired-open-subdir)))
-;;
-;; (use-package dired-list
-;;   :straight nil)
-;;
-;; (use-package dired-images
-;;   :straight (dired-hacks eimp))
-;;
-;; (use-package dired-ranger
-;;   :straight nil
-;;   :general
-;;   (:keymaps 'dired-mode-map
-;;             "C-c C-c" #'dired-ranger-copy
-;;             "C-c C-m" #'dired-ranger-move
-;;             "C-c C-p" #'dired-ranger-paste
-;;             "C-c C-b" #'dired-ranger-bookmark
-;;             "C-c b v" #'dired-ranger-bookmark-visit))
-;;
-;; (use-package dired-subtree
-;;   :straight nil
-;;   :general
-;;   (:keymaps 'dired-mode-map
-;;             "<tab>"     #'dired-subtree-toggle
-;;             "<backtab>" #'dired-subtree-cycle)
-;;   :config
-;;   (general-setq dired-subtree-use-backgrounds nil))
+  (use-package dired-hacks-utils
+    :straight nil)
+
+  (use-package dired-filter
+    :straight nil)
+
+  (use-package dired-rainbow
+    :demand t
+    :straight nil
+    :after (dired)
+    :config
+    (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
+
+  (use-package dired-narrow
+    :straight nil
+    :after dired
+    :commands (dired-narrow
+               dired-narrow-fuzzy
+               dired-narrow-regexp)
+    :general
+    (:keymaps 'dired-mode-map
+              "C-c C-n" #'dired-narrow
+              "C-c C-f" #'dired-narrow-fuzzy
+              "C-c C-r" #'dired-narrow-regexp)
+    :config
+    (general-setq dired-narrow-exit-when-one-left t
+                  dired-narrow-enable-blinking t
+                  dired-narrow-blink-time 0.3))
+
+  (use-package dired-collapse
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "c" #'dired-collapse-mode))
+
+  (use-package dired-open
+    :straight nil
+    :config
+    (general-setq dired-open-functions '(dired-open-by-extension
+                                         dired-open-subdir)))
+
+  (use-package dired-list
+    :straight nil)
+
+  ;; (use-package dired-images
+  ;;   :straight (dired-hacks eimp))
+
+  (use-package dired-ranger
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "C-c C-c" #'dired-ranger-copy
+              "C-c C-m" #'dired-ranger-move
+              "C-c C-p" #'dired-ranger-paste
+              "C-c C-b" #'dired-ranger-bookmark
+              "C-c b v" #'dired-ranger-bookmark-visit))
+
+  (use-package dired-subtree
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "<tab>"     #'dired-subtree-toggle
+              "<backtab>" #'dired-subtree-cycle)
+    :config
+    (general-setq dired-subtree-use-backgrounds nil))
 #+end_src
 
 *** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
@@ -3781,7 +3781,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
 
   (general-setq flycheck-flake8rc arco--flake8rc
-                flycheck-pylintrc arco--pylintrc
+                ;;flycheck-pylintrc arco--pylintrc
                 flycheck-python-mypy-config arco--mypy-config)
 
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
@@ -3905,8 +3905,7 @@ This is a nifty package that allows me to define functions as local variables in
   :straight auctex
   :gfhook ('LaTeX-mode-hook '(TeX-fold-mode
                               flycheck-mode
-                              reftex-mode
-                              virtual-auto-fill-mode))
+                              reftex-mode))
   :init
   (general-setq TeX-view-program-selection '((output-pdf "pdf-tools"))
                 TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))

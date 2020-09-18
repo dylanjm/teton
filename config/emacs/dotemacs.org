@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-09-15 13:54:11
+/last updated/: 2020-09-16 12:31:13
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2013,13 +2013,6 @@ Sort of a standard package in most emacs-configs these days.
                    all-the-icons-icon-alist))
 #+end_src
 
-*** [[https://github.com/mickeynp/ligature.el][Ligatures]]
-#+name: init-ligatures-block
-#+begin_src emacs-lisp
-(use-package ligatures
-  :straight (:host github :repo "mickeynp/ligature.el"))
-#+end_src
-
 *** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
 
 - TODO: Figure out how to config my fonts so this changes all font sizes consistently.
@@ -2034,6 +2027,16 @@ Sort of a standard package in most emacs-configs these days.
    "s-r" #'default-text-scale-reset)
   :config
   (general-setq default-text-scale-amount 20))
+#+end_src
+
+
+*** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
+#+name: init-rainbow-delimiters-block
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :blackout t
+  :straight t
+  :ghook 'prog-mode-hook)
 #+end_src
 
 *** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox-Theme]]
@@ -2191,6 +2194,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package multi-libvterm
   :straight (:host github :repo "suonlight/multi-libvterm")
+  :commands (multi-vterm-dedicated-toggle)
   :general
   ("C-c x v" #'multi-vterm-dedicated-toggle)
   :init
@@ -2337,7 +2341,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/PythonNut/company-flx][Company-FLX]]
 #+name: init-company-flx-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package company-flx
   :straight t
   :ghook 'company-mode-hook)
@@ -2522,14 +2526,6 @@ A nice way to restart emacs on the fly if you need to.
   :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
 #+end_src
 
-*** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
-#+name: init-rainbow-delimiters-block
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :blackout t
-  :straight t
-  :ghook 'prog-mode-hook)
-#+end_src
 
 *** [[https://github.com/apchamberlain/undo-tree.el][Undo-Tree]]
 #+name: init-undo-tree-block
@@ -2703,75 +2699,75 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
 #+name: init-dired-hacks-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package dired-hacks
   :straight t)
 
-(use-package dired-hacks-utils
-  :straight nil)
-
-(use-package dired-filter
-  :straight nil)
-
-(use-package dired-rainbow
-  :demand t
-  :straight nil
-  :after (dired)
-  :config
-  (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
-
-(use-package dired-narrow
-  :straight nil
-  :after dired
-  :commands (dired-narrow
-             dired-narrow-fuzzy
-             dired-narrow-regexp)
-  :general
-  (:keymaps 'dired-mode-map
-            "C-c C-n" #'dired-narrow
-            "C-c C-f" #'dired-narrow-fuzzy
-            "C-c C-r" #'dired-narrow-regexp)
-  :config
-  (general-setq dired-narrow-exit-when-one-left t
-                dired-narrow-enable-blinking t
-                dired-narrow-blink-time 0.3))
-
-(use-package dired-collapse
-  :straight nil
-  :general
-  (:keymaps 'dired-mode-map
-            "c" #'dired-collapse-mode))
-
-(use-package dired-open
-  :straight nil
-  :config
-  (general-setq dired-open-functions '(dired-open-by-extension
-                                       dired-open-subdir)))
-
-(use-package dired-list
-  :straight nil)
-
-(use-package dired-images
-  :straight (dired-hacks eimp))
-
-(use-package dired-ranger
-  :straight nil
-  :general
-  (:keymaps 'dired-mode-map
-            "C-c C-c" #'dired-ranger-copy
-            "C-c C-m" #'dired-ranger-move
-            "C-c C-p" #'dired-ranger-paste
-            "C-c C-b" #'dired-ranger-bookmark
-            "C-c b v" #'dired-ranger-bookmark-visit))
-
-(use-package dired-subtree
-  :straight nil
-  :general
-  (:keymaps 'dired-mode-map
-            "<tab>"     #'dired-subtree-toggle
-            "<backtab>" #'dired-subtree-cycle)
-  :config
-  (general-setq dired-subtree-use-backgrounds nil))
+;; (use-package dired-hacks-utils
+;;   :straight nil)
+;;
+;; (use-package dired-filter
+;;   :straight nil)
+;;
+;; (use-package dired-rainbow
+;;   :demand t
+;;   :straight nil
+;;   :after (dired)
+;;   :config
+;;   (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
+;;
+;; (use-package dired-narrow
+;;   :straight nil
+;;   :after dired
+;;   :commands (dired-narrow
+;;              dired-narrow-fuzzy
+;;              dired-narrow-regexp)
+;;   :general
+;;   (:keymaps 'dired-mode-map
+;;             "C-c C-n" #'dired-narrow
+;;             "C-c C-f" #'dired-narrow-fuzzy
+;;             "C-c C-r" #'dired-narrow-regexp)
+;;   :config
+;;   (general-setq dired-narrow-exit-when-one-left t
+;;                 dired-narrow-enable-blinking t
+;;                 dired-narrow-blink-time 0.3))
+;;
+;; (use-package dired-collapse
+;;   :straight nil
+;;   :general
+;;   (:keymaps 'dired-mode-map
+;;             "c" #'dired-collapse-mode))
+;;
+;; (use-package dired-open
+;;   :straight nil
+;;   :config
+;;   (general-setq dired-open-functions '(dired-open-by-extension
+;;                                        dired-open-subdir)))
+;;
+;; (use-package dired-list
+;;   :straight nil)
+;;
+;; (use-package dired-images
+;;   :straight (dired-hacks eimp))
+;;
+;; (use-package dired-ranger
+;;   :straight nil
+;;   :general
+;;   (:keymaps 'dired-mode-map
+;;             "C-c C-c" #'dired-ranger-copy
+;;             "C-c C-m" #'dired-ranger-move
+;;             "C-c C-p" #'dired-ranger-paste
+;;             "C-c C-b" #'dired-ranger-bookmark
+;;             "C-c b v" #'dired-ranger-bookmark-visit))
+;;
+;; (use-package dired-subtree
+;;   :straight nil
+;;   :general
+;;   (:keymaps 'dired-mode-map
+;;             "<tab>"     #'dired-subtree-toggle
+;;             "<backtab>" #'dired-subtree-cycle)
+;;   :config
+;;   (general-setq dired-subtree-use-backgrounds nil))
 #+end_src
 
 *** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]

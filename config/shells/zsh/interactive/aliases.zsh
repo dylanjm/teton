@@ -37,7 +37,6 @@ alias sbcl="rlwrap -p 'red' -D 0 -H ${XDG_DATA_HOME}/sbcl_history sbcl"
 ###
 ### Navigation
 ###
-#alias cd='z'
 alias dtop="cd ${HOME}/Desktop"
 alias docs="cd ${HOME}/Documents"
 alias dl="cd ${HOME}/Downloads"

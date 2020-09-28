@@ -13,7 +13,7 @@
 ###    A script to fetch remote assessment output data
 ###
 ### Usage:
-###    bisfetch [-h] [-n] [-l INTEGER] [-f <folder>] <folder> ...
+###    bisfetch [-h] [-n] [-l <integer>] [-f FOLDER] FOLDER ...
 ###
 ### Depends on:
 ###    local BISON repo
@@ -62,9 +62,9 @@ readonly MAGENTA='\033[1;4;35m'
 readonly YELLOW='\033[1;33m'
 
 # Flags
-DRYRUN=0
-LOOKBACK=1
-FOLDER=""
+declare -gi DRYRUN=0
+declare -gi LOOKBACK=1
+declare -g FOLDER=""
 
 # Utilities ############################################################
 magenta() { echo "${MAGENTA}$*${NORMAL}"; }
@@ -120,7 +120,7 @@ usage() {
 	A script to fetch remote assessment performance data.
 
 	$(echo -e "$(yellow "USAGE")"):
-	    ${ME} [-h] [-n] [-l INTEGER] [-f <folder>] [<folder> ...]
+	    ${ME} [-h] [-n] [-l <integer>] [-f FOLDER] FOLDER
 
 	$(echo -e "$(yellow "OPTIONS")"):
 	    -h        - Show this message
@@ -129,7 +129,7 @@ usage() {
 	    -f        - Folder of interest; optional flag
 
 	$(echo -e "$(yellow "ARGUMENTS")"):
-	    <folder>  - Folder of interest from remote machine.
+	    FOLDER    - Folder of interest from remote machine.
 	                To fetch all folders specify '*'
 
 	$(echo -e "$(yellow "EXAMPLES")"):
@@ -217,7 +217,6 @@ EOF
 
 create_local_paths() {
   [[ "${#files[@]}" == 0 ]] && folder_not_found
-
   # Modify remote paths to fit for local paths
   # We need extglob for '+([0-9])' to match multiple numbers.
   local i
@@ -253,7 +252,7 @@ main() {
   get_args "${@}"
   mapfile -t files < <(fetch_folder_files)
   mapfile -t local_paths < <(create_local_paths)
-  printf "\n📁 %b%b%b%b:\n" \
+  printf "\n📁  %b%b%b%b:\n" \
          "$(bold "Inspecting Nightly Folder") " \
          "$(magenta "${files[0]:20:14}") " \
          "$(bold "for Assessment") " \

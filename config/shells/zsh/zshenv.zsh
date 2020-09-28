@@ -91,7 +91,7 @@ export GUILE_HISTORY="${XDG_DATA_HOME}/guile_history"
 ###
 ### Java
 ###
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-14.0.1.jdk/Contents/Home"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/openjdk-14.0.2.jdk/Contents/Home"
 export JUNIT_HOME="/Library/JUNIT"
 export CLASSPATH="${CLASSPATH}:${JUNIT_HOME}/junit-4.10.jar:."
 
@@ -104,7 +104,7 @@ export JULIA_DEPOT_PATH="${XDG_DATA_HOME}/julia"
 ###
 ### Less
 ###
-export LESS="-g -i -F -M -N -R -S -w -z-4"
+export LESS="-g -i -F -M -R -S -w -z-4"
 export LESSOPEN='| /usr/bin/env lessfilter %s 2>&-'
 export LESSHISTFILE="${XDG_DATA_HOME}/lesshst"
 export LESS_TERMCAP_mb=$'\E[01;31m'    # begin blinking
@@ -118,7 +118,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'    # begin underline
 ###
 ### Python
 ###
-export PYTHONPATH="$HOME/Documents/projects/moose/python:$PYTHONPATH"
+# export PYTHONPATH="$HOME/Documents/projects/moose/python:$PYTHONPATH"
 export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export IPYTHONDIR="${XDG_CONFIG_HOME}/ipython"
 export PYLINTHOME="${XDG_CACHE_HOME}/pylint.d"

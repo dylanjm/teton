@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-09-17 20:46:51
+/last updated/: 2020-09-24 09:58:36
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -210,18 +210,35 @@ Application launching on MacOS isn't handled by a specific system. This makes it
   :straight t
   :if (eq system-type 'darwin)
   :init
-  (setq exec-path-from-shell-variables '("XDG_CONFIG_HOME" "XDG_CACHE_HOME"
-                                         "XDG_DATA_HOME" "XDG_BIN_HOME"
-                                         "DOTFILES" "ORG_FILES"
-                                         "EDITOR" "EMACS" "HISTFILE" "MOOSE_DIR"
-                                         "HIST_IGNORE" "HISTSIZE" "SAVEHIST" "ATOM_HOME"
-                                         "CCACHE_DIR" "CONDARC" "CONDA_ENVS_PATH" "EA_PATH"
-                                         "FZF_DEFAULT_COMMAND" "GPG_TTY" "GNUPGHOME"
-                                         "SSH_AUTH_SOCK" "GOKU_EDN_CONFIG_FILE"
-                                         "GUILE_AUTO_COMPILE" "GUILE_HISTORY"
-                                         "JAVA_HOME" "TREE_SITTER_DIR"
+  (setq exec-path-from-shell-variables '("XDG_CONFIG_HOME"
+                                         "XDG_CACHE_HOME"
+                                         "XDG_DATA_HOME"
+                                         "XDG_BIN_HOME"
+                                         "DOTFILES"
+                                         "ORG_FILES"
+                                         "EDITOR"
+                                         "EMACS"
+                                         "HISTFILE"
+                                         "MOOSE_DIR"
+                                         "HIST_IGNORE"
+                                         "HISTSIZE"
+                                         "SAVEHIST"
+                                         "ATOM_HOME"
+                                         "CCACHE_DIR"
+                                         "CONDARC"
+                                         "CONDA_ENVS_PATH"
+                                         "EA_PATH"
+                                         "FZF_DEFAULT_COMMAND"
+                                         "GPG_TTY" "GNUPGHOME"
+                                         "SSH_AUTH_SOCK"
+                                         "GOKU_EDN_CONFIG_FILE"
+                                         "GUILE_AUTO_COMPILE"
+                                         "GUILE_HISTORY"
+                                         "JAVA_HOME"
+                                         "TREE_SITTER_DIR"
                                          "ZSH"
                                          "PYGMENTIZE_STYLE"
+                                         "PYLINTHOME"
                                          "PYENV_ROOT"
                                          "IPYTHONDIR"
                                          "PYTHONSTARTUP"
@@ -230,7 +247,9 @@ Application launching on MacOS isn't handled by a specific system. This makes it
                                          "CARGO_HOME"
                                          "TERMINFO"
                                          "WEECHAT_HOME"
-                                         "PATH" "MANPATH" "FPATH")
+                                         "PATH"
+                                         "MANPATH"
+                                         "FPATH")
         exec-path-from-shell-arguments '("-l"))
   :config
   (exec-path-from-shell-initialize))
@@ -532,11 +551,9 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 (defun arco/set-face-attribute-font (family size)
   "Set `default' face font to FAMILY at SIZE."
-  (set-face-attribute 'default nil :font (concat family
-                                                 "-"
-                                                 (number-to-string size)
-                                                 ":"
-                                                 arco/font-params)))
+  (set-face-attribute
+   'default nil
+   :font (concat family "-" (number-to-string size) ":" arco/font-params)))
 
 (defun setup-main-fonts (frame)
   "Determine font-size based on FRAME."
@@ -549,8 +566,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
 
 (defun configure-fonts (frame)
   "Set up fonts for FRAME.
-    Set the default font, and configure various overrides for
-    symbols, emojis, greek letters, as well as fall backs for."
+Set the default font, and configure various overrides for
+symbols, emojis, greek letters, as well as fall backs for."
   ;; Additional fonts for special characters and fallbacks
   ;; Test range: 🐷 ❤ ⊄ ∫ 𝛼 α 🜚 Ⓚ
   ;; ()[]{}<>«»‹›
@@ -582,17 +599,14 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (set-frame-parameter (selected-frame) 'internal-border-width 15)
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
-
   ;; Define a fontset stack for symbols, greek and math characters
   (dolist (script '(mathematical symbol greek))
     (set-fontset-font t script (font-spec :family "Symbola") nil 'prepend)
     (set-fontset-font t script (font-spec :family "XITS Math" nil 'prepend)))
-
   ;; Colored Emoji on OS X, prefer over everything else!
   (dolist (script '(unicode unicode-bmp unicode-sip unicode-smp unicode-ssp))
     (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
     (set-fontset-font t script (font-spec :family "Apple Color Emoji") nil 'prepend))
-
   ;; Apple Symbols for everything else
   (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
 #+end_src
@@ -603,12 +617,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 
 #+name: init-yank-ws-cleanup-block
 #+begin_src emacs-lisp
-;; (defun arco/yank-ws-cleanup (&rest _)
-;;   (whitespace-cleanup)
-;;   (delete-trailing-whitespace))
-;;
-;; (general-add-advice #'insert-for-yank :after #'arco/yank-ws-cleanup)
-
 (defun arco/display-ansi-codes (buf &rest _)
   (and (bufferp buf)
        (string= (buffer-name buf) "*Shell Command Output*")
@@ -3089,14 +3097,13 @@ A nice way to restart emacs on the fly if you need to.
   (defun set-buffer-fixed-pitch ()
     (general-setq-local line-spacing 2
                         fill-column 110)
+    (variable-pitch-mode)
     (set-face-attribute 'variable-pitch nil
                         :family "Iosevka Sparkle"
                         :inherit 'default)
     (set-face-attribute 'fixed-pitch nil
                         :family "Iosevka Curly"
-                        :inherit 'default)
-    (variable-pitch-mode)
-    (virtual-auto-fill-mode))
+                        :inherit 'default))
   :config
   ;; Directory Settings
   (general-setq org-archive-location arco--org-archives
@@ -3734,9 +3741,9 @@ A nice way to restart emacs on the fly if you need to.
   :init
   (general-add-hook 'python-mode-hook
                     #'(lambda ()
-                        (flycheck-add-next-checker 'lsp 'python-flake8)
+                        (flycheck-add-next-checker 'lsp           'python-flake8)
                         (flycheck-add-next-checker 'python-flake8 'python-mypy)
-                        (flycheck-add-next-checker 'python-mypy 'python-pycompile)))
+                        (flycheck-add-next-checker 'python-mypy   'python-pycompile)))
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
                 lsp-idle-delay 0.1
@@ -3987,17 +3994,6 @@ This is a nifty package that allows me to define functions as local variables in
                 (expand-file-name "~/Documents/projects/moose/python")))
 #+end_src
 
-**** [[https://github.com/emacs-lsp/lsp-pyright][Pyright]]
-#+name: init-pyright-block
-#+begin_src emacs-lisp :tangle no
-(use-package lsp-pyright
-  :straight t
-  :ghook ('python-mode-hook
-          #'(lambda ()
-              (require 'lsp-pyright)
-              (lsp-deferred))))
-#+end_src
-
 *** C++
 **** [[https://github.com/MaskRay/emacs-ccls][CCLS]]
 #+name: init-ccls-block
@@ -4129,7 +4125,9 @@ This is a nifty package that allows me to define functions as local variables in
 (use-package csv-mode
   :straight t
   :commands (csv-mode
-             csv-align-mode))
+             csv-align-mode)
+  :config
+  (csv-align-mode))
 #+end_src
 
 **** [[https://github.com/magit/git-modes][Gitconfig-Mode]]

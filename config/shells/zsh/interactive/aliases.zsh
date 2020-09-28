@@ -61,6 +61,7 @@ alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified
 alias bc='eva'
 alias cat='bat'
 alias cam='conda activate moose'
+alias car='conda activate raven'
 alias cdm='conda deactivate'
 alias rg='rg --color=always --hidden --glob !.git --ignore-case --line-number --no-heading --sort=path'
 
@@ -107,4 +108,7 @@ if [[ "${USER}" == "mcdodj" ]]; then
   alias papers='cd ~/Documents/projects/papers'
   alias bb='cd ~/Documents/projects/blackbear'
   alias grz='cd ~/Documents/projects/grizzly'
+  alias rav='cd ~/Documents/projects/raven'
+  alias heron='cd ~/Documents/projects/HERON'
+  alias teal='cd ~/Documents/projects/TEAL'
 fi

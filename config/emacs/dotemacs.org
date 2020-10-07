@@ -361,7 +361,7 @@ We need to intercept the built-in org-version that ships with emacs. For some re
 ;; Org-Mode
 (defvar arco--org-dir          (getenv "ORG_FILES"))
 (defvar arco--org-archives     (f-join arco--org-dir "archive.org::"))
-(defvar arco--org-agenda-files (--map (f-join arco--org-dir it) '("inbox.org" "projects.org")))
+(defvar arco--org-agenda-files (--map `(f-join ,arco--org-dir it) '("inbox.org" "projects.org")))
 
 ;; Python
 (defvar arco--flake8rc    (f-join (getenv "XDG_CONFIG_HOME") "flake8"))

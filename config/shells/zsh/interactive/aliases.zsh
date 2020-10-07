@@ -61,7 +61,7 @@ alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified
 alias bc='eva'
 alias cat='bat'
 alias cam='conda activate moose'
-alias car='conda activate raven'
+alias car='conda activate ravenLibs'
 alias cdm='conda deactivate'
 alias rg='rg --color=always --hidden --glob !.git --ignore-case --line-number --no-heading --sort=path'
 

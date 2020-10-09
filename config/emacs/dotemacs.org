@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-09-24 09:58:36
+/last updated/: 2020-10-08 16:08:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -561,8 +561,8 @@ Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on set
   (when (display-graphic-p frame)
     (when window-system
       (if (> (x-display-pixel-width) 2000)
-          (arco/set-face-attribute-font arco/default-font 16)
-        (arco/set-face-attribute-font arco/default-font 14)))))
+          (arco/set-face-attribute-font arco/default-font 14)
+        (arco/set-face-attribute-font arco/default-font 12)))))
 
 (defun configure-fonts (frame)
   "Set up fonts for FRAME.
@@ -1990,7 +1990,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 ** Themes & Aesthetics
 *** [[https://github.com/luisgerhorst/virtual-auto-fill][Virtual-Auto-Fill]]
 #+name: init-virtual-auto-fill-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package virtual-auto-fill
   :blackout t
   :straight (:host github :repo "luisgerhorst/virtual-auto-fill")
@@ -2308,8 +2308,8 @@ A nice way to restart emacs on the fly if you need to.
                 company-dabbrev-other-buffers nil
                 company-dabbrev-ignore-case nil
                 company-dabbrev-downcase nil
-                company-idle-delay 0.15
-                company-minimum-prefix-length 2
+                company-idle-delay 0.0
+                company-minimum-prefix-length 1
                 company-show-numbers t
                 company-require-match 'never
                 company-tooltip-limit 14
@@ -3738,18 +3738,17 @@ A nice way to restart emacs on the fly if you need to.
             python-mode-hook)
           #'lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
-  :init
-  (general-add-hook 'python-mode-hook
-                    #'(lambda ()
-                        (flycheck-add-next-checker 'lsp           'python-flake8)
-                        (flycheck-add-next-checker 'python-flake8 'python-mypy)
-                        (flycheck-add-next-checker 'python-mypy   'python-pycompile)))
+  ;; :init
+  ;; (general-add-hook 'python-mode-hook
+  ;;                   #'(lambda ()
+  ;;                       (flycheck-add-next-checker 'lsp           'python-flake8)
+  ;;                       (flycheck-add-next-checker 'python-flake8 'python-mypy)
+  ;;                       (flycheck-add-next-checker 'python-mypy   'python-pycompile)))
   :config
   (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
-                lsp-idle-delay 0.1
-                lsp-header-breadcrumb-enable t
+                lsp-completion-provider :capf
+                lsp-idle-delay 0.500
                 lsp-prefer-capf t
-                lsp-enable-file-watchers nil
                 lsp-diagnostic-package :flycheck
                 lsp-eldoc-render-all nil
                 lsp-eldoc-enable-hover nil
@@ -3785,7 +3784,7 @@ A nice way to restart emacs on the fly if you need to.
                 flycheck-buffer-switch-check-intermediate-buffers t
                 flycheck-display-errors-delay 0.25)
 
-  (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  ;; (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
 
   (general-setq flycheck-flake8rc arco--flake8rc
                 ;;flycheck-pylintrc arco--pylintrc
@@ -3962,13 +3961,12 @@ This is a nifty package that allows me to define functions as local variables in
                 python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
                 python-indent-guess-indent-offset-verbose nil
                 python-indent-offset 4
-                comment-inline-offset 2)
-  (setenv "PYTHONPATH" (f-join (getenv "MOOSE_DIR") "python")))
+                comment-inline-offset 2))
 #+end_src
 
 **** [[https://github.com/necaris/conda.el][Conda]]
 #+name: init-conda-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package conda
   :demand t
   :after (python)
@@ -3979,19 +3977,24 @@ This is a nifty package that allows me to define functions as local variables in
                 conda-env-subdirectory "envs"))
 #+end_src
 
+**** LSP-Pyright
+#+name: init-lsp-pyright-block
+#+begin_src emacs-lisp :tangle no
+(use-package lsp-pyright
+  :straight t
+  :ghook ('python-mode-hook #'(lambda ()
+                                (require 'lsp-pyright)
+                                (lsp-deferred))))
+#+end_src
+
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
 #+begin_src emacs-lisp
 (use-package lsp-python-ms
-  :demand t
-  :after lsp-mode
   :straight t
   :ghook ('python-mode-hook #'(lambda () (require 'lsp-python-ms)))
   :init
-  (general-setq lsp-python-ms-auto-install-server t)
-  :config
-  (general-setq lsp-python-ms-extra-paths
-                (expand-file-name "~/Documents/projects/moose/python")))
+  (general-setq lsp-python-ms-auto-install-server t))
 #+end_src
 
 *** C++
@@ -4126,8 +4129,7 @@ This is a nifty package that allows me to define functions as local variables in
   :straight t
   :commands (csv-mode
              csv-align-mode)
-  :config
-  (csv-align-mode))
+  :gfhook #'csv-align-mode)
 #+end_src
 
 **** [[https://github.com/magit/git-modes][Gitconfig-Mode]]

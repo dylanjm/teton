@@ -13,7 +13,13 @@ function nuke() {
       read -r "response?Are you sure? [y/N] "
     fi
     if [[ "${response}" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-      git clean -e .dir-locals.el -e compile_commands.json  -e .ravenrc -dfx &&
+      git clean \
+          -e .dir-locals.el \
+          -e compile_commands.json \
+          -e .ravenrc \
+          -e .ravenconfig.xml \
+          -e .projectile \
+          -dfx &&
         git submodule foreach --recursive git clean -dfx
     fi
   fi

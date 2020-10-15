@@ -1,4 +1,4 @@
 # Global options:
-[mypy]
-warn_return_any = True
-warn_unused_configs = True
+# [mypy]
+# warn_return_any = True
+# warn_unused_configs = True

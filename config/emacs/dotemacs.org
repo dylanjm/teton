@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-08 16:08:58
+/last updated/: 2020-10-16 18:03:57
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -86,7 +86,8 @@ You'll see this modification in many config files around the internet. The idea 
       gc-cons-threshold extended-gc-cons-threshold)
 
 (defun arco/return-gc-to-default ()
-  (setq-default gc-cons-threshold default-gc-cons-threshold))
+  (setq-default gc-cons-threshold default-gc-cons-threshold
+                load-prefer-newer nil))
 
 (defun arco/reset-file-handler-alist-h ()
   (dolist (handler file-name-handler-alist)
@@ -118,16 +119,9 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 (advice-add 'x-apply-session-resources :override 'ignore)
 
 ;; Not sure if this is really needed anymore
-(prefer-coding-system 'utf-8-unix)
-(set-language-environment "UTF-8")
-(set-keyboard-coding-system 'utf-8)
-(set-clipboard-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-selection-coding-system 'utf-8)
-(modify-coding-system-alist 'process "*" 'utf-8)
-(set-file-name-coding-system 'utf-8)
+(when (fboundp 'set-charset-priority)
+  (set-charset-priority 'unicode))
+(prefer-coding-system 'utf-8)
 #+end_src
 
 
@@ -153,32 +147,30 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 ** Package Management
 *** [[https://github.com/raxod502/straight.el][Straight]]
 
-=Straight.el= is my package manager of choice. It is extremely powerful in it's design and ensures you have a functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup much more to anything I've tried.
+=Straight.el= is my package manager of choice. It is extremely powerful in its' design and ensures you have a
+functional Emacs config. There are a few peculiar things about this package, but overall I prefer this setup
+much more to anything I've tried.
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-(defvar straight-recipes-gnu-elpa-use-mirror t)
-(defvar bootstrap-version 5)
-(defvar bootstrap-file (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
-(defvar indent-file (concat user-emacs-directory "straight/repos/straight.el/indent"))
 (setq-default straight-cache-autoloads t
               straight-fix-org t
               straight-fix-flycheck t
               straight-recipe-overrides nil
               straight-repository-branch "develop"
               straight-use-package-by-default t
-              straight-check-for-modifications '(check-on-save find-when-checking)
-              straight-vc-git-default-clone-depth 1)
+              straight-check-for-modifications '(check-on-save find-when-checking))
 
-(unless (file-exists-p bootstrap-file)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-       'silent 'inhibit-cookies)
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-(load bootstrap-file nil 'nomessage)
-(load indent-file nil 'nomessage)
+(let ((bootstrap-version 5)
+      (bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 #+end_src
 
 *** [[https://github.com/jwiegley/use-package][Use-Package]]
@@ -947,16 +939,16 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :no-require t
   :straight (:type built-in)
   :init
-  (general-setq-default auto-save-list-file-prefix nil
-                        auto-save-list-file-name nil
+  (general-setq-default auto-save-list-file-name nil
+                        auto-save-list-file-prefix nil
                         auto-save-no-message t
                         bidi-paragraph-separate-re "^"
                         bidi-paragraph-start-re "^"
                         cursor-in-non-selected-windows nil
                         cursor-type 'bar
+                        default-directory (f-expand "$HOME")
                         delete-by-moving-to-trash t
                         disabled-command-function nil
-                        default-directory (f-expand "$HOME")
                         echo-keystrokes 0.02
                         fast-but-imprecise-scrolling t
                         ffap-machine-p-known 'reject
@@ -967,17 +959,18 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         history-delete-duplicates t
                         history-length 3000
                         icon-title-format frame-title-format
+                        indent-tabs-mode nil
                         indicate-buffer-boundaries nil
                         indicate-empty-lines nil
-                        initial-major-mode 'fundamental-mode
-                        initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
                         inhibit-compacting-font-caches t
                         inhibit-startup-echo-area-message t
                         inhibit-startup-screen t
-                        indent-tabs-mode nil
+                        initial-major-mode 'fundamental-mode
+                        initial-scratch-message ";; Welcome to the Church of Emacs! 🙏\n"
                         line-spacing 0
-                        resize-mini-windows 'grow-only
                         max-mini-window-height 0.20
+                        message-log-max 8192
+                        resize-mini-windows 'grow-only
                         ring-bell-function #'ignore
                         scroll-conservatively 101
                         scroll-margin 5
@@ -987,14 +980,14 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         tab-width 4
                         truncate-lines t
                         truncate-partial-width-windows nil
+                        underline-minimum-offset 0
                         use-dialog-box nil
                         use-file-dialog nil
                         visible-bell nil
                         window-combination-resize t
                         window-resize-pixelwise t
                         word-wrap t
-                        x-underline-at-descent-line t
-                        underline-minimum-offset 0))
+                        x-underline-at-descent-line t))
 #+end_src
 
 *** Dabbrev (Built-In)
@@ -1172,7 +1165,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         enable-local-variables t
                         find-file-suppress-same-file-warnings t
                         find-file-visit-truename t
-                        insert-directory-program "gls"
+                        insert-directory-program "/usr/local/bin/gls"
                         kept-new-versions 6
                         large-file-warning-threshold 10000000000
                         require-final-newline t
@@ -1338,7 +1331,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-isearch-block
 #+begin_src emacs-lisp
 (use-package isearch
-  :no-require t
   :straight (:type built-in)
   :general
   ("C-s" #'isearch-forward)
@@ -1460,7 +1452,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 (use-package mwheel
   :straight (:type built-in)
   :init
-  (general-setq mouse-wheel-scroll-amount '(3 ((shift) . 1) ((control) . nil))
+  (general-setq mouse-wheel-scroll-amount '(1 ((shift) .5) ((control)))
                 mouse-wheel-progressive-speed nil))
 #+end_src
 
@@ -2260,6 +2252,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package prescient
   :straight t
   :config
+  (setq prescient-history-length 1000)
   (prescient-persist-mode +1))
 #+end_src
 
@@ -2275,6 +2268,14 @@ A nice way to restart emacs on the fly if you need to.
 (use-package selectrum-prescient
   :straight (:host github :repo "raxod502/prescient.el")
   :ghook 'selectrum-mode-hook)
+#+end_src
+
+*** [[https://github.com/raxod502/ctrlf][CTRL-F]]
+#+name: init-ctrl-f-block
+#+begin_src emacs-lisp
+(use-package ctrlf
+  :straight t
+  :ghook 'emacs-startup-hook)
 #+end_src
 
 ** Autocompletion
@@ -2668,6 +2669,7 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 *** Image-Dired (Built-In)
+
 #+name: init-image-dired-block
 #+begin_src emacs-lisp
 (use-package image-dired
@@ -2682,6 +2684,15 @@ A nice way to restart emacs on the fly if you need to.
                 image-dired-thumb-margin 2
                 image-dired-thumb-relief 0
                 image-dired-thumbs-per-row 4))
+#+end_src
+
+*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
+#+name: init-fd-dired-block
+#+begin_src emacs-lisp
+(use-package fd-dired
+  :straight t
+  :init
+  (general-setq fd-dired-ls-option '("| xargs -0 gls -ld --quoting-style=literal" . "-ld")))
 #+end_src
 
 *** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]

@@ -2,9 +2,8 @@
 
 declare -a arr=(
   # Iosevka Font - Great Monospace and Proportional Font
-  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-curly-3.4.3.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-term-curly-3.4.3.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.4.3/ttf-iosevka-sparkle-3.4.3.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.6.3/ttf-iosevka-3.6.3.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v3.6.3/ttf-iosevka-sparkle-3.6.3.zip"
 
   # Symbola - Great Unicode Support
   "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip"

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-16 18:03:57
+/last updated/: 2020-10-17 16:37:53
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -60,7 +60,12 @@ This document is my current emacs config which contains the code for my =early-i
 
 ** Garbage Collection
 
-You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve our startup time. After we have given enough time for everything to load we then set the gc-theshold to a reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher to handle things like fuzzy completion and language-server requirements.
+You'll see this modification in many config files around the internet. The idea is that emacs sets it's memory
+threshold 40 years in the past. This causes the garbage collector to run frequently and can cause delays or
+muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve
+our startup time. After we have given enough time for everything to load we then set the gc-theshold to a
+reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher
+to handle things like fuzzy completion and language-server requirements.
 
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
@@ -101,7 +106,9 @@ You'll see this modification in many config files around the internet. The idea 
 
 ** Pre-Gui Optimization
 
-Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=, and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
+Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphical settings without seeing a
+major slow down. The biggest speed ups I've seen from this is setting =vertical-scroll-bars= , =ns-appearance=,
+and =ns-transparent-titlebar=. I also set the font during this time and handle a few other graphical settings.
 
 #+name: early-init-pre-gui-block
 #+begin_src emacs-lisp
@@ -109,11 +116,13 @@ Ever since Emacs 27.0 we can utilize the early-init file to setup a few graphica
 ;; in early-init.el
 (modify-all-frames-parameters '((width . 80)
                                 (height . 50)
-                                (internal-border-width . 15)
+                                (left . 0)
+                                (right . 0)
+                                ;; (internal-border-width . 1)
                                 (vertical-scroll-bars . nil)
                                 (tool-bar-lines . 0)
                                 (ns-appearance . dark)
-                                (font . "Iosevka Curly-18")))
+                                (font . "Iosevka-18")))
 
 ;; Not sure if I really need this on macOS
 (advice-add 'x-apply-session-resources :override 'ignore)
@@ -193,7 +202,8 @@ This section is for packages I need immediately upon launching emacs. My goal is
 
 *** [[https://github.com/purcell/exec-path-from-shell][Exec-Path-From-Shell]]
 
-Application launching on MacOS isn't handled by a specific system. This makes it really hard to get envrionment variables from your shell to show up  in Emacs. This package makes that easier.
+Application launching on MacOS isn't handled by a specific system. This makes it really hard to get
+envrionment variables from your shell to show up in Emacs. This package makes that easier.
 
 #+name: init-exec-path-from-shell-block
 #+begin_src emacs-lisp
@@ -271,7 +281,8 @@ Application launching on MacOS isn't handled by a specific system. This makes it
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
 
-Great package by the same author of Straight.el. It's similar to adding advice to functions but with a twist. Helpful if you need to future proof your emacs or need to alter a function from a package.
+Great package by the same author of Straight.el. It's similar to adding advice to functions but with a twist.
+Helpful if you need to future proof your emacs or need to alter a function from a package.
 
 #+name: init-el-patch-block
 #+begin_src emacs-lisp
@@ -293,7 +304,8 @@ Great package for managing key-bindings and other customizations.
 
 *** [[https://github.com/raxod502/blackout][Blackout]]
 
-Similar to packages like =minions=, =diminish=, or =delight=. You can alter how your minor and major modes show up in the mode-line.
+Similar to packages like =minions=, =diminish=, or =delight=. You can alter how your minor and major modes show up
+in the mode-line.
 
 #+name: init-blackout-block
 #+begin_src emacs-lisp
@@ -331,7 +343,8 @@ Great Elisp library used throughout my config
 
 *** [[https://orgmode.org/worg/org-contrib/][Org-Plus-Contrib]]
 
-We need to intercept the built-in org-version that ships with emacs. For some reason we have to do this early. I'm not really sure why though.
+We need to intercept the built-in org-version that ships with emacs. For some reason we have to do this early.
+I'm not really sure why though.
 
 #+name: init-org-plus-contrib-block
 #+begin_src emacs-lisp
@@ -368,7 +381,8 @@ We need to intercept the built-in org-version that ships with emacs. For some re
 *** Functions
 **** Active-Intervals
 
-This function is a great way to conditional run functions at different intervals. For example, take a look at my =recentf= config. Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
+This function is a great way to conditional run functions at different intervals. For example, take a look at
+my =recentf= config. Code taken from [[https://github.com/noctuid/dotfiles/blob/master/emacs/.emacs.d/awaken.org][noctuid dotfiles.]]
 
 #+name: init-active-interval-block
 #+begin_src emacs-lisp
@@ -392,7 +406,8 @@ BODY is run periodically even if Emacs is actively being used."
 
 **** Screen-Capture
 
-A quick work around function to easily snap screenshots of lecture videos while taking notes. Use the prefix command =C-u M-x emacs-screen-capture RET= to insert it automatically as an org link.
+A quick work around function to easily snap screenshots of lecture videos while taking notes. Use the prefix
+command =C-u M-x emacs-screen-capture RET= to insert it automatically as an org link.
 
 #+name: init-screen-capture-block
 #+begin_src emacs-lisp
@@ -533,11 +548,12 @@ Sometimes I need a different scratch buffer to do some work on.
 
 **** Font-Config
 
-Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on setting this up perfectly but I do set up Apple-Emoji Support.
+Fonts are a pain in the *ASS* in Emacs for some reason. I'm still working on setting this up perfectly but I do
+set up Apple-Emoji Support.
 
 #+name: init-font-config-block
 #+begin_src emacs-lisp
-(defconst arco/default-font "Iosevka Curly")
+(defconst arco/default-font "Iosevka")
 (defconst arco/font-params "autohint=false:hintstyle=hintslight:embeddedbitmap=false")
 (defconst arco/variable-pitch-font "Iosevka Sparkle")
 
@@ -654,7 +670,9 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 
 *** Hooks, Macros & Advice
 
-This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date config files online and always hard to tell just by commit times. I want people to see exactly when this file was last updated.
+This just changes the time-stamp at the top of my config. It's super annoying to try and find up-to-date
+config files online and always hard to tell just by commit times. I want people to see exactly when this file
+was last updated.
 
 #+name: init-personal-hooks-block
 #+begin_src emacs-lisp
@@ -949,10 +967,11 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         default-directory (f-expand "$HOME")
                         delete-by-moving-to-trash t
                         disabled-command-function nil
+                        display-fill-column-indicator-column 82
                         echo-keystrokes 0.02
                         fast-but-imprecise-scrolling t
                         ffap-machine-p-known 'reject
-                        fill-column 80
+                        fill-column 82
                         frame-resize-pixelwise t
                         frame-title-format '("%b - Emacs")
                         highlight-nonselected-windows nil
@@ -2045,12 +2064,26 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
-(use-package gruvbox-theme
-  :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
-  :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
+;; (use-package gruvbox-theme
+;;   :disabled t
+;;   :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
+;;   :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
+;;   :preface
+;;   (defun arco/load-gruvbox-theme ()
+;;     (load-theme 'gruvbox-dark-hard t)
+;;     (when (daemonp)
+;;       (general-add-hook
+;;        'after-make-frame-functions #'setup-main-fonts))
+;;     (when-let (frame (selected-frame))
+;;       (setup-main-fonts frame)
+;;       (configure-fonts frame))))
+
+(use-package doom-themes
+  :straight t
+  :ghook ('emacs-startup-hook #'arco/load-theme)
   :preface
-  (defun arco/load-gruvbox-theme ()
-    (load-theme 'gruvbox-dark-hard t)
+  (defun arco/load-theme ()
+    (load-theme 'doom-tomorrow-night t)
     (when (daemonp)
       (general-add-hook
        'after-make-frame-functions #'setup-main-fonts))
@@ -2059,9 +2092,17 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
       (configure-fonts frame))))
 #+end_src
 
+*** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
+#+name: init-doom-modeline-block
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :straight t
+  :ghook ('emacs-startup-hook #'doom-modeline-mode))
+#+end_src
+
 *** [[https://github.com/gexplorer/simple-modeline][Simple-Modeline]]
 #+name: init-simple-modeline-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package simple-modeline
   :straight t
   :ghook 'emacs-startup-hook
@@ -2328,7 +2369,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/sebastiencs/company-box][Company-Box]]
 #+name: init-company-box-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package company-box
   :blackout t
   :straight t
@@ -2577,7 +2618,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package dired
   :blackout "Dired"
   :straight (:type built-in)
-  :gfhook '(hl-line-mode arco/dired-for-tramp hide-mode-line-mode)
+  :gfhook '(hl-line-mode arco/dired-for-tramp)
   :general
   (:keymaps 'dired-mode-map
             "h" #'dired-up-directory
@@ -2597,7 +2638,8 @@ A nice way to restart emacs on the fly if you need to.
                 dired-listing-switches "-AFhlv --time=ctime --time-style=long-iso --group-directories-first"
                 dired-recursive-deletes 'always
                 dired-recursive-copies 'always
-                dired-deletion-confirmer '(lambda (x) t))) ;; Don't confirm deleting files
+                ;; Don't confirm deleting files
+                dired-deletion-confirmer '(lambda (x) t)))
 #+end_src
 
 *** Dired-Aux (Built-In)
@@ -3094,94 +3136,94 @@ A nice way to restart emacs on the fly if you need to.
 *** Org
 #+name: init-org-block
 #+begin_src emacs-lisp
-(use-package org
-  :straight nil
-  :mode (("\\.org\\'" . org-mode))
-  :gfhook #'set-buffer-fixed-pitch
-  :general
-  (:keymaps 'org-mode-map
-            "M-n" #'outline-next-visible-heading
-            "M-p" #'outline-previous-visible-heading)
-  :company '(company-capf company-files company-dabbrev)
-  :capf #'pcomplete-completions-at-point
-  :preface
-  (defun set-buffer-fixed-pitch ()
-    (general-setq-local line-spacing 2
-                        fill-column 110)
-    (variable-pitch-mode)
-    (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Sparkle"
-                        :inherit 'default)
-    (set-face-attribute 'fixed-pitch nil
-                        :family "Iosevka Curly"
-                        :inherit 'default))
-  :config
-  ;; Directory Settings
-  (general-setq org-archive-location arco--org-archives
-                org-directory arco--org-dir)
+  (use-package org
+    :straight nil
+    :mode (("\\.org\\'" . org-mode))
+    :gfhook #'set-buffer-fixed-pitch
+    :general
+    (:keymaps 'org-mode-map
+              "M-n" #'outline-next-visible-heading
+              "M-p" #'outline-previous-visible-heading)
+    :company '(company-capf company-files company-dabbrev)
+    :capf #'pcomplete-completions-at-point
+    :preface
+    (defun set-buffer-fixed-pitch ()
+      (general-setq-local line-spacing 2
+                          fill-column 110)
+      (variable-pitch-mode)
+      (set-face-attribute 'variable-pitch nil
+                          :family "Iosevka Sparkle"
+                          :inherit 'default)
+      (set-face-attribute 'fixed-pitch nil
+                          :family "Iosevka"
+                          :inherit 'default))
+    :config
+    ;; Directory Settings
+    (general-setq org-archive-location arco--org-archives
+                  org-directory arco--org-dir)
 
-  ;; Startup Settings
-  (general-setq org-startup-folded 'content
-                org-startup-with-inline-images t)
+    ;; Startup Settings
+    (general-setq org-startup-folded 'content
+                  org-startup-with-inline-images t)
 
-  ;; Fontify Settings
-  (general-setq org-fontify-whole-heading-line t
-                org-fontify-quote-and-verse-blocks t
-                org-fontify-done-headline t
-                org-fontify-todo-headline t)
+    ;; Fontify Settings
+    (general-setq org-fontify-whole-heading-line t
+                  org-fontify-quote-and-verse-blocks t
+                  org-fontify-done-headline t
+                  org-fontify-todo-headline t)
 
-  ;; Refile Settings
-  (general-setq org-refile-allow-creating-parent-nodes 'confirm
-                org-refile-use-outline-path 'file
-                org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+    ;; Refile Settings
+    (general-setq org-refile-allow-creating-parent-nodes 'confirm
+                  org-refile-use-outline-path 'f
+                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
-  ;; Log Settings
-  (general-setq org-log-done 'time
-                org-log-into-drawer t
-                org-log-state-notes-insert-after-drawers nil)
+    ;; Log Settings
+    (general-setq org-log-done 'time
+                  org-log-into-drawer t
+                  org-log-state-notes-insert-after-drawers nil)
 
-  ;; Usage Settings
-  (general-setq org-use-fast-todo-selection t
-                org-use-fast-tag-selection t
-                org-use-speed-commands t
-                org-use-tag-inheritance t)
+    ;; Usage Settings
+    (general-setq org-use-fast-todo-selection t
+                  org-use-fast-tag-selection t
+                  org-use-speed-commands t
+                  org-use-tag-inheritance t)
 
-  ;; Aesthetic Settings
-  (general-setq org-pretty-entities t
-                org-hide-emphasis-markers t
-                org-hide-leading-stars t
-                org-ellipsis "…"
-                org-image-actual-width nil)
+    ;; Aesthetic Settings
+    (general-setq org-pretty-entities t
+                  org-hide-emphasis-markers t
+                  org-hide-leading-stars t
+                  org-ellipsis "…"
+                  org-image-actual-width nil)
 
-  (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
+    (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
-  (font-lock-add-keywords 'org-mode
-                          `((,(rx bol (* space) (group "-") (+ space))
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-                            (,(rx bol (* space) (group "#+begin_src") symbol-end)
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-                            (,(rx bol (* space) (group "#+end_src") symbol-end)
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
-                            (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-                            (,(rx bol (* space) (group "#+end_quote") symbol-end)
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+    (font-lock-add-keywords 'org-mode
+                            `((,(rx bol (* space) (group "-") (+ space))
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                              (,(rx bol (* space) (group "#+end_src") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
-  ;; ;; List Settings
-  (general-setq org-list-indent-offset 2)
+    ;; ;; List Settings
+    (general-setq org-list-indent-offset 2)
 
-  ;; ;; Other Settings
-  (general-setq org-catch-invisible-edits 'smart
-                org-cycle-separator-lines 0
-                org-enforce-todo-dependencies t
-                org-enforce-todo-checkbox-dependencies t
-                org-insert-heading-respect-content t
-                org-special-ctrl-a/e t
-                org-special-ctrl-k t
-                org-tags-column 0
-                org-yank-adjusted-subtrees t)
+    ;; ;; Other Settings
+    (general-setq org-catch-invisible-edits 'smart
+                  org-cycle-separator-lines 0
+                  org-enforce-todo-dependencies t
+                  org-enforce-todo-checkbox-dependencies t
+                  org-insert-heading-respect-content t
+                  org-special-ctrl-a/e t
+                  org-special-ctrl-k t
+                  org-tags-column 0
+                  org-yank-adjusted-subtrees t)
 
-  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
+    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
 *** Org-Indent
@@ -3816,7 +3858,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]
 #+name: init-flycheck-indicator-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flycheck-indicator
   :straight t
   :ghook 'flycheck-mode-hook)
@@ -3824,7 +3866,7 @@ A nice way to restart emacs on the fly if you need to.
 
 *** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
 #+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flycheck-popup-tip
   :blackout t
   :straight t

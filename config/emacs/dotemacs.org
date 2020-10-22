@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-17 16:37:53
+/last updated/: 2020-10-21 13:08:57
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2248,7 +2248,6 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package vterm
   :straight t
-  :gfhook #'hide-mode-line-mode
   :preface
   (general-setq vterm-install t)
   :config
@@ -4030,16 +4029,6 @@ This is a nifty package that allows me to define functions as local variables in
                 conda-env-subdirectory "envs"))
 #+end_src
 
-**** LSP-Pyright
-#+name: init-lsp-pyright-block
-#+begin_src emacs-lisp :tangle no
-(use-package lsp-pyright
-  :straight t
-  :ghook ('python-mode-hook #'(lambda ()
-                                (require 'lsp-pyright)
-                                (lsp-deferred))))
-#+end_src
-
 **** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
 #+name: init-lsp-python-ms-block
 #+begin_src emacs-lisp
@@ -4047,7 +4036,8 @@ This is a nifty package that allows me to define functions as local variables in
   :straight t
   :ghook ('python-mode-hook #'(lambda () (require 'lsp-python-ms)))
   :init
-  (general-setq lsp-python-ms-auto-install-server t))
+  (general-setq lsp-python-ms-auto-install-server t)
+  (general-setq lsp-python-ms-python-executable python-shell-interpreter))
 #+end_src
 
 *** C++

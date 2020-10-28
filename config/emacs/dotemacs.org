@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-28 15:40:53
+/last updated/: 2020-10-28 16:17:48
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -3567,12 +3567,12 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
-*** [[https://github.com/dgutov/diff-hl][Diff-HL]]
-#+name: init-diff-hl-block
+*** Git-Gutter-Fringe
+#+name: init-git-gutter-fringe-block
 #+begin_src emacs-lisp
 (use-package git-gutter-fringe
   :straight t
-  :ghook ('prog-mode-hook))
+  :ghook ('prog-mode-hook #'global-git-gutter-mode))
 #+end_src
 
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]

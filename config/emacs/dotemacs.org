@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-28 16:17:48
+/last updated/: 2020-10-28 17:13:28
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -92,14 +92,14 @@ to handle things like fuzzy completion and language-server requirements.
 
 (defun arco/return-gc-to-default ()
   (setq-default gc-cons-threshold default-gc-cons-threshold
-                load-prefer-newer t))
+                load-prefer-newer nil))
 
 (defun arco/reset-file-handler-alist-h ()
   (dolist (handler file-name-handler-alist)
     (add-to-list 'default-file-name-handler-alist handler))
   (setq file-name-handler-alist default-file-name-handler-alist))
 
-(add-hook 'emacs-init-hook #'arco/reset-file-handler-alist-h)
+(add-hook 'after-init-hook #'arco/reset-file-handler-alist-h)
 (add-hook 'after-init-hook #'arco/return-gc-to-default)
 (advice-add #'package--ensure-init-file :override #'ignore)
 #+end_src
@@ -118,7 +118,7 @@ and =ns-transparent-titlebar=. I also set the font during this time and handle a
                                 (height . 50)
                                 (left . 0)
                                 (right . 0)
-                                ;; (internal-border-width . 1)
+                                (internal-border-width . 1)
                                 (vertical-scroll-bars . nil)
                                 (tool-bar-lines . 0)
                                 (ns-appearance . dark)
@@ -1073,13 +1073,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   (general-setq epg-pinentry-mode 'loopback))
 #+end_src
 
-*** Ert (Built-In)
-#+name: init-ert-block
-#+begin_src emacs-lisp
-(use-package ert
-  :straight (:type built-in))
-#+end_src
-
 *** Eww (Built-In)
 
 #+name: init-web-browsing-block
@@ -1194,16 +1187,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 tls-checktrust gnutls-verify-error))
 #+end_src
 
-*** Goto-Addr (Built-In)
-
-#+name: init-goto-addr-block
-#+begin_src emacs-lisp
-(use-package goto-addr
-  :straight (:type built-in)
-  :ghook ('text-mode-hook #'goto-address-mode)
-  :ghook ('prog-mode-hook #'goto-address-prog-mode))
-#+end_src
-
 *** Help (Built-In)
 
 #+name: init-help-block
@@ -1283,7 +1266,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** iSearch (Built-In)
-
 #+name: init-isearch-block
 #+begin_src emacs-lisp
 (use-package isearch
@@ -1305,7 +1287,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** iSpell (Built-In)
-
 #+name: init-ispell-block
 #+begin_src emacs-lisp
 (use-package ispell
@@ -1327,7 +1308,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Make-Mode (Built-In)
-
 #+name: init-makefile-block
 #+begin_src emacs-lisp
 (use-package make-mode
@@ -1354,7 +1334,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+end_src
 
 *** Minibuffer (Built-In)
-
 #+name: init-mini-buffer-block
 #+begin_src emacs-lisp
 (use-package minibuffer
@@ -1434,7 +1413,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Paren (Built-In)
-
 #+name: init-paren-block
 #+begin_src emacs-lisp
 (use-package paren
@@ -1448,7 +1426,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Pixel-Scroll (Built-In)
-
 #+name: init-pixel-scroll-block
 #+begin_src emacs-lisp
 (use-package pixel-scroll
@@ -1472,7 +1449,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Prog-Mode (Built-In)
-
 #+name: init-prog-mode-block
 #+begin_src emacs-lisp
 (use-package prog-mode
@@ -1944,26 +1920,15 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
-;; (use-package gruvbox-theme
-;;   :disabled t
-;;   :straight (:host github :repo "dylanjm/emacs-theme-gruvbox")
-;;   :ghook ('emacs-startup-hook #'arco/load-gruvbox-theme)
-;;   :preface
-;;   (defun arco/load-gruvbox-theme ()
-;;     (load-theme 'gruvbox-dark-hard t)
-;;     (when (daemonp)
-;;       (general-add-hook
-;;        'after-make-frame-functions #'setup-main-fonts))
-;;     (when-let (frame (selected-frame))
-;;       (setup-main-fonts frame)
-;;       (configure-fonts frame))))
-
 (use-package doom-themes
   :straight t
-  :ghook (#'emacs-startup-hook #'arco/load-theme)
+  :ghook ('emacs-startup-hook #'arco/load-theme)
   :preface
   (defun arco/load-theme ()
+    (setq doom-themes-enable-bold t
+          doom-themes-enable-italic t)
     (load-theme 'doom-tomorrow-night t)
+    (doom-themes-org-config)
     (when (daemonp)
       (general-add-hook
        'after-make-frame-functions #'setup-main-fonts))
@@ -1977,7 +1942,10 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :straight t
-  :ghook #'emacs-startup-hook #'doom-modeline-mode)
+  :ghook ('window-setup-hook)
+  :config
+  (general-setq doom-modeline-buffer-encoding nil
+                doom-modeline-checker-simple-format nil))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -3738,7 +3706,7 @@ This is a nifty package that allows me to define functions as local variables in
 on save. I use this to auto-tangle the config file when editing.
 
 #+name: init-firestarter-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package firestarter
   :straight t
   :ghook 'before-save-hook)

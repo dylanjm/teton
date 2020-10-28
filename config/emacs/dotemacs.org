@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-21 13:08:57
+/last updated/: 2020-10-28 15:40:53
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -92,14 +92,14 @@ to handle things like fuzzy completion and language-server requirements.
 
 (defun arco/return-gc-to-default ()
   (setq-default gc-cons-threshold default-gc-cons-threshold
-                load-prefer-newer nil))
+                load-prefer-newer t))
 
 (defun arco/reset-file-handler-alist-h ()
   (dolist (handler file-name-handler-alist)
     (add-to-list 'default-file-name-handler-alist handler))
   (setq file-name-handler-alist default-file-name-handler-alist))
 
-(add-hook 'emacs-startup-hook #'arco/reset-file-handler-alist-h)
+(add-hook 'emacs-init-hook #'arco/reset-file-handler-alist-h)
 (add-hook 'after-init-hook #'arco/return-gc-to-default)
 (advice-add #'package--ensure-init-file :override #'ignore)
 #+end_src
@@ -162,23 +162,23 @@ much more to anything I've tried.
 
 #+name: early-init-straight-block
 #+begin_src emacs-lisp
-(setq-default straight-cache-autoloads t
+(setq-default straight-repository-branch "develop"
               straight-fix-org t
               straight-fix-flycheck t
-              straight-recipe-overrides nil
-              straight-repository-branch "develop"
               straight-use-package-by-default t
               straight-check-for-modifications '(check-on-save find-when-checking))
 
-(let ((bootstrap-version 5)
-      (bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory)))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+	   (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	  (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+	    (url-retrieve-synchronously
+	     "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	     'silent 'inhibit-cookies)
+	  (goto-char (point-max))
+	  (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 #+end_src
 
@@ -726,17 +726,6 @@ Ignore those warnings from the old advice system.
   (general-setq ad-redefinition-action 'accept))
 #+end_src
 
-*** Align (Built-In)
-
-Align can be a pretty powerful tool, I just have to learn how to use it better.
-#+name: init-align-block
-#+begin_src emacs-lisp
-(use-package align
-  :straight (:type built-in)
-  :general
-  ("C-x a a" #'align-regexp))
-#+end_src
-
 *** Ansi-Color (Built-In)
 
 Here we can setup proper coloring for compile buffers.
@@ -754,13 +743,6 @@ Here we can setup proper coloring for compile buffers.
          (point-marker)))
   :init
   (general-setq ansi-color-for-comint-mode t))
-#+end_src
-
-*** Artist-Mode (Built-In)
-#+name: init-artist-mode-block
-#+begin_src emacs-lisp
-(use-package artist
-  :straight (:type built-in))
 #+end_src
 
 *** Auth-Source (Built-In)
@@ -810,7 +792,6 @@ Here we can setup proper coloring for compile buffers.
 #+end_src
 
 *** Bookmark (Built-In)
-
 #+name: init-bookmark-block
 #+begin_src emacs-lisp
 (use-package bookmark
@@ -819,14 +800,6 @@ Here we can setup proper coloring for compile buffers.
   ("H-b" #'bookmark-jump)
   :config
   (general-setq bookmark-save-flag +1))
-#+end_src
-
-*** Browse-Url (Built-In)
-
-#+name: init-browse-url-block
-#+begin_src emacs-lisp
-(use-package browse-url
-  :straight (:type built-in))
 #+end_src
 
 *** Calculator (Built-In)
@@ -926,7 +899,6 @@ of the current one and `my-kill-buffer-sentinel'."
 #+end_src
 
 *** Compile (Built-In)
-
 #+name: init-compile-block
 #+begin_src emacs-lisp
 (use-package compile
@@ -936,15 +908,6 @@ of the current one and `my-kill-buffer-sentinel'."
                 compilation-always-kill t
                 compilation-ask-about-save nil
                 compilation-scroll-output 'first-error))
-#+end_src
-
-*** Conf-Mode (Built-In)
-
-#+name: init-conf-mode-block
-#+begin_src emacs-lisp
-(use-package conf-mode
-  :straight (:type built-in)
-  :mode ("\\.i$" . conf-mode))
 #+end_src
 
 *** Cus-Start (Built-In)
@@ -1037,16 +1000,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
-*** Doc-View (Built-In)
-
-#+name: init-doc-view-block
-#+begin_src emacs-lisp
-(use-package doc-view
-  :straight (:type built-in)
-  :config
-  (general-setq doc-view-continuous t))
-#+end_src
-
 *** Ediff (Built-In)
 
 #+name: init-ediff-block
@@ -1124,14 +1077,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-ert-block
 #+begin_src emacs-lisp
 (use-package ert
-  :straight (:type built-in))
-#+end_src
-
-*** Eshell (Built-In)
-
-#+name: init-eshell-block
-#+begin_src emacs-lisp
-(use-package eshell
   :straight (:type built-in))
 #+end_src
 
@@ -1231,7 +1176,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Fringe (Built-In)
 #+name: init-fringe-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package fringe
   :straight (:type built-in)
   :init
@@ -1337,14 +1282,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                  (window-width . 120))))
 #+end_src
 
-*** iMenu (Built-In)
-
-#+name: init-imenu-block
-#+begin_src emacs-lisp
-(use-package imenu
-  :straight (:type built-in))
-#+end_src
-
 *** iSearch (Built-In)
 
 #+name: init-isearch-block
@@ -1401,13 +1338,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
              (makefile-imake-mode . "Makefile"))
   :straight (:type built-in)
   :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
-#+end_src
-
-*** Man-Mode (Built-In)
-#+name: init-man-mode-block
-#+begin_src emacs-lisp
-(use-package man
-  :straight (:type built-in))
 #+end_src
 
 *** Message (Built-In)
@@ -1489,7 +1419,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** NS-Win (Built-In)
 
-This block deserves some explanation. My keyboard config maps =caps-lock= to =left-control=, I then map the =left-control= key to the =right-control= key. So my hyper key is technically the =left-control= key.
+This block deserves some explanation. My keyboard config maps =caps-lock= to =left-control=, I then map the
+=left-control= key to the =right-control= key. So my hyper key is technically the =left-control= key.
 
 #+name: init-ns-win-block
 #+begin_src emacs-lisp
@@ -1500,15 +1431,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                 mac-option-modifier 'super
                 ;; Karabiner binds left-ctrl to right-ctrl
                 mac-right-control-modifier 'hyper))
-#+end_src
-
-*** Outline (Built-In)
-
-#+name: init-outline-block
-#+begin_src emacs-lisp
-(use-package outline
-  :blackout t
-  :straight (:type built-in))
 #+end_src
 
 *** Paren (Built-In)
@@ -1574,15 +1496,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :init
   (general-setq project-vc-ignores '("__pycache__")
                 project-find-functions nil))
-#+end_src
-
-*** Re-Builder (Built-In)
-#+name: init-re-builder-block
-#+begin_src emacs-lisp
-(use-package re-builder
-  :straight (:type built-in)
-  :config
-  (general-setq reb-re-syntax 'read))
 #+end_src
 
 *** Recentf (Built-In)
@@ -1762,7 +1675,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 (use-package subword
   :blackout t
   :straight (:type built-in)
-  :ghook ('emacs-startup-hook #'global-subword-mode))
+  :ghook #'emacs-startup-hook)
 #+end_src
 
 *** Term (Built-In)
@@ -1784,7 +1697,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package time
   :straight (:type built-in)
-  :ghook ('emacs-startup-hook #'display-time-mode)
+  :ghook (#'emacs-startup-hook #'display-time-mode)
   :config
   (general-setq display-time-24hr-format nil
                 display-time-day-and-date t
@@ -1859,31 +1772,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :straight (:type built-in)
   :init
   (general-setq view-inhibit-help-message t))
-#+end_src
-
-*** Warnings (Built-In)
-
-#+name: init-warnings-block
-#+begin_src emacs-lisp
-(use-package warnings
-  :straight (:type built-in))
-#+end_src
-
-*** Whitespace (Built-In)
-
-#+name: init-whitespace-block
-#+begin_src emacs-lisp
-(use-package whitespace
-  :straight (:type built-in))
-#+end_src
-
-*** Wid-Edit (Built-In)
-#+name: init-wid-edit-block
-#+begin_src emacs-lisp
-(use-package wid-edit
-  :straight (:type built-in)
-  :init
-  (general-setq widget-image-enable nil))
 #+end_src
 
 *** Window (Built-In)
@@ -1965,14 +1853,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                                         "*Help*"
                                         "*Buffer List*"
                                         "*Ibuffer*")))
-#+end_src
-
-*** XRef (Built-In)
-
-#+name: init-xref-block
-#+begin_src emacs-lisp
-(use-package xref
-  :straight (:type built-in))
 #+end_src
 
 ** User Files
@@ -2080,7 +1960,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 
 (use-package doom-themes
   :straight t
-  :ghook ('emacs-startup-hook #'arco/load-theme)
+  :ghook (#'emacs-startup-hook #'arco/load-theme)
   :preface
   (defun arco/load-theme ()
     (load-theme 'doom-tomorrow-night t)
@@ -2097,19 +1977,7 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :straight t
-  :ghook ('emacs-startup-hook #'doom-modeline-mode))
-#+end_src
-
-*** [[https://github.com/gexplorer/simple-modeline][Simple-Modeline]]
-#+name: init-simple-modeline-block
-#+begin_src emacs-lisp :tangle no
-(use-package simple-modeline
-  :straight t
-  :ghook 'emacs-startup-hook
-  :init
-  (general-setq simple-modeline-show-input-method nil
-                simple-modeline-show-encoding nil
-                simple-modeline-show-eol nil))
+  :ghook #'emacs-startup-hook #'doom-modeline-mode)
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -2119,16 +1987,6 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 (use-package hide-mode-line
   :straight t
   :commands (hide-mode-line-mode))
-#+end_src
-
-*** [[https://github.com/ubolonton/info-colors][Info-Colors]]
-
-#+name: init-info-colors-block
-#+begin_src emacs-lisp
-(use-package info-colors
-  :straight (:host github :repo "ubolonton/info-colors")
-  :init
-  (general-add-hook 'Info-selection-hook #'info-colors-fontify-node))
 #+end_src
 
 *** [[https://github.com/purcell/page-break-lines][Page-Break-Lines]]
@@ -2149,20 +2007,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
                                          help-mode-hook
                                          helpful-mode-hook
                                          org-agenda-mode-hook)))
-#+end_src
-
-*** [[https://github.com/emacsmirror/rainbow-mode][Rainbow-Mode]]
-
-#+name: init-rainbow-mode-block
-#+begin_src emacs-lisp
-(use-package rainbow-mode
-  :blackout t
-  :straight t
-  :ghook arco--rainbow-mode-hooks
-  :preface
-  (defconst arco--rainbow-mode-hooks '(elisp-mode-hook
-                                       shell-script-mode-hook
-                                       python-mode-hook)))
 #+end_src
 
 ** System
@@ -2212,24 +2056,6 @@ A nice way to restart emacs on the fly if you need to.
 #+end_src
 
 ** Shells & Terminals
-*** [[https://github.com/manateelazycat/aweshell][Aweshell]]
-#+name: init-aweshell-block
-#+begin_src emacs-lisp
-(use-package aweshell
-  :straight (:host github :repo "manateelazycat/aweshell")
-  :general
-  ("C-c x t" #'aweshell-dedicated-toggle)
-  :config
-  (general-setq aweshell-complete-selection-key "C-f"
-                eshell-highlight-prompt nil
-                eshell-prompt-function #'epe-theme-pipeline
-                epe-path-style 'fish
-                eshell-up-ignore-case nil
-                eshell-up-print-parent-dir t
-                aweshell-use-exec-path-from-shell t
-                aweshell-dedicated-window-height 25))
-#+end_src
-
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
@@ -2239,7 +2065,7 @@ A nice way to restart emacs on the fly if you need to.
   :general
   ("C-c x v" #'multi-vterm-dedicated-toggle)
   :init
-  (general-setq multi-vterm-dedicated-window-height 20
+  (general-setq multi-vterm-dedicated-window-height 15
                 multi-vterm-dedicated-window t))
 #+end_src
 
@@ -2249,9 +2075,11 @@ A nice way to restart emacs on the fly if you need to.
 (use-package vterm
   :straight t
   :preface
-  (general-setq vterm-install t)
+  (general-setq vterm-install t
+                vterm-always-compile-module t)
   :config
   (general-setq vterm-use-vterm-prompt-detection-method t
+                vterm-kill-buffer-on-exit t
                 vterm-shell "/usr/local/bin/zsh"
                 vterm-max-scrollback 10000))
 #+end_src
@@ -2546,7 +2374,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package editorconfig
   :blackout t
   :straight t
-  :ghook 'emacs-startup-hook
+  :ghook #'emacs-startup-hook
   :init
   (defun arco/hack-makefile-indent (props)
     (when (derived-mode-p 'makefile-mode)
@@ -2852,21 +2680,17 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/abo-abo/ace-window][Ace-Window]]
 #+name: init-ace-window-block
 #+begin_src emacs-lisp
-  (use-package ace-window
-    :straight t
-    :general ("C-x o" #'ace-window)
-    :config
-    (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
-                  aw-scope 'frame
-                  aw-dispatch-always nil
-                  aw-dispatch-alist '((?s aw-swap-window "Swap Windows")
-                                      (?2 aw-split-window-vert "Split Window Vertically")
-                                      (?3 aw-split-window-horz "Split Window Horizontally")
-                                      (?? aw-show-dispatch-help))
-                  aw-minibuffer-flag t
-                  aw-ignore-current nil
-                  aw-display-mode-overlay t
-                  aw-background t))
+(use-package ace-window
+  :straight t
+  :general ("C-x o" #'ace-window)
+  :config
+  (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
+                aw-scope 'frame
+                aw-dispatch-always nil
+                aw-minibuffer-flag t
+                aw-ignore-current nil
+                aw-display-mode-overlay t
+                aw-background t))
 #+end_src
 
 *** [[https://github.com/jacktasia/dumb-jump][Dumb-Jump]]
@@ -2874,8 +2698,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package dumb-jump
   :straight t
-  :commands (dumb-jump-mode
-             dumb-jump-go)
+  :commands (dumb-jump-mode dumb-jump-go)
   :config
   (general-setq dumb-jump-prefer-searcher 'rg
                 dumb-jump-rg-search-args "--pcre2 --no-ignore"))
@@ -2888,8 +2711,7 @@ A nice way to restart emacs on the fly if you need to.
   :straight (:type built-in)
   :gfhook '(hl-line-mode hide-mode-line-mode)
   :commands (ibuffer ibuffer-forward-line ibuffer-backward-line)
-  :defines (ibuffer-show-empty-filter-groups
-            ibuffer-never-show-predicates)
+  :defines (ibuffer-show-empty-filter-groups ibuffer-never-show-predicates)
   :general
   ([remap list-buffers] #'ibuffer)
   :config/el-patch
@@ -3069,7 +2891,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-ibuffer-ext-block
 #+begin_src emacs-lisp
 (use-package ibuf-ext
-  :no-require t
   :straight (:type built-in)
   :ghook ('ibuffer-mode-hook #'ibuffer-auto-mode)
   :config
@@ -3080,17 +2901,15 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-ibuffer-projectile-block
 #+begin_src emacs-lisp
 (use-package ibuffer-projectile
-  :demand t
   :straight t
   :commands (ibuffer-projectile-set-filter-groups)
-  :after (ibuffer)
   :preface
   (defun djm/config-ibuffer-projectile ()
     (ibuffer-projectile-set-filter-groups)
     ;; (add-to-list 'ibuffer-filter-groups '("Dired" (mode . dired-mode)))
     (add-to-list 'ibuffer-filter-groups
                  '("System" (predicate . (-contains? '("*direnv*" "*straight-process*"
-                                                       "*explain-pause-log*" "*lsp-log*"
+                                                       "*lsp-log*"
                                                        "*ccls*" "*ccls::stderr*"
                                                        "*mspyls*" "*mspyls::stderr*"
                                                        "flycheck")
@@ -3135,94 +2954,98 @@ A nice way to restart emacs on the fly if you need to.
 *** Org
 #+name: init-org-block
 #+begin_src emacs-lisp
-  (use-package org
-    :straight nil
-    :mode (("\\.org\\'" . org-mode))
-    :gfhook #'set-buffer-fixed-pitch
-    :general
-    (:keymaps 'org-mode-map
-              "M-n" #'outline-next-visible-heading
-              "M-p" #'outline-previous-visible-heading)
-    :company '(company-capf company-files company-dabbrev)
-    :capf #'pcomplete-completions-at-point
-    :preface
-    (defun set-buffer-fixed-pitch ()
-      (general-setq-local line-spacing 2
-                          fill-column 110)
-      (variable-pitch-mode)
-      (set-face-attribute 'variable-pitch nil
-                          :family "Iosevka Sparkle"
-                          :inherit 'default)
-      (set-face-attribute 'fixed-pitch nil
-                          :family "Iosevka"
-                          :inherit 'default))
-    :config
-    ;; Directory Settings
-    (general-setq org-archive-location arco--org-archives
-                  org-directory arco--org-dir)
+(use-package org
+  :straight nil
+  :mode (("\\.org\\'" . org-mode))
+  :gfhook #'set-buffer-fixed-pitch
+  :general
+  (:keymaps 'org-mode-map
+            "M-n" #'outline-next-visible-heading
+            "M-p" #'outline-previous-visible-heading)
+  :company '(company-capf company-files company-dabbrev)
+  :capf #'pcomplete-completions-at-point
+  :preface
+  (defun set-buffer-fixed-pitch ()
+    (general-setq-local line-spacing 2
+                        fill-column 110)
+    (variable-pitch-mode)
+    (set-face-attribute 'variable-pitch nil
+                        :family "Iosevka Sparkle"
+                        :inherit 'default)
+    (set-face-attribute 'fixed-pitch nil
+                        :family "Iosevka"
+                        :inherit 'default)
+    (set-face-attribute 'org-block nil
+                        :background (doom-color 'base3)
+                        :extend t
+                        :inherit 'fixed-pitch))
+  :config
+  ;; Directory Settings
+  (general-setq org-archive-location arco--org-archives
+                org-directory arco--org-dir)
 
-    ;; Startup Settings
-    (general-setq org-startup-folded 'content
-                  org-startup-with-inline-images t)
+  ;; Startup Settings
+  (general-setq org-startup-folded 'content
+                org-startup-with-inline-images t)
 
-    ;; Fontify Settings
-    (general-setq org-fontify-whole-heading-line t
-                  org-fontify-quote-and-verse-blocks t
-                  org-fontify-done-headline t
-                  org-fontify-todo-headline t)
+  ;; Fontify Settings
+  (general-setq org-fontify-whole-heading-line t
+                org-fontify-quote-and-verse-blocks t
+                org-fontify-done-headline t
+                org-fontify-todo-headline t)
 
-    ;; Refile Settings
-    (general-setq org-refile-allow-creating-parent-nodes 'confirm
-                  org-refile-use-outline-path 'f
-                  org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
+  ;; Refile Settings
+  (general-setq org-refile-allow-creating-parent-nodes 'confirm
+                org-refile-use-outline-path 'f
+                org-refile-targets '(("~/Documents/org-files/projects.org" :maxlevel . 3)))
 
-    ;; Log Settings
-    (general-setq org-log-done 'time
-                  org-log-into-drawer t
-                  org-log-state-notes-insert-after-drawers nil)
+  ;; Log Settings
+  (general-setq org-log-done 'time
+                org-log-into-drawer t
+                org-log-state-notes-insert-after-drawers nil)
 
-    ;; Usage Settings
-    (general-setq org-use-fast-todo-selection t
-                  org-use-fast-tag-selection t
-                  org-use-speed-commands t
-                  org-use-tag-inheritance t)
+  ;; Usage Settings
+  (general-setq org-use-fast-todo-selection t
+                org-use-fast-tag-selection t
+                org-use-speed-commands t
+                org-use-tag-inheritance t)
 
-    ;; Aesthetic Settings
-    (general-setq org-pretty-entities t
-                  org-hide-emphasis-markers t
-                  org-hide-leading-stars t
-                  org-ellipsis "…"
-                  org-image-actual-width nil)
+  ;; Aesthetic Settings
+  (general-setq org-pretty-entities t
+                org-hide-emphasis-markers t
+                org-hide-leading-stars t
+                org-ellipsis "…"
+                org-image-actual-width nil)
 
-    (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
+  (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file-other-window)
 
-    (font-lock-add-keywords 'org-mode
-                            `((,(rx bol (* space) (group "-") (+ space))
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
-                              (,(rx bol (* space) (group "#+begin_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
-                              (,(rx bol (* space) (group "#+end_src") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
-                              (,(rx bol (* space) (group "#+begin_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
-                              (,(rx bol (* space) (group "#+end_quote") symbol-end)
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
+  (font-lock-add-keywords 'org-mode
+                          `((,(rx bol (* space) (group "-") (+ space))
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))
+                            (,(rx bol (* space) (group "#+begin_src") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "λ"))))
+                            (,(rx bol (* space) (group "#+end_src") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "⋱"))))
+                            (,(rx bol (* space) (group "#+begin_quote") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "“"))))
+                            (,(rx bol (* space) (group "#+end_quote") symbol-end)
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
-    ;; ;; List Settings
-    (general-setq org-list-indent-offset 2)
+  ;; ;; List Settings
+  (general-setq org-list-indent-offset 2)
 
-    ;; ;; Other Settings
-    (general-setq org-catch-invisible-edits 'smart
-                  org-cycle-separator-lines 0
-                  org-enforce-todo-dependencies t
-                  org-enforce-todo-checkbox-dependencies t
-                  org-insert-heading-respect-content t
-                  org-special-ctrl-a/e t
-                  org-special-ctrl-k t
-                  org-tags-column 0
-                  org-yank-adjusted-subtrees t)
+  ;; ;; Other Settings
+  (general-setq org-catch-invisible-edits 'smart
+                org-cycle-separator-lines 0
+                org-enforce-todo-dependencies t
+                org-enforce-todo-checkbox-dependencies t
+                org-insert-heading-respect-content t
+                org-special-ctrl-a/e t
+                org-special-ctrl-k t
+                org-tags-column 0
+                org-yank-adjusted-subtrees t)
 
-    (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
+  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
 *** Org-Indent
@@ -3744,6 +3567,14 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
+*** [[https://github.com/dgutov/diff-hl][Diff-HL]]
+#+name: init-diff-hl-block
+#+begin_src emacs-lisp
+(use-package git-gutter-fringe
+  :straight t
+  :ghook ('prog-mode-hook))
+#+end_src
+
 *** [[https://github.com/justbur/emacs-vdiff-magit][Vdiff-Magit]]
 #+name: init-vdiff-magit-block
 #+begin_src emacs-lisp
@@ -3903,10 +3734,11 @@ A nice way to restart emacs on the fly if you need to.
 
 **** [[https://github.com/wasamasa/firestarter][Firestarter]]
 
-This is a nifty package that allows me to define functions as local variables in elisp files that will be run on save. I use this to auto-tangle the config file when editing.
+This is a nifty package that allows me to define functions as local variables in elisp files that will be run
+on save. I use this to auto-tangle the config file when editing.
 
 #+name: init-firestarter-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package firestarter
   :straight t
   :ghook 'before-save-hook)
@@ -3992,7 +3824,7 @@ This is a nifty package that allows me to define functions as local variables in
 
 **** [[https://github.com/cdominik/cdlatex][CDLaTeX]]
 #+name: init-cdlatex-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package cdlatex
   :straight t)
 #+end_src
@@ -4037,6 +3869,7 @@ This is a nifty package that allows me to define functions as local variables in
   :ghook ('python-mode-hook #'(lambda () (require 'lsp-python-ms)))
   :init
   (general-setq lsp-python-ms-auto-install-server t)
+  :config
   (general-setq lsp-python-ms-python-executable python-shell-interpreter))
 #+end_src
 

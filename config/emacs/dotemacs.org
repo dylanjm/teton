@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-10-28 17:13:28
+/last updated/: 2020-10-29 16:59:21
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1855,20 +1855,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 ** Themes & Aesthetics
-*** [[https://github.com/luisgerhorst/virtual-auto-fill][Virtual-Auto-Fill]]
-#+name: init-virtual-auto-fill-block
-#+begin_src emacs-lisp :tangle no
-(use-package virtual-auto-fill
-  :blackout t
-  :straight (:host github :repo "luisgerhorst/virtual-auto-fill")
-  :ghook arco--virtual-auto-fill-hooks
-  :commands (virtual-auto-fill-mode)
-  :preface
-  (defconst arco--virtual-auto-fill-hooks '(org-mode-hook
-                                            text-mode-hook
-                                            markdown-mode-hook)))
-#+end_src
-
 *** [[https://github.com/yoshiki/yaml-mode][All-The-Icons]]
 
 Sort of a standard package in most emacs-configs these days.
@@ -1967,14 +1953,14 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :straight t
   :ghook arco--page-break-line-hooks
   :preface
-  (defconst arco--page-break-line-hooks '(ibuffer-mode-hook
-                                         text-mode-hook
-                                         comint-mode-hook
-                                         compilation-mode-hook
-                                         ledger-report-mode-hook
-                                         help-mode-hook
-                                         helpful-mode-hook
-                                         org-agenda-mode-hook)))
+  (defconst arco--page-break-line-hooks '( ibuffer-mode-hook
+                                           text-mode-hook
+                                           comint-mode-hook
+                                           compilation-mode-hook
+                                           ledger-report-mode-hook
+                                           help-mode-hook
+                                           helpful-mode-hook
+                                           org-agenda-mode-hook)))
 #+end_src
 
 ** System
@@ -2087,9 +2073,9 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package prescient
   :straight t
-  :config
-  (setq prescient-history-length 1000)
-  (prescient-persist-mode +1))
+  :ghook ('selectrum-prescient-mode-hook #'prescient-persist-mode)
+  :init
+  (setq prescient-history-length 1000))
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
@@ -2098,7 +2084,7 @@ A nice way to restart emacs on the fly if you need to.
 (use-package selectrum
   :straight (:host github :repo "raxod502/selectrum" :files ("*.el"))
   :ghook 'emacs-startup-hook
-  :config
+  :init
   (general-setq selectrum-num-candidates-displayed 10))
 
 (use-package selectrum-prescient
@@ -2297,13 +2283,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-vdiff-block
 #+begin_src emacs-lisp
 (use-package vdiff
-  :straight t)
-#+end_src
-
-*** [[https://github.com/lassik/emacs-format-all-the-code][Emacs-Format-All-The-Code]]
-#+name: init-format-all-block
-#+begin_src emacs-lisp
-(use-package format-all
   :straight t)
 #+end_src
 
@@ -3535,7 +3514,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src
 
-*** Git-Gutter-Fringe
+*** [[https://github.com/emacsorphanage/git-gutter-fringe][Git-Gutter-Fringe]]
 #+name: init-git-gutter-fringe-block
 #+begin_src emacs-lisp
 (use-package git-gutter-fringe

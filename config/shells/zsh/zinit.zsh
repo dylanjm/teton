@@ -43,7 +43,6 @@ zinit $load zdharma/fast-syntax-highlighting
 zinit ice wait'1b' lucid atload"!_zsh_autosuggest_start" blockf
 zinit $load zsh-users/zsh-autosuggestions
 
-
 # Local Variables:
 # mode: shell-script
 # sh-basic-offset: 2

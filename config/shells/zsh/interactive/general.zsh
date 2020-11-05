@@ -7,7 +7,6 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-
 export WORDCHARS='*?_-.[]~&;!#$%^(){}<>'  # Treat characters as part of a word.
 autoload -Uz select-word-style
 select-word-style shell

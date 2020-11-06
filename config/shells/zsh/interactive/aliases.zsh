@@ -112,3 +112,8 @@ if [[ "${USER}" == "mcdodj" ]]; then
   alias heron='cd ~/Documents/projects/HERON'
   alias teal='cd ~/Documents/projects/TEAL'
 fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

@@ -195,3 +195,8 @@ setopt hist_verify               # Do not execute immediately upon history expan
 setopt append_history            # Default
 setopt inc_append_history        # this is default, but set for share_history
 setopt hist_fcntl_lock
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

@@ -26,6 +26,8 @@ export EMACS="/usr/local/bin/emacs"
 ###
 ### History
 ###
+export HISTDB_FILE="${HOME}/.local/share/zsh-history.db"
+export HISTDB_TABULATE_CMD=(sed -e $'s/\x1f/\t/g')
 export HISTFILE="${XDG_DATA_HOME}/zsh_history"
 export HIST_STAMPS="mm/dd/yyyy"
 export HISTSIZE=500000
@@ -155,6 +157,12 @@ export SUBVERSION_HOME="${XDG_CONFIG_HOME}/subversion"
 ###
 ### Terminfo
 ###
+export TEALDEER_CACHE_DIR="${XDG_CACHE_HOME}/tealdeer"
+export TEALDEER_CONFIG_DIR="${XDG_CONFIG_HOME}/tealdeer"
+
+###
+### Terminfo
+###
 export TERMINFO="${XDG_DATA_HOME}/terminfo"
 
 ###
@@ -192,12 +200,21 @@ export _ZO_MAXAGE=100
 ###
 ### ZSH-Auto-Suggestions
 ###
-export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+_zsh_autosuggest_strategy_histdb_top_here() {
+    local query="select commands.argv from
+history left join commands on history.command_id = commands.rowid
+left join places on history.place_id = places.rowid
+where places.dir LIKE '$(sql_escape $PWD)%'
+and commands.argv LIKE '$(sql_escape $1)%'
+group by commands.argv order by count(*) desc limit 1"
+    suggestion=$(_histdb_query "$query")
+}
+export ZSH_AUTOSUGGEST_STRATEGY=(histdb_top_here completion)
 
 ###
 ### MOOSE
 ###
-export MOOSE_DIR="$HOME/Documents/projects/moose"
+export MOOSE_DIR="${HOME}/Documents/projects/moose"
 
 ###
 ### Paths
@@ -245,7 +262,12 @@ autoload -Uz time-shell \
          vterm_printf \
          vterm_cmd \
          vterm_prompt_end \
-         colorlist
+         colorlist \
+         hc \
+         h \
+         rav \
+         update-opt
+
 
 # Local Variables:
 # mode: shell-script

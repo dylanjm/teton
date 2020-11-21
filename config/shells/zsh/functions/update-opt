@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+function update-opt() {
+  local case="${1}"
+  local name="${2}"
+  local longcase
+
+  if [[ "${case}" == "D" ]]; then
+    longcase="Deregulated"
+  else
+    longcase="Regulated"
+  fi
+  rsync -e ssh sawtooth1:"/scratch/mcdodyla/heron_cases/2020/12/run/${longcase}/IL_${name}_LNHR/${case}_${name}_LNHR_o/opt_soln_0.csv" ./
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

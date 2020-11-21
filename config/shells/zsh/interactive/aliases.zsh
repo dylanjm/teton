@@ -108,8 +108,8 @@ if [[ "${USER}" == "mcdodj" ]]; then
   alias papers='cd ~/Documents/projects/papers'
   alias bb='cd ~/Documents/projects/blackbear'
   alias grz='cd ~/Documents/projects/grizzly'
-  alias rav='cd ~/Documents/projects/raven'
-  alias heron='cd ~/Documents/projects/HERON'
+  alias ra='cd ~/Documents/projects/raven'
+  alias he='cd ~/Documents/projects/HERON'
   alias teal='cd ~/Documents/projects/TEAL'
 fi
 

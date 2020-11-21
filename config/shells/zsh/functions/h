@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+function h() {
+  local heron="${HOME}/Documents/projects/HERON/heron"
+  local input="${1}"
+  eval "${heron}" "${input}"
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

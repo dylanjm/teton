@@ -1,0 +1,15 @@
+#compdef _rav rav
+
+_rav() {
+  _arguments -s -S '*:filename:_files -g "*.xml"'
+}
+
+# don't run the completion function when being source-ed or eval-ed
+if [ "$funcstack[1]" = "_rav" ]; then
+	_rav
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

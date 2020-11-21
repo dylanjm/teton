@@ -1,0 +1,14 @@
+#compdef _hc hc
+
+_hc() {
+  _arguments '*: :_files -g "*.py" -W "${HOME}/Documents/projects/heron_cases/2020/12/scripts"'
+}
+
+if [ "$funcstack[1]" = "_hc" ]; then
+	_hc
+fi
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

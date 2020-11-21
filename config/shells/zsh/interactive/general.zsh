@@ -71,7 +71,7 @@ unsetopt flow_control      # Disable start/stop characters in shell editor.
 
 # Use caching to make completion for commands such as dpkg and apt usable.
 zstyle ':completion::complete:*' use-cache on
-zstyle ':completion::complete:*' cache-path "$XDG_CACHE_HOME/zcompcache"
+zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME}/zcompcache"
 
 # Case-insensitive (all), partial-word, and then substring completion.
 if zstyle -t ':prezto:module:completion:*' case-sensitive; then

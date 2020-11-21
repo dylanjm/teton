@@ -34,8 +34,12 @@ zinit ice wait lucid \
       atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"'
 zinit $load trapd00r/LS_COLORS
 
-zinit ice wait lucid
+zinit ice wait  lucid
 zinit $load hlissner/zsh-autopair
+
+zinit ice wait src'histdb-interactive.zsh' lucid
+zinit $load larkery/zsh-histdb
+bindkey '^r' _histdb-isearch
 
 zinit ice wait'1a' lucid atinit'zicompinit_fast; zicdreplay' blockf
 zinit $load zdharma/fast-syntax-highlighting

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-11-03 12:06:06
+/last updated/: 2020-11-18 12:21:41
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -122,7 +122,7 @@ and =ns-transparent-titlebar=. I also set the font during this time and handle a
                                 (vertical-scroll-bars . nil)
                                 (tool-bar-lines . 0)
                                 (ns-appearance . dark)
-                                (font . "Iosevka-18")))
+                                (font . "Iosevka-14")))
 
 ;; Not sure if I really need this on macOS
 (advice-add 'x-apply-session-resources :override 'ignore)
@@ -604,7 +604,6 @@ symbols, emojis, greek letters, as well as fall backs for."
   ;; 1234567890#%^*
   ;; ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ
   ;; αβγδεζηθικλμνξοπρστυφχψω
-  (set-frame-parameter (selected-frame) 'internal-border-width 15)
   (set-face-attribute 'variable-pitch nil :family arco/variable-pitch-font :height 1.0)
   (set-face-attribute 'fixed-pitch nil :family arco/default-font :height 1.0)
   ;; Define a fontset stack for symbols, greek and math characters
@@ -613,7 +612,6 @@ symbols, emojis, greek letters, as well as fall backs for."
     (set-fontset-font t script (font-spec :family "XITS Math" nil 'prepend)))
   ;; Colored Emoji on OS X, prefer over everything else!
   (dolist (script '(unicode unicode-bmp unicode-sip unicode-smp unicode-ssp))
-    (set-fontset-font t script (font-spec :family "Symbola") nil 'append)
     (set-fontset-font t script (font-spec :family "Apple Color Emoji") nil 'prepend))
   ;; Apple Symbols for everything else
   (set-fontset-font t nil (font-spec :family "Apple Symbols") nil 'append))
@@ -1169,11 +1167,11 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Fringe (Built-In)
 #+name: init-fringe-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package fringe
   :straight (:type built-in)
   :init
-  (fringe-mode '(0 . 0)))
+  (set-fringe-mode 10))
 #+end_src
 
 *** Gnutls (Built-In)
@@ -1706,7 +1704,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                 tramp-terminal-type "tramp"
                 tramp-verbose 3
                 tramp-completion-reread-directory-timeout nil
-                tramp-use-ssh-controlmaster-options nil
+                tramp-use-ssh-controlmaster-options t
                 tramp-histfile-override "/tmp/tramp_history"
                 remote-file-name-inhibit-cache nil
                 tramp-chunksize 500
@@ -2050,6 +2048,7 @@ A nice way to restart emacs on the fly if you need to.
            "s" #'projectile-switch-project
            "c" #'projectile-compile-project
            "f" #'projectile-find-file
+           "d" #'projectile-find-dir
            "b" #'projectile-switch-to-buffer
            "k" #'projectile-kill-buffers)
   :preface
@@ -2909,8 +2908,6 @@ A nice way to restart emacs on the fly if you need to.
   (:keymaps 'org-mode-map
             "M-n" #'outline-next-visible-heading
             "M-p" #'outline-previous-visible-heading)
-  :company '(company-capf company-files company-dabbrev)
-  :capf #'pcomplete-completions-at-point
   :preface
   (defun set-buffer-fixed-pitch ()
     (general-setq-local line-spacing 2
@@ -3561,28 +3558,13 @@ A nice way to restart emacs on the fly if you need to.
 (use-package lsp-mode
   :straight t
   :commands (lsp lsp-deferred)
-  :ghook ('(c-mode-hook
-            c++-mode-hook
-            objc-mode-hook
-            cuda-mode-hook
-            python-mode-hook)
-          #'lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
-  ;; :init
-  ;; (general-add-hook 'python-mode-hook
-  ;;                   #'(lambda ()
-  ;;                       (flycheck-add-next-checker 'lsp           'python-flake8)
-  ;;                       (flycheck-add-next-checker 'python-flake8 'python-mypy)
-  ;;                       (flycheck-add-next-checker 'python-mypy   'python-pycompile)))
   :config
-  (general-setq lsp-client-packages '(lsp-clients ccls lsp-python-ms)
-                lsp-completion-provider :capf
+  (general-setq lsp-completion-provider :capf
                 lsp-idle-delay 0.500
-                lsp-prefer-capf t
-                lsp-diagnostic-package :flycheck
-                lsp-eldoc-render-all nil
-                lsp-eldoc-enable-hover nil
-                lsp-eldoc-hook nil))
+                lsp-modeline-diagnostics-enable t
+                lsp-headerline-breadcrumb-enable t
+                lsp-enable-file-watchers nil))
 #+end_src
 
 *** [[https://github.com/emacs-lsp/lsp-ui][LSP-UI]]
@@ -3593,8 +3575,7 @@ A nice way to restart emacs on the fly if you need to.
   :commands (lsp-ui-mode)
   :ghook 'lsp-mode-hook
   :config
-  (general-setq lsp-ui-sideline-ignore-duplicate t
-                lsp-ui-sideline-show-hover nil
+  (general-setq lsp-ui-doc-enable t
                 lsp-ui-doc-position 'top
                 lsp-ui-flycheck-list-position 'right
                 lsp-ui-imenu-kind-position 'right))
@@ -3610,19 +3591,14 @@ A nice way to restart emacs on the fly if you need to.
   :commands (flycheck-list-errors)
   :config
   (general-setq flycheck-emacs-lisp-load-path 'inherit
-                flycheck-check-syntax-automatically '(save mode-enabled idle-buffer-switch)
-                flycheck-buffer-switch-check-intermediate-buffers t
                 flycheck-display-errors-delay 0.25)
 
-  ;; (general-setq flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
-
   (general-setq flycheck-flake8rc arco--flake8rc
-                ;;flycheck-pylintrc arco--pylintrc
                 flycheck-python-mypy-config arco--mypy-config)
 
   (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
                 flycheck-shellcheck-supported-shells '(bash sh)
-                flycheck-shellcheck-follow-sources t
+                flycheck-shellcheck-follow-sources nil
                 flycheck-sh-bash-executable "/usr/local/bin/bash"
                 flycheck-sh-zsh-executable "/usr/local/bin/zsh")
   (general-setq flycheck-global-modes '(not dir-locals-mode
@@ -3631,25 +3607,6 @@ A nice way to restart emacs on the fly if you need to.
                                             org-agenda-mode
                                             vterm-mode))
   (general-pushnew 'sh-shellcheck flycheck-checkers))
-#+end_src
-
-*** [[https://github.com/gexplorer/flycheck-indicator][Flycheck-Indicator]]
-#+name: init-flycheck-indicator-block
-#+begin_src emacs-lisp :tangle no
-(use-package flycheck-indicator
-  :straight t
-  :ghook 'flycheck-mode-hook)
-#+end_src
-
-*** [[https://github.com/flycheck/flycheck-popup-tip][Flycheck-Popup-Tip]]
-#+name: init-flycheck-popup-tip-block
-#+begin_src emacs-lisp
-(use-package flycheck-popup-tip
-  :blackout t
-  :straight t
-  :ghook 'flycheck-mode-hook
-  :config
-  (general-setq flycheck-popup-tip-error-prefix "‼ "))
 #+end_src
 
 ** Languages
@@ -3782,42 +3739,22 @@ on save. I use this to auto-tangle the config file when editing.
 #+begin_src emacs-lisp
 (use-package python
   :straight (:type built-in)
-  :compdef python-mode
-  :capf python-completion-complete-at-point
-  :company (company-capf company-files company-dabbrev-code)
   :config
   (general-setq python-shell-interpreter "ipython"
                 python-shell-interpreter-args "-i --simple-prompt --no-color-info"
-                python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-                python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
                 python-indent-guess-indent-offset-verbose nil
                 python-indent-offset 4
                 comment-inline-offset 2))
 #+end_src
 
-**** [[https://github.com/necaris/conda.el][Conda]]
-#+name: init-conda-block
-#+begin_src emacs-lisp :tangle no
-(use-package conda
-  :demand t
-  :after (python)
-  :straight t
-  :config
-  (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/"
-                conda-env-home-directory "/usr/local/Caskroom/miniconda/base/"
-                conda-env-subdirectory "envs"))
-#+end_src
-
-**** [[https://github.com/emacs-lsp/lsp-python-ms][LSP-Python-MS]]
-#+name: init-lsp-python-ms-block
+**** Pyright
+#+name: init-pyright-block
 #+begin_src emacs-lisp
-(use-package lsp-python-ms
+(use-package lsp-pyright
   :straight t
-  :ghook ('python-mode-hook #'(lambda () (require 'lsp-python-ms)))
-  :init
-  (general-setq lsp-python-ms-auto-install-server t)
-  :config
-  (general-setq lsp-python-ms-python-executable python-shell-interpreter))
+  :ghook ('python-mode-hook #'(lambda ()
+                              (require 'lsp-pyright)
+                              (lsp-deferred))))
 #+end_src
 
 *** C++

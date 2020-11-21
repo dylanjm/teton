@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+function rav() {
+  local raven="${HOME}/Documents/projects/raven/raven_framework"
+  local input="${1}"
+  eval "${raven}" "${input}"
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

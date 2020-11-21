@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+function hc() {
+  local heron_proj="${HOME}/Documents/projects/heron_cases/2020/12/scripts"
+  local script="${1}"
+  local command="${heron_proj}/${script}"
+  shift 1
+  eval "${command}" "${@}"
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

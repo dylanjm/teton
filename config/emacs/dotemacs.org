@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-11-18 12:21:41
+/last updated/: 2020-11-30 13:47:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2077,7 +2077,8 @@ A nice way to restart emacs on the fly if you need to.
   (setq prescient-history-length 1000))
 #+end_src
 
-*** [[https://github.com/raxod502/selectrum][Selectrum]]
+*** [[https://github.com/raxod502/selectrum][Selectrum
+]]
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
 (use-package selectrum
@@ -2089,6 +2090,13 @@ A nice way to restart emacs on the fly if you need to.
 (use-package selectrum-prescient
   :straight (:host github :repo "raxod502/prescient.el")
   :ghook 'selectrum-mode-hook)
+#+end_src
+
+*** [[https://github.com/minad/consult][Consult]]
+#+name: init-consult-block
+#+begin_src emacs-lisp
+(use-package consult
+  :straight (:host github :repo "minad/consult"))
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F]]

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-11-30 13:47:08
+/last updated/: 2020-12-21 15:44:44
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -19,14 +19,11 @@
     - [[#user-files][User Files]]
     - [[#themes--aesthetics][Themes & Aesthetics]]
     - [[#system][System]]
-    - [[#shells--terminals][Shells & Terminals]]
-    - [[#project-management][Project Management]]
     - [[#frameworks][Frameworks]]
     - [[#autocompletion][Autocompletion]]
     - [[#documentation][Documentation]]
     - [[#editing-tools][Editing Tools]]
     - [[#minor-modes][Minor Modes]]
-    - [[#file-explorer][File Explorer]]
     - [[#navigation][Navigation]]
     - [[#org][Org]]
     - [[#email][Email]]
@@ -2007,7 +2004,6 @@ A nice way to restart emacs on the fly if you need to.
   :ghook ('emacs-startup-hook #'osx-trash-setup))
 #+end_src
 
-** Shells & Terminals
 *** [[https://github.com/suonlight/multi-libvterm][Multi-Libvterm]]
 #+name: init-multi-vterm-block
 #+begin_src emacs-lisp
@@ -2034,36 +2030,6 @@ A nice way to restart emacs on the fly if you need to.
                 vterm-kill-buffer-on-exit t
                 vterm-shell "/usr/local/bin/zsh"
                 vterm-max-scrollback 10000))
-#+end_src
-
-** Project Management
-*** [[https://github.com/bbatsov/projectile][Projectile]]
-#+name: init-projectile-block
-#+begin_src emacs-lisp
-(use-package projectile
-  :blackout t
-  :straight t
-  :general
-  (:prefix "C-c p"
-           "s" #'projectile-switch-project
-           "c" #'projectile-compile-project
-           "f" #'projectile-find-file
-           "d" #'projectile-find-dir
-           "b" #'projectile-switch-to-buffer
-           "k" #'projectile-kill-buffers)
-  :preface
-  (defun projectile-project-find-function (dir)
-    (let* ((root (projectile-project-root dir)))
-      (and root (cons 'transient root))))
-  :config
-  (general-setq projectile-completion-system 'default
-                projectile-enable-caching t
-                projectile-switch-project-action 'projectile-dired)
-  (general-pushnew ".ccls-cache" projectile-globally-ignored-directories)
-  (general-pushnew ".ccls-root" projectile-project-root-files-bottom-up)
-  (general-pushnew "compile_commands.json" projectile-project-root-files-top-down-recurring)
-  (general-pushnew 'projectile-project-find-function project-find-functions)
-  (projectile-global-mode))
 #+end_src
 
 ** Frameworks
@@ -2099,12 +2065,42 @@ A nice way to restart emacs on the fly if you need to.
   :straight (:host github :repo "minad/consult"))
 #+end_src
 
-*** [[https://github.com/raxod502/ctrlf][CTRL-F]]
+*** [[https://github.com/raxod502/ctrlf][CTRL-F
+]]
 #+name: init-ctrl-f-block
 #+begin_src emacs-lisp
 (use-package ctrlf
   :straight t
   :ghook 'emacs-startup-hook)
+#+end_src
+
+*** [[https://github.com/bbatsov/projectile][Projectile]]
+#+name: init-projectile-block
+#+begin_src emacs-lisp
+(use-package projectile
+  :blackout t
+  :straight t
+  :general
+  (:prefix "C-c p"
+           "s" #'projectile-switch-project
+           "c" #'projectile-compile-project
+           "f" #'projectile-find-file
+           "d" #'projectile-find-dir
+           "b" #'projectile-switch-to-buffer
+           "k" #'projectile-kill-buffers)
+  :preface
+  (defun projectile-project-find-function (dir)
+    (let* ((root (projectile-project-root dir)))
+      (and root (cons 'transient root))))
+  :config
+  (general-setq projectile-completion-system 'default
+                projectile-enable-caching t
+                projectile-switch-project-action 'projectile-dired)
+  (general-pushnew ".ccls-cache" projectile-globally-ignored-directories)
+  (general-pushnew ".ccls-root" projectile-project-root-files-bottom-up)
+  (general-pushnew "compile_commands.json" projectile-project-root-files-top-down-recurring)
+  (general-pushnew 'projectile-project-find-function project-find-functions)
+  (projectile-global-mode))
 #+end_src
 
 ** Autocompletion
@@ -2392,244 +2388,6 @@ A nice way to restart emacs on the fly if you need to.
     (general-pushnew modes ws-butler-global-exempt-modes)))
 #+end_src
 
-** File Explorer
-*** Dired (Built-In)
-#+name: init-dired-block
-#+begin_src emacs-lisp
-(use-package dired
-  :blackout "Dired"
-  :straight (:type built-in)
-  :gfhook '(hl-line-mode arco/dired-for-tramp)
-  :general
-  (:keymaps 'dired-mode-map
-            "h" #'dired-up-directory
-            "n" #'dired-next-line
-            "p" #'dired-previous-line
-            "f" #'find-file)
-  :init
-  (defun arco/dired-for-tramp ()
-    (when (file-remote-p dired-directory)
-      (setq-local dired-actual-switches "-alhF")))
-  :config
-  (general-setq dired-auto-revert-buffer t
-                dired-dwim-target t
-                dired-use-ls-dired t
-                dired-ls-F-marks-symlinks t
-                dired-hide-details-hide-symlink-targets nil
-                dired-listing-switches "-AFhlv --time=ctime --time-style=long-iso --group-directories-first"
-                dired-recursive-deletes 'always
-                dired-recursive-copies 'always
-                ;; Don't confirm deleting files
-                dired-deletion-confirmer '(lambda (x) t)))
-#+end_src
-
-*** Dired-Aux (Built-In)
-#+name: init-dired-aux-block
-#+begin_src emacs-lisp
-(use-package dired-aux
-  :straight (:type built-in)
-  :after (dired)
-  :general
-  (:keymaps 'dired-mode-map
-            "C-c +" #'dired-create-empty-file)
-  :init
-  (general-setq dired-isearch-filenames 'dwim
-                dired-create-destination-dirs 'ask
-                dired-vc-rename-file t))
-#+end_src
-
-*** WDired (Built-In)
-#+name: init-wdired-block
-#+begin_src emacs-lisp
-(use-package wdired
-  :straight (:type built-in)
-  :after (dired)
-  :general
-  (:keymaps 'dired-mode-map
-            "C-c C-e" #'wdired-change-to-wdired-mode)
-  :init
-  (general-setq wdired-create-parent-directories t
-                wdired-allow-to-change-permissions t))
-#+end_src
-
-*** Dired-X (Built-In)
-#+name: init-dired-x-block
-#+begin_src emacs-lisp
-(use-package dired-x
-  :blackout ((dired-omit-mode . ""))
-  :straight (:type built-in)
-  :after (dired)
-  :ghook ('dired-mode-hook #'dired-omit-mode)
-  :general
-  ("C-x C-j" #'dired-jump
-   "s-j" #'dired-jump
-   "C-x 4 C-j" #'dired-jump-other-window
-   "s-J" #'dired-jump-other-window)
-  :config
-  (general-setq dired-x-hands-off-my-keys t
-                dired-omit-verbose nil
-                dired-omit-files-p t
-                dired-clean-up-buffers-too t
-                dired-clean-confirm-killing-deleted-buffers t
-                dired-bind-man nil
-                dired-bind-info nil
-                dired-omit-files (concat dired-omit-files
-                                         "\\|^.DS_Store\\'"
-                                         "\\|^.project\\(?:ile\\)?\\'"
-                                         "\\|^__pycache__\\'"
-                                         "\\|\\(?:\\.js\\)?\\.meta\\'"
-                                         "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
-#+end_src
-
-*** Find-Dired (Built-In)
-#+name: init-find-dired-block
-#+begin_src emacs-lisp
-(use-package find-dired
-  :straight (:type built-in)
-  :config
-  (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
-                find-name-arg "-iname"))
-#+end_src
-
-*** Image-Dired (Built-In)
-
-#+name: init-image-dired-block
-#+begin_src emacs-lisp
-(use-package image-dired
-  :demand t
-  :straight (:type built-in)
-  :after (dired)
-  :general
-  (:keymaps 'image-dired-thumbnail-mode-map
-            "<return>" #'image-dired-thumbnail-display-external)
-  :config
-  (general-setq image-dired-thumb-size 80
-                image-dired-thumb-margin 2
-                image-dired-thumb-relief 0
-                image-dired-thumbs-per-row 4))
-#+end_src
-
-*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
-#+name: init-fd-dired-block
-#+begin_src emacs-lisp
-(use-package fd-dired
-  :straight t
-  :init
-  (general-setq fd-dired-ls-option '("| xargs -0 gls -ld --quoting-style=literal" . "-ld")))
-#+end_src
-
-*** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
-#+name: init-dired-all-the-icons-block
-#+begin_src emacs-lisp
-(use-package all-the-icons-dired
-  :blackout t
-  :straight t
-  :ghook 'dired-mode-hook)
-#+end_src
-
-*** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
-#+name: init-dired-git-info-block
-#+begin_src emacs-lisp
-(use-package dired-git-info
-  :straight t
-  :general
-  (:keymaps 'dired-mode-map
-            ":" #'dired-git-info-mode)
-  :config
-  (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
-#+end_src
-
-*** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
-#+name: init-dired-hacks-block
-#+begin_src emacs-lisp
-  (use-package dired-hacks
-    :straight t)
-
-  (use-package dired-hacks-utils
-    :straight nil)
-
-  (use-package dired-filter
-    :straight nil)
-
-  (use-package dired-rainbow
-    :demand t
-    :straight nil
-    :after (dired)
-    :config
-    (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
-
-  (use-package dired-narrow
-    :straight nil
-    :after dired
-    :commands (dired-narrow
-               dired-narrow-fuzzy
-               dired-narrow-regexp)
-    :general
-    (:keymaps 'dired-mode-map
-              "C-c C-n" #'dired-narrow
-              "C-c C-f" #'dired-narrow-fuzzy
-              "C-c C-r" #'dired-narrow-regexp)
-    :config
-    (general-setq dired-narrow-exit-when-one-left t
-                  dired-narrow-enable-blinking t
-                  dired-narrow-blink-time 0.3))
-
-  (use-package dired-collapse
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "c" #'dired-collapse-mode))
-
-  (use-package dired-open
-    :straight nil
-    :config
-    (general-setq dired-open-functions '(dired-open-by-extension
-                                         dired-open-subdir)))
-
-  (use-package dired-list
-    :straight nil)
-
-  ;; (use-package dired-images
-  ;;   :straight (dired-hacks eimp))
-
-  (use-package dired-ranger
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "C-c C-c" #'dired-ranger-copy
-              "C-c C-m" #'dired-ranger-move
-              "C-c C-p" #'dired-ranger-paste
-              "C-c C-b" #'dired-ranger-bookmark
-              "C-c b v" #'dired-ranger-bookmark-visit))
-
-  (use-package dired-subtree
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "<tab>"     #'dired-subtree-toggle
-              "<backtab>" #'dired-subtree-cycle)
-    :config
-    (general-setq dired-subtree-use-backgrounds nil))
-#+end_src
-
-*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
-#+name: init-dired-rsync-block
-#+begin_src emacs-lisp
-(use-package dired-rsync
-  :straight t
-  :general
-  (:keymaps 'dired-mode-map
-            "r" #'dired-rsync))
-#+end_src
-
-*** [[https://github.com/purcell/diredfl][Diredfl]]
-#+name: init-diredfl-block
-#+begin_src emacs-lisp
-(use-package diredfl
-  :straight t
-  :ghook 'dired-mode-hook)
-#+end_src
-
 ** Navigation
 *** [[https://github.com/abo-abo/ace-window][Ace-Window]]
 #+name: init-ace-window-block
@@ -2891,7 +2649,8 @@ A nice way to restart emacs on the fly if you need to.
    "C-c w u" #'windmove-up))
 #+end_src
 
-*** [[https://gitlab.com/ambrevar/emacs-windower][Windower]]
+*** [[https://gitlab.com/ambrevar/emacs-windower][Windower
+]]
 #+name: init-windower-block
 #+begin_src emacs-lisp
 (use-package windower
@@ -2902,6 +2661,243 @@ A nice way to restart emacs on the fly if you need to.
    "C-c w s" #'windower-swap
    "C-c w m" #'windower-move-border
    "C-c w a" #'windower-toggle-single))
+#+end_src
+
+*** Dired (Built-In)
+#+name: init-dired-block
+#+begin_src emacs-lisp
+(use-package dired
+  :blackout "Dired"
+  :straight (:type built-in)
+  :gfhook '(hl-line-mode arco/dired-for-tramp)
+  :general
+  (:keymaps 'dired-mode-map
+            "h" #'dired-up-directory
+            "n" #'dired-next-line
+            "p" #'dired-previous-line
+            "f" #'find-file)
+  :init
+  (defun arco/dired-for-tramp ()
+    (when (file-remote-p dired-directory)
+      (setq-local dired-actual-switches "-alhF")))
+  :config
+  (general-setq dired-auto-revert-buffer t
+                dired-dwim-target t
+                dired-use-ls-dired t
+                dired-ls-F-marks-symlinks t
+                dired-hide-details-hide-symlink-targets nil
+                dired-listing-switches "-AFhlv --time=ctime --time-style=long-iso --group-directories-first"
+                dired-recursive-deletes 'always
+                dired-recursive-copies 'always
+                ;; Don't confirm deleting files
+                dired-deletion-confirmer '(lambda (x) t)))
+#+end_src
+
+*** Dired-Aux (Built-In)
+#+name: init-dired-aux-block
+#+begin_src emacs-lisp
+(use-package dired-aux
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'dired-mode-map
+            "C-c +" #'dired-create-empty-file)
+  :init
+  (general-setq dired-isearch-filenames 'dwim
+                dired-create-destination-dirs 'ask
+                dired-vc-rename-file t))
+#+end_src
+
+*** WDired (Built-In)
+#+name: init-wdired-block
+#+begin_src emacs-lisp
+(use-package wdired
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'dired-mode-map
+            "C-c C-e" #'wdired-change-to-wdired-mode)
+  :init
+  (general-setq wdired-create-parent-directories t
+                wdired-allow-to-change-permissions t))
+#+end_src
+
+*** Dired-X (Built-In)
+#+name: init-dired-x-block
+#+begin_src emacs-lisp
+(use-package dired-x
+  :blackout ((dired-omit-mode . ""))
+  :straight (:type built-in)
+  :after (dired)
+  :ghook ('dired-mode-hook #'dired-omit-mode)
+  :general
+  ("C-x C-j" #'dired-jump
+   "s-j" #'dired-jump
+   "C-x 4 C-j" #'dired-jump-other-window
+   "s-J" #'dired-jump-other-window)
+  :config
+  (general-setq dired-x-hands-off-my-keys t
+                dired-omit-verbose nil
+                dired-omit-files-p t
+                dired-clean-up-buffers-too t
+                dired-clean-confirm-killing-deleted-buffers t
+                dired-bind-man nil
+                dired-bind-info nil
+                dired-omit-files (concat dired-omit-files
+                                         "\\|^.DS_Store\\'"
+                                         "\\|^.project\\(?:ile\\)?\\'"
+                                         "\\|^__pycache__\\'"
+                                         "\\|\\(?:\\.js\\)?\\.meta\\'"
+                                         "\\|\\.\\(?:elc\\|\\zwc\\|o\\|pyo\\|swp\\|class\\)\\'")))
+#+end_src
+
+*** Find-Dired (Built-In)
+#+name: init-find-dired-block
+#+begin_src emacs-lisp
+(use-package find-dired
+  :straight (:type built-in)
+  :config
+  (general-setq find-ls-option '("-ls" . "-AFhlv --group-directories-first")
+                find-name-arg "-iname"))
+#+end_src
+
+*** Image-Dired (Built-In)
+
+#+name: init-image-dired-block
+#+begin_src emacs-lisp
+(use-package image-dired
+  :demand t
+  :straight (:type built-in)
+  :after (dired)
+  :general
+  (:keymaps 'image-dired-thumbnail-mode-map
+            "<return>" #'image-dired-thumbnail-display-external)
+  :config
+  (general-setq image-dired-thumb-size 80
+                image-dired-thumb-margin 2
+                image-dired-thumb-relief 0
+                image-dired-thumbs-per-row 4))
+#+end_src
+
+*** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
+#+name: init-fd-dired-block
+#+begin_src emacs-lisp
+(use-package fd-dired
+  :straight t
+  :init
+  (general-setq fd-dired-ls-option '("| xargs -0 gls -ld --quoting-style=literal" . "-ld")))
+#+end_src
+
+*** [[https://github.com/jtbm37/all-the-icons-dired][All-The-Icons-Dired]]
+#+name: init-dired-all-the-icons-block
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired
+  :blackout t
+  :straight t
+  :ghook 'dired-mode-hook)
+#+end_src
+
+*** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
+#+name: init-dired-git-info-block
+#+begin_src emacs-lisp
+(use-package dired-git-info
+  :straight t
+  :general
+  (:keymaps 'dired-mode-map
+            ":" #'dired-git-info-mode)
+  :config
+  (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
+#+end_src
+
+*** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
+#+name: init-dired-hacks-block
+#+begin_src emacs-lisp
+  (use-package dired-hacks
+    :straight t)
+
+  (use-package dired-hacks-utils
+    :straight nil)
+
+  (use-package dired-filter
+    :straight nil)
+
+  (use-package dired-rainbow
+    :demand t
+    :straight nil
+    :after (dired)
+    :config
+    (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
+
+  (use-package dired-narrow
+    :straight nil
+    :after dired
+    :commands (dired-narrow
+               dired-narrow-fuzzy
+               dired-narrow-regexp)
+    :general
+    (:keymaps 'dired-mode-map
+              "C-c C-n" #'dired-narrow
+              "C-c C-f" #'dired-narrow-fuzzy
+              "C-c C-r" #'dired-narrow-regexp)
+    :config
+    (general-setq dired-narrow-exit-when-one-left t
+                  dired-narrow-enable-blinking t
+                  dired-narrow-blink-time 0.3))
+
+  (use-package dired-collapse
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "c" #'dired-collapse-mode))
+
+  (use-package dired-open
+    :straight nil
+    :config
+    (general-setq dired-open-functions '(dired-open-by-extension
+                                         dired-open-subdir)))
+
+  (use-package dired-list
+    :straight nil)
+
+  ;; (use-package dired-images
+  ;;   :straight (dired-hacks eimp))
+
+  (use-package dired-ranger
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "C-c C-c" #'dired-ranger-copy
+              "C-c C-m" #'dired-ranger-move
+              "C-c C-p" #'dired-ranger-paste
+              "C-c C-b" #'dired-ranger-bookmark
+              "C-c b v" #'dired-ranger-bookmark-visit))
+
+  (use-package dired-subtree
+    :straight nil
+    :general
+    (:keymaps 'dired-mode-map
+              "<tab>"     #'dired-subtree-toggle
+              "<backtab>" #'dired-subtree-cycle)
+    :config
+    (general-setq dired-subtree-use-backgrounds nil))
+#+end_src
+
+*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
+#+name: init-dired-rsync-block
+#+begin_src emacs-lisp
+(use-package dired-rsync
+  :straight t
+  :general
+  (:keymaps 'dired-mode-map
+            "r" #'dired-rsync))
+#+end_src
+
+*** [[https://github.com/purcell/diredfl][Diredfl]]
+#+name: init-diredfl-block
+#+begin_src emacs-lisp
+(use-package diredfl
+  :straight t
+  :ghook 'dired-mode-hook)
 #+end_src
 
 ** Org

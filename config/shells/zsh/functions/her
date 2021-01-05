@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-function h() {
+function her() {
   local heron="${HOME}/Documents/projects/HERON/heron"
   local input="${1}"
   eval "${heron}" "${input}"

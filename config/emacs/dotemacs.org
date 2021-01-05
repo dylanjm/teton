@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2020-12-21 15:44:44
+/last updated/: 2020-12-21 15:51:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -26,7 +26,6 @@
     - [[#minor-modes][Minor Modes]]
     - [[#navigation][Navigation]]
     - [[#org][Org]]
-    - [[#email][Email]]
     - [[#media][Media]]
     - [[#version-control][Version Control]]
     - [[#language-server-protocol][Language Server Protocol]]
@@ -2065,6 +2064,15 @@ A nice way to restart emacs on the fly if you need to.
   :straight (:host github :repo "minad/consult"))
 #+end_src
 
+*** [[https://github.com/minad/marginalia][Marginalia]]
+#+name: init-marginalia-block
+#+begin_src emacs-lisp
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+#+end_src
+
 *** [[https://github.com/raxod502/ctrlf][CTRL-F
 ]]
 #+name: init-ctrl-f-block
@@ -3154,305 +3162,7 @@ A nice way to restart emacs on the fly if you need to.
   :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
-** Email
-*** [[https://github.com/emacsmirror/mu4e][MU4E]]
-#+name: init-mu4e-block
-#+begin_src emacs-lisp :tangle no
-(use-package mu4e
-  :straight t
-  :commands (mu4e mu4e-compose-new)
-  :preface
-  (defun config-mail--shr-buffer ()
-    (let ((shr-use-fonts nil))
-      (shr-render-region (point-min) (point-max))))
-
-  (defun config-mail--view-in-external-browser-action (msg)
-    "View the current message MSG in the browser."
-    (interactive (list mu4e~view-msg))
-    (let ((browse-url-browser-function #'browse-url-default-browser))
-      (mu4e-action-view-in-browser msg)))
-
-  :config/el-patch
-  (general-add-hook 'mu4e-compose-mode-hook #'turn-off-auto-fill)
-  (general-add-hook 'mu4e-view-mode-hook #'visual-line-mode)
-
-  (general-setq mu4e-context-policy 'pick-first
-                mu4e-compose-context-policy 'ask-if-none
-                message-kill-buffer-on-exit t
-                mu4e-view-use-gnus t
-                mu4e-use-fancy-chars t
-                mu4e-headers-include-related nil
-                mu4e-headers-attach-mark '("a" . "A")
-                mu4e-headers-unread-mark '("u" . "●")
-                mu4e-headers-seen-mark '(" " . " ")
-                mu4e-hide-index-messages t
-                mu4e-headers-skip-duplicates t
-                mu4e-index-lazy-check t
-                mu4e-confirm-quit t
-                mu4e-view-prefer-html t
-                mu4e-view-show-images t
-                mu4e-view-show-addresses t
-                mu4e-maildir (f-expand "~/Mail")
-                mu4e-headers-date-format "%d-%m-%y %k:%M"
-                mu4e-completing-read-function #'completing-read
-                sendmail-program "msmtp"
-                message-send-mail-function #'message-send-mail-with-sendmail
-                mu4e-compose-format-flowed t
-                fill-flowed-encode-column 998
-                mu4e-get-mail-command "mbsync -V -q -a"
-                mu4e-change-filename-when-moving t
-                smtpmail-queue-mail nil
-                smtpmail-queue-dir (concat mu4e-maildir "/queue/cur")
-                mu4e-attachments-dir (f-expand "~/Downloads")
-                message-forward-before-signature nil
-                message-citation-line-function #'message-insert-formatted-citation-line
-                message-citation-line-format "On %a, %b %d %Y, %f wrote:\n"
-                mu4e-update-interval (* 60 5)
-                sendmail-coding-system 'utf-8
-                mu4e-html2text-command #'config-mail--shr-buffer)
-
-  ;; View html message in eww. `av` in view to activate
-  (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-
-  ;; View html message in external browser. `a&` in view to activate
-  (add-to-list 'mu4e-view-actions '("&viewInExternalBrowser" . config-mail--view-in-external-browser-action) t)
-
-  (setf (alist-get 'refile mu4e-marks)
-        '(:char ("r" . "▶")
-          :prompt "refile"
-          :dyn-target (lambda (target msg)
-                        (if (config-mail--message-from-me-p msg)
-                            (mu4e-get-sent-folder msg)
-                          (mu4e-get-refile-folder msg)))
-          :action (lambda (docid msg target)
-                    (unless (config-mail--message-from-me-p msg)
-                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N")))))
-
-  (add-to-list 'display-buffer-alist
-               `(,(rx bos " *mu4e-main*" eos)
-                 (display-buffer-reuse-window
-                  display-buffer-fullframe)
-                 (reusable-frames . visible)))
-
-  ;; Chris Barrett lisp/mu4e-hacks.el
-  ;; https://github.com/chrisbarrett/.emacs.d/blob/master/hacks/mu4e-hacks.el
-  (el-patch-defun mu4e-context-label ()
-    "Propertized string with the current context name, or \"\" if
-    there is none."
-    (if (el-patch-wrap 1 1 (and (mu4e-context-current)
-                                (derived-mode-p 'mu4e-main-mode 'mu4e-headers-mode
-                                                'mu4e-view-mode 'mu4e-compose-mode)))
-        (concat "[" (propertize (mu4e~quote-for-modeline
-                                 (mu4e-context-name (mu4e-context-current)))
-                                'face 'mu4e-context-face) "]")
-      ""))
-
-  (el-patch-defun mu4e~main-view ()
-    "Create the mu4e main-view, and switch to it."
-    (if (eq mu4e-split-view 'single-window)
-        (if (buffer-live-p (mu4e-get-headers-buffer))
-            (switch-to-buffer (mu4e-get-headers-buffer))
-          (mu4e~main-menu))
-      (mu4e~main-view-real nil nil)
-      ((el-patch-swap switch-to-buffer display-buffer) mu4e~main-buffer-name)
-      (goto-char (point-min)))
-    (add-to-list 'global-mode-string '(:eval (mu4e-context-label)))))
-
-(use-package messages-are-flowing
-  :straight t
-  :ghook ('message-mode-hook #'messages-are-flowing-use-and-mark-hard-newlines)
-  :config/el-patch
-  (el-patch-defun messages-are-flowing-use-and-mark-hard-newlines ()
-    "Turn on `use-hard-newlines', and make hard newlines visible.
-  The main use of this is to send \"flowed\" email messages, where
-  line breaks within paragraphs are adjusted by the recipient's
-  device, such that messages remain readable on narrow displays."
-    (interactive)
-    (use-hard-newlines (el-patch-add +1 t))
-    (add-hook 'after-change-functions 'messages-are-flowing--mark-hard-newlines nil t)))
-
-(use-package mu4e-alert
-  :straight t
-  :after (mu4e)
-  :config
-  (general-setq mu4e-alert-interesting-mail-query "flag:unread maildir:/INBOX ")
-  (mu4e-alert-enable-mode-line-display))
-
-(use-package org-mu4e
-  :straight nil
-  :after (:any org mu4e))
-#+end_src
-
 ** Media
-*** [[https://www.gnu.org/software/emms/][EMMS]]
-#+name: init-emms-block
-#+begin_src emacs-lisp :tangle no
-(use-package emms
-  :straight t
-  :commands (emms)
-  :init
-  (defconst emms-info-atomic-parsley-tag-alist '(("©too" . "info-note")
-                                                 ("©alb" . "info-album")
-                                                 ("©ART" . "info-artist")
-                                                 ("©nam" . "info-title")
-                                                 ("©gen" . "info-genre")
-                                                 ("©day" . "info-year")
-                                                 ("trkn" . "info-tracknumber")))
-
-  (defun emms-info-atomic-parsley (track)
-    (when (and (eq 'file (emms-track-type track))
-               (string-match "\\.[Mm][Pp]4\\'" (emms-track-name track)))
-      (with-temp-buffer
-        (when (zerop
-               (apply (if (fboundp 'emms-i18n-call-process-simple)
-                          'emms-i18n-call-process-simple
-                        'call-process)
-                      "AtomicParsley"
-                      nil t nil
-                      (list (emms-track-name track) "-t" "+")))
-          (goto-char (point-min))
-          (while (not (eql (point) (point-max)))
-            (if (re-search-forward "^Atom \"\\(.*\\)\" contains: \\(.*\\)$" nil t)
-                (progn
-                  (let ((name (match-string 1))
-                        (value (match-string 2)))
-                    (when (> (length value) 0)
-                      (emms-track-set track
-                                      (intern (cdr (assoc name emms-info-atomic-parsley-tag-alist)))
-                                      value))
-                    (forward-line 1)))
-              (forward-line 1)))))))
-
-  (defun emms-mark-add-info-to-tracks ()
-    "Add info to all track in playlist"
-    (interactive)
-    (emms-mark-do-with-marked-track (lambda nil
-                                      (let ((x (emms-playlist-track-at)))
-                                        (emms-info-atomic-parsley x))
-                                      (progn
-                                        (forward-line 1)
-                                        (point)))))
-
-  ;;; Display album in playlist
-  (defun ambrevar/emms-artist-album-track-and-title-format (bdata fmt)
-    (concat
-     "%i"
-     (let ((artist (emms-browser-format-elem fmt "a")))
-       (if (not artist)
-           "%n"                           ; If unknown, display the filename.
-         (concat
-          "%a - "
-          (let ((album (emms-browser-format-elem fmt "A")))
-            (if album "%A - " ""))
-          (let ((disc (emms-browser-format-elem fmt "D")))
-            (if (and disc (not (string= disc ""))) "%D/" ""))
-          (let ((track (emms-browser-format-elem fmt "T")))
-            (if (and track (not (string= track "0")))
-                "%T. "
-              ""))
-          "%t [%d]")))))
-
-
-  ;; Display disc number in browser
-  (defun ambrevar/emms-browser-track-artist-and-title-format (bdata fmt)
-    (concat
-     "%i"
-     (let ((disc (emms-browser-format-elem fmt "D")))
-       (if (and disc (not (string= disc "")))
-           "%D/"))
-     (let ((track (emms-browser-format-elem fmt "T")))
-       (if (and track (not (string= track "0")))
-           "%T. "
-         ""))
-     "%n"))
-
-
-  (defun ambrevar/emms-time-for-display (track)
-    "Inspired by `emms-playing-time-display'."
-    (let* ((total-playing-time
-            (or (emms-track-get
-                 track
-                 'info-playing-time)
-                0))
-           (total-min-only (/ total-playing-time 60))
-           (total-sec-only (% total-playing-time 60)))
-      (format "%02d:%02d" total-min-only total-sec-only)))
-
-  (defun ambrevar/emms-track-description-with-album (track)
-    "Simple function to give a user-readable description of a track.
-  If it's a file track, just return the file name.  Otherwise,
-  return the type and the name with a colon in between.
-  Hex-encoded characters in URLs are replaced by the decoded
-  character."
-    (let ((type (emms-track-type track)))
-      (cond ((eq 'file type)
-             (cl-flet ((fmt (string &optional suffix prefix)
-                            (if string
-                                (concat prefix string suffix)
-                              "")))
-               (concat
-                (fmt (emms-track-get track 'info-artist) " - ")
-                (fmt (emms-track-get track 'info-album) " - ")
-                (fmt (emms-track-get track 'info-discnumber) "/")
-                (if (emms-track-get track 'info-tracknumber)
-                    (format "%02d. " (string-to-number (emms-track-get track 'info-tracknumber)))
-                  "")
-                (emms-track-get track 'info-title)
-                (fmt (ambrevar/emms-time-for-display track) "]" " ["))))
-            ((eq 'url type)
-             (emms-format-url-track-name (emms-track-name track)))
-            (t (concat (symbol-name type)
-                       ": " (emms-track-name track))))))
-
-
-  (defun ambrevar/emms-tracks-duration (begin end)
-    "Display play time of tracks in region."
-    (interactive "r")
-    (if (not (use-region-p))
-        (message "%s" (emms-browser-track-duration
-                       (car (emms-browser-tracks-at-point))))
-      (let* ((total-time)
-             (first-line (line-number-at-pos begin))
-             (last-line (line-number-at-pos end))
-             (count 0))
-        (setq total-time
-              (save-mark-and-excursion
-                (cl-loop for line from first-line to last-line
-                         do (goto-line line)
-                         for time = (emms-track-get (car (emms-browser-tracks-at-point))
-                                                    'info-playing-time)
-                         when time
-                         do (cl-incf count)
-                         when time
-                         sum time)))
-        (message "%02d:%02d for %d tracks" (/ total-time 60) (% total-time 60)
-                 count))))
-
-  :config
-  (require 'emms-setup)
-  (emms-all)
-  (emms-history-load)
-  (require 'emms-player-mpv)
-  (require 'emms-source-playlist)
-  (require 'emms-source-file)
-  (require 'emms-mark)
-  (require 'emms-info)
-  (require 'emms-browser)
-  (general-setq emms-player-list '(emms-player-mpv))
-
-
-  (general-setq emms-source-file-default-directory (expand-file-name "~/Movies/")
-                emms-info-asynchronously t
-                emms-info-auto-update t
-                emms-show-format "NP: %s"
-                emms-playlist-buffer-name "*EMMS Playlist*"
-                emms-browser-default-format "%i%a - %A:	%T	%t [%d]")
-
-  (general-setq emms-info-functions '(emms-info-atomic-parsley))
-  (general-pushnew "--no-audio-display" emms-player-mpv-parameters)
-  (general-pushnew 'emms-info-initialize-track emms-track-initialize-functions))
-#+end_src
-
 *** [[https://github.com/jorenvo/simple-mpc][Simple-MPC]]
 #+name: init-simple-mpc-block
 #+begin_src emacs-lisp
@@ -3863,8 +3573,7 @@ on save. I use this to auto-tangle the config file when editing.
   :straight (:host github :repo "dylanjm/moose-hit-format.el" :files ("*")))
 #+end_src
 
-*** File Modes
-**** [[https://github.com/tequilasunset/apples-mode][Apple-Script]]
+*** [[https://github.com/tequilasunset/apples-mode][Apple-Script]]
 #+name: init-apple-script-block
 #+begin_src emacs-lisp
 (use-package apples-mode
@@ -3872,21 +3581,21 @@ on save. I use this to auto-tangle the config file when editing.
   :mode "\\.\\(applescri\\|sc\\)pt\\'")
 #+end_src
 
-**** CMake-Mode
+*** CMake-Mode
 #+name: init-cmake-mode-block
 #+begin_src emacs-lisp
 (use-package cmake-mode
   :straight t)
 #+end_src
 
-**** Crontab-Mode
+*** Crontab-Mode
 #+name: init-crontab-mode-block
 #+begin_src emacs-lisp
 (use-package crontab-mode
   :straight t)
 #+end_src
 
-**** CSV-Mode
+*** CSV-Mode
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp
 (use-package csv-mode
@@ -3896,35 +3605,35 @@ on save. I use this to auto-tangle the config file when editing.
   :gfhook #'csv-align-mode)
 #+end_src
 
-**** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
+*** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
 #+name: init-gitconfig-mode-block
 #+begin_src emacs-lisp
 (use-package gitconfig-mode
   :straight t)
 #+end_src
 
-**** [[https://github.com/vkazanov/crontab-mode][Gitignore-Mode]]
+*** [[https://github.com/vkazanov/crontab-mode][Gitignore-Mode]]
 #+name: init-gitignore-mode-block
 #+begin_src emacs-lisp
 (use-package gitignore-mode
   :straight t)
 #+end_src
 
-**** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
+*** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
 #+name: init-json-mode-block
 #+begin_src emacs-lisp
 (use-package json-mode
   :straight t)
 #+end_src
 
-**** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
+*** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
 #+begin_src emacs-lisp
 (use-package ssh-config-mode
   :straight t)
 #+end_src
 
-**** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
+*** [[https://github.com/dryman/toml-mode.el][TOML-Mode]]
 #+name: init-toml-mode-block
 #+begin_src emacs-lisp
 (use-package toml-mode
@@ -3933,7 +3642,7 @@ on save. I use this to auto-tangle the config file when editing.
   :mode "Pipfile\\'")
 #+end_src
 
-**** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
+*** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
 #+name: init-yaml-block
 #+begin_src emacs-lisp
 (use-package yaml-mode

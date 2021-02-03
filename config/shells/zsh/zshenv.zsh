@@ -264,7 +264,7 @@ autoload -Uz time-shell \
          vterm_prompt_end \
          colorlist \
          hc \
-         h \
+         her \
          rav \
          update-opt
 

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-02-02 15:56:21
+/last updated/: 2021-02-15 12:32:54
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -660,6 +660,19 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
 
   (general-setq interprogram-paste-function #'arco/clipboard-paste)
   (general-setq interprogram-cut-function #'arco/clipboard-copy))
+#+end_src
+
+**** Sum-Numbers-In-Region
+#+name: init-sum-numbers-in-region-block
+#+begin_src emacs-lisp
+(defun sum-numbers-in-region (start end)
+  (interactive "r")
+  (message "%s"
+           (cl-reduce #'+
+                      (split-string (buffer-substring start
+                                                      end))
+                      :key #'string-to-number)))
+
 #+end_src
 
 *** Hooks, Macros & Advice

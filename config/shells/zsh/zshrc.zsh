@@ -30,3 +30,6 @@ true
 # mode: shell-script
 # sh-basic-offset: 2
 # End:
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+

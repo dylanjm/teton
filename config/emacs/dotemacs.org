@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-02-15 12:32:54
+/last updated/: 2021-04-07 10:59:16
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1434,7 +1434,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Pixel-Scroll (Built-In)
 #+name: init-pixel-scroll-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package pixel-scroll
   :straight (:type built-in)
   :ghook 'after-init-hook
@@ -1930,6 +1930,14 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
       (configure-fonts frame))))
 #+end_src
 
+*** [[https://github.com/io12/good-scroll.el][Good-Scroll]]
+#+name: init-good-scroll-block
+#+begin_src emacs-lisp :tangle no
+(use-package good-scroll
+  :straight t
+  :ghook #'selectrum-mode-hook)
+#+end_src
+
 *** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
 #+name: init-doom-modeline-block
 #+begin_src emacs-lisp
@@ -2060,13 +2068,13 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
 (use-package selectrum
-  :straight (:host github :repo "raxod502/selectrum" :files ("*.el"))
+  :straight t
   :ghook 'emacs-startup-hook
-  :init
+  :config
   (general-setq selectrum-num-candidates-displayed 10))
 
 (use-package selectrum-prescient
-  :straight (:host github :repo "raxod502/prescient.el")
+  :straight t
   :ghook 'selectrum-mode-hook)
 #+end_src
 
@@ -2074,7 +2082,7 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-consult-block
 #+begin_src emacs-lisp
 (use-package consult
-  :straight (:host github :repo "minad/consult"))
+  :straight t)
 #+end_src
 
 *** [[https://github.com/minad/marginalia][Marginalia]]
@@ -2082,8 +2090,7 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package marginalia
   :straight t
-  :init
-  (marginalia-mode))
+  :ghook #'selectrum-mode-hook)
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F
@@ -2093,6 +2100,13 @@ A nice way to restart emacs on the fly if you need to.
 (use-package ctrlf
   :straight t
   :ghook 'emacs-startup-hook)
+#+end_src
+
+*** [[https://github.com/oantolin/embark][Embark]]
+#+name: init-embark-block
+#+begin_src emacs-lisp
+(use-package embark
+  :straight t)
 #+end_src
 
 *** [[https://github.com/bbatsov/projectile][Projectile]]
@@ -2318,6 +2332,13 @@ A nice way to restart emacs on the fly if you need to.
   :general
   ("C->" #'mc/mark-next-like-this
    "C-<" #'mc/mark-previous-like-this))
+#+end_src
+
+*** [[https://github.com/Kungsgeten/selected.el][Selected]]
+#+name: init-selected-block
+#+begin_src emacs-lisp
+(use-package selected
+  :straight t)
 #+end_src
 
 *** [[https://github.com/thierryvolpiatto/zop-to-char][Zop-To-Char]]

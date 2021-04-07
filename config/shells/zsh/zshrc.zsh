@@ -8,6 +8,8 @@ fi
 
 source "${ZSH}/zinit.zsh"
 
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
 case "${INSIDE_EMACS:-}" in
   "")
     source "${ZSH}/themes/p10k.zsh"
@@ -30,6 +32,3 @@ true
 # mode: shell-script
 # sh-basic-offset: 2
 # End:
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-

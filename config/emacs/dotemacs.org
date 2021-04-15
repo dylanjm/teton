@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-04-07 10:59:16
+/last updated/: 2021-04-15 13:55:12
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1872,7 +1872,7 @@ Sort of a standard package in most emacs-configs these days.
   :straight t
   :commands (all-the-icons-icon-for-buffer)
   :config
-  (general-setq all-the-icons-scale-factor 1)
+  (general-setq all-the-icons-scale-factor 1.2)
   (general-pushnew '("\\.db$" all-the-icons-faicon
                      "database" :face all-the-icons-blue)
                    all-the-icons-icon-alist)
@@ -3309,6 +3309,7 @@ A nice way to restart emacs on the fly if you need to.
   :gfhook #'lsp-enable-which-key-integration
   :config
   (general-setq lsp-completion-provider :capf
+                lsp-log-io nil
                 lsp-idle-delay 0.500
                 lsp-modeline-diagnostics-enable t
                 lsp-headerline-breadcrumb-enable t
@@ -3327,6 +3328,13 @@ A nice way to restart emacs on the fly if you need to.
                 lsp-ui-doc-position 'top
                 lsp-ui-flycheck-list-position 'right
                 lsp-ui-imenu-kind-position 'right))
+#+end_src
+
+*** LSP-Treemacs
+#+name: init-lsp-treemacs-block
+#+begin_src emacs-lisp
+(use-package lsp-treemacs
+  :straight t)
 #+end_src
 
 ** Syntax & Linting

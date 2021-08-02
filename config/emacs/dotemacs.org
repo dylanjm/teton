@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-04-15 13:55:12
+/last updated/: 2021-04-22 11:19:27
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2071,7 +2071,9 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook 'emacs-startup-hook
   :config
-  (general-setq selectrum-num-candidates-displayed 10))
+  (general-setq selectrum-num-candidates-displayed 10)
+  (general-setq selectrum-refine-candidates-function #'orderless-filter
+                selectrum-highlight-candidates-function #'orderless-highlight-matches))
 
 (use-package selectrum-prescient
   :straight t
@@ -2091,6 +2093,16 @@ A nice way to restart emacs on the fly if you need to.
 (use-package marginalia
   :straight t
   :ghook #'selectrum-mode-hook)
+#+end_src
+
+*** [[https://github.com/oantolin/orderless][Orderless]]
+#+name: init-orderless-block
+#+begin_src emacs-lisp
+(use-package orderless
+  :straight t
+  :demand t
+  :init
+  (setq completion-styles '(orderless)))
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F

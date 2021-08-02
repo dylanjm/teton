@@ -128,6 +128,7 @@ export PYTHONSTARTUP="${XDG_CONFIG_HOME}/pythonrc"
 export MPLCONFIGDIR="${XDG_DATA_HOME}/matplotlib"
 export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy_cache"
 export PYGMENTIZE_STYLE='paraiso-dark'
+export PYTHONDONTWRITEBYTECODE="FALSE"
 
 ###
 ### R
@@ -237,7 +238,7 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       /usr/local/sbin
       /usr/sbin
       /sbin
-      /usr/local/texlive/2020/bin/x86_64-darwin
+      /usr/local/texlive/2021/bin/universal-darwin
       /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 

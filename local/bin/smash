@@ -36,8 +36,7 @@
 ### aa    ]8I 88      88      88 88,    ,88 aa    ]8I 88       88
 ### `"YbbdP"' 88      88      88 `"8bbdP"Y8 `"YbbdP"' 88       88
 ###
-### smash - The follies of coporate life:
-###    An Office Space meme script.
+### smash - The follies of coporate life: An Office Space meme script.
 ###
 ### Usage:
 ###    smash [-h] [-w] CAPTION
@@ -119,7 +118,7 @@ usage() {
 	    -w    - place CAPTION text into white bar above image.
 
 	$(echo -e "$(bold ARGS)"):
-	    CAPTION    - the text you want placed in the image or above the image.
+	    CAPTION  - the text you want placed in the image or above the image.
 
 	$(echo -e "$(bold EXAMPLES)"):
 
@@ -202,7 +201,7 @@ make_meme() {
 }
 
 file-to-clipboard() {
-  ## Use an applescript to read the meme jpeg into the system clipbaord.
+  ## Use an applescript to read the meme jpeg into the system clipboard.
   local memefile="/tmp/smash.jpg"
   osascript \
     -e 'on run args' \

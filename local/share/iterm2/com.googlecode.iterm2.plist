@@ -58095,11 +58095,11 @@
 			<key>Badge Max Height</key>
 			<real>0.20000000000000001</real>
 			<key>Badge Max Width</key>
-			<real>0.5</real>
+			<real>0.57999999999999996</real>
 			<key>Badge Right Margin</key>
 			<real>10</real>
 			<key>Badge Text</key>
-			<string>Desktop</string>
+			<string>Workstation</string>
 			<key>Badge Top Margin</key>
 			<real>10</real>
 			<key>Blink Allowed</key>

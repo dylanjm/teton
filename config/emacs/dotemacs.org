@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-04-22 11:19:27
+/last updated/: 2021-08-26 09:46:08
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -778,9 +778,7 @@ Here we can setup proper coloring for compile buffers.
     (yas/expand-snippet (buffer-string) (point-min) (point-max)))
   :config
   (general-setq auto-insert 'other)
-  (general-setq auto-insert-directory (nl-etc-expand "autoinsert/"))
-  (general-setq auto-insert-alist
-                '((("\\.py\\'" . "Python Plotting") . ["template.py" arco/autoinsert-yas-expand]))))
+  (general-setq auto-insert-directory (nl-etc-expand "autoinsert/")))
 #+end_src
 
 *** Autorevert (Built-In)
@@ -1127,8 +1125,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         create-lockfiles nil
                         delete-old-versions t
                         enable-local-variables t
-                        find-file-suppress-same-file-warnings t
-                        find-file-visit-truename t
+                        ;; find-file-suppress-same-file-warnings t
+                        ;; find-file-visit-truename t
                         insert-directory-program "/usr/local/bin/gls"
                         kept-new-versions 6
                         large-file-warning-threshold 10000000000

@@ -32,7 +32,7 @@ alias em="/usr/local/bin/emacsclient -t -c -a ''"
 ### Common Lisp
 ###
 breakchars="(){}[],^%$#@\"\";:''|\\"
-alias sbcl="rlwrap -p 'red' -D 0 -H ${XDG_DATA_HOME}/sbcl_history sbcl"
+alias sbcl="rlwrap -pred -D 0 -H ${XDG_DATA_HOME}/sbcl_history -f ${XDG_DATA_HOME}/lisp_completions/sbcl_completions sbcl"
 
 ###
 ### Navigation

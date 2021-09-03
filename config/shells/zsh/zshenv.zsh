@@ -233,13 +233,14 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       $PYENV_ROOT/shims             # Python Libraries
       $XDG_BIN_HOME                 # Personal CLI Tools
       /usr/local/bin                # Homebrew Installations
+      /usr/local/opt/texinfo/bin
       /usr/bin
       /bin
       /usr/local/sbin
       /usr/sbin
       /sbin
       /usr/local/texlive/2021/bin/universal-darwin
-      /usr/local/opt/texinfo/bin
+      # /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 
 export PATH

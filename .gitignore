@@ -1,5 +1,6 @@
 straight/
 matplotlib/
+eln-cache/
 early-init.el
 init.el
 

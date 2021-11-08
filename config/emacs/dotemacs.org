@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-10-19 16:58:33
+/last updated/: 2021-11-03 13:51:58
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -36,7 +36,18 @@
 
 * About
 
-This document is my current emacs config which contains the code for my =early-init.el= file and =init.el= file. You may be wondering how one file can contain code for two different configuration files. Through the power of =org-babel-tangle=, I am able to configure and document my entire emacs experience in a single Org file. There are several reasons to organize one's configuration this way. I hope these reasons become obvious as you browse through, but personally I find it much easier to document my choices using a markup language. This way I can store links and reference back to forum threads and other places when updating. I can also include pictures throughout and organize code-blocks with specific names to make navigation quick and painless. If you're interested in creating a similar setup, take a look at the raw-version of this file. There is important information contained in the header and throughout the file to make this work. Once you have a proper the proper settings, start adding src-blocks and then run =M-x org-babel-tangle <RET>=. Your config files will then be generated and Emacs will use those files when starting up. I have also written a hook that tangles this file everytime I save.
+This document is my current emacs config which contains the code for my =early-init.el= file and =init.el= file.
+You may be wondering how one file can contain code for two different configuration files. Through the power of
+=org-babel-tangle=, I am able to configure and document my entire emacs experience in a single Org file. There
+are several reasons to organize one's configuration this way. I hope these reasons become obvious as you
+browse through, but personally I find it much easier to document my choices using a markup language. This way
+I can store links and reference back to forum threads and other places when updating. I can also include
+pictures throughout and organize code-blocks with specific names to make navigation quick and painless. If
+you're interested in creating a similar setup, take a look at the raw-version of this file. There is important
+information contained in the header and throughout the file to make this work. Once you have a proper the
+proper settings, start adding src-blocks and then run =M-x org-babel-tangle <RET>=. Your config files will then
+be generated and Emacs will use those files when starting up. I have also written a hook that tangles this
+file everytime I save.
 
 * Early-Init
 :properties:
@@ -61,7 +72,7 @@ threshold 40 years in the past. This causes the garbage collector to run frequen
 muck up the speed of your setup. We pretty much disable garbage collection during the initial phase to improve
 our startup time. After we have given enough time for everything to load we then set the gc-theshold to a
 reasonable number. Sometimes people set the threshold back to its default value, but I keep it a little higher
-to handle things like fuzzy completion and language-server requirements.
+to handle things like fuzzy completion and language-server requirements. (See also GCMH Mode)
 
 #+name: early-init-gc-block
 #+begin_src emacs-lisp
@@ -70,8 +81,8 @@ to handle things like fuzzy completion and language-server requirements.
 (defvar default-gc-cons-threshold (* 100 1024 1024))
 
 ;; Native Compilation Vars
-(setq comp-speed 3
-      comp-deferred-compilation t)
+(setq-default native-comp-speed 2
+              native-comp-deferred-compilation t)
 
 ;; Prevents libgccjit error
 ;; Solution found at: https://github.com/d12frosted/homebrew-emacs-plus/issues/323
@@ -125,7 +136,7 @@ and =ns-transparent-titlebar=. I also set the font during this time and handle a
                                 (font . "Iosevka-14")))
 
 ;; Not sure if I really need this on macOS
-(advice-add 'x-apply-session-resources :override 'ignore)
+;; (advice-add 'x-apply-session-resources :override 'ignore)
 
 ;; Not sure if this is really needed anymore
 (when (fboundp 'set-charset-priority)
@@ -400,31 +411,6 @@ BODY is run periodically even if Emacs is actively being used."
      (run-with-idle-timer ,idle-interval t (lambda () ,@body))))
 #+end_src
 
-**** Screen-Capture
-
-A quick work around function to easily snap screenshots of lecture videos while taking notes. Use the prefix
-command =C-u M-x emacs-screen-capture RET= to insert it automatically as an org link.
-
-#+name: init-screen-capture-block
-#+begin_src emacs-lisp
-(defun emacs-screen-capture (arg &optional name dir format)
-  (interactive "P")
-  (let* ((format (completing-read "Screenshot Format: "
-                                  '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
-         (name (or name (read-string "Name of Screenshot: " nil)))
-         (dir (or dir (read-directory-name (format "Save %s%s to: " name format))))
-         (fp (concat dir name format))
-         (abb-fp (concat "file:" (file-relative-name fp))))
-    (set-process-sentinel
-     (start-process-shell-command
-      "imagecapture" nil (format "screencapture -i %s" fp))
-     `(lambda (process msg)
-        (when (memq (process-status process) '(exit signal))
-          (message (concat (process-name process) " - " msg))
-          (when (equal #',current-prefix-arg '(4))
-            (org-insert-link nil ,abb-fp nil)))))))
-#+end_src
-
 **** Protect Buffers
 
 There are certain buffers I don't want to delete on accident. Code taken from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou dotfiles.]]
@@ -444,41 +430,6 @@ There are certain buffers I don't want to delete on accident. Code taken from [[
         (emacs-lock-mode 'kill)))))
 
 (general-add-hook 'emacs-startup-hook #'arco/protected-buffers)
-#+end_src
-
-**** Eval-Print-Last-Sexp
-
-#+name: init-eval-print-last-sexp-block
-#+begin_src emacs-lisp
-(el-patch-defun eval-print-last-sexp (&optional eval-last-sexp-arg-internal)
-  "Evaluate sexp before point; print value into current buffer.
-
-Normally, this function truncates long output according to the value
-of the variables `eval-expression-print-length' and
-`eval-expression-print-level'.  With a prefix argument of zero,
-however, there is no such truncation.  Such a prefix argument
-also causes integers to be printed in several additional formats
-\(octal, hexadecimal, and character).
-
-If `eval-expression-debug-on-error' is non-nil, which is the default,
-this command arranges for all errors to enter the debugger.
-
-[El-Patch] Adds a ';; ' before printing the output to the buffer."
-  (interactive "P")
-  (let ((standard-output (current-buffer)))
-    (terpri)
-    (el-patch-add (insert ";; "))
-    (eval-last-sexp (or eval-last-sexp-arg-internal t))
-    (terpri)))
-#+end_src
-
-**** Eval-To-Kill-Ring
-#+name: init-eval-to-kill-ring-block
-#+begin_src emacs-lisp
-(defun arco/eval-to-kill-ring ()
-  (interactive)
-  (kill-new (with-output-to-string
-              (princ (call-interactively 'eval-expression)))))
 #+end_src
 
 **** Async Tangle
@@ -551,7 +502,7 @@ set up Apple-Emoji Support.
 #+begin_src emacs-lisp
 (defconst arco/default-font "Iosevka")
 (defconst arco/font-params "autohint=false:hintstyle=hintslight:embeddedbitmap=false")
-(defconst arco/variable-pitch-font "Iosevka Sparkle")
+(defconst arco/variable-pitch-font "Iosevka Aile")
 
 (defun arco/set-face-attribute-font (family size)
   "Set `default' face font to FAMILY at SIZE."
@@ -639,7 +590,7 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
 
 #+name: init-clipboard-integration-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (unless (display-graphic-p)
   (defvar clipboard-last-copy nil)
 
@@ -662,18 +613,6 @@ Better clipboard integration for non-gui emacs. Code taken from [[https://github
   (general-setq interprogram-cut-function #'arco/clipboard-copy))
 #+end_src
 
-**** Sum-Numbers-In-Region
-#+name: init-sum-numbers-in-region-block
-#+begin_src emacs-lisp
-(defun sum-numbers-in-region (start end)
-  (interactive "r")
-  (message "%s"
-           (cl-reduce #'+
-                      (split-string (buffer-substring start
-                                                      end))
-                      :key #'string-to-number)))
-
-#+end_src
 
 *** Hooks, Macros & Advice
 
@@ -717,8 +656,8 @@ was last updated.
   :straight (:type built-in)
   :ghook 'emacs-startup-hook
   :init
-  (general-setq abbrev-file-name (nl-var-expand "abbrevs")
-                only-global-abbrevs nil))
+  (general-setq-default abbrev-file-name (nl-var-expand "abbrevs")
+                        only-global-abbrevs nil))
 #+end_src
 
 *** Advice (Built-In)
@@ -730,7 +669,7 @@ Ignore those warnings from the old advice system.
 (use-package advice
   :straight (:type built-in)
   :init
-  (general-setq ad-redefinition-action 'accept))
+  (general-setq-default ad-redefinition-action 'accept))
 #+end_src
 
 *** Ansi-Color (Built-In)
@@ -767,7 +706,7 @@ Here we can setup proper coloring for compile buffers.
 
 *** Auto-Insert (Built-In)
 #+name: init-auto-insert-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package autoinsert
   :straight (:type built-in)
   :commands (auto-insert)
@@ -1678,10 +1617,10 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package time
   :straight (:type built-in)
-  :ghook (#'emacs-startup-hook #'display-time-mode)
+  ;;:ghook (#'emacs-startup-hook #'display-time-mode)
   :config
   (general-setq display-time-24hr-format nil
-                display-time-day-and-date t
+                display-time-day-and-date nil
                 display-time-default-load-average nil))
 #+end_src
 
@@ -1870,7 +1809,7 @@ Sort of a standard package in most emacs-configs these days.
   :straight t
   :commands (all-the-icons-icon-for-buffer)
   :config
-  (general-setq all-the-icons-scale-factor 1.2)
+  (general-setq all-the-icons-scale-factor 1)
   (general-pushnew '("\\.db$" all-the-icons-faicon
                      "database" :face all-the-icons-blue)
                    all-the-icons-icon-alist)
@@ -1911,21 +1850,30 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
-(use-package doom-themes
-  :straight t
-  :ghook ('emacs-startup-hook #'arco/load-theme)
-  :preface
-  (defun arco/load-theme ()
-    (setq doom-themes-enable-bold t
-          doom-themes-enable-italic t)
-    (load-theme 'doom-tomorrow-night t)
-    (doom-themes-org-config)
-    (when (daemonp)
-      (general-add-hook
-       'after-make-frame-functions #'setup-main-fonts))
-    (when-let (frame (selected-frame))
-      (setup-main-fonts frame)
-      (configure-fonts frame))))
+  (use-package doom-themes
+    :straight t
+    :ghook ('emacs-startup-hook #'arco/load-theme)
+    :preface
+    (defun arco/load-theme ()
+      (setq doom-themes-enable-bold t
+	    doom-themes-enable-italic t
+	    doom-themes-padded-modeline t
+	    doom-gruvbox-brighter-comments nil
+	    doom-gruvbox-dark-variant "hard")
+      (load-theme 'doom-gruvbox t)
+      (custom-set-faces
+       `(font-lock-doc-face ((t (:foreground ,(doom-color 'base4) :slant italic)))))
+      (doom-themes-org-config)
+      (doom-themes-treemacs-config)
+      (doom-themes-visual-bell-config)
+      (when (daemonp)
+	(general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+      (when-let (frame (selected-frame))
+	(setup-main-fonts frame)
+	(configure-fonts frame))))
+
+  (require 'general)
+  (require 'doom-themes)
 #+end_src
 
 *** [[https://github.com/io12/good-scroll.el][Good-Scroll]]
@@ -1941,10 +1889,12 @@ My own personal fork of the gruvbox-theme. I've mostly added color-modes for mis
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :straight t
-  :ghook ('window-setup-hook)
+  :ghook ('after-init-hook)
   :config
-  (general-setq doom-modeline-buffer-encoding nil
-                doom-modeline-checker-simple-format nil))
+  (general-setq doom-modeline-buffer-encoding t
+                doom-modeline-checker-simple-format t
+                doom-modeline-hud t
+                doom-modeline-project-detection 'projectile))
 #+end_src
 
 *** [[https://github.com/hlissner/emacs-hide-mode-line][Hide-Mode-Line-Mode]]
@@ -1992,16 +1942,21 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 
 *** [[https://github.com/politza/pdf-tools][PDF-Tools]]
 #+name: init-pdf-tools-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
-  :mode ("\\.pdf$" . 'pdf-view-mode)
+  :mode ("\\.pdf\\'" . 'pdf-view-mode)
   :preface
-  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  (setenv "PKG_CONFIG_PATH"
+          (mapconcat 'identity '("/usr/local/Cellar/libffi/3.2.1/lib/pkgconfig"
+                                 "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig"
+                                 "/usr/local/lib/pkgconfig"
+                                 "/opt/X11/lib/pkgconfig") ":"))
   :init
   (pdf-loader-install)
   :config
-  (pdf-tools-enable-minor-modes))
+  (general-setq pdf-view-display-size 'fit-page)
+  (general-setq pdf-annot-activate-created-annotations t))
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
@@ -2058,7 +2013,7 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook ('selectrum-prescient-mode-hook #'prescient-persist-mode)
   :init
-  (setq prescient-history-length 1000))
+  (general-setq prescient-history-length 1000))
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum
@@ -2069,13 +2024,15 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook 'emacs-startup-hook
   :config
-  (general-setq selectrum-num-candidates-displayed 10)
+  (general-setq selectrum-num-candidates-displayed 15)
   (general-setq selectrum-refine-candidates-function #'orderless-filter
                 selectrum-highlight-candidates-function #'orderless-highlight-matches))
 
 (use-package selectrum-prescient
   :straight t
-  :ghook 'selectrum-mode-hook)
+  :ghook 'selectrum-mode-hook
+  :config
+  (general-setq selectrum-prescient-enable-filtering nil))
 #+end_src
 
 *** [[https://github.com/minad/consult][Consult]]
@@ -2100,7 +2057,8 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :demand t
   :init
-  (setq completion-styles '(orderless)))
+  (general-setq completion-styles '(orderless))
+  (general-setq orderless-skip-highlighting (lambda () selectrum-is-active)))
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F
@@ -2146,6 +2104,26 @@ A nice way to restart emacs on the fly if you need to.
   (general-pushnew "compile_commands.json" projectile-project-root-files-top-down-recurring)
   (general-pushnew 'projectile-project-find-function project-find-functions)
   (projectile-global-mode))
+#+end_src
+
+*** [[https://github.com/Alexander-Miller/treemacs][Treemacs]]
+#+name: init-treemacs-block
+#+begin_src emacs-lisp
+(use-package treemacs
+  :straight t
+  :general ("M-o" #'treemacs-select-window)
+  :config
+  (general-setq-default treemacs-git-mode 'simple))
+
+(use-package treemacs-projectile
+  :straight t)
+
+(use-package treemacs-magit
+  :straight t)
+
+;; (use-package treemacs-icons-dired
+;;   :straight t
+;;   :ghook (dired-mode-hook #'treemacs-icons-dired-enable-once))
 #+end_src
 
 ** Autocompletion
@@ -2730,14 +2708,28 @@ A nice way to restart emacs on the fly if you need to.
   :general
   (:keymaps 'dired-mode-map
             "h" #'dired-up-directory
-            "n" #'dired-next-line
-            "p" #'dired-previous-line
             "f" #'find-file)
   :init
   (defun arco/dired-for-tramp ()
     (when (file-remote-p dired-directory)
       (setq-local dired-actual-switches "-alhF")))
-  :config
+  :config/el-patch
+  ;; This function prevents dired-up-directory from creating new buffers
+  (el-patch-defun dired-up-directory (&optional other-window)
+    "Run Dired on parent directory of current directory."
+    (interactive "P")
+    (let* ( (dir (dired-current-directory))
+            (orig (current-buffer))
+            (up (file-name-directory (directory-file-name dir))))
+      (or (dired-goto-file (directory-file-name dir))
+          ;; Only try dired-goto-subdir if buffer has more than one dir.
+          (and (cdr dired-subdir-alist)
+               (dired-goto-subdir up))
+          (progn
+            (kill-buffer orig)
+            (dired up)
+            (dired-goto-file dir)))))
+
   (general-setq dired-auto-revert-buffer t
                 dired-dwim-target t
                 dired-use-ls-dired t
@@ -2976,13 +2968,12 @@ A nice way to restart emacs on the fly if you need to.
                         fill-column 110)
     (variable-pitch-mode)
     (set-face-attribute 'variable-pitch nil
-                        :family "Iosevka Sparkle"
+                        :family "Iosevka Aile"
                         :inherit 'default)
     (set-face-attribute 'fixed-pitch nil
                         :family "Iosevka"
                         :inherit 'default)
     (set-face-attribute 'org-block nil
-                        :background (doom-color 'base3)
                         :extend t
                         :inherit 'fixed-pitch)
     (set-face-attribute 'org-table nil
@@ -3357,6 +3348,19 @@ A nice way to restart emacs on the fly if you need to.
   :straight t)
 #+end_src
 
+*** [[https://github.com/emacs-lsp/dap-mode][DAP-Mode]]
+#+name: init-dap-mode-block
+#+begin_src emacs-lisp
+(use-package dap-mode
+  :straight t
+  :ghook 'lsp-mode-hook
+  :config
+  (general-setq dap-auto-configure-features '(sessions locals controls tooltip)))
+
+  (use-package dap-python
+    :straight nil)
+#+end_src
+
 ** Syntax & Linting
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
@@ -3366,8 +3370,8 @@ A nice way to restart emacs on the fly if you need to.
   :ghook ('prog-mode-hook #'global-flycheck-mode)
   :commands (flycheck-list-errors)
   :config
-  (general-setq flycheck-emacs-lisp-load-path 'inherit
-                flycheck-display-errors-delay 0.25)
+  (general-setq-default flycheck-emacs-lisp-load-path 'inherit
+                        flycheck-display-errors-delay 0.25)
 
   (general-setq flycheck-flake8rc arco--flake8rc
                 flycheck-python-mypy-config arco--mypy-config)
@@ -3379,6 +3383,7 @@ A nice way to restart emacs on the fly if you need to.
                 flycheck-sh-zsh-executable "/usr/local/bin/zsh")
   (general-setq flycheck-global-modes '(not dir-locals-mode
                                             text-mode
+                                            markdown-mode
                                             org-mode
                                             org-agenda-mode
                                             vterm-mode))
@@ -3446,18 +3451,18 @@ on save. I use this to auto-tangle the config file when editing.
 **** [[https://github.com/defunkt/markdown-mode][Mardown-Mode]]
 #+name: init-markdown-block
 #+begin_src emacs-lisp
-  (use-package markdown-mode
-    :straight t
-    :mode ("\\.md$")
-    :config
-    (general-setq markdown-fontify-code-blocks-natively t
-                  markdown-enable-wiki-links t
-                  markdown-italic-underscore t
-                  markdown-asymmetric-header t
-                  markdown-gfm-uppercase-checkbox t
-                  markdown-gfm-additional-languages '("sh")
-                  markdown-make-gfm-checkboxes-buttons t
-                  mardown-indent-nenter 'indent-and-new-item))
+(use-package markdown-mode
+  :straight t
+  :mode ("\\.md$")
+  :config
+  (general-setq markdown-fontify-code-blocks-natively t
+                markdown-enable-wiki-links t
+                markdown-italic-underscore t
+                markdown-asymmetric-header t
+                markdown-gfm-uppercase-checkbox t
+                markdown-gfm-additional-languages '("sh")
+                markdown-make-gfm-checkboxes-buttons t
+                markdown-indent-on-enter 'indent-and-new-item))
 #+end_src
 
 **** [[https://github.com/milkypostman/markdown-mode-plus][Markdown-Mode-Plus]]
@@ -3473,12 +3478,10 @@ on save. I use this to auto-tangle the config file when editing.
 #+begin_src emacs-lisp
 (use-package tex
   :straight auctex
-  :gfhook ('LaTeX-mode-hook '(TeX-fold-mode
-                              flycheck-mode
-                              reftex-mode))
-  :init
-  (general-setq TeX-view-program-selection '((output-pdf "pdf-tools"))
-                TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
+  :gfhook ('LaTeX-mode-hook '(TeX-fold-mode flycheck-mode reftex-mode)))
+;; :init
+;; (general-setq TeX-view-program-selection '((output-pdf "pdf-tools"))
+;;               TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view"))))
 
 (use-package auctex-latexmk
   :straight t
@@ -3667,20 +3670,6 @@ on save. I use this to auto-tangle the config file when editing.
   :gfhook #'csv-align-mode)
 #+end_src
 
-*** [[https://github.com/magit/git-modes][Gitconfig-Mode]]
-#+name: init-gitconfig-mode-block
-#+begin_src emacs-lisp
-(use-package gitconfig-mode
-  :straight t)
-#+end_src
-
-*** [[https://github.com/vkazanov/crontab-mode][Gitignore-Mode]]
-#+name: init-gitignore-mode-block
-#+begin_src emacs-lisp
-(use-package gitignore-mode
-  :straight t)
-#+end_src
-
 *** [[https://github.com/joshwnj/json-mode][JSON-Mode]]
 #+name: init-json-mode-block
 #+begin_src emacs-lisp
@@ -3710,6 +3699,14 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package yaml-mode
   :straight t
   :mode ("\\.yaml'" "\\.yml'"))
+#+end_src
+
+*** [[https://github.com/paddymcall/noXML-fold][noXML-Fold-Mode]]
+#+name: init-noxml-fold-mode-block
+#+begin_src emacs-lisp
+(use-package noxml-fold
+  :straight t
+  :ghook 'nxml-mode-hook)
 #+end_src
 
 ** Miscellaneous

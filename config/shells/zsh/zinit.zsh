@@ -2,7 +2,7 @@
 ## Check for zinit install
 [[ ! -f "$ZINIT[BIN_DIR]/zinit.zsh" ]] && {
   command mkdir -p "$ZINIT[HOME_DIR]"
-  git clone https://github.com/zdharma/zinit.git "$ZINIT[BIN_DIR]"
+  git clone https://github.com/zdharma-continuum/zinit "$ZINIT[BIN_DIR]"
 }
 
 source "$ZINIT[BIN_DIR]/zinit.zsh"
@@ -42,7 +42,7 @@ zinit $load larkery/zsh-histdb
 bindkey '^r' _histdb-isearch
 
 zinit ice wait'1a' lucid atinit'zicompinit_fast; zicdreplay' blockf
-zinit $load zdharma/fast-syntax-highlighting
+zinit $load zdharma-continuum/fast-syntax-highlighting
 
 zinit ice wait'1b' lucid atload"!_zsh_autosuggest_start" blockf
 zinit $load zsh-users/zsh-autosuggestions

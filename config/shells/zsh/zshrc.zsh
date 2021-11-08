@@ -8,8 +8,6 @@ fi
 
 source "${ZSH}/zinit.zsh"
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
 case "${INSIDE_EMACS:-}" in
   "")
     source "${ZSH}/themes/p10k.zsh"

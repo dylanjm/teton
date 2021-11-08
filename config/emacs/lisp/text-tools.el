@@ -96,27 +96,59 @@
   (interactive)
   (let (input-str output-str from to)
     (cond
-     (string (setq input-str string))
-     ((use-region-p)
-      (setq from (region-beginning))
-      (setq to (region-end))
-      (setq input-str (buffer-substring-no-properties from to)))
-     (t
-      (setq from (point-at-bol))
-      (setq to (point-at-eol))
-      (setq input-str (buffer-substring-no-properties from to))))
+      (string (setq input-str string))
+      ((use-region-p)
+        (setq from (region-beginning))
+        (setq to (region-end))
+        (setq input-str (buffer-substring-no-properties from to)))
+      (t
+        (setq from (point-at-bol))
+        (setq to (point-at-eol))
+        (setq input-str (buffer-substring-no-properties from to))))
     (setq output-str
-          (progn
-            (let* ((path input-str)
-                   (file (djm/remove-dir-and-ext-from-path path))
-                   (title (djm/replace-underscore-as-space file)))
-              (concat "[" title "]" "(" input-str ")"))))
+      (progn
+        (let* ((path input-str)
+                (file (djm/remove-dir-and-ext-from-path path))
+                (title (djm/replace-underscore-as-space file)))
+          (concat "[" title "]" "(" input-str ")"))))
     (if string
-        output-str
+      output-str
       (save-excursion
         (delete-region from to)
         (goto-char from)
         (insert output-str)))))
+
+(defun sum-numbers-in-region (start end)
+  (interactive "r")
+  (message "%s"
+    (cl-reduce #'+
+      (split-string (buffer-substring start
+                      end))
+      :key #'string-to-number)))
+
+(defun arco/eval-to-kill-ring ()
+  (interactive)
+  (kill-new (with-output-to-string
+              (princ (call-interactively 'eval-expression)))))
+
+
+(defun emacs-screen-capture (arg &optional name dir format)
+  (interactive "P")
+  (let* ((format (completing-read "Screenshot Format: "
+                   '(".png" ".pdf" ".jpg" ".tiff" ".svg")))
+          (name (or name (read-string "Name of Screenshot: " nil)))
+          (dir (or dir (read-directory-name (format "Save %s%s to: " name format))))
+          (fp (concat dir name format))
+          (abb-fp (concat "file:" (file-relative-name fp))))
+    (set-process-sentinel
+      (start-process-shell-command
+        "imagecapture" nil (format "screencapture -i %s" fp))
+      `(lambda (process msg)
+         (when (memq (process-status process) '(exit signal))
+           (message (concat (process-name process) " - " msg))
+           (when (equal #',current-prefix-arg '(4))
+             (org-insert-link nil ,abb-fp nil)))))))
+
 
 (provide 'text-tools)
 ;;; text-tools.el ends here

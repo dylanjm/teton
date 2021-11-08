@@ -2,8 +2,9 @@
 
 declare -a arr=(
   # Iosevka Font - Great Monospace and Proportional Font
-  "https://github.com/be5invis/Iosevka/releases/download/v3.6.3/ttf-iosevka-3.6.3.zip"
-  "https://github.com/be5invis/Iosevka/releases/download/v3.6.3/ttf-iosevka-sparkle-3.6.3.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v10.3.4/super-ttc-sgr-iosevka-10.3.4.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v10.3.4/super-ttc-sgr-iosevka-aile-10.3.4.zip"
+  "https://github.com/be5invis/Iosevka/releases/download/v10.3.4/super-ttc-sgr-iosevka-term-10.3.4.zip"
 
   # Symbola - Great Unicode Support
   "https://fontlibrary.org/assets/downloads/symbola/cf81aeb303c13ce765877d31571dc5c7/symbola.zip"
@@ -13,7 +14,7 @@ declare -a arr=(
 )
 
 remove_old_fonts() {
-  rm "${HOME}/Library/Fonts/iosevka-*"
+  rm "${HOME}"/Library/Fonts/iosevka-*
   rm "${HOME}/Library/Fonts/symbola*"
   rm "${HOME}/Library/Fonts/xits*"
 }

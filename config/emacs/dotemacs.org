@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2021-11-03 13:51:58
+/last updated/: 2021-11-18 09:30:24
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -86,7 +86,7 @@ to handle things like fuzzy completion and language-server requirements. (See al
 
 ;; Prevents libgccjit error
 ;; Solution found at: https://github.com/d12frosted/homebrew-emacs-plus/issues/323
-(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/10:/usr/local/opt/libgccjit/lib/gcc/10:/usr/local/opt/gcc/lib/gcc/10/gcc/x86_64-apple-darwin20/10.2.0")
+(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11:/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin21/11")
 
 (setq-default auto-window-vscroll nil
               bidi-display-reordering 'left-to-right
@@ -2024,7 +2024,7 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :ghook 'emacs-startup-hook
   :config
-  (general-setq selectrum-num-candidates-displayed 15)
+  (general-setq selectrum-num-candidates-displayed 10)
   (general-setq selectrum-refine-candidates-function #'orderless-filter
                 selectrum-highlight-candidates-function #'orderless-highlight-matches))
 
@@ -2099,6 +2099,8 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq projectile-completion-system 'default
                 projectile-enable-caching t
                 projectile-switch-project-action 'projectile-dired)
+  (general-setq projectile-project-search-path '( ("~/Documents/projects" . 1)
+                                                  ("~/Documents/forked_github" . 1)))
   (general-pushnew ".ccls-cache" projectile-globally-ignored-directories)
   (general-pushnew ".ccls-root" projectile-project-root-files-bottom-up)
   (general-pushnew "compile_commands.json" projectile-project-root-files-top-down-recurring)

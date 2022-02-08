@@ -118,6 +118,15 @@
         (goto-char from)
         (insert output-str)))))
 
+(defun simple-print (start end)
+  (interactive "r")
+  (let* ((input-str (buffer-substring-no-properties start end))
+          (output-str (concat "print(\"" input-str "\")")))
+    (save-excursion
+      (goto-char start)
+      (insert output-str)
+      (open-line 1))))
+
 (defun sum-numbers-in-region (start end)
   (interactive "r")
   (message "%s"

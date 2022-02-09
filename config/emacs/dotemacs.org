@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-02-08 14:52:08
+/last updated/: 2022-02-09 09:54:43
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -883,6 +883,51 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :ghook ('emacs-startup-hook #'delete-selection-mode))
 #+end_src
 
+
+*** Dired (Built-In)
+#+name: init-dired-block
+#+begin_src emacs-lisp
+(use-package dired
+  :blackout "Dired"
+  :straight (:type built-in)
+  :gfhook '(hl-line-mode arco/dired-for-tramp)
+  :general
+  (:keymaps 'dired-mode-map
+            "h" #'dired-up-directory
+            "f" #'find-file)
+  :init
+  (defun arco/dired-for-tramp ()
+    (when (file-remote-p dired-directory)
+      (setq-local dired-actual-switches "-alhF")))
+  :config/el-patch
+  ;; This function prevents dired-up-directory from creating new buffers
+  (el-patch-defun dired-up-directory (&optional other-window)
+    "Run Dired on parent directory of current directory."
+    (interactive "P")
+    (let* ( (dir (dired-current-directory))
+            (orig (current-buffer))
+            (up (file-name-directory (directory-file-name dir))))
+      (or (dired-goto-file (directory-file-name dir))
+          ;; Only try dired-goto-subdir if buffer has more than one dir.
+          (and (cdr dired-subdir-alist)
+               (dired-goto-subdir up))
+          (progn
+            (kill-buffer orig)
+            (dired up)
+            (dired-goto-file dir)))))
+
+  (general-setq dired-auto-revert-buffer t
+                dired-dwim-target t
+                dired-use-ls-dired t
+                dired-ls-F-marks-symlinks t
+                dired-hide-details-hide-symlink-targets nil
+                dired-listing-switches "-AFhlv --time=ctime --time-style=long-iso --group-directories-first"
+                dired-recursive-deletes 'always
+                dired-recursive-copies 'always
+                ;; Don't confirm deleting files
+                dired-deletion-confirmer '(lambda (x) t)))
+#+end_src
+
 *** Ediff (Built-In)
 
 #+name: init-ediff-block
@@ -925,6 +970,20 @@ I bassically use this block to load all settings that don't have a loaded emacs 
   :straight (:type built-in)
   :config
   (general-setq epg-pinentry-mode 'loopback))
+#+end_src
+
+*** Elisp-Mode (Built-In)
+#+name: init-emacs-lisp-mode-block
+#+begin_src emacs-lisp
+(use-package elisp-mode
+  :blackout ((emacs-lisp-mode . "Elisp")
+             (lisp-interaction-mode . "Lisp-Interaction"))
+  :straight (:type built-in)
+  :mode (("\\.el\\'" . emacs-lisp-mode)
+         ("\\.Cask\\'" . emacs-lisp-mode))
+  :gfhook #'outline-minor-mode
+  :init
+  (general-setq emacs-lisp-docstring-fill-column 72))
 #+end_src
 
 *** Files (Built-In)
@@ -1337,21 +1396,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                 show-trailing-whitespace nil))
 #+end_src
 
-*** Subr-X (Built-In)
-#+name: init-subr-x-block
-#+begin_src emacs-lisp
-(use-package subr-x
-  :straight (:type built-in)
-  :preface
-  (defun display-buffer-fullframe (buffer alist)
-    (when-let* ((window (or (display-buffer-reuse-window buffer alist)
-                            (display-buffer-same-window buffer alist)
-                            (display-buffer-pop-up-window buffer alist)
-                            (display-buffer-use-some-window buffer alist))))
-      (delete-other-windows window)
-      window)))
-#+end_src
-
 *** Subword (Built-In)
 
 #+name: init-subword-block
@@ -1568,36 +1612,30 @@ Sort of a standard package in most emacs-configs these days.
   :ghook 'prog-mode-hook)
 #+end_src
 
-*** [[https://github.com/dylanjm/emacs-theme-gruvbox][Gruvbox-Theme]]
-
-My own personal fork of the gruvbox-theme. I've mostly added color-modes for missing packages.
+*** [[https://github.com/doomemacs/themes][Doom-Themes]]
 
 #+name: init-gruvbox-theme-block
 #+begin_src emacs-lisp
-  (use-package doom-themes
-    :straight t
-    :ghook ('emacs-startup-hook #'arco/load-theme)
-    :preface
-    (defun arco/load-theme ()
-      (setq doom-themes-enable-bold t
-	    doom-themes-enable-italic t
-	    doom-themes-padded-modeline t
-	    doom-gruvbox-brighter-comments nil
-	    doom-gruvbox-dark-variant "hard")
-      (load-theme 'doom-gruvbox t)
-      (custom-set-faces
-       `(font-lock-doc-face ((t (:foreground ,(doom-color 'base4) :slant italic)))))
-      (doom-themes-org-config)
-      (doom-themes-treemacs-config)
-      (doom-themes-visual-bell-config)
-      (when (daemonp)
-	(general-add-hook 'after-make-frame-functions #'setup-main-fonts))
-      (when-let (frame (selected-frame))
-	(setup-main-fonts frame)
-	(configure-fonts frame))))
-
-  (require 'general)
-  (require 'doom-themes)
+(use-package doom-themes
+  :straight t
+  :ghook ('emacs-startup-hook #'arco/load-theme)
+  :preface
+  (defun arco/load-theme ()
+    (general-setq doom-themes-enable-bold t
+	              doom-themes-enable-italic t
+	              doom-themes-padded-modeline nil
+	              doom-gruvbox-brighter-comments nil
+	              doom-gruvbox-dark-variant "hard")
+    (load-theme 'doom-gruvbox t)
+    (custom-set-faces
+     `(font-lock-doc-face ((t (:foreground ,(doom-color 'base4) :slant italic)))))
+    (doom-themes-org-config)
+    (doom-themes-visual-bell-config)
+    (when (daemonp)
+	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+    (when-let (frame (selected-frame))
+	  (setup-main-fonts frame)
+	  (configure-fonts frame))))
 #+end_src
 
 *** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
@@ -1647,7 +1685,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 #+name: init-gcmh-block
 #+begin_src emacs-lisp
 (use-package gcmh
-  :blackout t
   :straight t
   :ghook 'emacs-startup-hook
   :init
@@ -2341,49 +2378,6 @@ A nice way to restart emacs on the fly if you need to.
            "a" #'windower-toggle-single))
 #+end_src
 
-*** Dired (Built-In)
-#+name: init-dired-block
-#+begin_src emacs-lisp
-(use-package dired
-  :blackout "Dired"
-  :straight (:type built-in)
-  :gfhook '(hl-line-mode arco/dired-for-tramp)
-  :general
-  (:keymaps 'dired-mode-map
-            "h" #'dired-up-directory
-            "f" #'find-file)
-  :init
-  (defun arco/dired-for-tramp ()
-    (when (file-remote-p dired-directory)
-      (setq-local dired-actual-switches "-alhF")))
-  :config/el-patch
-  ;; This function prevents dired-up-directory from creating new buffers
-  (el-patch-defun dired-up-directory (&optional other-window)
-    "Run Dired on parent directory of current directory."
-    (interactive "P")
-    (let* ( (dir (dired-current-directory))
-            (orig (current-buffer))
-            (up (file-name-directory (directory-file-name dir))))
-      (or (dired-goto-file (directory-file-name dir))
-          ;; Only try dired-goto-subdir if buffer has more than one dir.
-          (and (cdr dired-subdir-alist)
-               (dired-goto-subdir up))
-          (progn
-            (kill-buffer orig)
-            (dired up)
-            (dired-goto-file dir)))))
-
-  (general-setq dired-auto-revert-buffer t
-                dired-dwim-target t
-                dired-use-ls-dired t
-                dired-ls-F-marks-symlinks t
-                dired-hide-details-hide-symlink-targets nil
-                dired-listing-switches "-AFhlv --time=ctime --time-style=long-iso --group-directories-first"
-                dired-recursive-deletes 'always
-                dired-recursive-copies 'always
-                ;; Don't confirm deleting files
-                dired-deletion-confirmer '(lambda (x) t)))
-#+end_src
 
 *** Dired-Aux (Built-In)
 #+name: init-dired-aux-block
@@ -2871,7 +2865,7 @@ A nice way to restart emacs on the fly if you need to.
   :init
   (general-add-hook 'magit-mode-mode-hook #'hide-mode-line-mode)
   :config
-  (general-setq magit-view-git-manual-method 'woman
+  (general-setq magit-view-git-manual-method 'man
                 magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                 magit-diff-refine-hunk t
                 magit-save-repository-buffers nil
@@ -2879,7 +2873,7 @@ A nice way to restart emacs on the fly if you need to.
 
 (use-package git-commit
   :straight nil
-  :ghook ('emacs-startup-hook #'global-git-commit-mode)
+  :ghook ('magit-mode-hook #'global-git-commit-mode)
   :config
   (general-setq git-commit-summary-max-length 50
                 git-commit-style-convention-checks '(overlong-summary-line non-empty-second-line)))
@@ -2915,7 +2909,7 @@ A nice way to restart emacs on the fly if you need to.
   (general-setq lsp-completion-provider :capf
                 lsp-log-io nil
                 lsp-idle-delay 0.500
-                lsp-modeline-diagnostics-enable t
+                lsp-modeline-diagnostics-enable nil
                 lsp-headerline-breadcrumb-enable t
                 lsp-enable-file-watchers nil))
 #+end_src
@@ -2978,19 +2972,6 @@ A nice way to restart emacs on the fly if you need to.
 
 ** Languages
 *** Lisp
-**** Elisp-Mode (Built-In)
-#+name: init-emacs-lisp-mode-block
-#+begin_src emacs-lisp
-(use-package elisp-mode
-  :blackout ((emacs-lisp-mode . "Elisp")
-             (lisp-interaction-mode . "Lisp-Interaction"))
-  :straight (:type built-in)
-  :mode (("\\.el\\'" . emacs-lisp-mode)
-         ("\\.Cask\\'" . emacs-lisp-mode))
-  :gfhook #'outline-minor-mode
-  :init
-  (general-setq emacs-lisp-docstring-fill-column 72))
-#+end_src
 
 **** [[https://github.com/joaotavora/sly][SLY]]
 #+name: init-sly-block

@@ -34,11 +34,6 @@ export HISTSIZE=500000
 export SAVEHIST=500000
 
 ###
-### Atom
-###
-export ATOM_HOME="${XDG_DATA_HOME}/atom"
-
-###
 ### CCACHE
 ###
 export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
@@ -47,11 +42,6 @@ export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 ### Conda
 ###
 export CONDARC="${XDG_CONFIG_HOME}/condarc"
-
-###
-### Emacs-Anywhere
-###
-export EA_PATH="${XDG_DATA_HOME}/emacs_anywhere"
 
 ###
 ### FZF
@@ -156,7 +146,7 @@ export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
 export SUBVERSION_HOME="${XDG_CONFIG_HOME}/subversion"
 
 ###
-### Terminfo
+### Tealdeer
 ###
 export TEALDEER_CACHE_DIR="${XDG_CACHE_HOME}/tealdeer"
 export TEALDEER_CONFIG_DIR="${XDG_CONFIG_HOME}/tealdeer"
@@ -170,11 +160,6 @@ export TERMINFO="${XDG_DATA_HOME}/terminfo"
 ### TreeSitter
 ###
 export TREE_SITTER_DIR="${XDG_DATA_HOME}/tree-sitter"
-
-###
-### Weechat
-###
-export WEECHAT_HOME="${XDG_CONFIG_HOME}/weechat"
 
 ###
 ### ZSH

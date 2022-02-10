@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-02-09 09:54:43
+/last updated/: 2022-02-10 11:53:00
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -319,18 +319,6 @@ Great package for managing key-bindings and other customizations.
 (use-package general
   :demand t
   :straight t)
-#+end_src
-
-*** [[https://github.com/raxod502/blackout][Blackout]]
-
-Similar to packages like =minions=, =diminish=, or =delight=. You can alter how your minor and major modes show up
-in the mode-line.
-
-#+name: init-blackout-block
-#+begin_src emacs-lisp
-(use-package blackout
-  :demand t
-  :straight (:host github :repo "raxod502/blackout"))
 #+end_src
 
 *** [[https://github.com/rejeep/f.el][Emacs-Lisp Libraries]]
@@ -656,18 +644,6 @@ was last updated.
 #+end_src
 
 ** Built-In Packages
-*** Abbrev (Built-In)
-#+name: init-abbrev-block
-#+begin_src emacs-lisp
-(use-package abbrev
-  :blackout t
-  :straight (:type built-in)
-  :ghook 'emacs-startup-hook
-  :init
-  (general-setq-default abbrev-file-name (nl-var-expand "abbrevs")
-                        only-global-abbrevs nil))
-#+end_src
-
 *** Advice (Built-In)
 
 Ignore those warnings from the old advice system.
@@ -727,17 +703,6 @@ Here we can setup proper coloring for compile buffers.
                 revert-without-query '(".*")))
 #+end_src
 
-*** Bookmark (Built-In)
-#+name: init-bookmark-block
-#+begin_src emacs-lisp
-(use-package bookmark
-  :straight (:type built-in)
-  :general
-  ("H-b" #'bookmark-jump)
-  :config
-  (general-setq bookmark-save-flag +1))
-#+end_src
-
 *** Checkdoc (Built-In)
 
 #+name: init-checkdoc-block
@@ -746,57 +711,6 @@ Here we can setup proper coloring for compile buffers.
   :straight (:type built-in)
   :config
   (put 'checkdoc-package-keywords-flag 'safe-local-variable #'booleanp))
-#+end_src
-
-*** Comint (Built-In)
-
-Added some functionality to kill buffers when their process ends. Code taken from [[https://www.eigenbahn.com/2020/05/13/emacs-comint-buffer-auto-close][Eigenbahn]].
-
-#+name: init-comint-block
-#+begin_src emacs-lisp
-(use-package comint
-  :no-require t
-  :straight (:type built-in)
-  :init
-  (defvar arco--kill-on-exit-comint-hook-has-run nil
-    "Whether or not `kill-on-exit-comint-hook' has run or not.
-We need this buffer-local var to prevent the hook from running
-several times, as can happen for example when calling `shell'.")
-
-  (defun arco/kill-buffer-sentinel (process output)
-    "Process sentinel to auto kill associated buffer once PROCESS dies."
-    (unless (process-live-p process)
-      (kill-buffer (process-buffer process))))
-
-  (defun arco/add-kill-on-exit-sentinel ()
-    "Replace current process sentinel with a new sentinel composed
-of the current one and `my-kill-buffer-sentinel'."
-    (let* ((process (get-buffer-process (current-buffer)))
-           (og-sentinel (process-sentinel process))
-           (sentinel-list (-remove #'null
-                                   (list og-sentinel #'arco/kill-buffer-sentinel)))
-           (combined-sentinel (lambda (process line)
-                                (--each sentinel-list
-                                  (funcall it process line)))))
-      (setf (process-sentinel process) combined-sentinel)))
-
-  (defun arco/async-funcall (function &optional buffer args delay)
-    "Run FUNCTION with ARGS in the buffer after a short DELAY."
-    (run-at-time (or delay 0.2) nil
-                 `(lambda () (with-current-buffer ,buffer ,(cons function args)))))
-
-  (defun arco/kill-on-exit-comint-hook ()
-    (unless arco--kill-on-exit-comint-hook-has-run
-      (setq-local arco--kill-on-exit-comint-hook-has-run t)
-      (arco/async-funcall #'arco/add-kill-on-exit-sentinel (current-buffer))))
-
-  (general-add-hook 'comint-mode-hook #'arco/kill-on-exit-comint-hook)
-  :config
-  (general-setq comint-prompt-read-only t
-                comint-move-point-for-output t
-                comint-scroll-show-maximum-output t
-                comint-scroll-to-bottom-on-output t
-                comint-scroll-to-botom-on-input t))
 #+end_src
 
 *** Compile (Built-In)
@@ -888,7 +802,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-dired-block
 #+begin_src emacs-lisp
 (use-package dired
-  :blackout "Dired"
   :straight (:type built-in)
   :gfhook '(hl-line-mode arco/dired-for-tramp)
   :general
@@ -944,7 +857,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-eldoc-block
 #+begin_src emacs-lisp
 (use-package eldoc
-  :blackout t
   :straight (:type built-in)
   :ghook ('prog-mode-hook #'turn-on-eldoc-mode)
   :init
@@ -976,8 +888,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 #+name: init-emacs-lisp-mode-block
 #+begin_src emacs-lisp
 (use-package elisp-mode
-  :blackout ((emacs-lisp-mode . "Elisp")
-             (lisp-interaction-mode . "Lisp-Interaction"))
   :straight (:type built-in)
   :mode (("\\.el\\'" . emacs-lisp-mode)
          ("\\.Cask\\'" . emacs-lisp-mode))
@@ -1013,19 +923,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                         view-read-only t))
 #+end_src
 
-*** Flyspell (Built-In)
-
-#+name: init-flyspell-block
-#+begin_src emacs-lisp
-(use-package flyspell
-  :straight (:type built-in)
-  :config
-  (general-setq flyspell-abbrev-p t
-                flyspell-use-global-abbrev-table-p t
-                flyspell-issue-welcome-flag nil
-                flyspell-issue-message-flag nil))
-#+end_src
-
 *** Frame (Built-In)
 #+name: init-frame-block
 #+begin_src emacs-lisp
@@ -1042,7 +939,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Fringe (Built-In)
 #+name: init-fringe-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package fringe
   :straight (:type built-in)
   :init
@@ -1089,7 +986,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** iSearch (Built-In)
 #+name: init-isearch-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package isearch
   :straight (:type built-in)
   :general
@@ -1106,40 +1003,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                 lazy-count-suffix-format nil
                 isearch-yank-on-move 'shift
                 isearch-allow-scroll 'unlimited))
-#+end_src
-
-*** iSpell (Built-In)
-#+name: init-ispell-block
-#+begin_src emacs-lisp
-(use-package ispell
-  :straight (:type built-in)
-  :preface
-  (defun djm/fetch-hunspell-dictionary ()
-    (unless (file-exists-p (expand-file-name "~/Library/Spelling/en_US.aff"))
-      (shell-command "bash ${DOTFILES}/bootstrap/setup-dictionaries.sh")))
-  :config
-  (djm/fetch-hunspell-dictionary)
-  (general-setq ispell-dictionary "en_US"
-                ispell-program-name (executable-find "hunspell")
-                ispell-really-hunspell t
-                ispell-silently-savep t)
-  (dolist (regions '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
-                     ("#\\+BEGIN_SRC" . "#\\+END_SRC")
-                     ("#\\+BEGIN_EXAMPLE" . "#\\+END_EXAMPLE")))
-    (general-pushnew regions ispell-skip-region-alist)))
-#+end_src
-
-*** Make-Mode (Built-In)
-#+name: init-makefile-block
-#+begin_src emacs-lisp
-(use-package make-mode
-  :blackout ((makefile-automake-mode . "Makefile")
-             (makefile-gmake-mode . "Makefile")
-             (makefile-makepp-mode . "Makefile")
-             (makefile-bsdmake-mode . "Makefile")
-             (makefile-imake-mode . "Makefile"))
-  :straight (:type built-in)
-  :gfhook #'(lambda () (setq-local indent-tabs-mode t)))
 #+end_src
 
 *** Minibuffer (Built-In)
@@ -1189,8 +1052,8 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 (use-package mwheel
   :straight (:type built-in)
   :init
-  (general-setq mouse-wheel-scroll-amount '(1 ((shift) .5) ((control)))
-                mouse-wheel-progressive-speed nil))
+  (general-setq mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
+                mouse-wheel-scroll-amount-horizontal 2))
 #+end_src
 
 *** New-Comment (Built-In)
@@ -1308,6 +1171,11 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package sh-script
   :straight (:type built-in)
+  :compdef (sh-mode shell-script-mode)
+  :capf #'sh-completion-at-point-function
+  :company (company-capf
+            company-files
+            company-dabbrev-code)
   :preface
   (defun arco/sh-prettify-mode-line ()
     (setq mode-line-process nil)
@@ -1346,15 +1214,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   (general-add-hook 'sh-mode-hook #'arco/sh-prettify-mode-line)
   (general-add-hook 'sh-mode-hook #'sh-script-extra-font-lock-activate)
   :config
-  (general-setq-default sh-basic-offset 2)
-  (compdef
-   :modes '(sh-mode shell-script-mode)
-   :capf #'sh-completion-at-point-function
-   :company '(company-capf
-              company-shell
-              company-shell-env
-              company-files
-              company-dabbrev-code)))
+  (general-setq-default sh-basic-offset 2))
 #+end_src
 
 *** Shell (Built-In)
@@ -1373,8 +1233,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+name: init-simple-block
 #+begin_src emacs-lisp
 (use-package simple
-  :blackout ((visual-line-mode . "")
-             (auto-fill-mode . ""))
   :straight (:type built-in)
   :general
   ("C-x p" #'pop-to-mark-command)
@@ -1394,29 +1252,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                 set-mark-command-repeat-pop t
                 shift-select-mode nil
                 show-trailing-whitespace nil))
-#+end_src
-
-*** Subword (Built-In)
-
-#+name: init-subword-block
-#+begin_src emacs-lisp
-(use-package subword
-  :blackout t
-  :straight (:type built-in)
-  :ghook #'emacs-startup-hook)
-#+end_src
-
-*** Term (Built-In)
-#+name: init-term-block
-#+begin_src emacs-lisp
-(use-package term
-  :straight (:type built-in)
-  :commands term
-  :config
-  (general-setq term-buffer-maximum-size 9999
-                term-completion-autolist t
-                term-completion-recexact t
-                term-scroll-to-bottom-on-output t))
 #+end_src
 
 *** Tramp (Built-In)
@@ -1481,7 +1316,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Window (Built-In)
 #+name: init-window-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package window
   :straight nil
   :init
@@ -1607,7 +1442,6 @@ Sort of a standard package in most emacs-configs these days.
 #+name: init-rainbow-delimiters-block
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
-  :blackout t
   :straight t
   :ghook 'prog-mode-hook)
 #+end_src
@@ -1666,7 +1500,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 #+name: init-page-break-lines-block
 #+begin_src emacs-lisp
 (use-package page-break-lines
-  :blackout t
   :straight t
   :ghook arco--page-break-line-hooks
   :preface
@@ -1722,6 +1555,18 @@ A nice way to restart emacs on the fly if you need to.
   :straight t
   :init
   (defalias 're #'restart-emacs))
+#+end_src
+
+*** [[https://github.com/wasamasa/firestarter][Firestarter]]
+
+This is a nifty package that allows me to define functions as local variables in elisp files that will be run
+on save. I use this to auto-tangle the config file when editing.
+
+#+name: init-firestarter-block
+#+begin_src emacs-lisp
+(use-package firestarter
+  :straight t
+  :ghook 'before-save-hook)
 #+end_src
 
 *** [[https://github.com/emacsorphanage/osx-trash][OSX-Trash]]
@@ -1825,13 +1670,6 @@ A nice way to restart emacs on the fly if you need to.
   :ghook 'after-init-hook)
 #+end_src
 
-*** [[https://github.com/oantolin/embark][Embark]]
-#+name: init-embark-block
-#+begin_src emacs-lisp
-(use-package embark
-  :straight t)
-#+end_src
-
 *** [[https://github.com/bbatsov/projectile][Projectile]]
 #+name: init-projectile-block
 #+begin_src emacs-lisp
@@ -1865,7 +1703,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-company-block
 #+begin_src emacs-lisp
 (use-package company
-  :blackout t
   :straight t
   :commands company-complete-common company-manual-begin company-grab-line
   :ghook ('emacs-startup-hook #'global-company-mode)
@@ -1912,7 +1749,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-company-box-block
 #+begin_src emacs-lisp
 (use-package company-box
-  :blackout t
   :straight t
   :ghook 'company-mode-hook
   :config
@@ -1935,8 +1771,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-yasnippet-block
 #+begin_src emacs-lisp
 (use-package yasnippet
-  :blackout ((yas-global-mode . "")
-             (yas-minor-mode . ""))
   :straight t
   :ghook ('(prog-mode-hook org-mode-hook) #'yas-global-mode)
   :general ("C-;" #'yas-expand)
@@ -1966,7 +1800,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-which-key-block
 #+begin_src emacs-lisp
 (use-package which-key
-  :blackout t
   :straight t
   :ghook 'emacs-startup-hook
   :config
@@ -1989,7 +1822,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-anzu-block
 #+begin_src emacs-lisp
 (use-package anzu
-  :blackout t
   :straight t
   :general
   ([remap query-replace] #'anzu-query-replace-regexp
@@ -2067,7 +1899,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-hungry-delete-block
 #+begin_src emacs-lisp
 (use-package hungry-delete
-  :blackout t
   :straight t
   :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
 #+end_src
@@ -2077,7 +1908,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-undo-tree-block
 #+begin_src emacs-lisp
 (use-package undo-tree
-  :blackout t
   :straight t
   :commands (undo-tree-undo
              undo-tree-redo)
@@ -2099,7 +1929,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-ws-butler-block
 #+begin_src emacs-lisp
 (use-package ws-butler
-  :blackout t
   :straight t
   :ghook ('prog-mode-hook #'ws-butler-global-mode)
   :config
@@ -2412,7 +2241,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-dired-x-block
 #+begin_src emacs-lisp
 (use-package dired-x
-  :blackout ((dired-omit-mode . ""))
   :straight (:type built-in)
   :after (dired)
   :ghook ('dired-mode-hook #'dired-omit-mode)
@@ -2478,7 +2306,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-dired-all-the-icons-block
 #+begin_src emacs-lisp
 (use-package all-the-icons-dired
-  :blackout t
   :straight t
   :ghook 'dired-mode-hook)
 #+end_src
@@ -2498,84 +2325,34 @@ A nice way to restart emacs on the fly if you need to.
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
 #+name: init-dired-hacks-block
 #+begin_src emacs-lisp
-  (use-package dired-hacks
-    :straight t)
+(use-package dired-hacks
+  :straight t)
 
-  (use-package dired-hacks-utils
-    :straight nil)
+(use-package dired-rainbow
+  :demand t
+  :straight nil
+  :after (dired)
+  :config
+  (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
 
-  (use-package dired-filter
-    :straight nil)
-
-  (use-package dired-rainbow
-    :demand t
-    :straight nil
-    :after (dired)
-    :config
-    (dired-rainbow-define-chmod executable-unix "Orange" "-[rw-]+x.*"))
-
-  (use-package dired-narrow
-    :straight nil
-    :after dired
-    :commands (dired-narrow
-               dired-narrow-fuzzy
-               dired-narrow-regexp)
-    :general
-    (:keymaps 'dired-mode-map
-              "C-c C-n" #'dired-narrow
-              "C-c C-f" #'dired-narrow-fuzzy
-              "C-c C-r" #'dired-narrow-regexp)
-    :config
-    (general-setq dired-narrow-exit-when-one-left t
-                  dired-narrow-enable-blinking t
-                  dired-narrow-blink-time 0.3))
-
-  (use-package dired-collapse
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "c" #'dired-collapse-mode))
-
-  (use-package dired-open
-    :straight nil
-    :config
-    (general-setq dired-open-functions '(dired-open-by-extension
-                                         dired-open-subdir)))
-
-  (use-package dired-list
-    :straight nil)
-
-  ;; (use-package dired-images
-  ;;   :straight (dired-hacks eimp))
-
-  (use-package dired-ranger
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "C-c C-c" #'dired-ranger-copy
-              "C-c C-m" #'dired-ranger-move
-              "C-c C-p" #'dired-ranger-paste
-              "C-c C-b" #'dired-ranger-bookmark
-              "C-c b v" #'dired-ranger-bookmark-visit))
-
-  (use-package dired-subtree
-    :straight nil
-    :general
-    (:keymaps 'dired-mode-map
-              "<tab>"     #'dired-subtree-toggle
-              "<backtab>" #'dired-subtree-cycle)
-    :config
-    (general-setq dired-subtree-use-backgrounds nil))
-#+end_src
-
-*** [[https://github.com/stsquad/dired-rsync][Dired-Rsync]]
-#+name: init-dired-rsync-block
-#+begin_src emacs-lisp
-(use-package dired-rsync
-  :straight t
+(use-package dired-ranger
+  :straight nil
   :general
   (:keymaps 'dired-mode-map
-            "r" #'dired-rsync))
+            "C-c C-c" #'dired-ranger-copy
+            "C-c C-m" #'dired-ranger-move
+            "C-c C-p" #'dired-ranger-paste
+            "C-c C-b" #'dired-ranger-bookmark
+            "C-c b v" #'dired-ranger-bookmark-visit))
+
+(use-package dired-subtree
+  :straight nil
+  :general
+  (:keymaps 'dired-mode-map
+            "<tab>"     #'dired-subtree-toggle
+            "<backtab>" #'dired-subtree-cycle)
+  :config
+  (general-setq dired-subtree-use-backgrounds nil))
 #+end_src
 
 *** [[https://github.com/purcell/diredfl][Diredfl]]
@@ -2604,6 +2381,7 @@ A nice way to restart emacs on the fly if you need to.
     (general-setq-local line-spacing 2
                         fill-column 110)
     (variable-pitch-mode)
+    (org-indent-mode)
     (set-face-attribute 'variable-pitch nil
                         :family "Iosevka Aile"
                         :inherit 'default)
@@ -2617,7 +2395,22 @@ A nice way to restart emacs on the fly if you need to.
                         :inherit 'fixed-pitch)
     (set-face-attribute 'org-formula nil
                         :inherit 'fixed-pitch))
-  :config
+
+  (defun arco/org-src-supress-final-newline ()
+    (setq-local require-final-newline nil))
+
+  (defun arco/org-src-delete-trailing-space (&rest _)
+    (delete-trailing-whitespace))
+
+  (defun arco/disable-flycheck-in-org-src-block ()
+    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
+  :init
+  (general-add-hook 'org-src-mode-hook #'arco/org-src-supress-final-newline)
+  (general-add-hook 'org-src-mode-hook #'arco/disable-flycheck-in-org-src-block)
+  (general-add-advice 'org-edit-src-exit :before #'arco/org-src-delete-trailing-space)
+
+  :config/el-patch
   ;; Directory Settings
   (general-setq org-archive-location arco--org-archives
                 org-directory arco--org-dir)
@@ -2669,10 +2462,10 @@ A nice way to restart emacs on the fly if you need to.
                             (,(rx bol (* space) (group "#+end_quote") symbol-end)
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "”"))))))
 
-  ;; ;; List Settings
+  ;; List Settings
   (general-setq org-list-indent-offset 2)
 
-  ;; ;; Other Settings
+  ;; Other Settings
   (general-setq org-catch-invisible-edits 'smart
                 org-cycle-separator-lines 0
                 org-enforce-todo-dependencies t
@@ -2683,145 +2476,17 @@ A nice way to restart emacs on the fly if you need to.
                 org-tags-column 0
                 org-yank-adjusted-subtrees t)
 
-  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
-#+end_src
-
-*** Org-Indent
-#+name: init-org-indent-block
-#+begin_src emacs-lisp
-(use-package org-indent
-  :blackout t
-  :straight nil
-  :ghook 'org-mode-hook)
-#+end_src
-
-*** Org-Agenda
-#+name: init-org-agenda-block
-#+begin_src emacs-lisp
-(use-package org-agenda
-  :straight nil
-  :general
-  ("C-c a" #'org-agenda
-   "C-c c" #'org-capture)
-  :config
-  (general-setq org-agenda-block-separator nil
-                org-agenda-diary-file "~/Documents/org-files/diary.org"
-                org-agenda-dim-blocked-tasks 'invisible
-                org-agenda-files arco--org-agenda-files
-                org-agenda-inhibit-startup nil
-                org-agenda-show-all-dates t
-                org-agenda-skip-deadline-if-done t
-                org-agenda-skip-scheduled-if-done t
-                org-agenda-span 'day
-                org-agenda-start-on-weekday nil
-                org-agenda-start-with-log-mode nil
-                org-agenda-tags-column -100
-                org-agenda-use-time-grid t
-                org-agenda-window-setup 'only-window))
-#+end_src
-
-*** Org-Src
-#+name: init-org-src-block
-#+begin_src emacs-lisp
-(use-package org-src
-  :straight nil
-  :preface
-  (defun arco/org-src-supress-final-newline ()
-    (setq-local require-final-newline nil))
-
-  (defun arco/org-src-delete-trailing-space (&rest _)
-    (delete-trailing-whitespace))
-
-  (defun arco/disable-flycheck-in-org-src-block ()
-    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  :init
-  (general-add-hook 'org-src-mode-hook #'arco/org-src-supress-final-newline)
-  (general-add-hook 'org-src-mode-hook #'arco/disable-flycheck-in-org-src-block)
-  (general-add-advice 'org-edit-src-exit :before #'arco/org-src-delete-trailing-space)
-  :config/el-patch
+  ;; Org-Src Settings
   (el-patch-defun org-src--construct-edit-buffer-name (org-buffer-name lang)
     (concat "[" org-buffer-name "]"))
 
   (general-setq org-src-window-setup 'current-window
                 org-src-fontify-natively t
-                org-src-preserve-indentation t
+                org-src-preserve-indentation nil
                 org-src-tab-acts-natively t
-                org-edit-src-content-indentation 0))
-#+end_src
+                org-edit-src-content-indentation 0)
 
-*** Org-Ob
-#+name: init-org-ob-block
-#+begin_src emacs-lisp
-(use-package ob
-  :straight nil
-  :preface
-  (defun arco/org-redisplay-inline-images ()
-    (interactive)
-    (when org-inline-image-overlays
-      (org-redisplay-inline-images)))
-  :init
-  (general-add-hook 'org-babel-after-execute-hook #'arco/org-redisplay-inline-images)
-  :config
-  (general-setq org-babel-load-languages '((emacs-lisp . t)
-                                           (shell . t)
-                                           (ditaa . t))
-                org-confirm-babel-evaluate nil))
-
-(use-package ob-ditaa
-  :straight nil
-  :commands (org-babel-execute:ditaa)
-  :config
-  (general-setq org-ditaa-jar-path ;; The custom var set in ob-ditaa.el breaks the ditaa path
-                "/usr/local/Cellar/ditaa/0.11.0_1/libexec/ditaa-0.11.0-standalone.jar"))
-#+end_src
-
-*** Org-Ox
-#+name: init-org-ox-block
-#+begin_src emacs-lisp
-(use-package ox
-  :straight nil
-  :config
-  (general-setq org-export-with-toc nil
-                org-export-headline-levels 8
-                org-export-backends '(ascii html latex md)
-                org-export-dispatch-use-expert-ui nil
-                org-export-coding-system 'utf-8
-                org-export-exclude-tags '("noexport" "no_export" "ignore")
-                org-export-with-author t
-                org-export-with-drawers t
-                org-export-with-email t
-                org-export-with-footnotes t
-                org-export-with-latex t
-                org-export-with-properties t
-                org-export-with-smart-quotes t
-                org-html-html5-fancy t
-                org-html-postamble nil))
-
-(use-package ox-latex
-  :straight nil
-  :config
-  ;; LaTeX Settings
-  (general-setq org-latex-pdf-process '("latexmk -shell-escape -bibtex -pdf %f")
-                org-latex-remove-logfiles t
-                org-latex-prefer-user-labels t
-                bibtex-dialect 'biblatex)
-
-  (dolist (ext '("lof" "lot" "tex"
-                 "aux" "idx" "log"
-                 "out" "toc" "nav"
-                 "snm" "vrb" "dvi"
-                 "fdb_latexmk" "blg"
-                 "brf" "fls" "entoc"
-                 "ps" "spl" "bbl"
-                 "bcf" "run.xml"))
-    (general-pushnew ext org-latex-logfiles-extensions)))
-
-
-(use-package ox-gfm
-  :straight t)
-
-(use-package ox-jdf-report
-  :straight (:host github :repo "dylanjm/ox-jdf"))
+  (general-pushnew '("el" . "src emacs-lisp") org-structure-template-alist))
 #+end_src
 
 *** [[https://github.com/integral-dw/org-superstar-mode][Org-SuperStar]]
@@ -2839,7 +2504,6 @@ A nice way to restart emacs on the fly if you need to.
 #+name: init-toc-org-block
 #+begin_src emacs-lisp
 (use-package toc-org
-  :blackout t
   :straight t
   :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
@@ -2893,7 +2557,6 @@ A nice way to restart emacs on the fly if you need to.
 #+begin_src emacs-lisp
 (use-package git-gutter-fringe
   :straight t
-  :blackout t
   :ghook ('prog-mode-hook #'global-git-gutter-mode))
 #+end_src
 
@@ -2982,18 +2645,6 @@ A nice way to restart emacs on the fly if you need to.
   :config
   (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
                 sly-mrepl-history-file-name (nl-var-expand "sly-mrepl-history")))
-#+end_src
-
-**** [[https://github.com/wasamasa/firestarter][Firestarter]]
-
-This is a nifty package that allows me to define functions as local variables in elisp files that will be run
-on save. I use this to auto-tangle the config file when editing.
-
-#+name: init-firestarter-block
-#+begin_src emacs-lisp
-(use-package firestarter
-  :straight t
-  :ghook 'before-save-hook)
 #+end_src
 
 **** [[https://github.com/jwiegley/emacs-async][Async]]

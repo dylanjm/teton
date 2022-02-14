@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-02-10 11:53:00
+/last updated/: 2022-02-14 10:09:55
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -937,15 +937,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
     (menu-bar-mode -1)))
 #+end_src
 
-*** Fringe (Built-In)
-#+name: init-fringe-block
-#+begin_src emacs-lisp :tangle no
-(use-package fringe
-  :straight (:type built-in)
-  :init
-  (set-fringe-mode 10))
-#+end_src
-
 *** Gnutls (Built-In)
 #+name: init-gnutls-block
 #+begin_src emacs-lisp
@@ -982,27 +973,6 @@ I bassically use this block to load all settings that don't have a loaded emacs 
                  (display-buffer-reuse-window display-buffer-in-side-window)
                  (side . right)
                  (window-width . 120))))
-#+end_src
-
-*** iSearch (Built-In)
-#+name: init-isearch-block
-#+begin_src emacs-lisp :tangle no
-(use-package isearch
-  :straight (:type built-in)
-  :general
-  ("C-s" #'isearch-forward)
-  :init
-  (general-setq lazy-highlight-initial-delay 0
-                search-highlight t
-                search-whitespace-regexp ".*?"
-                isearch-lax-whitespace t
-                isearch-regexp-lax-whitespace nil
-                isearch-lazy-highlight t
-                isearch-lazy-count t
-                lazy-count-prefix-format "(%s/%s) "
-                lazy-count-suffix-format nil
-                isearch-yank-on-move 'shift
-                isearch-allow-scroll 'unlimited))
 #+end_src
 
 *** Minibuffer (Built-In)

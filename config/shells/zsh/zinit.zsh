@@ -9,9 +9,6 @@ source "$ZINIT[BIN_DIR]/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-## Check if zmodule is installed and built.
-zmodload zdharma/zplugin 2>/dev/null || zinit module build
-
 ###
 ### Load Zsh Plugins
 ###

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-02-14 10:09:55
+/last updated/: 2022-02-15 12:02:04
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2539,11 +2539,23 @@ on save. I use this to auto-tangle the config file when editing.
   :commands (lsp lsp-deferred)
   :gfhook #'lsp-enable-which-key-integration
   :config
-  (general-setq lsp-completion-provider :capf
+  (general-setq lsp-auto-guess-root t
                 lsp-log-io nil
-                lsp-idle-delay 0.500
+                lsp-restart 'auto-restart
+                lsp-enable-symbol-highlighting nil
+                lsp-enable-on-type-formatting nil
+                lsp-signature-auto-activate nil
+                lsp-signature-render-documentation nil
+                lsp-eldoc-hook nil
+                lsp-modeline-code-actions-enable nil
                 lsp-modeline-diagnostics-enable nil
                 lsp-headerline-breadcrumb-enable t
+                lsp-semantic-tokens-enable nil
+                lsp-enable-folding nil
+                lsp-enable-imenu nil
+                lsp-enable-snippet nil
+                lsp-completion-provider :capf
+                lsp-idle-delay 0.500
                 lsp-enable-file-watchers nil))
 #+end_src
 
@@ -2556,7 +2568,12 @@ on save. I use this to auto-tangle the config file when editing.
   :ghook 'lsp-mode-hook
   :config
   (general-setq lsp-ui-doc-enable t
+                lsp-ui-doc-header t
+                lsp-ui-doc-include-signature t
+                lsp-ui-doc-border (face-foreground 'default)
                 lsp-ui-doc-position 'top
+                lsp-ui-sideline-show-code-actions t
+                lsp-ui-sideline-delay 0.05
                 lsp-ui-flycheck-list-position 'right
                 lsp-ui-imenu-kind-position 'left))
 #+end_src
@@ -2704,8 +2721,11 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package lsp-pyright
   :straight t
   :ghook ('python-mode-hook #'(lambda ()
-                              (require 'lsp-pyright)
-                              (lsp-deferred))))
+                                (require 'lsp-pyright)
+                                (lsp-deferred)))
+  :init
+  (when (executable-find "python3")
+    (general-setq lsp-pyright-python-executable-cmd "python3")))
 #+end_src
 
 *** MOOSE

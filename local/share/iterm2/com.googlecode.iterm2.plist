@@ -55688,13 +55688,13 @@
 			<key>Name</key>
 			<string>Workstation Laptop</string>
 			<key>Non Ascii Font</key>
-			<string>FiraCodeNerdFontComplete-Regular 14</string>
+			<string>FiraCodeNerdFontComplete-Regular 12</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Non-ASCII Ligatures</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>Iosevka-Term-Curly 16</string>
+			<string>Iosevka-Term 15</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
 			<key>Open Toolbelt</key>

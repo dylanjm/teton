@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-02-15 12:02:04
+/last updated/: 2022-04-14 14:28:29
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -2503,6 +2503,7 @@ on save. I use this to auto-tangle the config file when editing.
                 magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
                 magit-diff-refine-hunk t
                 magit-save-repository-buffers nil
+                magit-bury-buffer-function 'quit-window
                 magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
 
 (use-package git-commit

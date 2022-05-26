@@ -61,7 +61,7 @@ alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified
 alias bc='eva'
 alias cat='bat'
 alias cam='conda activate moose'
-alias car='conda activate ravenLibs'
+alias car='conda activate raven_libraries'
 alias cdm='conda deactivate'
 alias rg='rg --color=always --hidden --glob !.git --ignore-case --line-number --no-heading --sort=path'
 
@@ -71,6 +71,7 @@ alias rg='rg --color=always --hidden --glob !.git --ignore-case --line-number --
 alias refresh="source ${HOME}/.zshrc; echo 'Reloaded .zshrc.'"
 alias reload="exec ${SHELL} -l -i"
 alias bubu='brew update && brew upgrade && brew upgrade --cask && brew cleanup'
+alias nunu='zpl self-update; zpl update --all; knitit; kemc; bubu'
 
 ###
 ### Git aliases

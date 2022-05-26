@@ -249,6 +249,7 @@ autoload -Uz time-shell \
          vterm_printf \
          vterm_cmd \
          vterm_prompt_end \
+         find_file \
          colorlist \
          hc \
          her \

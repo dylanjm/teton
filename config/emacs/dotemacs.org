@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-04-14 14:28:29
+/last updated/: 2022-05-26 15:22:26
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -26,7 +26,6 @@
     - [[#minor-modes][Minor Modes]]
     - [[#navigation][Navigation]]
     - [[#org][Org]]
-    - [[#media][Media]]
     - [[#version-control][Version Control]]
     - [[#language-server-protocol][Language Server Protocol]]
     - [[#languages][Languages]]
@@ -1572,7 +1571,18 @@ on save. I use this to auto-tangle the config file when editing.
   (general-setq vterm-use-vterm-prompt-detection-method t
                 vterm-kill-buffer-on-exit t
                 vterm-shell "/usr/local/bin/zsh"
-                vterm-max-scrollback 10000))
+                vterm-max-scrollback 10000
+                vterm-buffer-name-string "vterm %s"))
+#+end_src
+
+*** [[https://github.com/jwiegley/emacs-async][Async]]
+#+name: init-async-block
+#+begin_src emacs-lisp
+(use-package async
+  :straight t
+  :ghook ('dired-mode-hook #'dired-async-mode)
+  :init
+  (general-setq dired-async-mode-lighter ""))
 #+end_src
 
 ** Frameworks
@@ -1915,7 +1925,7 @@ on save. I use this to auto-tangle the config file when editing.
   :general ("C-x o" #'ace-window)
   :config
   (general-setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
-                aw-scope 'frame
+                aw-scope 'global
                 aw-dispatch-always nil
                 aw-minibuffer-flag t
                 aw-ignore-current nil
@@ -2478,16 +2488,6 @@ on save. I use this to auto-tangle the config file when editing.
   :ghook 'org-mode-hook 'markdown-mode-hook)
 #+end_src
 
-** Media
-*** [[https://github.com/hniksic/emacs-htmlize][HTMLize]]
-#+name: init-htmlize-block
-#+begin_src emacs-lisp
-(use-package htmlize
-  :straight t
-  :config
-  (general-setq htmlize-ignore-face-size t))
-#+end_src
-
 ** Version Control
 *** [[https://github.com/magit/magit][Magit]]
 #+name: init-magit-block
@@ -2544,18 +2544,20 @@ on save. I use this to auto-tangle the config file when editing.
                 lsp-log-io nil
                 lsp-restart 'auto-restart
                 lsp-enable-symbol-highlighting nil
-                lsp-enable-on-type-formatting nil
-                lsp-signature-auto-activate nil
-                lsp-signature-render-documentation nil
-                lsp-eldoc-hook nil
-                lsp-modeline-code-actions-enable nil
-                lsp-modeline-diagnostics-enable nil
-                lsp-headerline-breadcrumb-enable t
-                lsp-semantic-tokens-enable nil
-                lsp-enable-folding nil
-                lsp-enable-imenu nil
-                lsp-enable-snippet nil
-                lsp-completion-provider :capf
+                ;; lsp-enable-on-type-formatting nil
+                ;; lsp-signature-auto-activate nil
+                ;; lsp-signature-render-documentation nil
+                ;; lsp-eldoc-hook nil
+                ;; lsp-modeline-code-actions-enable nil
+                ;; lsp-modeline-diagnostics-enable nil
+                ;; lsp-headerline-breadcrumb-enable nil
+                ;; lsp-semantic-tokens-enable nil
+                ;; lsp-enable-folding nil
+                ;; lsp-enable-imenu nil
+                ;; lsp-enable-snippet nil
+                ;; lsp-completion-provider :capf
+                ;; lsp-diagnostics-provider :capf
+                ;; lsp-lens-enable nil
                 lsp-idle-delay 0.500
                 lsp-enable-file-watchers nil))
 #+end_src
@@ -2571,12 +2573,10 @@ on save. I use this to auto-tangle the config file when editing.
   (general-setq lsp-ui-doc-enable t
                 lsp-ui-doc-header t
                 lsp-ui-doc-include-signature t
-                lsp-ui-doc-border (face-foreground 'default)
                 lsp-ui-doc-position 'top
+                lsp-ui-doc-show-with-cursor t
                 lsp-ui-sideline-show-code-actions t
-                lsp-ui-sideline-delay 0.05
-                lsp-ui-flycheck-list-position 'right
-                lsp-ui-imenu-kind-position 'left))
+                lsp-ui-sideline-delay 0.05))
 #+end_src
 
 *** [[https://github.com/emacs-lsp/dap-mode][DAP-Mode]]
@@ -2586,10 +2586,11 @@ on save. I use this to auto-tangle the config file when editing.
   :straight t
   :ghook 'lsp-mode-hook
   :config
-  (general-setq dap-auto-configure-features '(sessions locals controls tooltip)))
-
+  (dap-auto-configure-mode)
+  (general-setq dap-auto-configure-features '(sessions locals controls tooltip))
   (use-package dap-python
-    :straight nil)
+    :straight nil
+    :demand t))
 #+end_src
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
@@ -2600,25 +2601,26 @@ on save. I use this to auto-tangle the config file when editing.
   :ghook ('prog-mode-hook #'global-flycheck-mode)
   :commands (flycheck-list-errors)
   :config
-  (general-setq-default flycheck-emacs-lisp-load-path 'inherit
-                        flycheck-display-errors-delay 0.25
-                        flycheck-mode-line nil)
-
-  (general-setq flycheck-flake8rc arco--flake8rc
-                flycheck-python-mypy-config arco--mypy-config)
-
-  (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
-                flycheck-shellcheck-supported-shells '(bash sh)
-                flycheck-shellcheck-follow-sources nil
-                flycheck-sh-bash-executable "/usr/local/bin/bash"
-                flycheck-sh-zsh-executable "/usr/local/bin/zsh")
-  (general-setq flycheck-global-modes '(not dir-locals-mode
-                                            text-mode
-                                            markdown-mode
-                                            org-mode
-                                            org-agenda-mode
-                                            vterm-mode))
-  (general-pushnew 'sh-shellcheck flycheck-checkers))
+  ;; (general-setq-default flycheck-emacs-lisp-load-path 'inherit
+  ;;                       flycheck-display-errors-delay 0.25
+  ;;                       flycheck-mode-line nil)
+  ;;
+  ;; (general-setq flycheck-flake8rc arco--flake8rc
+  ;;               flycheck-python-mypy-config arco--mypy-config)
+  ;;
+  ;; (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
+  ;;               flycheck-shellcheck-supported-shells '(bash sh)
+  ;;               flycheck-shellcheck-follow-sources nil
+  ;;               flycheck-sh-bash-executable "/usr/local/bin/bash"
+  ;;               flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+  ;; (general-setq flycheck-global-modes '(not dir-locals-mode
+  ;;                                           text-mode
+  ;;                                           markdown-mode
+  ;;                                           org-mode
+  ;;                                           org-agenda-mode
+  ;;                                           vterm-mode))
+  ;; (general-pushnew 'sh-shellcheck flycheck-checkers))
+  )
 #+end_src
 
 ** Languages
@@ -2633,16 +2635,6 @@ on save. I use this to auto-tangle the config file when editing.
   :config
   (general-setq inferior-lisp-program "/usr/local/bin/sbcl"
                 sly-mrepl-history-file-name (nl-var-expand "sly-mrepl-history")))
-#+end_src
-
-**** [[https://github.com/jwiegley/emacs-async][Async]]
-#+name: init-async-block
-#+begin_src emacs-lisp
-(use-package async
-  :straight t
-  :ghook ('dired-mode-hook #'dired-async-mode)
-  :init
-  (general-setq dired-async-mode-lighter ""))
 #+end_src
 
 *** Markdown
@@ -2709,11 +2701,18 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package python
   :straight (:type built-in)
   :config
-  (general-setq python-shell-interpreter "ipython"
-                python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
+  (general-setq ;; python-shell-interpreter "ipython"
+                ;; python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
                 python-indent-guess-indent-offset-verbose nil
-                python-indent-offset 4
+                ;; python-indent-offset 4
+                python-guess-indent nil
                 comment-inline-offset 2))
+
+(use-package conda
+  :straight t
+  :config
+  (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/"
+                conda-env-home-directory "/usr/local/Caskroom/miniconda/base/"))
 #+end_src
 
 **** Pyright
@@ -2724,9 +2723,12 @@ on save. I use this to auto-tangle the config file when editing.
   :ghook ('python-mode-hook #'(lambda ()
                                 (require 'lsp-pyright)
                                 (lsp-deferred)))
-  :init
-  (when (executable-find "python3")
-    (general-setq lsp-pyright-python-executable-cmd "python3")))
+  :config
+  (general-setq lsp-pyright-disable-language-service nil
+                lsp-pyright-disable-organize-imports nil
+                lsp-pyright-auto-import-completions t
+                lsp-pyright-use-library-code-for-types t
+                lsp-completion-enable t))
 #+end_src
 
 *** MOOSE
@@ -2745,14 +2747,6 @@ on save. I use this to auto-tangle the config file when editing.
 #+end_src
 
 *** File Modes
-**** [[https://github.com/tequilasunset/apples-mode][Apple-Script]]
-#+name: init-apple-script-block
-#+begin_src emacs-lisp
-(use-package apples-mode
-  :straight t
-  :mode "\\.\\(applescri\\|sc\\)pt\\'")
-#+end_src
-
 **** CSV-Mode
 #+name: init-csv-mode-block
 #+begin_src emacs-lisp

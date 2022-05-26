@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+find_file() {
+  vterm_cmd find-file "$(realpath "${@:-.}")"
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:

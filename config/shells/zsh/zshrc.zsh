@@ -14,10 +14,11 @@ case "${INSIDE_EMACS:-}" in
     ;;
   "vterm")
     autoload -U add-zsh-hook
-    add-zsh-hook -Uz chpwd (){ print -Pn "\e]2;%m:%2~\a" }
+    add-zsh-hook -Uz chpwd (){ print -Pn "\e]2;%m:%~\a" }
     setopt prompt_subst
     source "${ZSH}/themes/p10k_vterm.zsh"
     PROMPT="$PROMPT'%{$(vterm_prompt_end)%}'"
+    alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
     ;;
 esac
 

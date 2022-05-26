@@ -1,7 +1,7 @@
-#compdef _rav rav
+#compdef _rav rav her
 
 _rav() {
-  _arguments -s -S '*:filename:_files -g "*.xml"'
+  _arguments '*:filename:_files -g "*.xml"'
 }
 
 # don't run the completion function when being source-ed or eval-ed

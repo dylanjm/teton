@@ -25,8 +25,6 @@ alias zconf="${EDITOR} ${ZSH}"
 alias econf="${EDITOR} ${DOTFILES}/config/emacs"
 alias kemc="brew services restart emacs-head@28"
 alias em="/usr/local/bin/emacsclient -t -c -a ''"
-[[ "${INSIDE_EMACS}" == "vterm" ]] &&
-  alias clear='vterm_printf "51;Evterm-clear-scrollback";tput clear'
 
 ###
 ### Common Lisp

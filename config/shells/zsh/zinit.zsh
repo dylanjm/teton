@@ -31,8 +31,13 @@ zinit ice wait lucid \
       atload'zstyle ":completion:*" list-colors "${(s.:.)LS_COLORS}"'
 zinit $load trapd00r/LS_COLORS
 
-zinit ice wait  lucid
+zinit ice wait lucid
 zinit $load hlissner/zsh-autopair
+
+zinit ice wait lucid id-as'zoxide/init' \
+      atclone'zoxide init zsh > zoxide-init.zsh' \
+      atpull'!%atclone' pick'zoxide-init.zsh'
+zinit $load zdharma-continuum/null
 
 zinit ice wait src'histdb-interactive.zsh' lucid
 zinit $load larkery/zsh-histdb

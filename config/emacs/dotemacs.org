@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-05-26 15:22:26
+/last updated/: 2022-06-01 17:01:17
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -142,6 +142,7 @@ and =ns-transparent-titlebar=. I also set the font during this time and handle a
                                 (ns-appearance . dark)
                                 (font . "Iosevka-14")))
 
+(tool-bar-mode -1)
 (set-language-environment "UTF-8")
 (setq default-input-method nil)
 
@@ -690,7 +691,7 @@ Here we can setup proper coloring for compile buffers.
 *** Autorevert (Built-In)
 
 #+name: init-autorevert-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package autorevert
   :straight (:type built-in)
   :ghook ('emacs-startup-hook #'global-auto-revert-mode)
@@ -976,7 +977,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Minibuffer (Built-In)
 #+name: init-mini-buffer-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package minibuffer
   :no-require t
   :straight (:type built-in)
@@ -1207,7 +1208,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   ("C-x p" #'pop-to-mark-command)
   :init
   (general-setq blink-matching-paren t
-                column-number-mode t
+                column-number-mode nil
                 delete-trailing-lines nil
                 eval-expression-print-length nil
                 eval-expression-print-level nil
@@ -1261,7 +1262,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 *** Uniquify (Built-In)
 
 #+name: init-uniquify-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package uniquify
   :straight (:type built-in)
   :init
@@ -1381,7 +1382,7 @@ Sort of a standard package in most emacs-configs these days.
   :straight t
   :commands (all-the-icons-icon-for-buffer)
   :config
-  (general-setq all-the-icons-scale-factor 1)
+  (general-setq all-the-icons-scale-factor 1.2)
   (general-pushnew '("\\.db$" all-the-icons-faicon
                      "database" :face all-the-icons-blue)
                    all-the-icons-icon-alist)
@@ -1417,7 +1418,7 @@ Sort of a standard package in most emacs-configs these days.
 
 *** [[https://github.com/doomemacs/themes][Doom-Themes]]
 
-#+name: init-gruvbox-theme-block
+#+name: init-doom-themes-block
 #+begin_src emacs-lisp
 (use-package doom-themes
   :straight t
@@ -1433,12 +1434,12 @@ Sort of a standard package in most emacs-configs these days.
     (custom-set-faces
      `(font-lock-doc-face ((t (:foreground ,(doom-color 'base4) :slant italic)))))
     (doom-themes-org-config)
-    (doom-themes-visual-bell-config)
-    (when (daemonp)
-	  (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
-    (when-let (frame (selected-frame))
-	  (setup-main-fonts frame)
-	  (configure-fonts frame))))
+    (doom-themes-visual-bell-config)))
+    ;; (when (daemonp)
+	;;   (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+    ;; (when-let (frame (selected-frame))
+	;;   (setup-main-fonts frame)
+	;;   (configure-fonts frame))))
 #+end_src
 
 *** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
@@ -1449,8 +1450,8 @@ Sort of a standard package in most emacs-configs these days.
   :ghook ('after-init-hook)
   :config
   (general-setq doom-modeline-buffer-encoding nil
-                doom-modeline-checker-simple-format t
-                doom-modeline-hud t
+                doom-modeline-checker-simple-format nil
+                doom-modeline-hud nil
                 doom-modeline-project-detection 'projectile))
 #+end_src
 
@@ -1490,7 +1491,8 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :straight t
   :ghook 'emacs-startup-hook
   :init
-  (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect)
+  (add-function :after after-focus-change-function #'gcmh-idle-garbage-collect)
+  ;; (general-add-hook 'focus-out-hook #'gcmh-idle-garbage-collect)
   (general-add-hook 'suspend-hook #'gcmh-idle-garbage-collect)
   (general-setq gcmh-idle-delay 'auto
                 gcmh-auto-idle-delay-factor 10
@@ -1596,8 +1598,7 @@ on save. I use this to auto-tangle the config file when editing.
   (general-setq prescient-history-length 1000))
 #+end_src
 
-*** [[https://github.com/raxod502/selectrum][Selectrum
-]]
+*** [[https://github.com/raxod502/selectrum][Selectrum]]
 #+name: init-selectrum-block
 #+begin_src emacs-lisp
 (use-package selectrum
@@ -1853,7 +1854,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
 #+name: init-editorconfig-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package editorconfig
   :straight t
   :ghook #'emacs-startup-hook
@@ -2292,7 +2293,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
 #+name: init-dired-git-info-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dired-git-info
   :straight t
   :general
@@ -2544,15 +2545,16 @@ on save. I use this to auto-tangle the config file when editing.
                 lsp-log-io nil
                 lsp-restart 'auto-restart
                 lsp-enable-symbol-highlighting nil
-                ;; lsp-enable-on-type-formatting nil
+                lsp-enable-on-type-formatting nil
+                lsp-enable-text-document-color nil
                 ;; lsp-signature-auto-activate nil
                 ;; lsp-signature-render-documentation nil
                 ;; lsp-eldoc-hook nil
                 ;; lsp-modeline-code-actions-enable nil
                 ;; lsp-modeline-diagnostics-enable nil
-                ;; lsp-headerline-breadcrumb-enable nil
+                lsp-headerline-breadcrumb-enable nil
                 ;; lsp-semantic-tokens-enable nil
-                ;; lsp-enable-folding nil
+                lsp-enable-folding nil
                 ;; lsp-enable-imenu nil
                 ;; lsp-enable-snippet nil
                 ;; lsp-completion-provider :capf
@@ -2595,7 +2597,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flycheck
   :straight t
   :ghook ('prog-mode-hook #'global-flycheck-mode)

@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-06-01 17:01:17
+/last updated/: 2022-06-03 09:22:32
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1208,7 +1208,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   ("C-x p" #'pop-to-mark-command)
   :init
   (general-setq blink-matching-paren t
-                column-number-mode nil
+                column-number-mode t
                 delete-trailing-lines nil
                 eval-expression-print-length nil
                 eval-expression-print-level nil
@@ -1809,9 +1809,7 @@ on save. I use this to auto-tangle the config file when editing.
    [remap query-replace-regexp] #'anzu-query-replace)
   :init
   (defalias 'qr #'anzu-query-replace)
-  (defalias 'qrr #'anzu-query-replace-regexp)
-  :config
-  (global-anzu-mode))
+  (defalias 'qrr #'anzu-query-replace-regexp))
 #+end_src
 
 *** [[https://github.com/Wilfred/deadgrep][Deadgrep]]

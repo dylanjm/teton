@@ -4,7 +4,7 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-06-03 09:22:32
+/last updated/: 2022-06-11 18:34:32
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1431,15 +1431,15 @@ Sort of a standard package in most emacs-configs these days.
 	              doom-gruvbox-brighter-comments nil
 	              doom-gruvbox-dark-variant "hard")
     (load-theme 'doom-gruvbox t)
-    (custom-set-faces
-     `(font-lock-doc-face ((t (:foreground ,(doom-color 'base4) :slant italic)))))
+    (custom-set-faces `(font-lock-doc-face
+                        ((t (:foreground ,(doom-color 'base4) :slant italic)))))
     (doom-themes-org-config)
-    (doom-themes-visual-bell-config)))
-    ;; (when (daemonp)
-	;;   (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
-    ;; (when-let (frame (selected-frame))
-	;;   (setup-main-fonts frame)
-	;;   (configure-fonts frame))))
+    (doom-themes-visual-bell-config))
+  ;; (when (daemonp)
+  ;;   (general-add-hook 'after-make-frame-functions #'setup-main-fonts))
+  (when-let (frame (selected-frame))
+    (setup-main-fonts frame)
+    (configure-fonts frame)))
 #+end_src
 
 *** [[https://github.com/seagle0128/doom-modeline][Doom-Modeline]]
@@ -1590,17 +1590,16 @@ on save. I use this to auto-tangle the config file when editing.
 ** Frameworks
 *** [[https://github.com/raxod502/prescient.el][Prescient]]
 #+name: init-prescient-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package prescient
   :straight t
-  :ghook ('selectrum-prescient-mode-hook #'prescient-persist-mode)
   :init
   (general-setq prescient-history-length 1000))
 #+end_src
 
 *** [[https://github.com/raxod502/selectrum][Selectrum]]
 #+name: init-selectrum-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package selectrum
   :straight t
   :ghook 'emacs-startup-hook
@@ -1616,6 +1615,14 @@ on save. I use this to auto-tangle the config file when editing.
   (general-setq selectrum-prescient-enable-filtering nil))
 #+end_src
 
+*** [[https://github.com/minad/vertico][Vertico]]
+#+name: init-vertico-block
+#+begin_src emacs-lisp
+(use-package vertico
+  :straight t
+  :ghook 'emacs-startup-hook)
+#+end_src
+
 *** [[https://github.com/minad/consult][Consult]]
 #+name: init-consult-block
 #+begin_src emacs-lisp
@@ -1628,7 +1635,11 @@ on save. I use this to auto-tangle the config file when editing.
 #+begin_src emacs-lisp
 (use-package marginalia
   :straight t
-  :ghook #'selectrum-mode-hook)
+  :ghook #'vertico-mode-hook
+  :general
+  ("M-A" #'marginalia-cycle)
+  (:keymaps 'minibuffer-local-map
+            "M-A" #'marginalia-cycle))
 #+end_src
 
 *** [[https://github.com/oantolin/orderless][Orderless]]
@@ -1638,8 +1649,8 @@ on save. I use this to auto-tangle the config file when editing.
   :straight t
   :demand t
   :init
-  (general-setq completion-styles '(orderless))
-  (general-setq orderless-skip-highlighting (lambda () selectrum-is-active)))
+  (general-setq completion-styles '(orderless basic)
+                completion-category-overrides '((file (styles basic org-without-partial-completion)))))
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F
@@ -1648,7 +1659,7 @@ on save. I use this to auto-tangle the config file when editing.
 #+begin_src emacs-lisp
 (use-package ctrlf
   :straight t
-  :ghook 'after-init-hook)
+  :ghook 'emacs-startup-hook)
 #+end_src
 
 *** [[https://github.com/bbatsov/projectile][Projectile]]

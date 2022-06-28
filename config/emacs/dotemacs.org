@@ -4,7 +4,8 @@
 
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
-/last updated/: 2022-06-16 10:46:36
+
+/last updated/: 2022-06-27 21:41:51
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1650,7 +1651,7 @@ on save. I use this to auto-tangle the config file when editing.
   :demand t
   :init
   (general-setq completion-styles '(orderless basic)))
-                ;; completion-category-overrides '((file (styles basic org-without-partial-completion)))))
+;; completion-category-overrides '((file (styles basic org-without-partial-completion)))))
 #+end_src
 
 *** [[https://github.com/raxod502/ctrlf][CTRL-F

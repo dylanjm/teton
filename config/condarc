@@ -1,7 +1,7 @@
 #-*-mode: yaml-*-
-channels:
-  - idaholab
-  - conda-forge
-  - defaults
+# channels:
+#   - idaholab
+#   - conda-forge
+#   - defaults
 
 auto_activate_base: false

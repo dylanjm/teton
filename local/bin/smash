@@ -208,6 +208,7 @@ file-to-clipboard() {
     -e 'set the clipboard to (read (POSIX file (first item of args)) as JPEG picture)' \
     -e end \
     "${memefile}"
+  echo "Meme copied to clipboard!"
 }
 
 #######################################################################

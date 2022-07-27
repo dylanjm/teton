@@ -40,12 +40,11 @@ alias docs="cd ${HOME}/Documents"
 alias dl="cd ${HOME}/Downloads"
 
 alias dot="cd ${DOTFILES}"
-alias dotconfig="cd ${DOTFILES}/config"
+alias dotconf="cd ${DOTFILES}/config"
 alias dotshell="cd ${ZSH}"
 alias dotem="cd ${DOTFILES}/config/emacs"
 alias dotbin="cd ${DOTFILES}/local/bin"
 alias dotsha="cd ${DOTFILES}/local/share"
-alias cache="cd ${XDG_CACHE_HOME}"
 alias org="cd ${HOME}/Documents/org-files"
 
 ###
@@ -86,10 +85,6 @@ alias gcob='git checkout -b'
 ### Personal Aliases
 ###
 if [[ "${USER}" == "djm" ]]; then
-  alias omscs="cd ~/Documents/College/OMSCS"
-  alias bayes="cd ~/Documents/College/OMSCS/isye_6420"
-  alias rl="cd ~/Documents/College/OMSCS/cs_7642"
-  alias kbai="cd ~/Documents/College/OMSCS/cs7637-kbai"
   alias code="cd ~/Documents/Code/Github"
 fi
 
@@ -99,16 +94,9 @@ fi
 if [[ "${USER}" == "mcdodj" ]]; then
   alias code="cd ~/Documents/forked_github"
   alias proj='cd ~/Documents/projects'
-  alias bis='cd ~/Documents/projects/bison'
-  alias bisd='cd ~/Documents/projects/bison_data'
-  alias valid='cd ~/Documents/projects/bison/assessment/LWR/validation'
-  alias moose='cd ~/Documents/projects/moose'
-  alias libmesh='cd ~/Documents/projects/libmesh'
-  alias papers='cd ~/Documents/projects/papers'
-  alias bb='cd ~/Documents/projects/blackbear'
-  alias grz='cd ~/Documents/projects/grizzly'
   alias ra='cd ~/Documents/projects/raven'
   alias he='cd ~/Documents/projects/HERON'
+  alias fo='cd ~/Documents/projects/FORCE'
   alias teal='cd ~/Documents/projects/TEAL'
 fi
 

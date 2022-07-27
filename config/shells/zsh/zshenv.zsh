@@ -141,11 +141,6 @@ export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
 
 ###
-### Subversion
-###
-export SUBVERSION_HOME="${XDG_CONFIG_HOME}/subversion"
-
-###
 ### Tealdeer
 ###
 export TEALDEER_CACHE_DIR="${XDG_CACHE_HOME}/tealdeer"
@@ -155,11 +150,6 @@ export TEALDEER_CONFIG_DIR="${XDG_CONFIG_HOME}/tealdeer"
 ### Terminfo
 ###
 export TERMINFO="${XDG_DATA_HOME}/terminfo"
-
-###
-### TreeSitter
-###
-export TREE_SITTER_DIR="${XDG_DATA_HOME}/tree-sitter"
 
 ###
 ### ZSH
@@ -201,11 +191,6 @@ _zsh_autosuggest_strategy_histdb_top() {
 export ZSH_AUTOSUGGEST_STRATEGY=(histdb_top completion)
 
 ###
-### MOOSE
-###
-export MOOSE_DIR="${HOME}/Documents/projects/moose"
-
-###
 ### Paths
 ###
 fpath+=(/usr/local/opt/zsh/share/zsh/functions
@@ -228,7 +213,6 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       /usr/sbin
       /sbin
       /usr/local/texlive/2022/bin/universal-darwin
-      # /usr/local/opt/texinfo/bin
       /opt/X11/bin)
 
 export PATH

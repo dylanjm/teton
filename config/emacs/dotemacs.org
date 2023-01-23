@@ -5,7 +5,7 @@
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
 
-/last updated/: 2023-01-23 12:55:14
+/last updated/: 2023-01-23 14:38:40
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -241,34 +241,22 @@ envrionment variables from your shell to show up in Emacs. This package makes th
                                          "EDITOR"
                                          "EMACS"
                                          "HISTFILE"
-                                         "MOOSE_DIR"
                                          "HIST_IGNORE"
                                          "HISTSIZE"
                                          "SAVEHIST"
-                                         "ATOM_HOME"
-                                         "CCACHE_DIR"
                                          "CONDARC"
                                          "CONDA_ENVS_PATH"
-                                         "EA_PATH"
-                                         "FZF_DEFAULT_COMMAND"
-                                         "GPG_TTY" "GNUPGHOME"
+                                         "GPG_TTY"
+                                         "GNUPGHOME"
                                          "SSH_AUTH_SOCK"
                                          "GOKU_EDN_CONFIG_FILE"
-                                         "GUILE_AUTO_COMPILE"
-                                         "GUILE_HISTORY"
-                                         "JAVA_HOME"
-                                         "TREE_SITTER_DIR"
                                          "ZSH"
-                                         "PYGMENTIZE_STYLE"
-                                         "PYLINTHOME"
                                          "PYENV_ROOT"
                                          "IPYTHONDIR"
                                          "PYTHONSTARTUP"
                                          "MPLCONFIGDIR"
                                          "MYPY_CACHE_DIR"
                                          "CARGO_HOME"
-                                         "TERMINFO"
-                                         "WEECHAT_HOME"
                                          "PATH"
                                          "MANPATH"
                                          "FPATH")
@@ -289,14 +277,6 @@ envrionment variables from your shell to show up in Emacs. This package makes th
         no-littering-var-directory (expand-file-name "~/.cache/emacs/"))
   (defalias 'nl-var-expand #'no-littering-expand-var-file-name)
   (defalias 'nl-etc-expand #'no-littering-expand-etc-file-name))
-#+end_src
-
-*** [[https://gitlab.com/jjzmajic/compdef][Compdef]]
-#+name: init-compdef-block
-#+begin_src emacs-lisp
-(use-package compdef
-  :demand t
-  :straight (:host gitlab :repo "jjzmajic/compdef"))
 #+end_src
 
 *** [[https://github.com/raxod502/el-patch][El-Patch]]
@@ -1115,11 +1095,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+begin_src emacs-lisp
 (use-package sh-script
   :straight (:type built-in)
-  :compdef (sh-mode shell-script-mode)
-  :capf #'sh-completion-at-point-function
-  :company (company-capf
-            company-files
-            company-dabbrev-code)
   :preface
   (defun arco/sh-prettify-mode-line ()
     (setq mode-line-process nil)
@@ -1648,9 +1623,18 @@ on save. I use this to auto-tangle the config file when editing.
   :custom
   (corfu-cycle t)
   (corfu-auto t)
-  (corfu-separator ?\s)
-  (corfu-quit-no-match 'separator)
   (corfu-preselect 'prompt))
+#+end_src
+
+*** [[https://github.com/minad/cape][Cape]]
+
+#+name: init-cape-block
+#+begin_src emacs-lisp
+(use-package cape
+  :straight t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file))
 #+end_src
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]

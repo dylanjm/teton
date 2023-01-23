@@ -5,7 +5,7 @@
 [[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
 
 
-/last updated/: 2022-06-30 10:29:22
+/last updated/: 2023-01-23 12:55:14
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -582,33 +582,6 @@ Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/confi
 (general-add-hook 'minibuffer-exit-hook #'arco/cleanup-completions-buffer)
 #+end_src
 
-**** Clipboard-Integration
-
-Better clipboard integration for non-gui emacs. Code taken from [[https://github.com/raxod502/radian/blob/develop/emacs/radian.el][radian.el]].
-
-#+name: init-clipboard-integration-block
-#+begin_src emacs-lisp :tangle no
-(unless (display-graphic-p)
-  (defvar clipboard-last-copy nil)
-
-  (eval-and-compile
-    (defun arco/clipboard-paste ()
-      (let* ((default-directory "/")
-             (text (shell-command-to-string "pbpaste")))
-        (unless (string= text clipboard-last-copy)
-          text)))
-
-    (defun arco/clipboard-copy (text)
-      (let* ((default-directory "/")
-             (process-connection-type nil)
-             (proc (start-process "pbcopy" nil "pbcopy")))
-        (process-send-string proc text)
-        (process-send-eof proc))
-      (setq clipboard-last-copy text)))
-
-  (general-setq interprogram-paste-function #'arco/clipboard-paste)
-  (general-setq interprogram-cut-function #'arco/clipboard-copy))
-#+end_src
 
 
 *** Hooks, Macros & Advice
@@ -978,7 +951,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Minibuffer (Built-In)
 #+name: init-mini-buffer-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package minibuffer
   :no-require t
   :straight (:type built-in)
@@ -1260,20 +1233,6 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
                                              tramp-file-name-regexp)))
 #+end_src
 
-*** Uniquify (Built-In)
-
-#+name: init-uniquify-block
-#+begin_src emacs-lisp :tangle no
-(use-package uniquify
-  :straight (:type built-in)
-  :init
-  (general-setq uniquify-ignore-buffers-re "^\\*"
-                uniquify-buffer-name-style 'post-forward-angle-brackets
-                uniquify-strip-common-suffix t
-                uniquify-after-kill-buffer-p t
-                uniquify-separator "/"))
-#+end_src
-
 *** VC-Hooks (Built-In)
 
 #+name: init-vc-hooks-block
@@ -1287,7 +1246,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Window (Built-In)
 #+name: init-window-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package window
   :straight nil
   :init
@@ -1589,33 +1548,6 @@ on save. I use this to auto-tangle the config file when editing.
 #+end_src
 
 ** Frameworks
-*** [[https://github.com/raxod502/prescient.el][Prescient]]
-#+name: init-prescient-block
-#+begin_src emacs-lisp :tangle no
-(use-package prescient
-  :straight t
-  :init
-  (general-setq prescient-history-length 1000))
-#+end_src
-
-*** [[https://github.com/raxod502/selectrum][Selectrum]]
-#+name: init-selectrum-block
-#+begin_src emacs-lisp :tangle no
-(use-package selectrum
-  :straight t
-  :ghook 'emacs-startup-hook
-  :config
-  (general-setq selectrum-num-candidates-displayed 10)
-  (general-setq selectrum-refine-candidates-function #'orderless-filter
-                selectrum-highlight-candidates-function #'orderless-highlight-matches))
-
-(use-package selectrum-prescient
-  :straight t
-  :ghook 'selectrum-mode-hook
-  :config
-  (general-setq selectrum-prescient-enable-filtering nil))
-#+end_src
-
 *** [[https://github.com/minad/vertico][Vertico]]
 #+name: init-vertico-block
 #+begin_src emacs-lisp
@@ -1650,12 +1582,13 @@ on save. I use this to auto-tangle the config file when editing.
   :straight t
   :demand t
   :init
-  (general-setq completion-styles '(orderless basic)))
-;; completion-category-overrides '((file (styles basic org-without-partial-completion)))))
+  (general-setq completion-styles '(orderless basic)
+                completion-category-defaults nil
+                completion-category-overrides '((file (styles . (partial-completion))))))
+
 #+end_src
 
-*** [[https://github.com/raxod502/ctrlf][CTRL-F
-]]
+*** [[https://github.com/raxod502/ctrlf][CTRL-F]]
 #+name: init-ctrl-f-block
 #+begin_src emacs-lisp
 (use-package ctrlf
@@ -1700,73 +1633,25 @@ on save. I use this to auto-tangle the config file when editing.
 #+end_src
 
 ** Autocompletion
-*** [[https://github.com/company-mode/company-mode][Company]]
-#+name: init-company-block
+*** [[https://github.com/minad/corfu][Corfu]]
+#+name: init-corfu-block
 #+begin_src emacs-lisp
-(use-package company
+(use-package corfu
   :straight t
-  :commands company-complete-common company-manual-begin company-grab-line
-  :ghook ('emacs-startup-hook #'global-company-mode)
+  :ghook ('vertico-mode-hook #'global-corfu-mode)
   :general
-  ([remap completion-at-point] #'company-manual-begin
-   [remap complete-symbol] #'company-manual-begin)
-  (:keymaps 'company-active-map
-            "TAB"     #'company-complete-selection
-            "<tab>"   #'company-complete-selection
-            "C-n"     #'company-select-next-if-tooltip-visible-or-complete-selection
-            "C-p"     #'company-select-previous-or-abort)
-  (:keymaps 'company-active-map
-            :predicate '(company-explicit-action-p)
-            "<return>" #'company-complete-selection
-            "RET"      #'company-complete-selection)
-  (:keymaps 'comint-mode-map
-            [remap indent-for-tab-command] #'company-manual-begin)
-  :init
-  (general-unbind :keymaps 'company-active-map "C-w" "C-h")
-  (general-setq company-async-timeout 10
-                company-auto-complete nil
-                company-auto-complete-chars nil
-                company-dabbrev-other-buffers nil
-                company-dabbrev-ignore-case nil
-                company-dabbrev-downcase nil
-                company-idle-delay 0.0
-                company-minimum-prefix-length 1
-                company-show-numbers t
-                company-require-match 'never
-                company-tooltip-limit 14
-                company-tooltip-align-annotations t)
-  (general-setq company-frontends '(company-pseudo-tooltip-frontend
-                                    company-echo-metadata-frontend))
-  (general-setq company-global-modes '(not message-mode
-                                           help-mode
-                                           gud-mode
-                                           vterm-mode
-                                           eshell-mode
-                                           term-mode))
-  (general-setq company-backends '(company-capf company-files company-dabbrev)))
+  (:keymaps 'corfu-map
+            "TAB" #'corfu-next
+            "<tab>" #'corfu-next
+            "S-TAB" #'corfu-previous
+            "<backtab>" #'corfu-previous)
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-separator ?\s)
+  (corfu-quit-no-match 'separator)
+  (corfu-preselect 'prompt))
 #+end_src
-
-*** [[https://github.com/sebastiencs/company-box][Company-Box]]
-#+name: init-company-box-block
-#+begin_src emacs-lisp
-(use-package company-box
-  :straight t
-  :ghook 'company-mode-hook
-  :config
-  (general-setq company-box-show-single-candidate t
-                company-box-backends-colors nil
-                company-box-max-candidates 14
-                company-box-icons-alist 'company-box-icons-all-the-icons))
-#+end_src
-
-*** [[https://github.com/raxod502/prescient.el][Company-Prescient]]
-#+name: init-company-prescient-block
-#+begin_src emacs-lisp
-(use-package company-prescient
-  :straight t
-  :ghook 'company-mode-hook)
-#+end_src
-
 
 *** [[https://github.com/joaotavora/yasnippet][Yasnippet]]
 #+name: init-yasnippet-block
@@ -1868,22 +1753,6 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package aggressive-indent
   :straight t
   :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
-#+end_src
-
-*** [[https://github.com/editorconfig/editorconfig-emacs][EditorConfig]]
-#+name: init-editorconfig-block
-#+begin_src emacs-lisp :tangle no
-(use-package editorconfig
-  :straight t
-  :ghook #'emacs-startup-hook
-  :init
-  (defun arco/hack-makefile-indent (props)
-    (when (derived-mode-p 'makefile-mode)
-      (puthash 'indent_style "tab" props)))
-  :config
-  (general-setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
-  (general-add-hook 'editorconfig-hack-properties-functions
-                    #'arco/hack-makefile-indent))
 #+end_src
 
 *** [[https://github.com/DarthFennec/highlight-indent-guides][Highlight-Indent-Guides]]
@@ -2190,8 +2059,7 @@ on save. I use this to auto-tangle the config file when editing.
    "C-c w u" #'windmove-up))
 #+end_src
 
-*** [[https://gitlab.com/ambrevar/emacs-windower][Windower
-]]
+*** [[https://gitlab.com/ambrevar/emacs-windower][Windower]]
 #+name: init-windower-block
 #+begin_src emacs-lisp
 (use-package windower
@@ -2307,18 +2175,6 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package all-the-icons-dired
   :straight t
   :ghook 'dired-mode-hook)
-#+end_src
-
-*** [[https://github.com/clemera/dired-git-info][Dired-Git-Info]]
-#+name: init-dired-git-info-block
-#+begin_src emacs-lisp :tangle no
-(use-package dired-git-info
-  :straight t
-  :general
-  (:keymaps 'dired-mode-map
-            ":" #'dired-git-info-mode)
-  :config
-  (general-setq dgi-commit-message-format "%h\t%s\t%cr"))
 #+end_src
 
 *** [[https://github.com/Fuco1/dired-hacks][Dired-Hacks]]
@@ -2537,7 +2393,7 @@ on save. I use this to auto-tangle the config file when editing.
 #+name: init-git-timemachine-block
 #+begin_src emacs-lisp
 (use-package git-timemachine
-  :straight (:host gitlab :repo "pidu/git-timemachine")
+  :straight (:url "https://codeberg.org/pidu/git-timemachine")
   :config
   (general-setq git-timemachine-show-minibuffer-details t))
 #+end_src

@@ -2,10 +2,10 @@
 #+author: Dylan McDowell
 #+property: header-args :tangle "~/teton/config/emacs/init.el"
 
-[[file:https://img.shields.io/badge/GNU%20Emacs-28.0.50-b48ead.svg]]
+[[file:https://img.shields.io/badge/GNU%20Emacs-29.0.60-b48ead.svg]]
 
 
-/last updated/: 2023-01-23 14:38:40
+/last updated/: 2023-01-24 11:06:34
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -546,7 +546,7 @@ symbols, emojis, greek letters, as well as fall backs for."
 Sourced from [[https://github.com/chrisbarrett/.emacs.d/blob/master/config/config-basic-settings.el][chrisbarret]].
 
 #+name: init-yank-ws-cleanup-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun arco/display-ansi-codes (buf &rest _)
   (and (bufferp buf)
        (string= (buffer-name buf) "*Shell Command Output*")
@@ -1326,23 +1326,6 @@ Sort of a standard package in most emacs-configs these days.
                    all-the-icons-icon-alist))
 #+end_src
 
-*** [[https://github.com/purcell/default-text-scale][Default-Text-Scale]]
-
-- TODO: Figure out how to config my fonts so this changes all font sizes consistently.
-
-#+name: init-default-text-scale-block
-#+begin_src emacs-lisp
-(use-package default-text-scale
-  :straight t
-  :general
-  ("<s-up>" #'default-text-scale-increase
-   "<s-down>" #'default-text-scale-decrease
-   "s-r" #'default-text-scale-reset)
-  :config
-  (general-setq default-text-scale-amount 20))
-#+end_src
-
-
 *** [[https://github.com/Fanael/rainbow-delimiters][Rainbow-Delimiters]]
 #+name: init-rainbow-delimiters-block
 #+begin_src emacs-lisp
@@ -1651,6 +1634,12 @@ on save. I use this to auto-tangle the config file when editing.
                 yas-snippet-dirs `(,arco--yasnippet-dir)))
 #+end_src
 
+*** [[https://github.com/minad/tempel][Tempel]]
+#+name: init-tempel-block
+#+begin_src emacs-lisp
+
+#+end_src
+
 ** Documentation
 *** [[https://github.com/Wilfred/helpful][Helpful]]
 #+name: init-helpful-block
@@ -1676,15 +1665,6 @@ on save. I use this to auto-tangle the config file when editing.
   (general-setq which-key-separator " "
                 which-key-prefix-prefix "+")
   (which-key-setup-side-window-bottom))
-#+end_src
-
-*** [[https://github.com/jguenther/discover-my-major][Discover-My-Major]]
-#+name: init-discover-my-major-block
-#+begin_src emacs-lisp
-(use-package discover-my-major
-  :straight t
-  :general
-  ("C-h C-m" #'discover-my-major))
 #+end_src
 
 ** Editing Tools
@@ -2126,24 +2106,6 @@ on save. I use this to auto-tangle the config file when editing.
                 find-name-arg "-iname"))
 #+end_src
 
-*** Image-Dired (Built-In)
-
-#+name: init-image-dired-block
-#+begin_src emacs-lisp
-(use-package image-dired
-  :demand t
-  :straight (:type built-in)
-  :after (dired)
-  :general
-  (:keymaps 'image-dired-thumbnail-mode-map
-            "<return>" #'image-dired-thumbnail-display-external)
-  :config
-  (general-setq image-dired-thumb-size 80
-                image-dired-thumb-margin 2
-                image-dired-thumb-relief 0
-                image-dired-thumbs-per-row 4))
-#+end_src
-
 *** [[https://github.com/yqrashawn/fd-dired][FD-Dired]]
 #+name: init-fd-dired-block
 #+begin_src emacs-lisp
@@ -2183,15 +2145,6 @@ on save. I use this to auto-tangle the config file when editing.
             "C-c C-p" #'dired-ranger-paste
             "C-c C-b" #'dired-ranger-bookmark
             "C-c b v" #'dired-ranger-bookmark-visit))
-
-(use-package dired-subtree
-  :straight nil
-  :general
-  (:keymaps 'dired-mode-map
-            "<tab>"     #'dired-subtree-toggle
-            "<backtab>" #'dired-subtree-cycle)
-  :config
-  (general-setq dired-subtree-use-backgrounds nil))
 #+end_src
 
 *** [[https://github.com/purcell/diredfl][Diredfl]]
@@ -2561,8 +2514,8 @@ on save. I use this to auto-tangle the config file when editing.
 (use-package python
   :straight (:type built-in)
   :config
-  (general-setq ;; python-shell-interpreter "ipython"
-                ;; python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
+  (general-setq python-shell-interpreter "ipython"
+                python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
                 python-indent-guess-indent-offset-verbose nil
                 ;; python-indent-offset 4
                 python-guess-indent nil
@@ -2589,21 +2542,6 @@ on save. I use this to auto-tangle the config file when editing.
                 lsp-pyright-auto-import-completions t
                 lsp-pyright-use-library-code-for-types t
                 lsp-completion-enable t))
-#+end_src
-
-*** MOOSE
-**** [[https://github.com/dylanjm/emacs-moose-mode][Moose-Mode]]
-#+name: init-moose-mode-block
-#+begin_src emacs-lisp
-(use-package moose-mode
-  :straight (:host github :repo "dylanjm/emacs-moose-mode"))
-#+end_src
-
-**** [[https://github.com/dylanjm/moose-hit-format.el][Hit-Formatter]]
-#+name: init-hit-formatter-block
-#+begin_src emacs-lisp
-(use-package moose-hit-format
-  :straight (:host github :repo "dylanjm/moose-hit-format.el" :files ("*")))
 #+end_src
 
 *** File Modes

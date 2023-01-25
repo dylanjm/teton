@@ -5,7 +5,7 @@
 [[file:https://img.shields.io/badge/GNU%20Emacs-29.0.60-b48ead.svg]]
 
 
-/last updated/: 2023-01-24 11:06:34
+/last updated/: 2023-01-25 09:46:55
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -857,6 +857,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 (use-package files
   :straight (:type built-in)
   :init
+  (defalias 're #'restart-emacs)
   (general-setq-default auto-mode-case-fold nil
                         auto-save-file-name-transforms `((".*" ,arco--auto-save-file-cache t))
                         backup-by-copying t
@@ -1434,16 +1435,6 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
   :config
   (general-setq pdf-view-display-size 'fit-page)
   (general-setq pdf-annot-activate-created-annotations t))
-#+end_src
-
-*** [[https://github.com/emacsorphanage/osx-trash][Restart-Emacs]]
-A nice way to restart emacs on the fly if you need to.
-#+name: init-restart-emacs-block
-#+begin_src emacs-lisp
-(use-package restart-emacs
-  :straight t
-  :init
-  (defalias 're #'restart-emacs))
 #+end_src
 
 *** [[https://github.com/wasamasa/firestarter][Firestarter]]

@@ -5,7 +5,7 @@
 [[file:https://img.shields.io/badge/GNU%20Emacs-29.0.60-b48ead.svg]]
 
 
-/last updated/: 2023-01-25 09:46:55
+/last updated/: 2023-01-25 12:07:24
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -1222,7 +1222,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Window (Built-In)
 #+name: init-window-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package window
   :straight nil
   :init
@@ -1715,7 +1715,15 @@ on save. I use this to auto-tangle the config file when editing.
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
   :straight t
-  :ghook '(python-mode-hook yaml-mode-hook moose-mode-hook))
+  :ghook 'prog-mode-hook
+  :init
+  (general-setq highlight-indent-guides-method 'fill
+                highlight-indent-guides-responsive 'nil
+                highlight-indent-guides-auto-enabled 'nil)
+  :config
+  (set-face-background 'highlight-indent-guides-odd-face (doom-color 'base2))
+  (set-face-background 'highlight-indent-guides-even-face (doom-color 'base3))
+  (set-face-background 'highlight-indent-guides-character-face (doom-color 'base2)))
 #+end_src
 
 *** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
@@ -2344,24 +2352,9 @@ on save. I use this to auto-tangle the config file when editing.
   :gfhook #'lsp-enable-which-key-integration
   :config
   (general-setq lsp-auto-guess-root t
-                lsp-log-io nil
-                lsp-restart 'auto-restart
-                lsp-enable-symbol-highlighting nil
-                lsp-enable-on-type-formatting nil
-                lsp-enable-text-document-color nil
-                ;; lsp-signature-auto-activate nil
-                ;; lsp-signature-render-documentation nil
-                ;; lsp-eldoc-hook nil
-                ;; lsp-modeline-code-actions-enable nil
-                ;; lsp-modeline-diagnostics-enable nil
                 lsp-headerline-breadcrumb-enable nil
-                ;; lsp-semantic-tokens-enable nil
-                lsp-enable-folding nil
-                ;; lsp-enable-imenu nil
-                ;; lsp-enable-snippet nil
-                ;; lsp-completion-provider :capf
-                ;; lsp-diagnostics-provider :capf
-                ;; lsp-lens-enable nil
+                lsp-completion-provider :capf
+                lsp-diagnostics-provider :capf
                 lsp-idle-delay 0.500
                 lsp-enable-file-watchers nil))
 #+end_src

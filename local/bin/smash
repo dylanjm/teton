@@ -219,6 +219,7 @@ main() {
   setup-vars
   make_meme "${_MESSAGE}"
   file-to-clipboard
+  open "/tmp/smash.jpg"
 }
 
 if [[ "${BASH_SOURCE[0]}" = "${0}" ]]; then

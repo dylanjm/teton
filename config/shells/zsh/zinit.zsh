@@ -16,9 +16,6 @@ autoload -Uz _zinit
 zinit ice lucid depth=1
 zinit light romkatv/powerlevel10k
 
-zinit ice wait lucid atpull'zinit creinstall -q .' blockf
-zinit light zsh-users/zsh-completions
-
 zinit ice wait lucid src"general.zsh" id-as'personal/config'
 zinit light $ZSH/interactive
 
@@ -35,11 +32,13 @@ zinit ice wait src'histdb-interactive.zsh' lucid
 zinit light larkery/zsh-histdb
 bindkey '^r' _histdb-isearch
 
-zinit ice wait'1a' lucid atinit'zicompinit_fast; zicdreplay' blockf
-zinit light zdharma-continuum/fast-syntax-highlighting
-
-zinit ice wait'1b' lucid atload"!_zsh_autosuggest_start" blockf
-zinit light zsh-users/zsh-autosuggestions
+zinit wait lucid for \
+ atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
+    zdharma-continuum/fast-syntax-highlighting \
+ blockf \
+    zsh-users/zsh-completions \
+ atload"!_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions
 
 # Local Variables:
 # mode: shell-script

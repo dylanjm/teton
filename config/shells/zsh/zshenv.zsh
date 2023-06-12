@@ -241,7 +241,6 @@ autoload -Uz time-shell \
          hc \
          her \
          rav \
-         update-opt
 
 
 # Local Variables:

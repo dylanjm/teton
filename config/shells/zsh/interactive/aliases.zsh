@@ -69,6 +69,7 @@ alias refresh="source ${HOME}/.zshrc; echo 'Reloaded .zshrc.'"
 alias reload="exec ${SHELL} -l -i"
 alias bubu='brew update && brew upgrade && brew upgrade --cask && brew cleanup'
 alias nunu='zpl self-update; zpl update --all; knitit; kemc; bubu'
+alias fcc='echo -ne "\e[5 q"' # Whenever I use reverse search it messes up my cursor
 
 ###
 ### Git aliases

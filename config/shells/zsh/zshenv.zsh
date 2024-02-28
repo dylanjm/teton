@@ -190,6 +190,10 @@ _zsh_autosuggest_strategy_histdb_top() {
 }
 export ZSH_AUTOSUGGEST_STRATEGY=(histdb_top completion)
 
+export REQUESTS_CA_BUNDLE="${HOME}/certs/CAINLROOT_B64.crt"
+export CURL_CA_BUNDLE="${HOME}/certs/CAINLROOT_B64.crt"
+export SSL_CERT_FILE="${HOME}/certs/CAINLROOT_B64.crt"
+
 ###
 ### Paths
 ###

@@ -195,6 +195,13 @@ export CURL_CA_BUNDLE="${HOME}/certs/CAINLROOT_B64.crt"
 export SSL_CERT_FILE="${HOME}/certs/CAINLROOT_B64.crt"
 
 ###
+### ZScalar
+###
+export REQUESTS_CA_BUNDLE="${HOME}/certs/CAINLROOT_B64.crt"
+export CURL_CA_BUNDLE="${HOME}/certs/CAINLROOT_B64.crt"
+export SSL_CERT_FILE="${HOME}/certs/CAINLROOT_B64.crt"
+
+###
 ### Paths
 ###
 fpath+=(/usr/local/opt/zsh/share/zsh/functions
@@ -216,7 +223,7 @@ path=($CARGO_HOME/bin               # Rust CLI Utils
       /usr/local/sbin
       /usr/sbin
       /sbin
-      /usr/local/texlive/2023/bin/universal-darwin
+      /usr/local/texlive/2024/bin/universal-darwin
       /opt/X11/bin)
 
 export PATH

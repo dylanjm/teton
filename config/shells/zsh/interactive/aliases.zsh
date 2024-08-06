@@ -52,9 +52,9 @@ alias org="cd ${HOME}/Documents/org-files"
 ###
 alias ls='gls --color=tty --group-directories-first'
 alias la='gls -la --color=tty --group-directories-first'
-alias lx='exa -lah --icons --time=changed --time-style long-iso --group-directories-first'
-alias lxg='exa -lah --icons --time=changed --time-style long-iso --git --sort=modified'
-alias lxm='exa -lah --icons --time=changed --time-style long-iso --sort=modified'
+alias lx='eza -lah --icons --time=changed --time-style long-iso --group-directories-first'
+alias lxg='eza -lah --icons --time=changed --time-style long-iso --git --sort=modified'
+alias lxm='eza -lah --icons --time=changed --time-style long-iso --sort=modified'
 alias bc='eva'
 alias cat='bat'
 alias cam='conda activate moose'

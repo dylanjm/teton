@@ -5,7 +5,7 @@
 [[file:https://img.shields.io/badge/GNU%20Emacs-29.0.60-b48ead.svg]]
 
 
-/last updated/: 2023-01-25 12:07:24
+/last updated/: 2024-10-10 15:28:29
 
 * Table of Contents :TOC@2:noexport:
 - [[#about][About]]
@@ -85,7 +85,7 @@ to handle things like fuzzy completion and language-server requirements. (See al
 
 ;; Prevents libgccjit error
 ;; Solution found at: https://github.com/d12frosted/homebrew-emacs-plus/issues/323
-(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/11:/usr/local/opt/libgccjit/lib/gcc/11:/usr/local/opt/gcc/lib/gcc/11/gcc/x86_64-apple-darwin21/11")
+(setenv "LIBRARY_PATH" "/usr/local/opt/gcc/lib/gcc/14:/usr/local/opt/libgccjit/lib/gcc/14:/usr/local/opt/gcc/lib/gcc/14/gcc/x86_64-apple-darwin23/14")
 
 (setq-default auto-window-vscroll nil
               bidi-display-reordering 'left-to-right
@@ -603,7 +603,7 @@ was last updated.
 Ignore those warnings from the old advice system.
 
 #+name: init-advice-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package advice
   :straight (:type built-in)
   :init
@@ -615,7 +615,7 @@ Ignore those warnings from the old advice system.
 Here we can setup proper coloring for compile buffers.
 
 #+name: init-ansi-color-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ansi-color
   :straight (:type built-in)
   :ghook ('compilation-filter-hook #'compilation-ansi-color-process-output)
@@ -660,7 +660,7 @@ Here we can setup proper coloring for compile buffers.
 *** Checkdoc (Built-In)
 
 #+name: init-checkdoc-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package checkdoc
   :straight (:type built-in)
   :config
@@ -669,7 +669,7 @@ Here we can setup proper coloring for compile buffers.
 
 *** Compile (Built-In)
 #+name: init-compile-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package compile
   :straight (:type built-in)
   :init
@@ -809,7 +809,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Eldoc (Built-In)
 #+name: init-eldoc-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package eldoc
   :straight (:type built-in)
   :ghook ('prog-mode-hook #'turn-on-eldoc-mode)
@@ -821,7 +821,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Epa (Built-In)
 
 #+name: init-epa-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package epa
   :straight (:type built-in)
   :config
@@ -831,7 +831,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Epg (Built-In)
 
 #+name: init-epg-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package epg
   :straight (:type built-in)
   :config
@@ -840,7 +840,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Elisp-Mode (Built-In)
 #+name: init-emacs-lisp-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package elisp-mode
   :straight (:type built-in)
   :mode (("\\.el\\'" . emacs-lisp-mode)
@@ -880,7 +880,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Frame (Built-In)
 #+name: init-frame-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package frame
   :straight (:type built-in)
   :init
@@ -894,7 +894,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Gnutls (Built-In)
 #+name: init-gnutls-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package gnutls
   :straight (:type built-in)
   :config
@@ -906,7 +906,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** Help (Built-In)
 
 #+name: init-help-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package help
   :straight (:type built-in)
   :gfhook #'visual-line-mode
@@ -918,7 +918,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 *** iElm (Built-In)
 
 #+name: init-ielm-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ielm
   :straight (:type built-in)
   :config
@@ -932,7 +932,7 @@ I bassically use this block to load all settings that don't have a loaded emacs 
 
 *** Minibuffer (Built-In)
 #+name: init-mini-buffer-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package minibuffer
   :no-require t
   :straight (:type built-in)
@@ -1004,9 +1004,9 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :straight (:type built-in)
   :init
   (general-setq mac-command-modifier 'meta
-                mac-option-modifier 'super
+                mac-option-modifier 'super))
                 ;; Karabiner binds left-ctrl to right-ctrl
-                mac-right-control-modifier 'hyper))
+                ;; mac-right-control-modifier 'hyper))
 #+end_src
 
 *** Paren (Built-In)
@@ -1040,7 +1040,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 
 *** Project (Built-In)
 #+name: init-project-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package project
   :straight (:type built-in)
   :init
@@ -1058,7 +1058,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   :general
   ("C-x C-r" #'crux-recentf-find-file)
   :config
-  (general-setq recentf-max-saved-items 2000
+  (general-setq recentf-max-saved-items 200
                 recentf-max-menu-items 100
                 recentf-auto-cleanup 'never)
   (arco/run-at-active-interval (* 5 60) 10
@@ -1212,7 +1212,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 *** VC-Hooks (Built-In)
 
 #+name: init-vc-hooks-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package vc-hooks
   :straight (:type built-in)
   :init
@@ -1221,6 +1221,7 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
 #+end_src
 
 *** Window (Built-In)
+
 #+name: init-window-block
 #+begin_src emacs-lisp :tangle no
 (use-package window
@@ -1282,6 +1283,16 @@ This block deserves some explanation. My keyboard config maps =caps-lock= to =le
   (general-setq window-combination-resize t
                 even-window-sizes 'height-only
                 window-sides-vertical nil))
+#+end_src
+
+*** CSV-Mode
+#+name: init-csv-mode-block
+#+begin_src emacs-lisp
+(use-package csv-mode
+  :straight t
+  :commands (csv-mode
+             csv-align-mode)
+  :gfhook #'csv-align-mode)
 #+end_src
 
 ** User Files
@@ -1405,7 +1416,7 @@ This package is great, but can be a little annoying. It can sometimes slow-down 
 ** System
 *** [[https://gitlab.com/koral/gcmh/][GCMH]]
 #+name: init-gcmh-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package gcmh
   :straight t
   :ghook 'emacs-startup-hook
@@ -1576,7 +1587,7 @@ on save. I use this to auto-tangle the config file when editing.
 *** [[https://github.com/alphapapa/burly.el#changelog][Burly]]
 
 #+name: init-burly-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package burly
   :straight t)
 #+end_src
@@ -1648,7 +1659,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/justbur/emacs-which-key][Which-Key]]
 #+name: init-which-key-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package which-key
   :straight t
   :ghook 'emacs-startup-hook
@@ -1704,7 +1715,7 @@ on save. I use this to auto-tangle the config file when editing.
 ** Minor Modes
 *** [[https://github.com/Malabarba/aggressive-indent-mode][Aggressive-Indent]]
 #+name: init-aggressive-indent-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package aggressive-indent
   :straight t
   :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
@@ -1728,7 +1739,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/nflath/hungry-delete][Hungry-Delete]]
 #+name: init-hungry-delete-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package hungry-delete
   :straight t
   :ghook '(emacs-lisp-mode-hook lisp-mode-hook))
@@ -1746,13 +1757,13 @@ on save. I use this to auto-tangle the config file when editing.
   ("C-/" #'undo-tree-undo
    "C-?" #'undo-tree-redo)
   :config
-  (general-setq undo-tree-save-history t
+  (general-setq undo-tree-save-history nil
                 undo-tree-visualizer-timestamps t
                 undo-tree-enable-undo-in-region nil
                 undo-tree-visualizer-diff t
                 undo-limit 800000
-                undo-strong-limit 1200000
-                undo-outer-limit 1200000)
+                undo-strong-limit 240000
+                undo-outer-limit 24000000)
   (global-undo-tree-mode +1))
 #+end_src
 
@@ -2378,7 +2389,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/emacs-lsp/dap-mode][DAP-Mode]]
 #+name: init-dap-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package dap-mode
   :straight t
   :ghook 'lsp-mode-hook
@@ -2392,37 +2403,35 @@ on save. I use this to auto-tangle the config file when editing.
 
 *** [[https://github.com/flycheck/flycheck][Flycheck]]
 #+name: init-flycheck-block
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package flycheck
   :straight t
   :ghook ('prog-mode-hook #'global-flycheck-mode)
   :commands (flycheck-list-errors)
   :config
-  ;; (general-setq-default flycheck-emacs-lisp-load-path 'inherit
-  ;;                       flycheck-display-errors-delay 0.25
-  ;;                       flycheck-mode-line nil)
-  ;;
-  ;; (general-setq flycheck-flake8rc arco--flake8rc
-  ;;               flycheck-python-mypy-config arco--mypy-config)
-  ;;
-  ;; (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
-  ;;               flycheck-shellcheck-supported-shells '(bash sh)
-  ;;               flycheck-shellcheck-follow-sources nil
-  ;;               flycheck-sh-bash-executable "/usr/local/bin/bash"
-  ;;               flycheck-sh-zsh-executable "/usr/local/bin/zsh")
-  ;; (general-setq flycheck-global-modes '(not dir-locals-mode
-  ;;                                           text-mode
-  ;;                                           markdown-mode
-  ;;                                           org-mode
-  ;;                                           org-agenda-mode
-  ;;                                           vterm-mode))
-  ;; (general-pushnew 'sh-shellcheck flycheck-checkers))
-  )
+  (general-setq-default flycheck-emacs-lisp-load-path 'inherit
+                        flycheck-display-errors-delay 0.25
+                        flycheck-mode-line nil)
+
+  (general-setq flycheck-flake8rc arco--flake8rc
+                flycheck-python-mypy-config arco--mypy-config)
+
+  (general-setq flycheck-sh-shellcheck-executable "/usr/local/bin/shellcheck"
+                flycheck-shellcheck-supported-shells '(bash sh)
+                flycheck-shellcheck-follow-sources nil
+                flycheck-sh-bash-executable "/usr/local/bin/bash"
+                flycheck-sh-zsh-executable "/usr/local/bin/zsh")
+  (general-setq flycheck-global-modes '(not dir-locals-mode
+                                            text-mode
+                                            markdown-mode
+                                            org-mode
+                                            org-agenda-mode
+                                            vterm-mode))
+  (general-pushnew 'sh-shellcheck flycheck-checkers))
 #+end_src
 
 ** Languages
 *** Lisp
-
 **** [[https://github.com/joaotavora/sly][SLY]]
 #+name: init-sly-block
 #+begin_src emacs-lisp
@@ -2505,11 +2514,11 @@ on save. I use this to auto-tangle the config file when editing.
                 python-guess-indent nil
                 comment-inline-offset 2))
 
-(use-package conda
-  :straight t
-  :config
-  (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/"
-                conda-env-home-directory "/usr/local/Caskroom/miniconda/base/"))
+;; (use-package conda
+;;   :straight t
+;;   :config
+;;   (general-setq conda-anaconda-home "/usr/local/Caskroom/miniconda/base/"
+;;                 conda-env-home-directory "/usr/local/Caskroom/miniconda/base/"))
 #+end_src
 
 **** Pyright
@@ -2529,26 +2538,16 @@ on save. I use this to auto-tangle the config file when editing.
 #+end_src
 
 *** File Modes
-**** CSV-Mode
-#+name: init-csv-mode-block
-#+begin_src emacs-lisp
-(use-package csv-mode
-  :straight t
-  :commands (csv-mode
-             csv-align-mode)
-  :gfhook #'csv-align-mode)
-#+end_src
-
 **** [[https://github.com/jhgorrell/ssh-config-mode-el][SSH-Config-Mode]]
 #+name: init-ssh-config-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ssh-config-mode
   :straight t)
 #+end_src
 
 **** [[https://github.com/yoshiki/yaml-mode][YAML-Mode]]
 #+name: init-yaml-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package yaml-mode
   :straight t
   :mode ("\\.yaml'" "\\.yml'"))
@@ -2556,7 +2555,7 @@ on save. I use this to auto-tangle the config file when editing.
 
 **** [[https://github.com/paddymcall/noXML-fold][noXML-Fold-Mode]]
 #+name: init-noxml-fold-mode-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package noxml-fold
   :straight t
   :ghook 'nxml-mode-hook)
@@ -2565,19 +2564,17 @@ on save. I use this to auto-tangle the config file when editing.
 ** Miscellaneous
 *** [[https://github.com/parkouss/speed-type][SpeedType]]
 #+name: init-speed-type-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package speed-type
   :straight t)
 #+end_src
 
 *** [[https://github.com/emacsmirror/2048-game][2048-Game]]
 #+name: init-2048-block
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package 2048-game
   :straight t)
 #+end_src
-
-
 
 * Citations
 + [[https://github.com/rememberYou/.emacs.d/blob/master/config.org][rememberYou config]]
